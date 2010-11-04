@@ -1,9 +1,8 @@
 package operation;
 
-import model.Attribute;
-import model.AttributeContainer;
-import model.IOperationConfig;
-import model.Attribute.Type;
+import util.Attribute;
+import util.AttributeContainer;
+import util.Attribute.Type;
 
 public abstract class AbstractOperationConfig implements IOperationConfig {
 
@@ -32,6 +31,11 @@ public abstract class AbstractOperationConfig implements IOperationConfig {
 				ATTRIBUTES.TIMEOUT.toString(), "Timeout in minutes (0 = no timeout)", 
 				Type.INTEGER, 0
 		));
+	}
+	
+	@Override
+	public String getName(){
+		return getClass().getSimpleName();
 	}
 	
 	@Override

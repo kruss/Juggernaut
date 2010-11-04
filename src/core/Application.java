@@ -3,11 +3,11 @@ package core;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.util.ArrayList;
 
 import ui.Frame;
 import util.FileTools;
-import logger.Logger;
+import util.Logger;
+import util.UiTools;
 
 public class Application {
 
@@ -25,6 +25,7 @@ public class Application {
 		Application.getInstance();
 	}
 	
+	private Configuration configuration;
 	private Frame frame;
 	private Logger logger;
 	
@@ -32,17 +33,50 @@ public class Application {
 	
 	private Application(){
 		
-		init();
-		logger.info(Constants.APP_NAME+" ("+Constants.APP_VERSION+")");
+		try{ 
+			init(); 
+			logger.info(Constants.APP_NAME+" ("+Constants.APP_VERSION+")");
+		}catch(Exception e){
+			e.printStackTrace();
+			System.exit(Constants.PROCESS_NOK);
+		}
 	}
 	
-	private void init(){
+	private void init() throws Exception {
 		
-		initFolders();
+		initFolder();
 		initLogger();
+		initConfiguration();
 		initFrame();
 	}
 
+	private void initFolder() {
+
+		File folder = new File(getOutputFolder());
+		if(!folder.isDirectory()){
+			folder.mkdirs();
+		}
+	}
+
+	private void initLogger() {
+		
+		logger = new Logger(
+				new File(getOutputFolder()+File.separator+Logger.OUTPUT_FILE)
+		);
+	}
+	
+	private void initConfiguration() throws Exception {
+		
+		File file = new File(getOutputFolder()+File.separator+Configuration.OUTPUT_FILE);
+		if(file.isFile()){
+			configuration = Configuration.load(file.getAbsolutePath());
+		}else{
+			configuration = new Configuration(file.getAbsolutePath());
+			configuration.save();
+		}
+		
+	}
+	
 	private void initFrame() {
 		
 		frame = new Frame();
@@ -54,34 +88,21 @@ public class Application {
         });
 		frame.setVisible(true);
 	}
-
-	private void initFolders() {
-
-		ArrayList<File> folders = new ArrayList<File>();
-		folders.add(new File(getFolderPath(Constants.CONFIG_FOLDER)));
-		folders.add(new File(getFolderPath(Constants.DATA_FOLDER)));
-		for(File folder : folders){
-			if(!folder.isDirectory()){
-				folder.mkdirs();
-			}
-		}
-	}
-	
-	private String getFolderPath(String name){
-		return FileTools.getWorkingDir()+File.separator+name;
-	}
-
-	private void initLogger() {
-		
-		logger = new Logger(
-				new File(FileTools.getWorkingDir()+File.separator+Constants.APP_NAME+".log")
-		);
-	}
 	
 	public void shutdown(){
 		
 		logger.info("Shutdown");
-		
+		try{
+			configuration.chekForSave();
+		}catch(Exception e){
+			logger.error(e);
+			UiTools.errorDialog(e);
+		}
 		System.exit(Constants.PROCESS_OK);
+	}
+	
+	
+	private String getOutputFolder(){
+		return FileTools.getWorkingDir()+File.separator+Constants.OUTPUT_FOLDER;
 	}
 }

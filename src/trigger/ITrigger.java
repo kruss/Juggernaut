@@ -1,4 +1,4 @@
-package model;
+package trigger;
 
 /**
  * a trigger of a launch

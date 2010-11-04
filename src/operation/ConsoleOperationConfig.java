@@ -1,8 +1,7 @@
 package operation;
 
-import model.Attribute;
-import model.IOperation;
-import model.Attribute.Type;
+import util.Attribute;
+import util.Attribute.Type;
 
 public class ConsoleOperationConfig extends AbstractOperationConfig {
 
@@ -24,11 +23,6 @@ public class ConsoleOperationConfig extends AbstractOperationConfig {
 				ATTRIBUTES.ARGUMENTS.toString(), "The item's arguments",
 				Type.TEXTFIELD, false
 		));
-	}
-	
-	@Override
-	public Class<?> getType(){
-		return this.getClass();
 	}
 	
 	@Override

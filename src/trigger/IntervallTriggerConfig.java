@@ -1,8 +1,7 @@
 package trigger;
 
-import model.Attribute;
-import model.ITrigger;
-import model.Attribute.Type;
+import util.Attribute;
+import util.Attribute.Type;
 
 public class IntervallTriggerConfig extends AbstractTriggerConfig {
 
@@ -16,11 +15,6 @@ public class IntervallTriggerConfig extends AbstractTriggerConfig {
 				ATTRIBUTES.INTERVALL.toString(), "Intervall in minutes (0 = continous)", 
 				Type.INTEGER, 0
 		));
-	}
-	
-	@Override
-	public Class<?> getType(){
-		return this.getClass();
 	}
 	
 	@Override

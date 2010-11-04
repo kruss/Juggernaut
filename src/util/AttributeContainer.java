@@ -1,6 +1,7 @@
-package model;
+package util;
 
 import java.util.ArrayList;
+
 
 /**
  * container for all attributes of an item

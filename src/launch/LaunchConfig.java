@@ -2,13 +2,12 @@ package launch;
 
 import java.util.ArrayList;
 
-import model.Attribute;
-import model.AttributeContainer;
-import model.ILaunch;
-import model.ILaunchConfig;
-import model.ITriggerConfig;
-import model.IOperationConfig;
-import model.Attribute.Type;
+import operation.IOperationConfig;
+import trigger.ITriggerConfig;
+import util.Attribute;
+import util.AttributeContainer;
+import util.Attribute.Type;
+
 
 public class LaunchConfig implements ILaunchConfig {
 	
@@ -20,6 +19,8 @@ public class LaunchConfig implements ILaunchConfig {
 	private ArrayList<IOperationConfig> operations;
 	private ArrayList<ITriggerConfig> triggers;
 
+	private transient boolean dirty;
+	
 	public LaunchConfig(){
 
 		container = new AttributeContainer();
@@ -43,6 +44,8 @@ public class LaunchConfig implements ILaunchConfig {
 		
 		operations = new ArrayList<IOperationConfig>();
 		triggers = new ArrayList<ITriggerConfig>();
+		
+		dirty = true;
 	}
 	
 	@Override
@@ -51,6 +54,11 @@ public class LaunchConfig implements ILaunchConfig {
 	public ArrayList<IOperationConfig> getOperations(){ return operations; }
 	@Override
 	public ArrayList<ITriggerConfig> getTriggers(){ return triggers; }
+	
+	@Override
+	public boolean isDirty(){ return dirty; }
+	@Override
+	public void setDirty(boolean dirty){ this.dirty = dirty; }
 	
 	@Override
 	public ILaunch createInstance(){

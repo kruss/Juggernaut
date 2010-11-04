@@ -6,6 +6,7 @@ import java.awt.Container;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuBar;
+import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 import core.Application;
@@ -17,6 +18,9 @@ public class Frame extends JFrame {
 
 	private JMenuBar menuBar;
 	private JTabbedPane tabPane;
+	private JPanel configPane;
+	private JPanel statusPane;
+	private JPanel historyPane;
 	private JLabel statusBar;
 	
 	public Frame(){
@@ -25,7 +29,15 @@ public class Frame extends JFrame {
 		menuBar.add(new LaunchMenu());
 		setJMenuBar(menuBar);
 		
+		configPane = new ConfigPane();
+		statusPane = new StatusPane();
+		historyPane = new HistoryPane();
+		
 		tabPane = new JTabbedPane();
+		tabPane.setTabPlacement(JTabbedPane.TOP);
+		tabPane.add(configPane, "Config");
+		tabPane.add(statusPane, "Status");
+		tabPane.add(historyPane, "History");
 		
 		statusBar = new JLabel("> ");
 		

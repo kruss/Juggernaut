@@ -6,11 +6,11 @@ import java.awt.event.ActionListener;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-import model.IModelListener;
 
 import core.Application;
+import core.IConfigListener;
 
-public class LaunchMenu extends JMenu implements IModelListener {
+public class LaunchMenu extends JMenu implements IConfigListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -68,7 +68,7 @@ public class LaunchMenu extends JMenu implements IModelListener {
 	}
 	
 	@Override
-	public void modelChanged(Status status) {
+	public void configChanged(Status status) {
 		
 		if(status == Status.INIT){
 			save.setEnabled(true);

@@ -1,13 +1,13 @@
-package logger;
+package util;
 
 import java.io.File;
 import java.util.Date;
 
-import util.FileTools;
-import util.StringTools;
 
 public class Logger {
 
+	public static final String OUTPUT_FILE = "logger.txt";
+	
 	private enum Level { VERBOSE, DEBUG, NORMAL, ERROR, INFO }
 	
 	private File logfile;

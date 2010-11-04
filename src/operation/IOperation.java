@@ -1,4 +1,4 @@
-package model;
+package operation;
 
 /**
  * an operation to be performed
