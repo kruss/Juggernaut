@@ -1,6 +1,6 @@
 package operation;
 
-import util.AttributeContainer;
+import util.OptionContainer;
 
 /**
  * the configuration of an operation
@@ -8,6 +8,7 @@ import util.AttributeContainer;
 public interface IOperationConfig {
 
 	public String getName();
-	public AttributeContainer getContainer();
-	public IOperation createInstance();
+	public OptionContainer getOptionContainer();
+	public IOperation createOperation();
+	public String toString();
 }

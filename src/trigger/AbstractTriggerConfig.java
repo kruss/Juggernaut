@@ -1,31 +1,34 @@
 package trigger;
 
-import util.Attribute;
-import util.AttributeContainer;
-import util.Attribute.Type;
+import util.Option;
+import util.OptionContainer;
+import util.Option.Type;
 
 public abstract class AbstractTriggerConfig implements ITriggerConfig {
 
-	public enum ATTRIBUTES {
+	public enum OPTIONS {
 		ACTIVE
 	}
 	
-	protected AttributeContainer container;
+	protected OptionContainer container;
 	
 	public AbstractTriggerConfig(){
 		
-		container = new AttributeContainer();
-		container.getAttributes().add(new Attribute(
-				ATTRIBUTES.ACTIVE.toString(), "The item's active state",
+		container = new OptionContainer();
+		container.getOptions().add(new Option(
+				OPTIONS.ACTIVE.toString(), "The item's active state",
 				Type.BOOLEAN, false
 		));
 	}
 	
 	@Override
-	public AttributeContainer getContainer(){ return container; }
+	public OptionContainer getOptionContainer(){ return container; }
 	
 	@Override
 	public String getName(){
 		return getClass().getSimpleName();
 	}
+	
+	@Override
+	public String toString(){ return getName(); }
 }

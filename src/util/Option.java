@@ -3,9 +3,9 @@ package util;
 import java.sql.Date;
 
 /**
- * attribute of an item
+ * option of an item
  */
-public class Attribute {
+public class Option {
 
 	public enum Type { TEXT, TEXTFIELD, DATE, INTEGER, BOOLEAN }
 
@@ -14,7 +14,7 @@ public class Attribute {
 	private Type type;
 	private String value;
 	
-	public Attribute(String name, String description, Type type, String value){
+	public Option(String name, String description, Type type, String value){
 		
 		this.name = name;
 		this.description = description;
@@ -22,7 +22,7 @@ public class Attribute {
 		setStringValue(value);
 	}
 	
-	public Attribute(String name, String description, Type type, Date value){
+	public Option(String name, String description, Type type, Date value){
 		
 		this.name = name;
 		this.description = description;
@@ -30,7 +30,7 @@ public class Attribute {
 		setDateValue(value);
 	}
 	
-	public Attribute(String name, String description, Type type, int value){
+	public Option(String name, String description, Type type, int value){
 		
 		this.name = name;
 		this.description = description;
@@ -38,7 +38,7 @@ public class Attribute {
 		setIntegerValue(value);
 	}
 	
-	public Attribute(String name, String description, Type type, boolean value){
+	public Option(String name, String description, Type type, boolean value){
 		
 		this.name = name;
 		this.description = description;

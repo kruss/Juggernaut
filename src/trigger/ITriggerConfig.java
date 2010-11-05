@@ -1,6 +1,6 @@
 package trigger;
 
-import util.AttributeContainer;
+import util.OptionContainer;
 
 /**
  * the configuration of a trigger
@@ -8,6 +8,7 @@ import util.AttributeContainer;
 public interface ITriggerConfig {
 
 	public String getName();
-	public AttributeContainer getContainer();
-	public ITrigger createInstance();
+	public OptionContainer getOptionContainer();
+	public ITrigger createTrigger();
+	public String toString();
 }

@@ -4,6 +4,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 
+import launch.LaunchManager;
+
 import ui.Frame;
 import util.FileTools;
 import util.Logger;
@@ -22,32 +24,32 @@ public class Application {
 	
 	public static void main(String[] args){
 		
-		Application.getInstance();
-	}
-	
-	private Configuration configuration;
-	private Frame frame;
-	private Logger logger;
-	
-	public Logger getLogger(){ return logger; }
-	
-	private Application(){
-		
 		try{ 
-			init(); 
-			logger.info(Constants.APP_NAME+" ("+Constants.APP_VERSION+")");
+			Application app = Application.getInstance();
+			app.init(); 
 		}catch(Exception e){
 			e.printStackTrace();
 			System.exit(Constants.PROCESS_NOK);
 		}
 	}
 	
-	private void init() throws Exception {
+	private Frame frame;
+	private ConfigStore configStore;
+	private Logger logger;
+	
+	public Logger getLogger(){ return logger; }
+	public ConfigStore getConfigStore(){ return configStore; }
+	
+	private Application(){}
+	
+	public void init() throws Exception {
 		
 		initFolder();
 		initLogger();
-		initConfiguration();
+		initConfig();
+		LaunchManager.getInstance().init();
 		initFrame();
+		logger.info(Constants.APP_FULL_NAME);
 	}
 
 	private void initFolder() {
@@ -65,26 +67,23 @@ public class Application {
 		);
 	}
 	
-	private void initConfiguration() throws Exception {
+	private void initConfig() throws Exception {
 		
-		File file = new File(getOutputFolder()+File.separator+Configuration.OUTPUT_FILE);
+		File file = new File(getOutputFolder()+File.separator+ConfigStore.OUTPUT_FILE);
 		if(file.isFile()){
-			configuration = Configuration.load(file.getAbsolutePath());
+			configStore = ConfigStore.load(file.getAbsolutePath());
 		}else{
-			configuration = new Configuration(file.getAbsolutePath());
-			configuration.save();
+			configStore = new ConfigStore(file.getAbsolutePath());
+			configStore.save();
 		}
-		
 	}
 	
 	private void initFrame() {
 		
 		frame = new Frame();
+		configStore.addListener(frame);
 		frame.addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent e) {
-            	frame.setStatus("Close");
-            	shutdown();
-            }
+            public void windowClosing(WindowEvent e){ shutdown(); }
         });
 		frame.setVisible(true);
 	}
@@ -93,14 +92,19 @@ public class Application {
 		
 		logger.info("Shutdown");
 		try{
-			configuration.chekForSave();
+			configStore.chekForSave();
 		}catch(Exception e){
-			logger.error(e);
-			UiTools.errorDialog(e);
+			handleException(e);
 		}
+		LaunchManager.getInstance().shutdown();
 		System.exit(Constants.PROCESS_OK);
 	}
 	
+	public void handleException(Exception e){
+		
+		logger.error(e);
+		UiTools.errorDialog(e.getClass().getSimpleName()+"\n\n"+e.getMessage());
+	}
 	
 	private String getOutputFolder(){
 		return FileTools.getWorkingDir()+File.separator+Constants.OUTPUT_FOLDER;
