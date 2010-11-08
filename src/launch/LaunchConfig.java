@@ -2,8 +2,8 @@ package launch;
 
 import java.util.ArrayList;
 
-import operation.IOperationConfig;
-import trigger.ITriggerConfig;
+import operation.AbstractOperationConfig;
+import trigger.AbstractTriggerConfig;
 import util.Option;
 import util.OptionContainer;
 import util.Option.Type;
@@ -17,8 +17,8 @@ public class LaunchConfig {
 	
 	private String name;
 	private OptionContainer container;
-	private ArrayList<IOperationConfig> operations;
-	private ArrayList<ITriggerConfig> triggers;
+	private ArrayList<AbstractOperationConfig> operations;
+	private ArrayList<AbstractTriggerConfig> triggers;
 	
 	public LaunchConfig(String name){
 
@@ -39,16 +39,16 @@ public class LaunchConfig {
 		));
 		
 		
-		operations = new ArrayList<IOperationConfig>();
-		triggers = new ArrayList<ITriggerConfig>();
+		operations = new ArrayList<AbstractOperationConfig>();
+		triggers = new ArrayList<AbstractTriggerConfig>();
 	}
 	
 	public void setName(String name){ this.name = name; }
 	public String getName(){ return name; }
 	
 	public OptionContainer getOptionContainer(){ return container; }
-	public ArrayList<IOperationConfig> getOperations(){ return operations; }
-	public ArrayList<ITriggerConfig> getTriggers(){ return triggers; }
+	public ArrayList<AbstractOperationConfig> getOperations(){ return operations; }
+	public ArrayList<AbstractTriggerConfig> getTriggers(){ return triggers; }
 	
 	public Launch createLaunch(){
 		return Launch.initializeLaunch(this);

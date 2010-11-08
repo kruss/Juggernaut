@@ -4,7 +4,7 @@ import util.Option;
 import util.OptionContainer;
 import util.Option.Type;
 
-public abstract class AbstractOperationConfig implements IOperationConfig {
+public abstract class AbstractOperationConfig {
 
 	public enum OPTIONS {
 		DESCRIPTION, ACTIVE, TIMEOUT
@@ -29,14 +29,13 @@ public abstract class AbstractOperationConfig implements IOperationConfig {
 		));
 	}
 	
-	@Override
 	public OptionContainer getOptionContainer(){ return container; }
 	
-	@Override
 	public String getName(){
 		return getClass().getSimpleName();
 	}
 	
-	@Override
 	public String toString(){ return getName(); }
+	
+	public abstract AbstractOperation createOperation();
 }

@@ -4,7 +4,7 @@ import util.Option;
 import util.OptionContainer;
 import util.Option.Type;
 
-public abstract class AbstractTriggerConfig implements ITriggerConfig {
+public abstract class AbstractTriggerConfig {
 
 	public enum OPTIONS {
 		ACTIVE
@@ -21,14 +21,14 @@ public abstract class AbstractTriggerConfig implements ITriggerConfig {
 		));
 	}
 	
-	@Override
 	public OptionContainer getOptionContainer(){ return container; }
 	
-	@Override
 	public String getName(){
 		return getClass().getSimpleName();
 	}
 	
 	@Override
 	public String toString(){ return getName(); }
+	
+	public abstract AbstractTrigger createTrigger();
 }

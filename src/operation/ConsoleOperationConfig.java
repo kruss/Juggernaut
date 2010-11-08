@@ -26,7 +26,7 @@ public class ConsoleOperationConfig extends AbstractOperationConfig {
 	}
 	
 	@Override
-	public IOperation createOperation() {
+	public AbstractOperation createOperation() {
 		// TODO
 		// return (new OperationInitializer(this)).createInstance();
 		return null;

@@ -5,7 +5,6 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 
 import launch.LaunchManager;
-
 import ui.Frame;
 import util.FileTools;
 import util.Logger;

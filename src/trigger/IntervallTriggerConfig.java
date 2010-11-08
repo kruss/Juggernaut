@@ -18,7 +18,7 @@ public class IntervallTriggerConfig extends AbstractTriggerConfig {
 	}
 	
 	@Override
-	public ITrigger createTrigger() {
+	public AbstractTrigger createTrigger() {
 		// TODO
 		// return (new TriggerInitializer(this)).createInstance();
 		return null;
