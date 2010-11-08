@@ -21,7 +21,6 @@ public class ConfigStore {
 	private ArrayList<LaunchConfig> configs;
 	private transient ArrayList<IChangeListener> listeners;
 	private transient String path;
-	private transient boolean dirty;
 
 	public ConfigStore(String path){
 		
@@ -29,7 +28,6 @@ public class ConfigStore {
 		
 		listeners = new ArrayList<IChangeListener>();
 		this.path = path;
-		dirty = true;
 	}
 	
 	public void addListener(IChangeListener listener){ listeners.add(listener); }
@@ -42,9 +40,15 @@ public class ConfigStore {
 	
 	public ArrayList<LaunchConfig> getLaunchConfigs(){ return configs; }
 	public String getPath(){ return path; }
-	public boolean isDirty(){ return dirty; }
-	public void setDirty(boolean dirty){ this.dirty = dirty; }
-	public State getState(){ return dirty ? State.DIRTY : State.CLEAN; }
+	
+	public boolean isDirty(){ 
+		for(LaunchConfig config : configs){
+			if(config.isDirty()){ return true; }
+		}
+		return false;
+	}
+	
+	public State getState(){ return isDirty() ? State.DIRTY : State.CLEAN; }
 	
 	public static ConfigStore load(String path) throws Exception {
 	
@@ -53,7 +57,9 @@ public class ConfigStore {
 		ConfigStore store = (ConfigStore)xstream.fromXML(xml);
 		store.listeners = new ArrayList<IChangeListener>();
 		store.path = path;
-		store.dirty = false;
+		for(LaunchConfig config : store.configs){
+			config.setDirty(false);
+		}
 		return store;
 	}
 	
@@ -62,7 +68,9 @@ public class ConfigStore {
 		XStream xstream = new XStream(new DomDriver());
 		String xml = xstream.toXML(this);
 		FileTools.writeFile(path, xml, false);
-		dirty = false;
+		for(LaunchConfig config : configs){
+			config.setDirty(false);
+		}
 		notifyListeners();
 	}
 

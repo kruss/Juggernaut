@@ -125,31 +125,31 @@ public class ConfigPanelOperation extends JPanel implements IChangeListener {
 		}
 	}
 	
-	void initUI(){
+	private void initUI(){
 		
 	}
 	
-	void clearUI(){
+	private void clearUI(){
 		
 	}
 	
-	void refreshUI(AbstractOperationConfig selected){
+	private void refreshUI(AbstractOperationConfig selected){
 		
 	}
 	
-	void addOperation(){
+	private void addOperation(){
 		
 	}
 	
-	void removeOperation(){
+	private void removeOperation(){
 		
 	}
 	
-	void moveOperationUp(){
+	private void moveOperationUp(){
 		
 	}
 	
-	void moveOperationDown(){
+	private void moveOperationDown(){
 		
 	}
 }

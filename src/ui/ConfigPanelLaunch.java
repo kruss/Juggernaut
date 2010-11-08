@@ -40,8 +40,9 @@ public class ConfigPanelLaunch extends JPanel implements IChangeListener {
 		
 		if(object instanceof OptionEditor){
 			ConfigStore store = Application.getInstance().getConfigStore();
-			store.setDirty(true);
+			parent.getLaunchConfig().setDirty(true);
 			store.notifyListeners();
+			parent.repaint();
 		}
 	}
 

@@ -20,6 +20,8 @@ public class LaunchConfig {
 	private ArrayList<AbstractOperationConfig> operations;
 	private ArrayList<AbstractTriggerConfig> triggers;
 	
+	private transient boolean dirty;
+	
 	public LaunchConfig(String name){
 
 		this.name = name;
@@ -41,6 +43,14 @@ public class LaunchConfig {
 		
 		operations = new ArrayList<AbstractOperationConfig>();
 		triggers = new ArrayList<AbstractTriggerConfig>();
+		dirty = true;
+	}
+	
+	public boolean isDirty(){ return dirty; }
+	public void setDirty(boolean dirty){ this.dirty = dirty; }
+	
+	public boolean isReady(){
+		return isActive() && !dirty;
 	}
 	
 	public void setName(String name){ this.name = name; }
@@ -59,9 +69,9 @@ public class LaunchConfig {
 	@Override
 	public String toString(){ 
 		if(isActive()){
-			return name;
+			return name + (dirty ? " *" : "");
 		}else{
-			return "<"+name+">";
+			return "<"+name+">" + (dirty ? " *" : "");
 		}
 	}
 }

@@ -1,5 +1,6 @@
 package util;
 
+import java.awt.event.KeyEvent;
 import java.io.File;
 
 import javax.swing.JFileChooser;
@@ -73,5 +74,13 @@ public class UiTools {
 		}else{
 			return null;
 		}
+	}
+	
+	public boolean isModifyingKeyEvent(KeyEvent e) {
+
+		return 
+		( KeyEvent.CHAR_UNDEFINED != e.getKeyChar() && !e.isControlDown() && !e.isMetaDown() ) || 
+		( e.isControlDown() && KeyEvent.VK_V == e.getKeyCode() ) ||
+		( e.isControlDown() && KeyEvent.VK_X == e.getKeyCode() ); 
 	}
 }

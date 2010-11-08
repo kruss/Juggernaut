@@ -125,7 +125,7 @@ public class ConfigPanel extends JPanel {
 		notifyListeners();
 	}
 	
-	void initUI(){
+	private void initUI(){
 		
 		ArrayList<LaunchConfig> configs = configStore.getLaunchConfigs();
 		for(LaunchConfig config : configs){
@@ -134,13 +134,13 @@ public class ConfigPanel extends JPanel {
 		launchCombo.addItemListener(selectionListener);
 	}
 	
-	void clearUI(){
+	private void clearUI(){
 		
 		launchCombo.removeItemListener(selectionListener);
 		launchCombo.removeAllItems();
 	}
 	
-	void refreshUI(LaunchConfig selected){
+	private void refreshUI(LaunchConfig selected){
 
 		clearUI();
 		initUI();
@@ -162,7 +162,6 @@ public class ConfigPanel extends JPanel {
 		if(name != null && !name.equals("")){
 			LaunchConfig config = new LaunchConfig(name);
 			configStore.getLaunchConfigs().add(config);
-			configStore.setDirty(true);
 			configStore.notifyListeners();
 			refreshUI(config);
 		}
@@ -173,7 +172,6 @@ public class ConfigPanel extends JPanel {
 		int index = launchCombo.getSelectedIndex();
 		if(index >= 0 && UiTools.confirmDialog("Remove Launch ?")){
 			configStore.getLaunchConfigs().remove(index);
-			configStore.setDirty(true);
 			configStore.notifyListeners();
 			refreshUI(null);
 		}
@@ -187,7 +185,7 @@ public class ConfigPanel extends JPanel {
 			String name = UiTools.inputDialog("Rename Launch", config.getName());
 			if(name != null && !name.equals("")){
 				config.setName(name);
-				configStore.setDirty(true);
+				config.setDirty(true);
 				configStore.notifyListeners();
 				refreshUI(config);
 			}
