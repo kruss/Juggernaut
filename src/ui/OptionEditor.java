@@ -1,4 +1,4 @@
-package util;
+package ui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -16,6 +16,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import util.Option;
+import util.OptionContainer;
 import util.Option.Type;
 
 import core.IChangeListener;

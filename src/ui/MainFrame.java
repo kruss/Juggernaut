@@ -20,9 +20,9 @@ public class MainFrame extends JFrame implements IChangeListener {
 
 	private JMenuBar menuBar;
 	private JPanel configPanel;
-	private JPanel statusPanel;
+	private JPanel activityPanel;
 	private JPanel historyPanel;
-	private JPanel optionsPanel;
+	private JPanel preferencePanel;
 	private JLabel statusBar;
 	
 	public MainFrame(){
@@ -32,16 +32,16 @@ public class MainFrame extends JFrame implements IChangeListener {
 		setJMenuBar(menuBar);
 		
 		configPanel = new ConfigPanel();
-		statusPanel = new StatusPanel();
+		activityPanel = new ActivityPanel();
 		historyPanel = new HistoryPanel();
-		optionsPanel = new OptionsPanel();
+		preferencePanel = new PreferencePanel();
 		
 		JTabbedPane centerPanel = new JTabbedPane();
 		centerPanel.setTabPlacement(JTabbedPane.TOP);
-		centerPanel.add(configPanel, "Config");
-		centerPanel.add(statusPanel, "Status");
+		centerPanel.add(configPanel, "Configuration");
+		centerPanel.add(activityPanel, "Activity");
 		centerPanel.add(historyPanel, "History");
-		centerPanel.add(optionsPanel, "Options");
+		centerPanel.add(preferencePanel, "Preferences");
 		
 		statusBar = new JLabel("> ");
 		

@@ -1,5 +1,7 @@
 package operation;
 
+import java.util.UUID;
+
 import util.Option;
 import util.OptionContainer;
 import util.Option.Type;
@@ -10,9 +12,12 @@ public abstract class AbstractOperationConfig {
 		DESCRIPTION, ACTIVE, TIMEOUT
 	}
 	
+	private String id;
 	protected OptionContainer container;
 	
 	public AbstractOperationConfig(){
+		
+		id = UUID.randomUUID().toString();
 		
 		container = new OptionContainer();
 		container.getOptions().add(new Option(
@@ -21,7 +26,7 @@ public abstract class AbstractOperationConfig {
 		));
 		container.getOptions().add(new Option(
 				OPTIONS.ACTIVE.toString(), "The item's active state",
-				Type.BOOLEAN, false
+				Type.BOOLEAN, true
 		));
 		container.getOptions().add(new Option(
 				OPTIONS.TIMEOUT.toString(), "Timeout in minutes (0 = no timeout)", 
@@ -29,13 +34,26 @@ public abstract class AbstractOperationConfig {
 		));
 	}
 	
+	public String getId(){ return id; }
+	
 	public OptionContainer getOptionContainer(){ return container; }
 	
 	public String getName(){
-		return getClass().getSimpleName();
+		return getClass().getSimpleName().replaceAll("Config$", "");
+	}
+
+	public boolean isActive(){ 
+		return container.getOption(OPTIONS.ACTIVE.toString()).getBooleanValue(); 
 	}
 	
-	public String toString(){ return getName(); }
+	@Override
+	public String toString(){ 
+		if(isActive()){
+			return getName();
+		}else{
+			return "<"+getName()+">";
+		}
+	}
 	
 	public abstract AbstractOperation createOperation();
 }

@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 
 import javax.swing.JPanel;
 
-import util.OptionEditor;
 
 import launch.LaunchConfig;
 import core.Application;
@@ -42,7 +41,6 @@ public class ConfigPanelLaunch extends JPanel implements IChangeListener {
 			ConfigStore store = Application.getInstance().getConfigStore();
 			parent.getLaunchConfig().setDirty(true);
 			store.notifyListeners();
-			parent.repaint();
 		}
 	}
 

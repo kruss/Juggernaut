@@ -23,7 +23,7 @@ import core.Application;
 import core.ConfigStore;
 import core.IChangeListener;
 
-public class ConfigPanel extends JPanel {
+public class ConfigPanel extends JPanel implements IChangeListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -42,6 +42,7 @@ public class ConfigPanel extends JPanel {
 		
 		listeners = new ArrayList<IChangeListener>();
 		configStore = Application.getInstance().getConfigStore();
+		configStore.addListener(this);
 		
 		launchCombo = new JComboBox();
 		launchCombo.setToolTipText("Configured Launches");
@@ -81,13 +82,10 @@ public class ConfigPanel extends JPanel {
 		centerPanel.add(new ConfigPanelLaunch(this), "Launch");
 		centerPanel.add(new ConfigPanelOperation(this), "Operation");
 		centerPanel.add(new ConfigPanelTrigger(this), "Trigger");
-		
-		JPanel contentPanel = new JPanel(new BorderLayout());
-		contentPanel.add(topPanel, BorderLayout.NORTH);
-		contentPanel.add(centerPanel, BorderLayout.CENTER);
-		
+
 		setLayout(new BorderLayout());
-		add(contentPanel, BorderLayout.CENTER);
+		add(topPanel, BorderLayout.NORTH);
+		add(centerPanel, BorderLayout.CENTER);
 		
 		initUI();
 		adjustSelection();
@@ -154,6 +152,14 @@ public class ConfigPanel extends JPanel {
 			launchCombo.setSelectedIndex(-1);
 		}
 		adjustSelection();
+	}
+	
+	@Override
+	public void changed(Object object) {
+		
+		if(object instanceof ConfigStore){
+			launchCombo.repaint();
+		}
 	}
 	
 	private void addLaunch(){

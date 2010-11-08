@@ -1,6 +1,7 @@
 package launch;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 import operation.AbstractOperationConfig;
 import trigger.AbstractTriggerConfig;
@@ -15,6 +16,7 @@ public class LaunchConfig {
 		DESCRIPTION, ACTIVE, NOTIFICATION
 	}
 	
+	private String id;
 	private String name;
 	private OptionContainer container;
 	private ArrayList<AbstractOperationConfig> operations;
@@ -24,6 +26,7 @@ public class LaunchConfig {
 	
 	public LaunchConfig(String name){
 
+		id = UUID.randomUUID().toString();
 		this.name = name;
 		
 		container = new OptionContainer();
@@ -46,6 +49,8 @@ public class LaunchConfig {
 		dirty = true;
 	}
 	
+	public String getId(){ return id; }
+	
 	public boolean isDirty(){ return dirty; }
 	public void setDirty(boolean dirty){ this.dirty = dirty; }
 	
@@ -56,7 +61,9 @@ public class LaunchConfig {
 	public void setName(String name){ this.name = name; }
 	public String getName(){ return name; }
 	
-	public boolean isActive(){ return container.getOption(OPTIONS.ACTIVE.toString()).getBooleanValue(); }
+	public boolean isActive(){ 
+		return container.getOption(OPTIONS.ACTIVE.toString()).getBooleanValue(); 
+	}
 	
 	public OptionContainer getOptionContainer(){ return container; }
 	public ArrayList<AbstractOperationConfig> getOperationConfigs(){ return operations; }
