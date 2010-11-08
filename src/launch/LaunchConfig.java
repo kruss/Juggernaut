@@ -26,16 +26,16 @@ public class LaunchConfig {
 		
 		container = new OptionContainer();
 		container.getOptions().add(new Option(
-				OPTIONS.DESCRIPTION.toString(), "The item's description", 
-				Type.TEXT, ""
-		));
-		container.getOptions().add(new Option(
 				OPTIONS.ACTIVE.toString(), "The item's active state",
 				Type.BOOLEAN, false
 		));
 		container.getOptions().add(new Option(
-				OPTIONS.NOTIFICATION.toString(), "eMail list to notify (comma seperated)", 
+				OPTIONS.DESCRIPTION.toString(), "The item's description", 
 				Type.TEXT, ""
+		));
+		container.getOptions().add(new Option(
+				OPTIONS.NOTIFICATION.toString(), "The eMail-list to notify status (comma seperated)", 
+				Type.TEXTAREA, ""
 		));
 		
 		
@@ -46,14 +46,22 @@ public class LaunchConfig {
 	public void setName(String name){ this.name = name; }
 	public String getName(){ return name; }
 	
+	public boolean isActive(){ return container.getOption(OPTIONS.ACTIVE.toString()).getBooleanValue(); }
+	
 	public OptionContainer getOptionContainer(){ return container; }
-	public ArrayList<AbstractOperationConfig> getOperations(){ return operations; }
-	public ArrayList<AbstractTriggerConfig> getTriggers(){ return triggers; }
+	public ArrayList<AbstractOperationConfig> getOperationConfigs(){ return operations; }
+	public ArrayList<AbstractTriggerConfig> getTriggerConfigs(){ return triggers; }
 	
 	public Launch createLaunch(){
 		return Launch.initializeLaunch(this);
 	}
 	
 	@Override
-	public String toString(){ return name; }
+	public String toString(){ 
+		if(isActive()){
+			return name;
+		}else{
+			return "<"+name+">";
+		}
+	}
 }

@@ -7,7 +7,7 @@ import java.sql.Date;
  */
 public class Option {
 
-	public enum Type { TEXT, TEXTFIELD, DATE, INTEGER, BOOLEAN }
+	public enum Type { TEXT, TEXTAREA, DATE, INTEGER, BOOLEAN }
 
 	private String name;
 	private String description;

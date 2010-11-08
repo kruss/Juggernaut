@@ -21,7 +21,7 @@ public class ConsoleOperationConfig extends AbstractOperationConfig {
 		));
 		container.getOptions().add(new Option(
 				OPTIONS.ARGUMENTS.toString(), "The item's arguments",
-				Type.TEXTFIELD, false
+				Type.TEXTAREA, false
 		));
 	}
 	

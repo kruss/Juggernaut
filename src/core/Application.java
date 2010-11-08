@@ -4,8 +4,14 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+
+import operation.ConsoleOperationConfig;
+import operation.OperationRegistry;
+
 import launch.LaunchManager;
-import ui.Frame;
+import ui.MainFrame;
 import util.FileTools;
 import util.Logger;
 import util.UiTools;
@@ -32,12 +38,14 @@ public class Application {
 		}
 	}
 	
-	private Frame frame;
+	private MainFrame frame;
 	private ConfigStore configStore;
+	private OperationRegistry operationRegistry;
 	private Logger logger;
 	
 	public Logger getLogger(){ return logger; }
 	public ConfigStore getConfigStore(){ return configStore; }
+	public OperationRegistry getOperationRegistry(){ return operationRegistry; }
 	
 	private Application(){}
 	
@@ -45,7 +53,8 @@ public class Application {
 		
 		initFolder();
 		initLogger();
-		initConfig();
+		initPersistence();
+		initRegistry();
 		LaunchManager.getInstance().init();
 		initFrame();
 		logger.info(Constants.APP_FULL_NAME);
@@ -66,7 +75,7 @@ public class Application {
 		);
 	}
 	
-	private void initConfig() throws Exception {
+	private void initPersistence() throws Exception {
 		
 		File file = new File(getOutputFolder()+File.separator+ConfigStore.OUTPUT_FILE);
 		if(file.isFile()){
@@ -77,13 +86,22 @@ public class Application {
 		}
 	}
 	
-	private void initFrame() {
+	private void initRegistry() {
 		
-		frame = new Frame();
+		operationRegistry = new OperationRegistry();
+		operationRegistry.getOperationConfigs().add(new ConsoleOperationConfig());
+	}
+	
+	private void initFrame() throws Exception {
+		
+		frame = new MainFrame();
 		configStore.addListener(frame);
 		frame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e){ shutdown(); }
         });
+		UIManager.LookAndFeelInfo styles[] = UIManager.getInstalledLookAndFeels();
+		UIManager.setLookAndFeel(styles[1].getClassName()); 
+		SwingUtilities.updateComponentTreeUI(frame);
 		frame.setVisible(true);
 	}
 	

@@ -12,6 +12,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 
 import util.UiTools;
 
@@ -20,25 +21,30 @@ import launch.LaunchManager;
 
 import core.Application;
 import core.ConfigStore;
+import core.IChangeListener;
 
-public class ConfigPane extends JPanel {
+public class ConfigPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
 	private ConfigStore configStore;
 	
+	private ArrayList<IChangeListener> listeners;
 	private JComboBox launchCombo;
 	private SelectionListener selectionListener;
 	private JButton addLaunch;
 	private JButton removeLaunch;
 	private JButton renameLaunch;
 	private JButton runLaunch;
+	private LaunchConfig launchConfig;
 	
-	public ConfigPane(){
+	public ConfigPanel(){
 		
+		listeners = new ArrayList<IChangeListener>();
 		configStore = Application.getInstance().getConfigStore();
 		
 		launchCombo = new JComboBox();
+		launchCombo.setToolTipText("Configured Launches");
 		selectionListener = new SelectionListener();
 		
 		addLaunch = new JButton(" Add ");
@@ -58,44 +64,70 @@ public class ConfigPane extends JPanel {
 			public void actionPerformed(ActionEvent e){ runLaunch(); }
 		});
 		
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+		buttonPanel.add(addLaunch); 
+		buttonPanel.add(removeLaunch); 
+		buttonPanel.add(renameLaunch); 
+		buttonPanel.add(runLaunch);
+		
 		JPanel topPanel = new JPanel(new BorderLayout());
 		topPanel.add(new JLabel(" Launch "), BorderLayout.WEST);
 		topPanel.add(launchCombo, BorderLayout.CENTER);
+		topPanel.add(buttonPanel, BorderLayout.SOUTH);
 		
-		JPanel centerPanel = new JPanel();
-		
-		JPanel launchButtonPanel = new JPanel();
-		launchButtonPanel.setLayout(new BoxLayout(launchButtonPanel, BoxLayout.Y_AXIS));
-		launchButtonPanel.add(addLaunch); 
-		launchButtonPanel.add(removeLaunch); 
-		launchButtonPanel.add(renameLaunch); 
-		launchButtonPanel.add(runLaunch);
+		JTabbedPane centerPanel = new JTabbedPane();
+		centerPanel.setTabPlacement(JTabbedPane.LEFT);
+		centerPanel.add(new ConfigPanelLaunch(this), "Launch");
+		centerPanel.add(new ConfigPanelOperation(this), "Operation");
+		centerPanel.add(new ConfigPanelTrigger(this), "Trigger");
 		
 		JPanel contentPanel = new JPanel(new BorderLayout());
 		contentPanel.add(topPanel, BorderLayout.NORTH);
 		contentPanel.add(centerPanel, BorderLayout.CENTER);
-		contentPanel.add(launchButtonPanel, BorderLayout.EAST);
 		
 		setLayout(new BorderLayout());
 		add(contentPanel, BorderLayout.CENTER);
 		
 		initUI();
-		adjustLaunchSelection();
+		adjustSelection();
 	}
 	
+	public void addListener(IChangeListener listener){ listeners.add(listener); }
+	
+	public void notifyListeners(){
+		for(IChangeListener listener : listeners){
+			listener.changed(this);
+		}
+	}
+	
+	public LaunchConfig getLaunchConfig(){ return launchConfig; }
+	
 	private class SelectionListener implements ItemListener { 
+		
 		public void itemStateChanged(ItemEvent e) {
 			if(e.getStateChange() == ItemEvent.SELECTED){
 				if(e.getSource() == launchCombo){
-					adjustLaunchSelection();
+					adjustSelection();
 				}
 			}
 		}
 	}
 	
+	private void adjustSelection() {
+		
+		int index = launchCombo.getSelectedIndex();
+		if(index >= 0){
+			launchConfig = configStore.getLaunchConfigs().get(index);
+		}else{
+			launchConfig = null;
+		}
+		notifyListeners();
+	}
+	
 	void initUI(){
 		
-		ArrayList<LaunchConfig> configs = configStore.getConfigs();
+		ArrayList<LaunchConfig> configs = configStore.getLaunchConfigs();
 		for(LaunchConfig config : configs){
 			launchCombo.addItem(config);
 		}
@@ -121,15 +153,7 @@ public class ConfigPane extends JPanel {
 		}else{
 			launchCombo.setSelectedIndex(-1);
 		}
-		adjustLaunchSelection();
-	}
-	
-	private void adjustLaunchSelection() {
-		
-		int index = launchCombo.getSelectedIndex();
-		if(index >= 0){
-			
-		}
+		adjustSelection();
 	}
 	
 	private void addLaunch(){
@@ -137,7 +161,7 @@ public class ConfigPane extends JPanel {
 		String name = UiTools.inputDialog("New Launch", "");
 		if(name != null && !name.equals("")){
 			LaunchConfig config = new LaunchConfig(name);
-			configStore.getConfigs().add(config);
+			configStore.getLaunchConfigs().add(config);
 			configStore.setDirty(true);
 			configStore.notifyListeners();
 			refreshUI(config);
@@ -148,7 +172,7 @@ public class ConfigPane extends JPanel {
 		
 		int index = launchCombo.getSelectedIndex();
 		if(index >= 0 && UiTools.confirmDialog("Remove Launch ?")){
-			configStore.getConfigs().remove(index);
+			configStore.getLaunchConfigs().remove(index);
 			configStore.setDirty(true);
 			configStore.notifyListeners();
 			refreshUI(null);
@@ -159,7 +183,7 @@ public class ConfigPane extends JPanel {
 		
 		int index = launchCombo.getSelectedIndex();
 		if(index >= 0){
-			LaunchConfig config = configStore.getConfigs().get(index);
+			LaunchConfig config = configStore.getLaunchConfigs().get(index);
 			String name = UiTools.inputDialog("Rename Launch", config.getName());
 			if(name != null && !name.equals("")){
 				config.setName(name);
@@ -174,7 +198,7 @@ public class ConfigPane extends JPanel {
 		
 		int index = launchCombo.getSelectedIndex();
 		if(index >= 0){
-			LaunchConfig config = configStore.getConfigs().get(index);
+			LaunchConfig config = configStore.getLaunchConfigs().get(index);
 			LaunchManager.getInstance().runLaunch(config.createLaunch());
 		}
 	}

@@ -8,8 +8,6 @@ import util.UiTools;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
-import core.IConfigStoreListener.State;
-
 import launch.LaunchConfig;
 
 /**
@@ -17,35 +15,43 @@ import launch.LaunchConfig;
  */
 public class ConfigStore {
 
+	public enum State { CLEAN, DIRTY }
 	public static final String OUTPUT_FILE = "config.xml";
 	
 	private ArrayList<LaunchConfig> configs;
-	
+	private transient ArrayList<IChangeListener> listeners;
 	private transient String path;
 	private transient boolean dirty;
-	private transient ArrayList<IConfigStoreListener> listeners;
 
 	public ConfigStore(String path){
 		
 		configs = new ArrayList<LaunchConfig>();
 		
+		listeners = new ArrayList<IChangeListener>();
 		this.path = path;
 		dirty = true;
-		listeners = new ArrayList<IConfigStoreListener>();
 	}
 	
-	public ArrayList<LaunchConfig> getConfigs(){ return configs; }
-	public void addListener(IConfigStoreListener listener){ listeners.add(listener); }
+	public void addListener(IChangeListener listener){ listeners.add(listener); }
+	
+	public void notifyListeners(){
+		for(IChangeListener listener : listeners){
+			listener.changed(this);
+		}
+	}
+	
+	public ArrayList<LaunchConfig> getLaunchConfigs(){ return configs; }
 	public String getPath(){ return path; }
 	public boolean isDirty(){ return dirty; }
 	public void setDirty(boolean dirty){ this.dirty = dirty; }
+	public State getState(){ return dirty ? State.DIRTY : State.CLEAN; }
 	
 	public static ConfigStore load(String path) throws Exception {
 	
 		XStream xstream = new XStream(new DomDriver());
 		String xml = FileTools.readFile(path);
 		ConfigStore store = (ConfigStore)xstream.fromXML(xml);
-		store.listeners = new ArrayList<IConfigStoreListener>();
+		store.listeners = new ArrayList<IChangeListener>();
 		store.path = path;
 		store.dirty = false;
 		return store;
@@ -64,14 +70,6 @@ public class ConfigStore {
 		
 		if(isDirty() && UiTools.confirmDialog("Save changes ?")){
 			save();
-		}
-	}
-	
-	public void notifyListeners(){
-		
-		State state = dirty ? State.DIRTY : State.CLEAN;
-		for(IConfigStoreListener listener : listeners){
-			listener.configChanged(state);
 		}
 	}
 }
