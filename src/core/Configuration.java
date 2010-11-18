@@ -13,7 +13,7 @@ import launch.LaunchConfig;
 /**
  * the configuration of all launches
  */
-public class ConfigStore {
+public class Configuration {
 
 	public enum State { CLEAN, DIRTY }
 	public static final String OUTPUT_FILE = "config.xml";
@@ -22,7 +22,7 @@ public class ConfigStore {
 	private transient ArrayList<IChangeListener> listeners;
 	private transient String path;
 
-	public ConfigStore(String path){
+	public Configuration(String path){
 		
 		configs = new ArrayList<LaunchConfig>();
 		
@@ -50,11 +50,11 @@ public class ConfigStore {
 	
 	public State getState(){ return isDirty() ? State.DIRTY : State.CLEAN; }
 	
-	public static ConfigStore load(String path) throws Exception {
+	public static Configuration load(String path) throws Exception {
 	
 		XStream xstream = new XStream(new DomDriver());
 		String xml = FileTools.readFile(path);
-		ConfigStore store = (ConfigStore)xstream.fromXML(xml);
+		Configuration store = (Configuration)xstream.fromXML(xml);
 		store.listeners = new ArrayList<IChangeListener>();
 		store.path = path;
 		for(LaunchConfig config : store.configs){

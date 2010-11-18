@@ -36,7 +36,7 @@ public class ProjectMenu extends JMenu {
 	private void save(){
 		
 		try{
-			Application.getInstance().getConfigStore().save();
+			Application.getInstance().getConfiguration().save();
 		}catch(Exception e){
 			Application.getInstance().handleException(e);
 		}

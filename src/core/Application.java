@@ -11,7 +11,7 @@ import operation.ConsoleOperationConfig;
 import operation.OperationRegistry;
 
 import launch.LaunchManager;
-import ui.MainFrame;
+import ui.Window;
 import util.FileTools;
 import util.Logger;
 import util.UiTools;
@@ -30,38 +30,52 @@ public class Application {
 	public static void main(String[] args){
 		
 		try{ 
-			Application app = Application.getInstance();
-			app.init(); 
+			Application application = Application.getInstance();
+			application.init(); 
 		}catch(Exception e){
 			e.printStackTrace();
 			System.exit(Constants.PROCESS_NOK);
 		}
 	}
 	
-	private MainFrame frame;
-	private ConfigStore configStore;
-	private OperationRegistry operationRegistry;
 	private Logger logger;
+	private Window window;
+	private Configuration configuration;
+	private OperationRegistry operationRegistry;
+	private LaunchManager launchManager;
 	
 	public Logger getLogger(){ return logger; }
-	public MainFrame getFrame(){ return frame; }
-	public ConfigStore getConfigStore(){ return configStore; }
+	public Window getWindow(){ return window; }
+	public Configuration getConfiguration(){ return configuration; }
 	public OperationRegistry getOperationRegistry(){ return operationRegistry; }
+	public LaunchManager getLaunchManager(){ return launchManager; }
 	
 	private Application(){}
 	
 	public void init() throws Exception {
 		
-		initFolder();
+		initFolders();
 		initLogger();
 		initPersistence();
 		initRegistry();
-		LaunchManager.getInstance().init();
-		initFrame();
-		logger.info(Constants.APP_FULL_NAME);
+		initUI();
+		initSystems();
 	}
 
-	private void initFolder() {
+	public void shutdown(){
+		
+		logger.info("Shutdown");
+		try{
+			shutdownSystems();
+			shutdownPersistence();
+		}catch(Exception e){
+			handleException(e);
+			System.exit(Constants.PROCESS_NOK);
+		}
+		System.exit(Constants.PROCESS_OK);
+	}
+	
+	private void initFolders() {
 
 		File folder = new File(getOutputFolder());
 		if(!folder.isDirectory()){
@@ -74,17 +88,23 @@ public class Application {
 		logger = new Logger(
 				new File(getOutputFolder()+File.separator+Logger.OUTPUT_FILE)
 		);
+		logger.info(Constants.APP_FULL_NAME);
 	}
 	
 	private void initPersistence() throws Exception {
 		
-		File file = new File(getOutputFolder()+File.separator+ConfigStore.OUTPUT_FILE);
+		File file = new File(getOutputFolder()+File.separator+Configuration.OUTPUT_FILE);
 		if(file.isFile()){
-			configStore = ConfigStore.load(file.getAbsolutePath());
+			configuration = Configuration.load(file.getAbsolutePath());
 		}else{
-			configStore = new ConfigStore(file.getAbsolutePath());
-			configStore.save();
+			configuration = new Configuration(file.getAbsolutePath());
+			configuration.save();
 		}
+	}
+	
+	private void shutdownPersistence() throws Exception {
+		
+		configuration.chekForSave();
 	}
 	
 	private void initRegistry() {
@@ -93,29 +113,28 @@ public class Application {
 		operationRegistry.getOperationConfigs().add(new ConsoleOperationConfig());
 	}
 	
-	private void initFrame() throws Exception {
+	private void initUI() throws Exception {
 		
-		frame = new MainFrame();
-		configStore.addListener(frame);
-		frame.addWindowListener(new WindowAdapter() {
+		window = new Window();
+		configuration.addListener(window);
+		window.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e){ shutdown(); }
         });
 		UIManager.LookAndFeelInfo styles[] = UIManager.getInstalledLookAndFeels();
 		UIManager.setLookAndFeel(styles[1].getClassName()); 
-		SwingUtilities.updateComponentTreeUI(frame);
-		frame.init();
+		SwingUtilities.updateComponentTreeUI(window);
+		window.init();
 	}
 	
-	public void shutdown(){
+	private void initSystems() {
 		
-		logger.info("Shutdown");
-		try{
-			configStore.chekForSave();
-		}catch(Exception e){
-			handleException(e);
-		}
-		LaunchManager.getInstance().shutdown();
-		System.exit(Constants.PROCESS_OK);
+		launchManager = new LaunchManager();
+		launchManager.init();
+	}
+	
+	private void shutdownSystems() {
+		
+		launchManager.shutdown();
 	}
 	
 	public void handleException(Exception e){

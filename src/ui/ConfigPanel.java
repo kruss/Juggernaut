@@ -17,18 +17,15 @@ import javax.swing.JTabbedPane;
 import util.UiTools;
 
 import launch.LaunchConfig;
-import launch.LaunchManager;
 
 import core.Application;
-import core.ConfigStore;
 import core.IChangeListener;
 
 public class ConfigPanel extends JPanel implements IChangeListener {
 
 	private static final long serialVersionUID = 1L;
 
-	private ConfigStore configStore;
-	
+	private Application application;
 	private ArrayList<IChangeListener> listeners;
 	private JComboBox launchCombo;
 	private SelectionListener selectionListener;
@@ -37,16 +34,18 @@ public class ConfigPanel extends JPanel implements IChangeListener {
 	private JButton renameLaunch;
 	private JButton runLaunch;
 	private JTabbedPane tabPanel;
-	private LaunchConfig currentConfig;
 	private LaunchConfigPanel launchPanel;
 	private OperationConfigPanel operationPanel;
 	private TriggerConfigPanel triggerPanel;
+	private LaunchConfig currentConfig;
+		
+	public LaunchConfig getCurrentConfig(){ return currentConfig; }
 	
 	public ConfigPanel(){
 		
+		application = Application.getInstance();
 		listeners = new ArrayList<IChangeListener>();
-		configStore = Application.getInstance().getConfigStore();
-		configStore.addListener(this);
+		
 		
 		launchCombo = new JComboBox();
 		launchCombo.setToolTipText("Configured Launches");
@@ -94,6 +93,8 @@ public class ConfigPanel extends JPanel implements IChangeListener {
 		setLayout(new BorderLayout());
 		add(topPanel, BorderLayout.NORTH);
 		add(tabPanel, BorderLayout.CENTER);
+		
+		application.getConfiguration().addListener(this);
 	}
 	
 	public void init() {
@@ -113,8 +114,6 @@ public class ConfigPanel extends JPanel implements IChangeListener {
 		}
 	}
 	
-	public LaunchConfig getCurrentConfig(){ return currentConfig; }
-	
 	private class SelectionListener implements ItemListener { 
 		
 		public void itemStateChanged(ItemEvent e) {
@@ -130,8 +129,8 @@ public class ConfigPanel extends JPanel implements IChangeListener {
 		
 		int index = launchCombo.getSelectedIndex();
 		if(index >= 0){
-			currentConfig = configStore.getLaunchConfigs().get(index);
-			Application.getInstance().getFrame().setStatus("Launch ["+currentConfig.getId()+"]");
+			currentConfig = application.getConfiguration().getLaunchConfigs().get(index);
+			application.getWindow().setStatus("Launch ["+currentConfig.getId()+"]");
 		}else{
 			currentConfig = null;
 		}
@@ -141,7 +140,7 @@ public class ConfigPanel extends JPanel implements IChangeListener {
 	
 	private void initUI(){
 		
-		ArrayList<LaunchConfig> configs = configStore.getLaunchConfigs();
+		ArrayList<LaunchConfig> configs = application.getConfiguration().getLaunchConfigs();
 		for(LaunchConfig config : configs){
 			launchCombo.addItem(config);
 		}
@@ -173,7 +172,7 @@ public class ConfigPanel extends JPanel implements IChangeListener {
 	@Override
 	public void changed(Object object) {
 		
-		if(object instanceof ConfigStore){
+		if(object == application.getConfiguration()){
 			launchCombo.repaint();
 		}
 	}
@@ -183,8 +182,8 @@ public class ConfigPanel extends JPanel implements IChangeListener {
 		String name = UiTools.inputDialog("New Launch", "");
 		if(name != null && !name.equals("")){
 			LaunchConfig config = new LaunchConfig(name);
-			configStore.getLaunchConfigs().add(config);
-			configStore.notifyListeners();
+			application.getConfiguration().getLaunchConfigs().add(config);
+			application.getConfiguration().notifyListeners();
 			refreshUI(config);
 		}
 	}
@@ -193,8 +192,8 @@ public class ConfigPanel extends JPanel implements IChangeListener {
 		
 		int index = launchCombo.getSelectedIndex();
 		if(index >= 0 && UiTools.confirmDialog("Remove Launch ?")){
-			configStore.getLaunchConfigs().remove(index);
-			configStore.notifyListeners();
+			application.getConfiguration().getLaunchConfigs().remove(index);
+			application.getConfiguration().notifyListeners();
 			refreshUI(null);
 		}
 	}
@@ -203,12 +202,12 @@ public class ConfigPanel extends JPanel implements IChangeListener {
 		
 		int index = launchCombo.getSelectedIndex();
 		if(index >= 0){
-			LaunchConfig config = configStore.getLaunchConfigs().get(index);
+			LaunchConfig config = application.getConfiguration().getLaunchConfigs().get(index);
 			String name = UiTools.inputDialog("Rename Launch", config.getName());
 			if(name != null && !name.equals("")){
 				config.setName(name);
 				config.setDirty(true);
-				configStore.notifyListeners();
+				application.getConfiguration().notifyListeners();
 				refreshUI(config);
 			}
 		}
@@ -218,8 +217,8 @@ public class ConfigPanel extends JPanel implements IChangeListener {
 		
 		int index = launchCombo.getSelectedIndex();
 		if(index >= 0){
-			LaunchConfig config = configStore.getLaunchConfigs().get(index);
-			LaunchManager.getInstance().runLaunch(config.createLaunch());
+			LaunchConfig config = application.getConfiguration().getLaunchConfigs().get(index);
+			application.getLaunchManager().runLaunch(config.createLaunch());
 		}
 	}
 }

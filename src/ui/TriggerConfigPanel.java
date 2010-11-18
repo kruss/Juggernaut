@@ -7,7 +7,7 @@ public class TriggerConfigPanel extends JPanel {
 	
 	private static final long serialVersionUID = 1L;
 
-	public TriggerConfigPanel(ConfigPanel parent) {
+	public TriggerConfigPanel(ConfigPanel parentPanel) {
 
 	}
 

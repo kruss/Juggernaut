@@ -9,11 +9,11 @@ import javax.swing.JMenuBar;
 import javax.swing.JTabbedPane;
 
 import core.Application;
-import core.ConfigStore;
+import core.Configuration;
 import core.Constants;
 import core.IChangeListener;
 
-public class MainFrame extends JFrame implements IChangeListener {
+public class Window extends JFrame implements IChangeListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -24,7 +24,7 @@ public class MainFrame extends JFrame implements IChangeListener {
 	private PreferencePanel preferencePanel;
 	private JLabel statusBar;
 	
-	public MainFrame(){
+	public Window(){
 		
 		menuBar = new JMenuBar();
 		menuBar.add(new ProjectMenu());
@@ -74,11 +74,11 @@ public class MainFrame extends JFrame implements IChangeListener {
 	@Override
 	public void changed(Object object) {
 		
-		if(object instanceof ConfigStore){
-			ConfigStore.State state = ((ConfigStore)object).getState();
-			if(state == ConfigStore.State.CLEAN){
+		if(object == Application.getInstance().getConfiguration()){
+			Configuration.State state = Application.getInstance().getConfiguration().getState();
+			if(state == Configuration.State.CLEAN){
 				setTitle(Constants.APP_FULL_NAME);
-			}else if(state == ConfigStore.State.DIRTY){
+			}else if(state == Configuration.State.DIRTY){
 				setTitle(Constants.APP_FULL_NAME+" *");
 			}
 		}

@@ -7,25 +7,26 @@ import javax.swing.JPanel;
 
 import launch.LaunchConfig;
 import core.Application;
-import core.ConfigStore;
 import core.IChangeListener;
 
 public class LaunchConfigPanel extends JPanel implements IChangeListener {
 
 	private static final long serialVersionUID = 1L;
 
-	private ConfigPanel parent;
+	private Application application;
+	private ConfigPanel parentPanel;
 	private OptionEditor optionEditor;
 	
-	public LaunchConfigPanel(ConfigPanel parent){
+	public LaunchConfigPanel(ConfigPanel parentPanel){
 		
-		this.parent = parent;
+		this.parentPanel = parentPanel;
+		application = Application.getInstance();
 		optionEditor = new OptionEditor();
 
 		setLayout(new BorderLayout());
 		add(optionEditor, BorderLayout.CENTER);
 		
-		parent.addListener(this);
+		parentPanel.addListener(this);
 		optionEditor.addListener(this);
 	}
 
@@ -36,20 +37,19 @@ public class LaunchConfigPanel extends JPanel implements IChangeListener {
 	@Override
 	public void changed(Object object) {
 		
-		if(object == parent){
+		if(object == parentPanel){
 			initUI();
 		}
 		
 		if(object == optionEditor){
-			ConfigStore store = Application.getInstance().getConfigStore();
-			parent.getCurrentConfig().setDirty(true);
-			store.notifyListeners();
+			parentPanel.getCurrentConfig().setDirty(true);
+			application.getConfiguration().notifyListeners();
 		}
 	}
 
 	private void initUI() {
 
-		LaunchConfig config = parent.getCurrentConfig();
+		LaunchConfig config = parentPanel.getCurrentConfig();
 		if(config != null){
 			optionEditor.setOptionContainer(config.getOptionContainer());
 		}else{

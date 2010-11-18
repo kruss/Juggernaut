@@ -63,6 +63,6 @@ public class Logger {
 	}
     
     private void writeSystem(String log){
-    	System.out.println(log);
+    	System.out.print(log);
     }
 }
