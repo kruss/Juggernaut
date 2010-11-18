@@ -31,10 +31,6 @@ public abstract class AbstractTriggerConfig {
 	public String getId(){ return id; }
 	
 	public OptionContainer getOptionContainer(){ return container; }
-	
-	public String getName(){
-		return getClass().getSimpleName();
-	}
 
 	public boolean isActive(){ 
 		return container.getOption(OPTIONS.ACTIVE.toString()).getBooleanValue(); 
@@ -49,5 +45,6 @@ public abstract class AbstractTriggerConfig {
 		}
 	}
 	
+	public abstract String getName();
 	public abstract AbstractTrigger createTrigger();
 }

@@ -38,10 +38,6 @@ public abstract class AbstractOperationConfig {
 	
 	public OptionContainer getOptionContainer(){ return container; }
 	
-	public String getName(){
-		return getClass().getSimpleName().replaceAll("Config$", "");
-	}
-
 	public boolean isActive(){ 
 		return container.getOption(OPTIONS.ACTIVE.toString()).getBooleanValue(); 
 	}
@@ -55,5 +51,6 @@ public abstract class AbstractOperationConfig {
 		}
 	}
 	
+	public abstract String getName();
 	public abstract AbstractOperation createOperation();
 }

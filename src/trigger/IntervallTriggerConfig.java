@@ -5,6 +5,8 @@ import util.Option.Type;
 
 public class IntervallTriggerConfig extends AbstractTriggerConfig {
 
+	public static final String TRIGGER_NAME = "Intervall";
+	
 	public enum OPTIONS {
 		INTERVALL
 	}
@@ -16,6 +18,9 @@ public class IntervallTriggerConfig extends AbstractTriggerConfig {
 				Type.INTEGER, 0
 		));
 	}
+	
+	@Override
+	public String getName(){ return TRIGGER_NAME; }
 	
 	@Override
 	public AbstractTrigger createTrigger() {

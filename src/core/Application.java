@@ -8,9 +8,9 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import operation.ConsoleOperationConfig;
-import operation.OperationRegistry;
 
 import launch.LaunchManager;
+import trigger.IntervallTriggerConfig;
 import ui.Window;
 import util.FileTools;
 import util.Logger;
@@ -41,13 +41,13 @@ public class Application {
 	private Logger logger;
 	private Window window;
 	private Configuration configuration;
-	private OperationRegistry operationRegistry;
+	private Registry registry;
 	private LaunchManager launchManager;
 	
 	public Logger getLogger(){ return logger; }
 	public Window getWindow(){ return window; }
 	public Configuration getConfiguration(){ return configuration; }
-	public OperationRegistry getOperationRegistry(){ return operationRegistry; }
+	public Registry getRegistry(){ return registry; }
 	public LaunchManager getLaunchManager(){ return launchManager; }
 	
 	private Application(){}
@@ -109,8 +109,9 @@ public class Application {
 	
 	private void initRegistry() {
 		
-		operationRegistry = new OperationRegistry();
-		operationRegistry.getOperationConfigs().add(new ConsoleOperationConfig());
+		registry = new Registry();
+		registry.getOperationConfigs().add(new ConsoleOperationConfig());
+		registry.getTriggerConfigs().add(new IntervallTriggerConfig());
 	}
 	
 	private void initUI() throws Exception {

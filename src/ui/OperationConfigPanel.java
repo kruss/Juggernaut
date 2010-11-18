@@ -106,8 +106,8 @@ public class OperationConfigPanel extends JPanel implements IChangeListener {
 	
 	private void initOperationCombo() {
 		
-		for(AbstractOperationConfig config : application.getOperationRegistry().getOperationConfigs()){
-			operationCombo.addItem(config);
+		for(String operationName : application.getRegistry().getOperationNames()){
+			operationCombo.addItem(operationName);
 		}
 	}
 
@@ -149,6 +149,12 @@ public class OperationConfigPanel extends JPanel implements IChangeListener {
 		parentPanel.repaint();
 	}
 	
+	private void clearUI(){
+		
+		operationList.removeListSelectionListener(selectionListener);
+		operationList.removeAll();
+	}
+	
 	private void initUI(){
 		
 		DefaultListModel listModel = new DefaultListModel();
@@ -162,12 +168,6 @@ public class OperationConfigPanel extends JPanel implements IChangeListener {
 		operationList.addListSelectionListener(selectionListener);
 	}
 	
-	private void clearUI(){
-		
-		operationList.removeListSelectionListener(selectionListener);
-		operationList.removeAll();
-	}
-	
 	private void refreshUI(AbstractOperationConfig selected){
 		
 		clearUI();
@@ -175,7 +175,7 @@ public class OperationConfigPanel extends JPanel implements IChangeListener {
 		if(selected != null){
 			for(int i=0; i<operationList.getModel().getSize(); i++){
 				AbstractOperationConfig config = (AbstractOperationConfig)operationList.getModel().getElementAt(i);
-				if(config.getId().equals(config.getId())){
+				if(selected.getId().equals(config.getId())){
 					operationList.setSelectedIndex(i);
 					break;
 				}
@@ -189,12 +189,17 @@ public class OperationConfigPanel extends JPanel implements IChangeListener {
 		int listIndex = operationList.getSelectedIndex();
 		int comboIndex = operationCombo.getSelectedIndex();
 		if(comboIndex >= 0){
-			AbstractOperationConfig operationConfig = (AbstractOperationConfig)operationCombo.getItemAt(comboIndex);
-			LaunchConfig launchConfig = parentPanel.getCurrentConfig();
-			launchConfig.getOperationConfigs().add(listIndex >=0 ? listIndex : 0, operationConfig);
-			launchConfig.setDirty(true);
-			application.getConfiguration().notifyListeners();
-			refreshUI(operationConfig);
+			String operationName = (String)operationCombo.getItemAt(comboIndex);
+			try{
+				AbstractOperationConfig operationConfig = application.getRegistry().createOperationConfig(operationName);
+				LaunchConfig launchConfig = parentPanel.getCurrentConfig();
+				launchConfig.getOperationConfigs().add(listIndex >=0 ? listIndex+1 : 0, operationConfig);
+				launchConfig.setDirty(true);
+				application.getConfiguration().notifyListeners();
+				refreshUI(operationConfig);
+			}catch(Exception e){
+				application.handleException(e);
+			}
 		}
 	}
 	

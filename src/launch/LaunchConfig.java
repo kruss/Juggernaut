@@ -10,7 +10,7 @@ import util.OptionContainer;
 import util.Option.Type;
 
 
-public class LaunchConfig {
+public class LaunchConfig implements Comparable<LaunchConfig> {
 	
 	public enum OPTIONS {
 		ACTIVE, DESCRIPTION, NOTIFICATION, ADMINISTRATORS
@@ -84,5 +84,10 @@ public class LaunchConfig {
 		}else{
 			return "<"+name+">" + (dirty ? " *" : "");
 		}
+	}
+
+	@Override
+	public int compareTo(LaunchConfig o) {
+		return name.compareTo(o.getName());
 	}
 }

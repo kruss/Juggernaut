@@ -4,6 +4,8 @@ import util.Option;
 import util.Option.Type;
 
 public class ConsoleOperationConfig extends AbstractOperationConfig {
+	
+	public static final String OPERATION_NAME = "Command";
 
 	public enum OPTIONS {
 		COMMAND, DIRECTORY, ARGUMENTS
@@ -24,6 +26,9 @@ public class ConsoleOperationConfig extends AbstractOperationConfig {
 				Type.TEXTAREA, ""
 		));
 	}
+	
+	@Override
+	public String getName(){ return OPERATION_NAME; }
 	
 	@Override
 	public AbstractOperation createOperation() {

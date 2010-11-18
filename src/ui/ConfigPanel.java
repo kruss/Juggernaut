@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -138,6 +139,12 @@ public class ConfigPanel extends JPanel implements IChangeListener {
 		notifyListeners();
 	}
 	
+	private void clearUI(){
+		
+		launchCombo.removeItemListener(selectionListener);
+		launchCombo.removeAllItems();
+	}
+	
 	private void initUI(){
 		
 		ArrayList<LaunchConfig> configs = application.getConfiguration().getLaunchConfigs();
@@ -145,12 +152,6 @@ public class ConfigPanel extends JPanel implements IChangeListener {
 			launchCombo.addItem(config);
 		}
 		launchCombo.addItemListener(selectionListener);
-	}
-	
-	private void clearUI(){
-		
-		launchCombo.removeItemListener(selectionListener);
-		launchCombo.removeAllItems();
 	}
 	
 	private void refreshUI(LaunchConfig selected){
@@ -183,6 +184,7 @@ public class ConfigPanel extends JPanel implements IChangeListener {
 		if(name != null && !name.equals("")){
 			LaunchConfig config = new LaunchConfig(name);
 			application.getConfiguration().getLaunchConfigs().add(config);
+			Collections.sort(application.getConfiguration().getLaunchConfigs());
 			application.getConfiguration().notifyListeners();
 			refreshUI(config);
 		}
@@ -207,6 +209,7 @@ public class ConfigPanel extends JPanel implements IChangeListener {
 			if(name != null && !name.equals("")){
 				config.setName(name);
 				config.setDirty(true);
+				Collections.sort(application.getConfiguration().getLaunchConfigs());
 				application.getConfiguration().notifyListeners();
 				refreshUI(config);
 			}
