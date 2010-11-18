@@ -8,6 +8,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import operation.ConsoleOperationConfig;
+import operation.SampleOperationConfig;
 
 import launch.LaunchManager;
 import trigger.IntervallTriggerConfig;
@@ -66,6 +67,7 @@ public class Application {
 		
 		logger.info("Shutdown");
 		try{
+			shutdownUI();
 			shutdownSystems();
 			shutdownPersistence();
 		}catch(Exception e){
@@ -111,6 +113,7 @@ public class Application {
 	private void initRegistry() {
 		
 		registry = new Registry();
+		registry.getOperationConfigs().add(new SampleOperationConfig());
 		registry.getOperationConfigs().add(new ConsoleOperationConfig());
 		registry.getTriggerConfigs().add(new IntervallTriggerConfig());
 	}
@@ -126,6 +129,11 @@ public class Application {
 		UIManager.setLookAndFeel(styles[1].getClassName()); 
 		SwingUtilities.updateComponentTreeUI(window);
 		window.init();
+	}
+	
+	private void shutdownUI(){
+		
+		window.dispose();
 	}
 	
 	private void initSystems() {
@@ -145,7 +153,7 @@ public class Application {
 		UiTools.errorDialog(e.getClass().getSimpleName()+"\n\n"+e.getMessage());
 	}
 	
-	private String getOutputFolder(){
+	public String getOutputFolder(){
 		return FileTools.getWorkingDir()+File.separator+Constants.OUTPUT_FOLDER;
 	}
 
@@ -153,6 +161,7 @@ public class Application {
 	public void revert() throws Exception {
 		
 		if(configuration.isDirty()){
+			shutdownUI();
 			initPersistence();
 			initUI();
 		}

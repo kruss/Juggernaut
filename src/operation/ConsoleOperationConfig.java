@@ -13,15 +13,15 @@ public class ConsoleOperationConfig extends AbstractOperationConfig {
 	
 	public ConsoleOperationConfig(){
 		
-		container.getOptions().add(new Option(
+		optionContainer.getOptions().add(new Option(
 				OPTIONS.COMMAND.toString(), "The item's command", 
 				Type.TEXT, ""
 		));
-		container.getOptions().add(new Option(
+		optionContainer.getOptions().add(new Option(
 				OPTIONS.DIRECTORY.toString(), "The item's directory", 
 				Type.TEXT, ""
 		));
-		container.getOptions().add(new Option(
+		optionContainer.getOptions().add(new Option(
 				OPTIONS.ARGUMENTS.toString(), "The item's arguments",
 				Type.TEXTAREA, ""
 		));
@@ -33,7 +33,6 @@ public class ConsoleOperationConfig extends AbstractOperationConfig {
 	@Override
 	public AbstractOperation createOperation() {
 		// TODO
-		// return (new OperationInitializer(this)).createInstance();
 		return null;
 	}
 }

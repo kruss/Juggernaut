@@ -26,11 +26,11 @@ public class Logger {
 		}
 	}
 	
-	public void info(String text){ 		writeLog(text, Level.INFO); 					}
-	public void log(String text){ 		writeLog(text, Level.NORMAL); 					}
-    public void error(String text){ 	writeLog(text, Level.ERROR); 					}
-    public void error(Exception e){ 	writeLog(StringTools.trace(e), Level.ERROR); 	}
-    public void debug(String text){ 	writeLog(text, Level.DEBUG);					}
+	public synchronized void info(String text){ 		writeLog(text, Level.INFO); 					}
+	public synchronized void log(String text){ 			writeLog(text, Level.NORMAL); 					}
+    public synchronized void error(String text){ 		writeLog(text, Level.ERROR); 					}
+    public synchronized void error(Exception e){ 		writeLog(StringTools.trace(e), Level.ERROR); 	}
+    public synchronized void debug(String text){ 		writeLog(text, Level.DEBUG);					}
     
     private void writeLog(String text, Level level) {
 

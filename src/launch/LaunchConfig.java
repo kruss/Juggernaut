@@ -3,6 +3,10 @@ package launch;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.DomDriver;
+
+
 import operation.AbstractOperationConfig;
 import trigger.AbstractTriggerConfig;
 import util.Option;
@@ -13,12 +17,12 @@ import util.Option.Type;
 public class LaunchConfig implements Comparable<LaunchConfig> {
 	
 	public enum OPTIONS {
-		ACTIVE, DESCRIPTION, NOTIFICATION, ADMINISTRATORS
+		ACTIVE, DESCRIPTION, CLEAN, NOTIFY, ADMINISTRATORS
 	}
 	
 	private String id;
 	private String name;
-	private OptionContainer container;
+	private OptionContainer optionContainer;
 	private ArrayList<AbstractOperationConfig> operations;
 	private ArrayList<AbstractTriggerConfig> triggers;
 	
@@ -29,20 +33,24 @@ public class LaunchConfig implements Comparable<LaunchConfig> {
 		id = UUID.randomUUID().toString();
 		this.name = name;
 		
-		container = new OptionContainer();
-		container.getOptions().add(new Option(
+		optionContainer = new OptionContainer();
+		optionContainer.getOptions().add(new Option(
 				OPTIONS.ACTIVE.toString(), "The item's active state",
 				Type.BOOLEAN, false
 		));
-		container.getOptions().add(new Option(
+		optionContainer.getOptions().add(new Option(
 				OPTIONS.DESCRIPTION.toString(), "The item's description", 
 				Type.TEXT, ""
 		));
-		container.getOptions().add(new Option(
-				OPTIONS.NOTIFICATION.toString(), "Enable status notification",
+		optionContainer.getOptions().add(new Option(
+				OPTIONS.CLEAN.toString(), "Clean launch folder on start",
+				Type.BOOLEAN, true
+		));
+		optionContainer.getOptions().add(new Option(
+				OPTIONS.NOTIFY.toString(), "Enable status notification",
 				Type.BOOLEAN, false
 		));
-		container.getOptions().add(new Option(
+		optionContainer.getOptions().add(new Option(
 				OPTIONS.ADMINISTRATORS.toString(), "eMail-list of administrators (comma seperated)", 
 				Type.TEXT, ""
 		));
@@ -66,19 +74,19 @@ public class LaunchConfig implements Comparable<LaunchConfig> {
 	public String getName(){ return name; }
 	
 	public boolean isActive(){ 
-		return container.getOption(OPTIONS.ACTIVE.toString()).getBooleanValue(); 
+		return optionContainer.getOption(OPTIONS.ACTIVE.toString()).getBooleanValue(); 
 	}
 	
 	public void setActive(boolean active){ 
-		container.getOption(OPTIONS.ACTIVE.toString()).setBooleanValue(active); 
+		optionContainer.getOption(OPTIONS.ACTIVE.toString()).setBooleanValue(active); 
 	}
 	
-	public OptionContainer getOptionContainer(){ return container; }
+	public OptionContainer getOptionContainer(){ return optionContainer; }
 	public ArrayList<AbstractOperationConfig> getOperationConfigs(){ return operations; }
 	public ArrayList<AbstractTriggerConfig> getTriggerConfigs(){ return triggers; }
 	
-	public Launch createLaunch(){
-		return Launch.initializeLaunch(this);
+	public LaunchAction createLaunch(){
+		return new LaunchAction(this);
 	}
 	
 	@Override
@@ -93,5 +101,13 @@ public class LaunchConfig implements Comparable<LaunchConfig> {
 	@Override
 	public int compareTo(LaunchConfig o) {
 		return name.compareTo(o.getName());
+	}
+	
+	public LaunchConfig clone(){
+		
+		XStream xstream = new XStream(new DomDriver());
+		String xml = xstream.toXML(this);
+		LaunchConfig config = (LaunchConfig)xstream.fromXML(xml);
+		return config;
 	}
 }
