@@ -4,10 +4,11 @@ import java.awt.BorderLayout;
 
 import javax.swing.JPanel;
 
+import util.IChangeListener;
+
 
 import launch.LaunchConfig;
 import core.Application;
-import core.IChangeListener;
 
 public class LaunchConfigPanel extends JPanel implements IChangeListener {
 

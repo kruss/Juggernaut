@@ -18,9 +18,9 @@ import javax.swing.event.ListSelectionListener;
 
 import launch.LaunchConfig;
 import trigger.AbstractTriggerConfig;
+import util.IChangeListener;
 import util.UiTools;
 import core.Application;
-import core.IChangeListener;
 
 public class TriggerConfigPanel extends JPanel implements IChangeListener {
 

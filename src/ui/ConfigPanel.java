@@ -15,12 +15,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
+import util.IChangeListener;
 import util.UiTools;
 
 import launch.LaunchConfig;
 
 import core.Application;
-import core.IChangeListener;
 
 public class ConfigPanel extends JPanel implements IChangeListener {
 
@@ -33,7 +33,6 @@ public class ConfigPanel extends JPanel implements IChangeListener {
 	private JButton addLaunch;
 	private JButton removeLaunch;
 	private JButton renameLaunch;
-	private JButton runLaunch;
 	private JTabbedPane tabPanel;
 	private LaunchConfigPanel launchPanel;
 	private OperationConfigPanel operationPanel;
@@ -64,17 +63,12 @@ public class ConfigPanel extends JPanel implements IChangeListener {
 		renameLaunch.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){ renameLaunch(); }
 		});
-		runLaunch = new JButton(" Run ");
-		runLaunch.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){ runLaunch(); }
-		});
 		
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 		buttonPanel.add(addLaunch); 
 		buttonPanel.add(removeLaunch); 
 		buttonPanel.add(renameLaunch); 
-		buttonPanel.add(runLaunch);
 		
 		JPanel topPanel = new JPanel(new BorderLayout());
 		topPanel.add(new JLabel(" Launch "), BorderLayout.WEST);
@@ -213,15 +207,6 @@ public class ConfigPanel extends JPanel implements IChangeListener {
 				application.getConfiguration().notifyListeners();
 				refreshUI(config);
 			}
-		}
-	}
-	
-	private void runLaunch(){
-		
-		int index = launchCombo.getSelectedIndex();
-		if(index >= 0){
-			LaunchConfig config = application.getConfiguration().getLaunchConfigs().get(index);
-			application.getLaunchManager().runLaunch(config.createLaunch());
 		}
 	}
 }

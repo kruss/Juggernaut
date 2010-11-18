@@ -3,6 +3,7 @@ package core;
 import java.util.ArrayList;
 
 import util.FileTools;
+import util.IChangeListener;
 import util.UiTools;
 
 import com.thoughtworks.xstream.XStream;
@@ -52,19 +53,21 @@ public class Configuration {
 	
 	public static Configuration load(String path) throws Exception {
 	
+		Application.getInstance().getLogger().debug("load: "+path);
 		XStream xstream = new XStream(new DomDriver());
 		String xml = FileTools.readFile(path);
-		Configuration store = (Configuration)xstream.fromXML(xml);
-		store.listeners = new ArrayList<IChangeListener>();
-		store.path = path;
-		for(LaunchConfig config : store.configs){
+		Configuration configuration = (Configuration)xstream.fromXML(xml);
+		configuration.listeners = new ArrayList<IChangeListener>();
+		configuration.path = path;
+		for(LaunchConfig config : configuration.configs){
 			config.setDirty(false);
 		}
-		return store;
+		return configuration;
 	}
 	
 	public void save() throws Exception {
 		
+		Application.getInstance().getLogger().debug("save: "+path);
 		XStream xstream = new XStream(new DomDriver());
 		String xml = xstream.toXML(this);
 		FileTools.writeFile(path, xml, false);

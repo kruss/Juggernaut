@@ -47,7 +47,6 @@ public class LaunchConfig implements Comparable<LaunchConfig> {
 				Type.TEXT, ""
 		));
 		
-		
 		operations = new ArrayList<AbstractOperationConfig>();
 		triggers = new ArrayList<AbstractTriggerConfig>();
 		dirty = true;
@@ -58,6 +57,7 @@ public class LaunchConfig implements Comparable<LaunchConfig> {
 	public boolean isDirty(){ return dirty; }
 	public void setDirty(boolean dirty){ this.dirty = dirty; }
 	
+	/** answers if configuration is ready and could be launched */
 	public boolean isReady(){
 		return isActive() && !dirty;
 	}

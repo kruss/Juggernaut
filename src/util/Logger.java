@@ -30,7 +30,7 @@ public class Logger {
 	public void log(String text){ 		writeLog(text, Level.NORMAL); 					}
     public void error(String text){ 	writeLog(text, Level.ERROR); 					}
     public void error(Exception e){ 	writeLog(StringTools.trace(e), Level.ERROR); 	}
-    public void debug(String text){ 	if(verbose){ writeLog(text, Level.DEBUG); } 	}
+    public void debug(String text){ 	writeLog(text, Level.DEBUG);					}
     
     private void writeLog(String text, Level level) {
 
@@ -48,7 +48,7 @@ public class Logger {
 		}
 		
 		writeFile(log);
-    	if(level != Level.DEBUG){
+    	if(level != Level.DEBUG || verbose){
     		writeSystem(log);
     	}
 	}

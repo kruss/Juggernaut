@@ -88,6 +88,7 @@ public class Application {
 		logger = new Logger(
 				new File(getOutputFolder()+File.separator+Logger.OUTPUT_FILE)
 		);
+		logger.setVerbose(true);
 		logger.info(Constants.APP_FULL_NAME);
 	}
 	
@@ -146,5 +147,14 @@ public class Application {
 	
 	private String getOutputFolder(){
 		return FileTools.getWorkingDir()+File.separator+Constants.OUTPUT_FOLDER;
+	}
+
+	/** drop any unsaved changes */
+	public void revert() throws Exception {
+		
+		if(configuration.isDirty()){
+			initPersistence();
+			initUI();
+		}
 	}
 }

@@ -8,10 +8,11 @@ import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JTabbedPane;
 
+import util.IChangeListener;
+
 import core.Application;
 import core.Configuration;
 import core.Constants;
-import core.IChangeListener;
 
 public class Window extends JFrame implements IChangeListener {
 

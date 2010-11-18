@@ -19,10 +19,10 @@ import javax.swing.event.ListSelectionListener;
 import launch.LaunchConfig;
 
 import operation.AbstractOperationConfig;
+import util.IChangeListener;
 import util.UiTools;
 
 import core.Application;
-import core.IChangeListener;
 
 public class OperationConfigPanel extends JPanel implements IChangeListener {
 

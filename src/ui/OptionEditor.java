@@ -16,11 +16,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import util.IChangeListener;
 import util.KeyInput;
 import util.Option;
 import util.OptionContainer;
 
-import core.IChangeListener;
 
 public class OptionEditor extends JPanel {
 
