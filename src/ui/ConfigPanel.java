@@ -33,6 +33,7 @@ public class ConfigPanel extends JPanel implements IChangeListener {
 	private JButton addLaunch;
 	private JButton removeLaunch;
 	private JButton renameLaunch;
+	private JButton triggerLaunch;
 	private JTabbedPane tabPanel;
 	private LaunchConfigPanel launchPanel;
 	private OperationConfigPanel operationPanel;
@@ -63,12 +64,17 @@ public class ConfigPanel extends JPanel implements IChangeListener {
 		renameLaunch.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){ renameLaunch(); }
 		});
+		triggerLaunch = new JButton(" Trigger ");
+		triggerLaunch.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){ triggerLaunch(); }
+		});
 		
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 		buttonPanel.add(addLaunch); 
 		buttonPanel.add(removeLaunch); 
-		buttonPanel.add(renameLaunch); 
+		buttonPanel.add(renameLaunch);
+		buttonPanel.add(triggerLaunch); 
 		
 		JPanel topPanel = new JPanel(new BorderLayout());
 		topPanel.add(new JLabel(" Launch "), BorderLayout.WEST);
@@ -206,6 +212,28 @@ public class ConfigPanel extends JPanel implements IChangeListener {
 				Collections.sort(application.getConfiguration().getLaunchConfigs());
 				application.getConfiguration().notifyListeners();
 				refreshUI(config);
+			}
+		}
+	}
+	
+	private void triggerLaunch(){
+		
+		int index = launchCombo.getSelectedIndex();
+		if(index >= 0){
+			if(UiTools.confirmDialog("Trigger Launch"))
+			{
+				try{
+					LaunchConfig config = application.getConfiguration().getLaunchConfigs().get(index);
+					if(!config.isActive()){ 
+						config.setActive(true); 
+						config.setDirty(true);
+					}
+					application.getConfiguration().save();
+					application.getLaunchManager().runLaunch(config.createLaunch());
+					refreshUI(config);
+				}catch(Exception e){
+					application.handleException(e);
+				}
 			}
 		}
 	}

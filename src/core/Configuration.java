@@ -67,14 +67,16 @@ public class Configuration {
 	
 	public void save() throws Exception {
 		
-		Application.getInstance().getLogger().debug("save: "+path);
-		XStream xstream = new XStream(new DomDriver());
-		String xml = xstream.toXML(this);
-		FileTools.writeFile(path, xml, false);
-		for(LaunchConfig config : configs){
-			config.setDirty(false);
+		if(isDirty()){
+			Application.getInstance().getLogger().debug("save: "+path);
+			XStream xstream = new XStream(new DomDriver());
+			String xml = xstream.toXML(this);
+			FileTools.writeFile(path, xml, false);
+			for(LaunchConfig config : configs){
+				config.setDirty(false);
+			}
+			notifyListeners();
 		}
-		notifyListeners();
 	}
 
 	public void chekForSave() throws Exception {

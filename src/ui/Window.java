@@ -69,7 +69,7 @@ public class Window extends JFrame implements IChangeListener {
 	public void setStatus(String text){
 		
 		statusBar.setText(text);
-		Application.getInstance().getLogger().log("> "+text);
+		Application.getInstance().getLogger().debug(text);
 	}
 
 	@Override

@@ -69,6 +69,10 @@ public class LaunchConfig implements Comparable<LaunchConfig> {
 		return container.getOption(OPTIONS.ACTIVE.toString()).getBooleanValue(); 
 	}
 	
+	public void setActive(boolean active){ 
+		container.getOption(OPTIONS.ACTIVE.toString()).setBooleanValue(active); 
+	}
+	
 	public OptionContainer getOptionContainer(){ return container; }
 	public ArrayList<AbstractOperationConfig> getOperationConfigs(){ return operations; }
 	public ArrayList<AbstractTriggerConfig> getTriggerConfigs(){ return triggers; }

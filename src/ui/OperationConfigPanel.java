@@ -129,7 +129,7 @@ public class OperationConfigPanel extends JPanel implements IChangeListener {
 
 		@Override
 		public void valueChanged(ListSelectionEvent e) {
-			if(e.getSource() == operationList){
+			if(e.getSource() == operationList && e.getValueIsAdjusting()){
 				adjustSelection();
 			}
 		}

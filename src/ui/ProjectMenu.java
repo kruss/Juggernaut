@@ -16,13 +16,19 @@ public class ProjectMenu extends JMenu {
 
 	private static final long serialVersionUID = 1L;
 
-	private JMenuItem save;
 	private JMenuItem revert;
+	private JMenuItem save;
 	private JMenuItem quit;
 	
 	public ProjectMenu(){
 		
 		super("Project");
+		
+		revert = new JMenuItem("Revert");
+		revert.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){ revert(); }
+		});
+		add(revert);
 		
 		save = new JMenuItem("Save");
 		save.addActionListener(new ActionListener(){
@@ -30,12 +36,6 @@ public class ProjectMenu extends JMenu {
 		});
 		save.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
 		add(save);
-		
-		revert = new JMenuItem("Revert");
-		revert.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){ revert(); }
-		});
-		add(revert);
 		
 		quit = new JMenuItem("Quit");
 		quit.addActionListener(new ActionListener(){
@@ -45,19 +45,19 @@ public class ProjectMenu extends JMenu {
 		add(quit);
 	}
 	
-	private void save(){
+	private void revert(){
 		
 		try{
-			Application.getInstance().getConfiguration().save();
+			Application.getInstance().revert();
 		}catch(Exception e){
 			Application.getInstance().handleException(e);
 		}
 	}
 	
-	private void revert(){
+	private void save(){
 		
 		try{
-			Application.getInstance().revert();
+			Application.getInstance().getConfiguration().save();
 		}catch(Exception e){
 			Application.getInstance().handleException(e);
 		}
