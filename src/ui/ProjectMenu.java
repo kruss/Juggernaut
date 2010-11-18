@@ -2,9 +2,12 @@ package ui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.KeyStroke;
 
 
 import core.Application;
@@ -24,6 +27,7 @@ public class ProjectMenu extends JMenu {
 		save.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){ save(); }
 		});
+		save.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
 		add(save);
 		
 		close = new JMenuItem("Close");

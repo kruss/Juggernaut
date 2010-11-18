@@ -16,6 +16,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import util.KeyInput;
 import util.Option;
 import util.OptionContainer;
 
@@ -93,9 +94,11 @@ public class OptionEditor extends JPanel {
 			public void keyPressed(KeyEvent arg0) {}
 			@Override
 			public void keyReleased(KeyEvent arg0) {
-				String value = component.getText();
-				container.getOption(option.getName()).setStringValue(value);
-				notifyListeners();
+				if(KeyInput.isModifyingKeyEvent(arg0)){
+					String value = component.getText();
+					container.getOption(option.getName()).setStringValue(value);
+					notifyListeners();
+				}
 			}
 			@Override
 			public void keyTyped(KeyEvent arg0) {}
@@ -113,9 +116,11 @@ public class OptionEditor extends JPanel {
 			public void keyPressed(KeyEvent arg0) {}
 			@Override
 			public void keyReleased(KeyEvent arg0) {
-				String value = component.getText();
-				container.getOption(option.getName()).setStringValue(value);
-				notifyListeners();
+				if(KeyInput.isModifyingKeyEvent(arg0)){
+					String value = component.getText();
+					container.getOption(option.getName()).setStringValue(value);
+					notifyListeners();
+				}
 			}
 			@Override
 			public void keyTyped(KeyEvent arg0) {}
