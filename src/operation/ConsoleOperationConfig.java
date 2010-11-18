@@ -13,7 +13,7 @@ public class ConsoleOperationConfig extends AbstractOperationConfig {
 		
 		container.getOptions().add(new Option(
 				OPTIONS.COMMAND.toString(), "The item's command", 
-				Type.TEXT, "new "+getClass().getSimpleName()
+				Type.TEXT, ""
 		));
 		container.getOptions().add(new Option(
 				OPTIONS.DIRECTORY.toString(), "The item's directory", 
@@ -21,7 +21,7 @@ public class ConsoleOperationConfig extends AbstractOperationConfig {
 		));
 		container.getOptions().add(new Option(
 				OPTIONS.ARGUMENTS.toString(), "The item's arguments",
-				Type.TEXTAREA, false
+				Type.TEXTAREA, ""
 		));
 	}
 	

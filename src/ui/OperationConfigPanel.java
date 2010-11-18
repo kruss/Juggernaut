@@ -3,18 +3,15 @@ package ui;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.ListModel;
+import javax.swing.JSplitPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -22,13 +19,13 @@ import javax.swing.event.ListSelectionListener;
 import launch.LaunchConfig;
 
 import operation.AbstractOperationConfig;
-import operation.OperationRegistry;
+import util.UiTools;
 
 import core.Application;
 import core.ConfigStore;
 import core.IChangeListener;
 
-public class ConfigPanelOperation extends JPanel implements IChangeListener {
+public class OperationConfigPanel extends JPanel implements IChangeListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -41,8 +38,9 @@ public class ConfigPanelOperation extends JPanel implements IChangeListener {
 	private JButton moveOperationUp;
 	private JButton moveOperationDown;
 	private AbstractOperationConfig currentConfig;
+	private OptionEditor optionEditor;
 	
-	public ConfigPanelOperation(ConfigPanel parent){
+	public OperationConfigPanel(ConfigPanel parent){
 		
 		this.parent = parent;
 		
@@ -51,6 +49,7 @@ public class ConfigPanelOperation extends JPanel implements IChangeListener {
 		operationList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		operationCombo = new JComboBox();
 		operationCombo.setToolTipText("Available Operations");
+		optionEditor = new OptionEditor();
 
 		selectionListener = new SelectionListener();
 		
@@ -82,14 +81,22 @@ public class ConfigPanelOperation extends JPanel implements IChangeListener {
 		bottomPanel.add(operationCombo, BorderLayout.CENTER);
 		bottomPanel.add(buttonPanel, BorderLayout.SOUTH);
 		
-		JPanel centerPanel = new JPanel(new BorderLayout());
-		centerPanel.add(new JScrollPane(operationList), BorderLayout.WEST);
+		JSplitPane centerPanel = new JSplitPane(
+				JSplitPane.HORIZONTAL_SPLIT,
+				new JScrollPane(operationList), 
+				optionEditor);
+		centerPanel.setDividerLocation(150);
 
 		setLayout(new BorderLayout());
 		add(centerPanel, BorderLayout.CENTER);
 		add(bottomPanel, BorderLayout.SOUTH);
 		
 		parent.addListener(this);
+		optionEditor.addListener(this);
+	}
+	
+	public void init() {
+		
 		initOperationCombo();
 		initUI();
 		adjustSelection();
@@ -105,8 +112,15 @@ public class ConfigPanelOperation extends JPanel implements IChangeListener {
 	@Override
 	public void changed(Object object) {
 		
-		if(object instanceof ConfigPanel){
+		if(object == parent){
 			refreshUI(null);
+		}
+		
+		if(object == optionEditor){
+			ConfigStore store = Application.getInstance().getConfigStore();
+			parent.getCurrentConfig().setDirty(true);
+			store.notifyListeners();
+			operationList.repaint();
 		}
 	}
 	
@@ -124,18 +138,22 @@ public class ConfigPanelOperation extends JPanel implements IChangeListener {
 	
 	private void adjustSelection() {
 		
-		int index = operationList.getSelectedIndex();
-		if(index >= 0){
-			currentConfig = parent.getLaunchConfig().getOperationConfigs().get(index);
+		int listIndex = operationList.getSelectedIndex();
+		if(listIndex >= 0){
+			currentConfig = parent.getCurrentConfig().getOperationConfigs().get(listIndex);
+			optionEditor.setOptionContainer(currentConfig.getOptionContainer());
+			Application.getInstance().getFrame().setStatus("Operation ["+currentConfig.getId()+"]");
 		}else{
 			currentConfig = null;
+			optionEditor.setOptionContainer(null);
 		}
+		parent.repaint();
 	}
 	
 	private void initUI(){
 		
 		DefaultListModel listModel = new DefaultListModel();
-		LaunchConfig config = parent.getLaunchConfig();
+		LaunchConfig config = parent.getCurrentConfig();
 		if(config != null){
 			for(AbstractOperationConfig operationConfig : config.getOperationConfigs()){
 				listModel.addElement(operationConfig);
@@ -154,6 +172,7 @@ public class ConfigPanelOperation extends JPanel implements IChangeListener {
 	private void refreshUI(AbstractOperationConfig selected){
 		
 		clearUI();
+		initUI();
 		if(selected != null){
 			for(int i=0; i<operationList.getModel().getSize(); i++){
 				AbstractOperationConfig config = (AbstractOperationConfig)operationList.getModel().getElementAt(i);
@@ -163,32 +182,58 @@ public class ConfigPanelOperation extends JPanel implements IChangeListener {
 				}
 			}
 		}
-		initUI();
+		adjustSelection();
 	}
 	
 	private void addOperation(){
 		
-		int index = operationCombo.getSelectedIndex();
-		if(index >= 0){
-			AbstractOperationConfig operationConfig = (AbstractOperationConfig)operationCombo.getItemAt(index);
-			ConfigStore store = Application.getInstance().getConfigStore();
-			LaunchConfig launchConfig = parent.getLaunchConfig();
-			launchConfig.getOperationConfigs().add(operationConfig);
+		int listIndex = operationList.getSelectedIndex();
+		int comboIndex = operationCombo.getSelectedIndex();
+		if(comboIndex >= 0){
+			AbstractOperationConfig operationConfig = (AbstractOperationConfig)operationCombo.getItemAt(comboIndex);
+			LaunchConfig launchConfig = parent.getCurrentConfig();
+			launchConfig.getOperationConfigs().add(listIndex >=0 ? listIndex : 0, operationConfig);
 			launchConfig.setDirty(true);
-			store.notifyListeners();
-			refreshUI(null);
+			Application.getInstance().getConfigStore().notifyListeners();
+			refreshUI(operationConfig);
 		}
 	}
 	
 	private void removeOperation(){
 		
+		int listIndex = operationList.getSelectedIndex();
+		if(listIndex >= 0 && UiTools.confirmDialog("Remove Operation ?")){
+			LaunchConfig launchConfig = parent.getCurrentConfig();
+			launchConfig.getOperationConfigs().remove(listIndex);
+			launchConfig.setDirty(true);
+			Application.getInstance().getConfigStore().notifyListeners();
+			refreshUI(null);
+		}
 	}
 	
 	private void moveOperationUp(){
 		
+		int listIndex = operationList.getSelectedIndex();
+		if(listIndex > 0){
+			LaunchConfig launchConfig = parent.getCurrentConfig();
+			AbstractOperationConfig operationConfig = launchConfig.getOperationConfigs().remove(listIndex);
+			launchConfig.getOperationConfigs().add(listIndex-1, operationConfig);
+			launchConfig.setDirty(true);
+			Application.getInstance().getConfigStore().notifyListeners();
+			refreshUI(operationConfig);
+		}
 	}
 	
 	private void moveOperationDown(){
 		
+		int listIndex = operationList.getSelectedIndex();
+		if(listIndex >= 0 && listIndex < operationList.getModel().getSize()-1){
+			LaunchConfig launchConfig = parent.getCurrentConfig();
+			AbstractOperationConfig operationConfig = launchConfig.getOperationConfigs().remove(listIndex);
+			launchConfig.getOperationConfigs().add(listIndex+1, operationConfig);
+			launchConfig.setDirty(true);
+			Application.getInstance().getConfigStore().notifyListeners();
+			refreshUI(operationConfig);
+		}
 	}
 }

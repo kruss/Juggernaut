@@ -9,7 +9,7 @@ import util.Option.Type;
 public abstract class AbstractOperationConfig {
 
 	public enum OPTIONS {
-		DESCRIPTION, ACTIVE, TIMEOUT
+		ACTIVE, DESCRIPTION, TIMEOUT
 	}
 	
 	private String id;
@@ -21,12 +21,12 @@ public abstract class AbstractOperationConfig {
 		
 		container = new OptionContainer();
 		container.getOptions().add(new Option(
-				OPTIONS.DESCRIPTION.toString(), "The item's description", 
-				Type.TEXT, ""
-		));
-		container.getOptions().add(new Option(
 				OPTIONS.ACTIVE.toString(), "The item's active state",
 				Type.BOOLEAN, true
+		));
+		container.getOptions().add(new Option(
+				OPTIONS.DESCRIPTION.toString(), "The item's description", 
+				Type.TEXT, ""
 		));
 		container.getOptions().add(new Option(
 				OPTIONS.TIMEOUT.toString(), "Timeout in minutes (0 = no timeout)", 

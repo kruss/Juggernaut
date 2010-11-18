@@ -36,7 +36,11 @@ public class ConfigPanel extends JPanel implements IChangeListener {
 	private JButton removeLaunch;
 	private JButton renameLaunch;
 	private JButton runLaunch;
-	private LaunchConfig launchConfig;
+	private JTabbedPane tabPanel;
+	private LaunchConfig currentConfig;
+	private LaunchConfigPanel launchPanel;
+	private OperationConfigPanel operationPanel;
+	private TriggerConfigPanel triggerPanel;
 	
 	public ConfigPanel(){
 		
@@ -77,16 +81,26 @@ public class ConfigPanel extends JPanel implements IChangeListener {
 		topPanel.add(launchCombo, BorderLayout.CENTER);
 		topPanel.add(buttonPanel, BorderLayout.SOUTH);
 		
-		JTabbedPane centerPanel = new JTabbedPane();
-		centerPanel.setTabPlacement(JTabbedPane.LEFT);
-		centerPanel.add(new ConfigPanelLaunch(this), "Launch");
-		centerPanel.add(new ConfigPanelOperation(this), "Operation");
-		centerPanel.add(new ConfigPanelTrigger(this), "Trigger");
+		launchPanel =  new LaunchConfigPanel(this);
+		operationPanel = new OperationConfigPanel(this);
+		triggerPanel = new TriggerConfigPanel(this);
+		
+		tabPanel = new JTabbedPane();
+		tabPanel.setTabPlacement(JTabbedPane.LEFT);
+		tabPanel.add(launchPanel, "Launch");
+		tabPanel.add(operationPanel, "Operation");
+		tabPanel.add(triggerPanel, "Trigger");
 
 		setLayout(new BorderLayout());
 		add(topPanel, BorderLayout.NORTH);
-		add(centerPanel, BorderLayout.CENTER);
+		add(tabPanel, BorderLayout.CENTER);
+	}
+	
+	public void init() {
 		
+		launchPanel.init();
+		operationPanel.init();
+		triggerPanel.init();
 		initUI();
 		adjustSelection();
 	}
@@ -99,7 +113,7 @@ public class ConfigPanel extends JPanel implements IChangeListener {
 		}
 	}
 	
-	public LaunchConfig getLaunchConfig(){ return launchConfig; }
+	public LaunchConfig getCurrentConfig(){ return currentConfig; }
 	
 	private class SelectionListener implements ItemListener { 
 		
@@ -116,10 +130,12 @@ public class ConfigPanel extends JPanel implements IChangeListener {
 		
 		int index = launchCombo.getSelectedIndex();
 		if(index >= 0){
-			launchConfig = configStore.getLaunchConfigs().get(index);
+			currentConfig = configStore.getLaunchConfigs().get(index);
+			Application.getInstance().getFrame().setStatus("Launch ["+currentConfig.getId()+"]");
 		}else{
-			launchConfig = null;
+			currentConfig = null;
 		}
+		tabPanel.setSelectedIndex(0);
 		notifyListeners();
 	}
 	

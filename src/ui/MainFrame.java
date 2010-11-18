@@ -6,7 +6,6 @@ import java.awt.Container;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuBar;
-import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 import core.Application;
@@ -19,10 +18,10 @@ public class MainFrame extends JFrame implements IChangeListener {
 	private static final long serialVersionUID = 1L;
 
 	private JMenuBar menuBar;
-	private JPanel configPanel;
-	private JPanel activityPanel;
-	private JPanel historyPanel;
-	private JPanel preferencePanel;
+	private ConfigPanel configPanel;
+	private StatusPanel statusPanel;
+	private HistoryPanel historyPanel;
+	private PreferencePanel preferencePanel;
 	private JLabel statusBar;
 	
 	public MainFrame(){
@@ -31,19 +30,20 @@ public class MainFrame extends JFrame implements IChangeListener {
 		menuBar.add(new ProjectMenu());
 		setJMenuBar(menuBar);
 		
+		statusBar = new JLabel();
+		statusBar.setEnabled(false);
+		
 		configPanel = new ConfigPanel();
-		activityPanel = new ActivityPanel();
+		statusPanel = new StatusPanel();
 		historyPanel = new HistoryPanel();
 		preferencePanel = new PreferencePanel();
 		
 		JTabbedPane centerPanel = new JTabbedPane();
 		centerPanel.setTabPlacement(JTabbedPane.TOP);
 		centerPanel.add(configPanel, "Configuration");
-		centerPanel.add(activityPanel, "Activity");
+		centerPanel.add(statusPanel, "Status");
 		centerPanel.add(historyPanel, "History");
 		centerPanel.add(preferencePanel, "Preferences");
-		
-		statusBar = new JLabel("> ");
 		
 		Container pane = getContentPane();
 		pane.add(centerPanel, BorderLayout.CENTER);
@@ -56,11 +56,19 @@ public class MainFrame extends JFrame implements IChangeListener {
 		setTitle(Constants.APP_FULL_NAME);
 	}
 	
+	public void init() {
+		
+		configPanel.init();
+		statusPanel.init();
+		historyPanel.init();
+		preferencePanel.init();
+		setVisible(true);
+	}
+	
 	public void setStatus(String text){
 		
-		text = "> "+text;
 		statusBar.setText(text);
-		Application.getInstance().getLogger().log(text);
+		Application.getInstance().getLogger().log("> "+text);
 	}
 
 	@Override

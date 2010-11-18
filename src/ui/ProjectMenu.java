@@ -26,7 +26,7 @@ public class ProjectMenu extends JMenu {
 		});
 		add(save);
 		
-		close = new JMenuItem("close");
+		close = new JMenuItem("Close");
 		close.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){ close(); }
 		});

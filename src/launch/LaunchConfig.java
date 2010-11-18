@@ -13,7 +13,7 @@ import util.Option.Type;
 public class LaunchConfig {
 	
 	public enum OPTIONS {
-		DESCRIPTION, ACTIVE, NOTIFICATION
+		ACTIVE, DESCRIPTION, NOTIFICATION, ADMINISTRATORS
 	}
 	
 	private String id;
@@ -39,8 +39,12 @@ public class LaunchConfig {
 				Type.TEXT, ""
 		));
 		container.getOptions().add(new Option(
-				OPTIONS.NOTIFICATION.toString(), "The eMail-list to notify status (comma seperated)", 
-				Type.TEXTAREA, ""
+				OPTIONS.NOTIFICATION.toString(), "Enable status notification",
+				Type.BOOLEAN, false
+		));
+		container.getOptions().add(new Option(
+				OPTIONS.ADMINISTRATORS.toString(), "eMail-list of administrators (comma seperated)", 
+				Type.TEXT, ""
 		));
 		
 		

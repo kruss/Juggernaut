@@ -44,6 +44,7 @@ public class Application {
 	private Logger logger;
 	
 	public Logger getLogger(){ return logger; }
+	public MainFrame getFrame(){ return frame; }
 	public ConfigStore getConfigStore(){ return configStore; }
 	public OperationRegistry getOperationRegistry(){ return operationRegistry; }
 	
@@ -102,7 +103,7 @@ public class Application {
 		UIManager.LookAndFeelInfo styles[] = UIManager.getInstalledLookAndFeels();
 		UIManager.setLookAndFeel(styles[1].getClassName()); 
 		SwingUtilities.updateComponentTreeUI(frame);
-		frame.setVisible(true);
+		frame.init();
 	}
 	
 	public void shutdown(){

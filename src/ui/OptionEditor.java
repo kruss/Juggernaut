@@ -18,10 +18,8 @@ import javax.swing.JTextField;
 
 import util.Option;
 import util.OptionContainer;
-import util.Option.Type;
 
 import core.IChangeListener;
-
 
 public class OptionEditor extends JPanel {
 
@@ -34,22 +32,21 @@ public class OptionEditor extends JPanel {
 		
 		listeners = new ArrayList<IChangeListener>();
 		container = null;
+		
+		setLayout(new BorderLayout());
 	}
 	
 	public void setOptionContainer(OptionContainer container) {
 		
 		removeAll();
 		this.container = container;
-		
 		if(container != null){
-			JPanel optionPanel = new JPanel();
-			optionPanel.setLayout(new BoxLayout(optionPanel, BoxLayout.Y_AXIS));
+			JPanel panel = new JPanel();
+			panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 			for(Option option : container.getOptions()){
-				optionPanel.add(createPanel(option));
+				panel.add(createPanel(option));
 			}
-			
-			setLayout(new BorderLayout());
-			add(new JScrollPane(optionPanel), BorderLayout.CENTER);
+			add(panel, BorderLayout.NORTH);
 		}
 	}
 
@@ -77,6 +74,14 @@ public class OptionEditor extends JPanel {
 		}
 		return null;
 	}
+	
+	private Component createPanel(Option option, Component component) {
+		
+		JPanel panel = new JPanel(new BorderLayout());
+		panel.add(new JLabel(" "+option.getName()+": "), BorderLayout.NORTH);
+		panel.add(component, BorderLayout.CENTER);
+		return panel;
+	}
 
 	private Component createTextFieldPanel(final Option option) {
 
@@ -95,7 +100,7 @@ public class OptionEditor extends JPanel {
 			@Override
 			public void keyTyped(KeyEvent arg0) {}
 		});
-		return createComponentPanel(option, component);
+		return createPanel(option, component);
 	}
 
 	private Component createTextAreaPanel(final Option option) {
@@ -115,7 +120,7 @@ public class OptionEditor extends JPanel {
 			@Override
 			public void keyTyped(KeyEvent arg0) {}
 		});
-		return createComponentPanel(option, new JScrollPane(component));
+		return createPanel(option, new JScrollPane(component));
 	}
 
 	private Component createCheckBoxPanel(final Option option) {
@@ -131,21 +136,6 @@ public class OptionEditor extends JPanel {
 				notifyListeners();
 			}
 		});
-		return createComponentPanel(option, component);
-	}
-	
-	private Component createComponentPanel(Option option, Component component) {
-		
-		JPanel panel = new JPanel(new BorderLayout());
-		if(
-				option.getType() == Type.TEXT ||
-				option.getType() == Type.TEXTAREA
-		){
-			panel.add(new JLabel(" "+option.getName()+": "), BorderLayout.NORTH);
-		}else{
-			panel.add(new JLabel(" "+option.getName()+": "), BorderLayout.WEST);
-		}
-		panel.add(component, BorderLayout.CENTER);
-		return panel;
+		return createPanel(option, component);
 	}
 }

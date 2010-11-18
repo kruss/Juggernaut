@@ -10,47 +10,50 @@ import core.Application;
 import core.ConfigStore;
 import core.IChangeListener;
 
-public class ConfigPanelLaunch extends JPanel implements IChangeListener {
+public class LaunchConfigPanel extends JPanel implements IChangeListener {
 
 	private static final long serialVersionUID = 1L;
 
 	private ConfigPanel parent;
-	private OptionEditor editor;
+	private OptionEditor optionEditor;
 	
-	public ConfigPanelLaunch(ConfigPanel parent){
+	public LaunchConfigPanel(ConfigPanel parent){
 		
 		this.parent = parent;
-		editor = new OptionEditor();
+		optionEditor = new OptionEditor();
 
 		setLayout(new BorderLayout());
-		add(editor, BorderLayout.NORTH);
+		add(optionEditor, BorderLayout.CENTER);
 		
 		parent.addListener(this);
-		editor.addListener(this);
-		initUI();
+		optionEditor.addListener(this);
 	}
 
+	public void init() {
+		initUI();
+	}
+	
 	@Override
 	public void changed(Object object) {
 		
-		if(object instanceof ConfigPanel){
+		if(object == parent){
 			initUI();
 		}
 		
-		if(object instanceof OptionEditor){
+		if(object == optionEditor){
 			ConfigStore store = Application.getInstance().getConfigStore();
-			parent.getLaunchConfig().setDirty(true);
+			parent.getCurrentConfig().setDirty(true);
 			store.notifyListeners();
 		}
 	}
 
 	private void initUI() {
 
-		LaunchConfig config = parent.getLaunchConfig();
+		LaunchConfig config = parent.getCurrentConfig();
 		if(config != null){
-			editor.setOptionContainer(config.getOptionContainer());
+			optionEditor.setOptionContainer(config.getOptionContainer());
 		}else{
-			editor.setOptionContainer(null);
+			optionEditor.setOptionContainer(null);
 		}
 	}
 }
