@@ -1,6 +1,6 @@
 package util;
 
-public interface IChangeListener {
+public interface IChangedListener {
 
 	public void changed(Object object);
 }

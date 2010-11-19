@@ -10,7 +10,7 @@ import javax.swing.UIManager;
 import operation.ConsoleOperationConfig;
 import operation.SampleOperationConfig;
 
-import launch.LaunchManager;
+import lifecycle.LaunchManager;
 import trigger.IntervallTriggerConfig;
 import ui.Window;
 import util.FileTools;
@@ -121,7 +121,6 @@ public class Application {
 	private void initUI() throws Exception {
 		
 		window = new Window();
-		configuration.addListener(window);
 		window.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e){ shutdown(); }
         });
@@ -140,6 +139,7 @@ public class Application {
 		
 		launchManager = new LaunchManager();
 		launchManager.init();
+		configuration.notifyListeners();
 	}
 	
 	private void shutdownSystems() {

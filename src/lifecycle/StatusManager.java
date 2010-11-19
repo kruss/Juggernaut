@@ -5,7 +5,7 @@ import java.util.Date;
 public class StatusManager {
 
 	public enum Status {
-		UNDEFINED, PROCESSING, WARNING, ERROR, FAILURE, SUCCEED, CANCEL
+		UNDEFINED, PROCESSING, SUCCEED, ERROR, FAILURE, CANCEL
 	}
 	
 	private AbstractLifecycleObject lifecycleObject;
@@ -27,20 +27,18 @@ public class StatusManager {
 	
 	private int getLevel(Status status){
 		
-		if(this.status == Status.UNDEFINED){
+		if(status == Status.UNDEFINED){
 			return 0;
-		}else if(this.status == Status.PROCESSING){
+		}else if(status == Status.PROCESSING){
 			return 1;
-		}else if(this.status == Status.WARNING){
+		}else if(status == Status.SUCCEED){
 			return 2;
-		}else if(this.status == Status.ERROR){
-			return 4;
-		}else if(this.status == Status.FAILURE){
-			return 5;
-		}else if(this.status == Status.SUCCEED){
+		}else if(status == Status.ERROR){
 			return 3;
-		}else if(this.status == Status.CANCEL){
-			return 5;
+		}else if(status == Status.FAILURE){
+			return 4;
+		}else if(status == Status.CANCEL){
+			return 4;
 		}else{
 			return -1;
 		}
@@ -65,8 +63,10 @@ public class StatusManager {
 	
 	public void setProgressMax(int progress){ progressMax = progress; }
 	public void addProgress(int progress){ 
-		this.progress += progress; 
-		lifecycleObject.notifyListeners();
+		if(progress > 0 && (this.progress += progress) <= progressMax){
+			this.progress += progress; 
+			lifecycleObject.notifyListeners();
+		}
 	}
 	public int getProgress(){ 
 		
@@ -85,10 +85,7 @@ public class StatusManager {
 	public Date getStart(){ return start; }
 	public void setEnd(Date end){ 
 		this.end = end; 
-		if(
-				status == Status.PROCESSING ||
-				status == Status.WARNING
-		){
+		if(status == Status.PROCESSING){
 			setInternalStatus(Status.SUCCEED);
 		}
 		lifecycleObject.notifyListeners();

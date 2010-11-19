@@ -4,13 +4,13 @@ import java.awt.BorderLayout;
 
 import javax.swing.JPanel;
 
-import util.IChangeListener;
+import util.IChangedListener;
 
 
-import launch.LaunchConfig;
 import core.Application;
+import data.LaunchConfig;
 
-public class LaunchConfigPanel extends JPanel implements IChangeListener {
+public class LaunchConfigPanel extends JPanel implements IChangedListener {
 
 	private static final long serialVersionUID = 1L;
 

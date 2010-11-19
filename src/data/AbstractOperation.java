@@ -1,25 +1,28 @@
-package operation;
+package data;
 
 import java.io.File;
 
+
 import util.Logger;
 
-import launch.LaunchAction;
 import lifecycle.AbstractLifecycleObject;
+import lifecycle.LaunchAgent;
 
 public abstract class AbstractOperation extends AbstractLifecycleObject {
 
-	protected LaunchAction parent;
+	protected LaunchAgent parent;
 	protected AbstractOperationConfig config;
 	protected Logger logger;
 	
+	public AbstractOperationConfig getConfig(){ return config; }
+
 	public AbstractOperation(AbstractOperationConfig config){
 		
 		this.config = config.clone();
 	}
 	
-	public void setParent(LaunchAction parent){ this.parent = parent; }
-
+	public void setParent(LaunchAgent parent){ this.parent = parent; }
+	
 	@Override
 	public String getOutputFolder() {
 		return parent.getOutputFolder()+File.separator+config.getId();
@@ -39,7 +42,7 @@ public abstract class AbstractOperation extends AbstractLifecycleObject {
 	}
 	
 	@Override
-	protected void finish() throws Exception {
+	protected void finish() {
 		// TODO Auto-generated method stub
 	}
 }

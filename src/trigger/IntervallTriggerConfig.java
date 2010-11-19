@@ -1,7 +1,9 @@
 package trigger;
 
-import util.Option;
-import util.Option.Type;
+import data.AbstractTrigger;
+import data.AbstractTriggerConfig;
+import data.Option;
+import data.Option.Type;
 
 public class IntervallTriggerConfig extends AbstractTriggerConfig {
 

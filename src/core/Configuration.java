@@ -3,13 +3,14 @@ package core;
 import java.util.ArrayList;
 
 import util.FileTools;
-import util.IChangeListener;
+import util.IChangedListener;
 import util.UiTools;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
-import launch.LaunchConfig;
+import data.LaunchConfig;
+
 
 /**
  * the configuration of the application,- will be serialized
@@ -20,21 +21,23 @@ public class Configuration {
 	public static final String OUTPUT_FILE = "config.xml";
 	
 	private ArrayList<LaunchConfig> configs;
-	private transient ArrayList<IChangeListener> listeners;
+	private transient ArrayList<IChangedListener> listeners;
 	private transient String path;
+	private transient boolean dirty;
 
 	public Configuration(String path){
 		
 		configs = new ArrayList<LaunchConfig>();
 		
-		listeners = new ArrayList<IChangeListener>();
+		listeners = new ArrayList<IChangedListener>();
 		this.path = path;
+		dirty = true;
 	}
 	
-	public void addListener(IChangeListener listener){ listeners.add(listener); }
+	public void addListener(IChangedListener listener){ listeners.add(listener); }
 	
 	public void notifyListeners(){
-		for(IChangeListener listener : listeners){
+		for(IChangedListener listener : listeners){
 			listener.changed(this);
 		}
 	}
@@ -42,7 +45,10 @@ public class Configuration {
 	public ArrayList<LaunchConfig> getLaunchConfigs(){ return configs; }
 	public String getPath(){ return path; }
 	
+	public void setDirty(boolean dirty){ this.dirty = dirty; }
+	
 	public boolean isDirty(){ 
+		if(dirty){ return true; }
 		for(LaunchConfig config : configs){
 			if(config.isDirty()){ return true; }
 		}
@@ -57,11 +63,12 @@ public class Configuration {
 		XStream xstream = new XStream(new DomDriver());
 		String xml = FileTools.readFile(path);
 		Configuration configuration = (Configuration)xstream.fromXML(xml);
-		configuration.listeners = new ArrayList<IChangeListener>();
+		configuration.listeners = new ArrayList<IChangedListener>();
 		configuration.path = path;
 		for(LaunchConfig config : configuration.configs){
 			config.setDirty(false);
 		}
+		configuration.dirty = false;
 		return configuration;
 	}
 	
@@ -75,6 +82,7 @@ public class Configuration {
 			for(LaunchConfig config : configs){
 				config.setDirty(false);
 			}
+			dirty = false;
 			notifyListeners();
 		}
 	}

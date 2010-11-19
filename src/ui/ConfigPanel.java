@@ -15,19 +15,22 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
-import util.IChangeListener;
+import lifecycle.LaunchAgent;
+
+import trigger.UserTrigger;
+import util.IChangedListener;
 import util.UiTools;
 
-import launch.LaunchConfig;
 
 import core.Application;
+import data.LaunchConfig;
 
-public class ConfigPanel extends JPanel implements IChangeListener {
+public class ConfigPanel extends JPanel implements IChangedListener {
 
 	private static final long serialVersionUID = 1L;
 
 	private Application application;
-	private ArrayList<IChangeListener> listeners;
+	private ArrayList<IChangedListener> listeners;
 	private JComboBox launchCombo;
 	private SelectionListener selectionListener;
 	private JButton addLaunch;
@@ -45,7 +48,7 @@ public class ConfigPanel extends JPanel implements IChangeListener {
 	public ConfigPanel(){
 		
 		application = Application.getInstance();
-		listeners = new ArrayList<IChangeListener>();
+		listeners = new ArrayList<IChangedListener>();
 		
 		
 		launchCombo = new JComboBox();
@@ -107,10 +110,10 @@ public class ConfigPanel extends JPanel implements IChangeListener {
 		adjustSelection();
 	}
 	
-	public void addListener(IChangeListener listener){ listeners.add(listener); }
+	public void addListener(IChangedListener listener){ listeners.add(listener); }
 	
 	public void notifyListeners(){
-		for(IChangeListener listener : listeners){
+		for(IChangedListener listener : listeners){
 			listener.changed(this);
 		}
 	}
@@ -136,7 +139,32 @@ public class ConfigPanel extends JPanel implements IChangeListener {
 			currentConfig = null;
 		}
 		tabPanel.setSelectedIndex(0);
+		adjustButtons();
 		notifyListeners();
+	}
+	
+	private void adjustButtons() {
+		
+		int index = launchCombo.getSelectedIndex();
+		if(index >= 0){
+			
+			removeLaunch.setEnabled(true);
+			renameLaunch.setEnabled(true);
+			if(
+					application.getConfiguration().getLaunchConfigs().size() > 0 &&
+					application.getConfiguration().getLaunchConfigs().get(index).isReady()
+			){
+				triggerLaunch.setEnabled(true);
+			}else{
+				triggerLaunch.setEnabled(false);
+			}
+			tabPanel.setEnabled(true);
+		}else{
+			removeLaunch.setEnabled(false);
+			renameLaunch.setEnabled(false);
+			triggerLaunch.setEnabled(false);
+			tabPanel.setEnabled(false);
+		}		
 	}
 	
 	private void clearUI(){
@@ -175,9 +203,10 @@ public class ConfigPanel extends JPanel implements IChangeListener {
 		
 		if(object == application.getConfiguration()){
 			launchCombo.repaint();
+			adjustButtons();
 		}
 	}
-	
+
 	private void addLaunch(){
 		
 		String name = UiTools.inputDialog("New Launch", "");
@@ -195,6 +224,7 @@ public class ConfigPanel extends JPanel implements IChangeListener {
 		int index = launchCombo.getSelectedIndex();
 		if(index >= 0 && UiTools.confirmDialog("Remove Launch ?")){
 			application.getConfiguration().getLaunchConfigs().remove(index);
+			application.getConfiguration().setDirty(true);
 			application.getConfiguration().notifyListeners();
 			refreshUI(null);
 		}
@@ -229,7 +259,8 @@ public class ConfigPanel extends JPanel implements IChangeListener {
 						config.setDirty(true);
 					}
 					application.getConfiguration().save();
-					application.getLaunchManager().runLaunch(config.createLaunch());
+					LaunchAgent launch = config.createLaunch(new UserTrigger());
+					application.getLaunchManager().runLaunch(launch);
 					refreshUI(config);
 				}catch(Exception e){
 					application.handleException(e);

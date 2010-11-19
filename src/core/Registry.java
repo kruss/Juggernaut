@@ -2,8 +2,9 @@ package core;
 
 import java.util.ArrayList;
 
-import operation.AbstractOperationConfig;
-import trigger.AbstractTriggerConfig;
+import data.AbstractOperationConfig;
+import data.AbstractTriggerConfig;
+
 
 public class Registry {
 

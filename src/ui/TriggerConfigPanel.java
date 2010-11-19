@@ -16,13 +16,13 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import launch.LaunchConfig;
-import trigger.AbstractTriggerConfig;
-import util.IChangeListener;
+import util.IChangedListener;
 import util.UiTools;
 import core.Application;
+import data.AbstractTriggerConfig;
+import data.LaunchConfig;
 
-public class TriggerConfigPanel extends JPanel implements IChangeListener {
+public class TriggerConfigPanel extends JPanel implements IChangedListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -144,7 +144,29 @@ public class TriggerConfigPanel extends JPanel implements IChangeListener {
 			currentConfig = null;
 			optionEditor.setOptionContainer(null);
 		}
+		adjustButtons();
 		parentPanel.repaint();
+	}
+	
+	private void adjustButtons() {
+		
+		int listIndex = triggerList.getSelectedIndex();
+		int listSize = triggerList.getModel().getSize();
+		if(listIndex >= 0){
+			removeTrigger.setEnabled(true);
+		}else{
+			removeTrigger.setEnabled(false);
+		}
+		if(listIndex >=1){
+			moveTriggerUp.setEnabled(true);
+		}else{
+			moveTriggerUp.setEnabled(false);
+		}
+		if(listIndex >=0 && listIndex < listSize-1 && listSize > 0){
+			moveTriggerDown.setEnabled(true);
+		}else{
+			moveTriggerDown.setEnabled(false);
+		}
 	}
 	
 	private void clearUI(){

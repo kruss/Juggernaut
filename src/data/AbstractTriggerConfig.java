@@ -1,11 +1,14 @@
-package trigger;
-
+package data;
 
 import java.util.UUID;
 
-import util.Option;
-import util.OptionContainer;
-import util.Option.Type;
+
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.DomDriver;
+
+import data.Option.Type;
+
+
 
 /**
  * the configuration of a trigger,- will be serialized
@@ -53,4 +56,12 @@ public abstract class AbstractTriggerConfig {
 	public abstract String getDescription();
 	public abstract boolean isValid();
 	public abstract AbstractTrigger createTrigger();
+	
+	public AbstractTriggerConfig clone(){
+		
+		XStream xstream = new XStream(new DomDriver());
+		String xml = xstream.toXML(this);
+		AbstractTriggerConfig config = (AbstractTriggerConfig)xstream.fromXML(xml);
+		return config;
+	}
 }

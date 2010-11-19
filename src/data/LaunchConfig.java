@@ -1,16 +1,15 @@
-package launch;
+package data;
 
 import java.util.ArrayList;
 import java.util.UUID;
 
+import lifecycle.LaunchAgent;
+
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
-import operation.AbstractOperationConfig;
-import trigger.AbstractTriggerConfig;
-import util.Option;
-import util.OptionContainer;
-import util.Option.Type;
+import data.Option.Type;
+
 
 /**
  * the configuration of a launch,- will be serialized
@@ -44,7 +43,7 @@ public class LaunchConfig implements Comparable<LaunchConfig> {
 				Type.TEXT, ""
 		));
 		optionContainer.getOptions().add(new Option(
-				OPTIONS.CLEAN.toString(), "Clean launch folder on start",
+				OPTIONS.CLEAN.toString(), "Clean launch-folder on start",
 				Type.BOOLEAN, true
 		));
 		optionContainer.getOptions().add(new Option(
@@ -87,8 +86,12 @@ public class LaunchConfig implements Comparable<LaunchConfig> {
 		optionContainer.getOption(OPTIONS.ACTIVE.toString()).setBooleanValue(active); 
 	}
 	
-	public boolean isDirty(){ return dirty; }
+	public boolean isClean() {
+		return optionContainer.getOption(OPTIONS.CLEAN.toString()).getBooleanValue();
+	}
+	
 	public void setDirty(boolean dirty){ this.dirty = dirty; }
+	public boolean isDirty(){ return dirty; }
 	
 	public boolean isValid(){
 		
@@ -107,8 +110,8 @@ public class LaunchConfig implements Comparable<LaunchConfig> {
 	public ArrayList<AbstractOperationConfig> getOperationConfigs(){ return operations; }
 	public ArrayList<AbstractTriggerConfig> getTriggerConfigs(){ return triggers; }
 	
-	public LaunchAction createLaunch(){
-		return new LaunchAction(this);
+	public LaunchAgent createLaunch(AbstractTrigger trigger){
+		return new LaunchAgent(this, trigger);
 	}
 	
 	@Override

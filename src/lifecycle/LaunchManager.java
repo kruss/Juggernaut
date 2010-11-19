@@ -1,4 +1,4 @@
-package launch;
+package lifecycle;
 
 import core.Application;
 
@@ -20,7 +20,7 @@ public class LaunchManager {
 		// TODO Auto-generated method stub
 	}
 
-	public void runLaunch(LaunchAction launch) {
+	public void runLaunch(LaunchAgent launch) {
 		
 		application.getLogger().log("Starting Launch: "+launch.getConfig().getName());
 		try{

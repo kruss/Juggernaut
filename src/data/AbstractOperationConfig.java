@@ -1,13 +1,13 @@
-package operation;
+package data;
 
 import java.util.UUID;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
-import util.Option;
-import util.OptionContainer;
-import util.Option.Type;
+import data.Option.Type;
+
+
 
 /**
  * the configuration of an operation,- will be serialized
@@ -32,8 +32,8 @@ public abstract class AbstractOperationConfig {
 				Type.BOOLEAN, true
 		));
 		optionContainer.getOptions().add(new Option(
-				OPTIONS.CRITICAL.toString(), "Erros will aboard the launch",
-				Type.BOOLEAN, true
+				OPTIONS.CRITICAL.toString(), "Errors will aboard the launch",
+				Type.BOOLEAN, false
 		));
 	}
 	
@@ -43,6 +43,10 @@ public abstract class AbstractOperationConfig {
 	
 	public boolean isActive(){ 
 		return optionContainer.getOption(OPTIONS.ACTIVE.toString()).getBooleanValue(); 
+	}
+	
+	public boolean isCritical() {
+		return optionContainer.getOption(OPTIONS.CRITICAL.toString()).getBooleanValue(); 
 	}
 	
 	@Override

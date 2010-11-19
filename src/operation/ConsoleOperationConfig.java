@@ -1,7 +1,9 @@
 package operation;
 
-import util.Option;
-import util.Option.Type;
+import data.AbstractOperation;
+import data.AbstractOperationConfig;
+import data.Option;
+import data.Option.Type;
 
 public class ConsoleOperationConfig extends AbstractOperationConfig {
 	
@@ -14,11 +16,11 @@ public class ConsoleOperationConfig extends AbstractOperationConfig {
 	public ConsoleOperationConfig(){
 		
 		optionContainer.getOptions().add(new Option(
-				OPTIONS.COMMAND.toString(), "The item's command", 
+				OPTIONS.COMMAND.toString(), "The command to execute", 
 				Type.TEXT, ""
 		));
 		optionContainer.getOptions().add(new Option(
-				OPTIONS.DIRECTORY.toString(), "The item's directory", 
+				OPTIONS.DIRECTORY.toString(), "The commands directory within the launch-folder", 
 				Type.TEXT, ""
 		));
 		optionContainer.getOptions().add(new Option(

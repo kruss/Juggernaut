@@ -9,20 +9,24 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
+import util.IChangedListener;
+
 
 import core.Application;
 
-public class ProjectMenu extends JMenu {
+public class ProjectMenu extends JMenu implements IChangedListener {
 
 	private static final long serialVersionUID = 1L;
 
+	private Application application;
 	private JMenuItem revert;
 	private JMenuItem save;
 	private JMenuItem quit;
 	
 	public ProjectMenu(){
-		
 		super("Project");
+		
+		application = Application.getInstance();
 		
 		revert = new JMenuItem("Revert");
 		revert.addActionListener(new ActionListener(){
@@ -43,6 +47,8 @@ public class ProjectMenu extends JMenu {
 		});
 		quit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_MASK));
 		add(quit);
+		
+		application.getConfiguration().addListener(this);
 	}
 	
 	private void revert(){
@@ -66,5 +72,19 @@ public class ProjectMenu extends JMenu {
 	private void quit(){
 		
 		Application.getInstance().shutdown();
+	}
+
+	@Override
+	public void changed(Object object) {
+		
+		if(object == application.getConfiguration()){
+			if(application.getConfiguration().isDirty()){
+				revert.setEnabled(true);
+				save.setEnabled(true);
+			}else{
+				revert.setEnabled(false);
+				save.setEnabled(false);
+			}
+		}
 	}
 }

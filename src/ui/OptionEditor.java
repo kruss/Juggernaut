@@ -21,23 +21,24 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import data.Option;
+import data.OptionContainer;
 
-import util.IChangeListener;
+
+import util.IChangedListener;
 import util.KeyInput;
-import util.Option;
-import util.OptionContainer;
 
 
 public class OptionEditor extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	private ArrayList<IChangeListener> listeners;
+	private ArrayList<IChangedListener> listeners;
 	private OptionContainer container;
 	
 	public OptionEditor(){
 		
-		listeners = new ArrayList<IChangeListener>();
+		listeners = new ArrayList<IChangedListener>();
 		container = null;
 		
 		setLayout(new BorderLayout());
@@ -60,10 +61,10 @@ public class OptionEditor extends JPanel {
 		}
 	}
 
-	public void addListener(IChangeListener listener){ listeners.add(listener); }
+	public void addListener(IChangedListener listener){ listeners.add(listener); }
 	
 	public void notifyListeners(){
-		for(IChangeListener listener : listeners){
+		for(IChangedListener listener : listeners){
 			listener.changed(this);
 		}
 	}

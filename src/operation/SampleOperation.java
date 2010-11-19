@@ -1,5 +1,7 @@
 package operation;
 
+import data.AbstractOperation;
+
 public class SampleOperation extends AbstractOperation {
 
 	public SampleOperation(SampleOperationConfig config) {

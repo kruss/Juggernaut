@@ -16,15 +16,15 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import launch.LaunchConfig;
 
-import operation.AbstractOperationConfig;
-import util.IChangeListener;
+import util.IChangedListener;
 import util.UiTools;
 
 import core.Application;
+import data.AbstractOperationConfig;
+import data.LaunchConfig;
 
-public class OperationConfigPanel extends JPanel implements IChangeListener {
+public class OperationConfigPanel extends JPanel implements IChangedListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -146,7 +146,29 @@ public class OperationConfigPanel extends JPanel implements IChangeListener {
 			currentConfig = null;
 			optionEditor.setOptionContainer(null);
 		}
+		adjustButtons();
 		parentPanel.repaint();
+	}
+	
+	private void adjustButtons() {
+		
+		int listIndex = operationList.getSelectedIndex();
+		int listSize = operationList.getModel().getSize();
+		if(listIndex >= 0){
+			removeOperation.setEnabled(true);
+		}else{
+			removeOperation.setEnabled(false);
+		}
+		if(listIndex >=1){
+			moveOperationUp.setEnabled(true);
+		}else{
+			moveOperationUp.setEnabled(false);
+		}
+		if(listIndex >=0 && listIndex < listSize-1 && listSize > 0){
+			moveOperationDown.setEnabled(true);
+		}else{
+			moveOperationDown.setEnabled(false);
+		}
 	}
 	
 	private void clearUI(){

@@ -1,22 +1,20 @@
 package operation;
 
-import util.Option;
-import util.Option.Type;
+import data.AbstractOperation;
+import data.AbstractOperationConfig;
+import data.Option;
+import data.Option.Type;
 
 public class SampleOperationConfig extends AbstractOperationConfig {
 	
 	public static final String OPERATION_NAME = "Sample";
 
 	public enum OPTIONS {
-		WARNING, ERROR, EXCEPTION, TIME
+		ERROR, EXCEPTION, IDLE
 	}
 	
 	public SampleOperationConfig(){
 		
-		optionContainer.getOptions().add(new Option(
-				OPTIONS.WARNING.toString(), "Throw a warning",
-				Type.BOOLEAN, false
-		));
 		optionContainer.getOptions().add(new Option(
 				OPTIONS.ERROR.toString(), "Throw an error",
 				Type.BOOLEAN, false
@@ -26,8 +24,8 @@ public class SampleOperationConfig extends AbstractOperationConfig {
 				Type.BOOLEAN, false
 		));
 		optionContainer.getOptions().add(new Option(
-				OPTIONS.TIME.toString(), "Idle time in seconds", 
-				Type.INTEGER, 0
+				OPTIONS.IDLE.toString(), "Idle time in seconds", 
+				Type.INTEGER, 10
 		));
 	}
 	
@@ -42,7 +40,7 @@ public class SampleOperationConfig extends AbstractOperationConfig {
 	@Override
 	public boolean isValid(){
 		return
-			optionContainer.getOption(OPTIONS.TIME.toString()).getIntegerValue() >= 0;
+			optionContainer.getOption(OPTIONS.IDLE.toString()).getIntegerValue() >= 0;
 	}
 	
 	@Override

@@ -8,16 +8,17 @@ import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JTabbedPane;
 
-import util.IChangeListener;
+import util.IChangedListener;
 
 import core.Application;
 import core.Configuration;
 import core.Constants;
 
-public class Window extends JFrame implements IChangeListener {
+public class Window extends JFrame implements IChangedListener {
 
 	private static final long serialVersionUID = 1L;
 
+	private Application application;
 	private JMenuBar menuBar;
 	private ConfigPanel configPanel;
 	private StatusPanel statusPanel;
@@ -26,6 +27,8 @@ public class Window extends JFrame implements IChangeListener {
 	private JLabel statusBar;
 	
 	public Window(){
+		
+		application = Application.getInstance();
 		
 		menuBar = new JMenuBar();
 		menuBar.add(new ProjectMenu());
@@ -53,8 +56,9 @@ public class Window extends JFrame implements IChangeListener {
 
 		setSize(Constants.APP_WIDTH, Constants.APP_HEIGHT);
 		setLocation(100, 100);
-		
 		setTitle(Constants.APP_FULL_NAME);
+		
+		application.getConfiguration().addListener(this);
 	}
 	
 	public void init() {

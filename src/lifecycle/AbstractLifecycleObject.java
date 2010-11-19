@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import lifecycle.StatusManager.Status;
-import util.IChangeListener;
+import util.IChangedListener;
 import util.Logger;
 
 
@@ -14,7 +14,7 @@ public abstract class AbstractLifecycleObject extends Thread {
 	protected ArtifactManager artifactManager;
 	protected PropertyManager propertyManager;
 	
-	private ArrayList<IChangeListener> listeners;
+	private ArrayList<IChangedListener> listeners;
 	
 	public StatusManager getStatusManager(){ return statusManager; }
 	public ArtifactManager getArtifactManager(){ return artifactManager; }
@@ -26,13 +26,13 @@ public abstract class AbstractLifecycleObject extends Thread {
 		artifactManager = new ArtifactManager(this);
 		propertyManager = new PropertyManager(this);
 		
-		listeners = new ArrayList<IChangeListener>();
+		listeners = new ArrayList<IChangedListener>();
 	}
 	
-	public void addListener(IChangeListener listener){ listeners.add(listener); }
+	public void addListener(IChangedListener listener){ listeners.add(listener); }
 	
 	public void notifyListeners(){
-		for(IChangeListener listener : listeners){
+		for(IChangedListener listener : listeners){
 			listener.changed(this);
 		}
 	}
@@ -42,20 +42,20 @@ public abstract class AbstractLifecycleObject extends Thread {
 	
 	protected abstract void init() throws Exception;
 	protected abstract void execute() throws Exception;
-	protected abstract void finish() throws Exception;
+	protected abstract void finish();
 	
 	public void run() {
 		
 		try{
-			statusManager.setStart(new Date());
 			init();
+			statusManager.setStart(new Date());
 			execute();
-			finish();
 		}catch(Exception e){
 			getLogger().error(e);
 			statusManager.setStatus(Status.FAILURE);
 		}finally{
 			statusManager.setEnd(new Date());
+			finish();
 		}
 	}
 }

@@ -40,7 +40,7 @@ public class Logger {
 		if(level == Level.INFO){
 			log = "\n\t>>> "+text+" <<<\n\n";
 		}else if(level == Level.ERROR){
-			log = time+" "+"ERROR !!!\n"+text+"\n!!!\n";
+			log = time+" "+"!!!\n"+text+"\n!!!\n";
 		}else if(level == Level.DEBUG){
 			log = time+" ~> "+text+"\n";
 		}else{
