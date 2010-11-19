@@ -10,7 +10,7 @@ public class ConsoleOperationConfig extends AbstractOperationConfig {
 	public static final String OPERATION_NAME = "Command";
 
 	public enum OPTIONS {
-		COMMAND, DIRECTORY, ARGUMENTS
+		COMMAND, DIRECTORY, ARGUMENTS, OUTPUT
 	}
 	
 	public ConsoleOperationConfig(){
@@ -20,12 +20,16 @@ public class ConsoleOperationConfig extends AbstractOperationConfig {
 				Type.TEXT, ""
 		));
 		optionContainer.getOptions().add(new Option(
-				OPTIONS.DIRECTORY.toString(), "The commands directory within the launch-folder", 
+				OPTIONS.DIRECTORY.toString(), "The command's directory within the launch-folder", 
 				Type.TEXT, ""
 		));
 		optionContainer.getOptions().add(new Option(
 				OPTIONS.ARGUMENTS.toString(), "The item's arguments",
 				Type.TEXTAREA, ""
+		));
+		optionContainer.getOptions().add(new Option(
+				OPTIONS.OUTPUT.toString(), "List of glob pattern to collect output (comma seperated)", 
+				Type.TEXT, ""
 		));
 	}
 	

@@ -6,8 +6,9 @@ import java.util.Date;
 import lifecycle.ILifecycleListener.Lifecycle;
 import lifecycle.StatusManager.Status;
 import util.Logger;
+import util.Task;
 
-public abstract class AbstractLifecycleObject extends Thread {
+public abstract class AbstractLifecycleObject extends Task {
 	
 	protected StatusManager statusManager;
 	protected ArtifactManager artifactManager;
@@ -43,7 +44,7 @@ public abstract class AbstractLifecycleObject extends Thread {
 	protected abstract void execute() throws Exception;
 	protected abstract void finish();
 	
-	public void run() {
+	public void runTask() {
 		
 		notifyListeners(Lifecycle.START);
 		try{

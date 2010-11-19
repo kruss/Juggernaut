@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import data.AbstractOperationConfig;
 import data.AbstractTriggerConfig;
 
-
 public class Registry {
 
 	private ArrayList<AbstractOperationConfig> operationConfigs;

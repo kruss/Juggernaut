@@ -2,32 +2,30 @@ package lifecycle;
 
 import java.io.File;
 
-
 import core.Application;
 import data.AbstractOperation;
 import data.AbstractOperationConfig;
-import data.AbstractTrigger;
 import data.LaunchConfig;
 import util.FileTools;
 import util.Logger;
 import util.Logger.Mode;
+import lifecycle.LaunchManager.TriggerStatus;
 import lifecycle.StatusManager.Status;
-
 
 public class LaunchAgent extends AbstractLifecycleObject {
 
 	private LaunchConfig config;
-	private AbstractTrigger trigger;
+	private TriggerStatus trigger;
 	private Logger logger;
 	
-	public LaunchAgent(LaunchConfig config, AbstractTrigger trigger){
+	public LaunchAgent(LaunchConfig config, TriggerStatus trigger){
 
 		this.config = config.clone();
-		this.trigger = trigger.clone();
+		this.trigger = trigger;
 	}
 	
 	public LaunchConfig getConfig(){ return config; }
-	public AbstractTrigger getTrigger(){ return trigger; }
+	public TriggerStatus getTrigger(){ return trigger; }
 	
 	@Override
 	public String getOutputFolder() {
@@ -59,7 +57,7 @@ public class LaunchAgent extends AbstractLifecycleObject {
 	protected void execute() throws Exception {
 		
 		logger.info("Launch ["+config.getName()+"]");
-		logger.log("Trigger ["+trigger.getConfig().getName()+"]: "+trigger.getTriggerReason());
+		logger.log("Trigger: "+trigger.message);
 		int currentIndex = 1;
 		int maxIndex = config.getOperationConfigs().size();
 		boolean aboarding = false;

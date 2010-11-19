@@ -3,10 +3,12 @@ package util;
 import java.io.File;
 import java.util.Date;
 
+import core.Constants;
+
 
 public class Logger {
 
-	public static final String OUTPUT_FILE = "logger.txt";
+	public static final String OUTPUT_FILE = Constants.APP_NAME+".log";
 	
 	public enum Level { DEBUG, NORMAL, EMPHASISED, ERROR, INFO }
 	public enum Mode { FILE_ONLY, CONSOLE_ONLY, FILE_AND_CONSOLE }

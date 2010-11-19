@@ -1,8 +1,5 @@
 package data;
 
-import java.io.File;
-
-
 import util.Logger;
 
 import lifecycle.AbstractLifecycleObject;
@@ -25,7 +22,7 @@ public abstract class AbstractOperation extends AbstractLifecycleObject {
 	
 	@Override
 	public String getOutputFolder() {
-		return parent.getOutputFolder()+File.separator+config.getId();
+		return parent.getOutputFolder();
 	}
 	
 	@Override
@@ -33,11 +30,6 @@ public abstract class AbstractOperation extends AbstractLifecycleObject {
 	
 	@Override
 	protected void init() throws Exception {
-		
-		File folder = new File(getOutputFolder());
-		if(!folder.isDirectory()){
-			folder.mkdirs();
-		}
 		logger = parent.getLogger();
 	}
 	

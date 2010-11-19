@@ -18,7 +18,7 @@ import data.LaunchConfig;
 public class Configuration {
 
 	public enum State { CLEAN, DIRTY }
-	public static final String OUTPUT_FILE = "config.xml";
+	public static final String OUTPUT_FILE = "configuration.xml";
 	
 	private ArrayList<LaunchConfig> configs;
 	private transient ArrayList<IChangedListener> listeners;

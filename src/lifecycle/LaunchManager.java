@@ -2,72 +2,79 @@ package lifecycle;
 
 import java.util.ArrayList;
 import java.util.Date;
-
-import trigger.UserTrigger;
+import java.util.HashMap;
 import util.StringTools;
-
 import core.Application;
 import core.Constants;
 
 public class LaunchManager implements ILifecycleListener {
-	
-	public static final UserTrigger USER_TRIGGER = new UserTrigger();
 
-	private Application application;
+	public static TriggerStatus USER_TRIGGER;
+	public static TriggerStatus INITIAL_TRIGGER;
 	
-	ArrayList<LaunchAgent> agents;
+	private Application application;
+	private ScheduleTask scheduler;
+	private HashMap<String, String> cache;
+	private ArrayList<LaunchAgent> agents;
+	
+	public HashMap<String, String> getCache(){ return cache; }
 	
 	public LaunchManager(){
 		
+		USER_TRIGGER = new TriggerStatus("Run by user", true);
+		INITIAL_TRIGGER = new TriggerStatus("Initial run", true);
+		
 		application = Application.getInstance();
+		scheduler = new ScheduleTask();
+		cache = new HashMap<String, String>();
 		agents = new ArrayList<LaunchAgent>();
 	}
 	
 	public void init() {
-		// TODO Auto-generated method stub
 		
+		scheduler.start();
 	}
 	
 	public void shutdown() {
-		// TODO Auto-generated method stub
+		
+		scheduler.terminate();
+		for(LaunchAgent agent : agents){
+			agent.terminate();
+		}
 	}
 
-	public synchronized LaunchingStatus runLaunch(LaunchAgent launch) {
+	public synchronized LaunchStatus runLaunch(LaunchAgent launch) {
 		
-		if(agents.size() < Constants.MAX_AGENTS || launch.getTrigger() == USER_TRIGGER){
-			String name = launch.getConfig().getName();
-			if(!isLaunchRunning(launch.getConfig().getId())){
+		if(isReady() || launch.getTrigger() == USER_TRIGGER){
+			if(!isRunning(launch)){
 				agents.add(launch);
 				launch.addListener(this);
 				launch.start();
-				return new LaunchingStatus("Launch ["+name+"] launched", true);
+				return new LaunchStatus("Launch started", true);
 			}else{
-				return new LaunchingStatus("Launch ["+name+"] already running", false);
+				return new LaunchStatus("Already running", false);
 			}
 		}else{
-			return new LaunchingStatus("Maximum of "+Constants.MAX_AGENTS+" agents running", false);
+			return new LaunchStatus("Maximum tasks", false);
 		}
 	}
 	
-	private boolean isLaunchRunning(String id) {
+	public synchronized boolean isBusy() {
+		return agents.size() > 0;
+	}
+	
+	public synchronized boolean isReady() {
+		return agents.size() < Constants.MAX_AGENTS;
+	}
+	
+	private boolean isRunning(LaunchAgent launch) {
 		
 		for(LaunchAgent agent : agents){
-			if(agent.getConfig().getId().equals(id)){
+			if(agent.getConfig().getId().equals(launch.getConfig().getId())){
 				return true;
 			}
 		}
 		return false;
-	}
-
-	public class LaunchingStatus {
-		
-		public String message;
-		public boolean launched;
-		
-		public LaunchingStatus(String message, boolean launched){
-			this.message = message;
-			this.launched = launched;
-		}
 	}
 
 	@Override
@@ -85,6 +92,28 @@ public class LaunchManager implements ILifecycleListener {
 					"Launch ["+agent.getConfig().getName()+"] finished at "+date
 			);
 			agents.remove(object);
+		}
+	}
+	
+	public class TriggerStatus {
+		
+		public String message;
+		public boolean triggered;
+		
+		public TriggerStatus(String message, boolean triggered){
+			this.message = message;
+			this.triggered = triggered;
+		}
+	}
+	
+	public class LaunchStatus {
+		
+		public String message;
+		public boolean launched;
+		
+		public LaunchStatus(String message, boolean launched){
+			this.message = message;
+			this.launched = launched;
 		}
 	}
 }

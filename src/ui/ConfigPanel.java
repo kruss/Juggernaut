@@ -17,7 +17,7 @@ import javax.swing.JTabbedPane;
 
 import lifecycle.LaunchAgent;
 import lifecycle.LaunchManager;
-import lifecycle.LaunchManager.LaunchingStatus;
+import lifecycle.LaunchManager.LaunchStatus;
 
 import util.IChangedListener;
 import util.UiTools;
@@ -255,7 +255,7 @@ public class ConfigPanel extends JPanel implements IChangedListener {
 				try{
 					LaunchConfig config = application.getConfiguration().getLaunchConfigs().get(index);
 					LaunchAgent launch = config.createLaunch(LaunchManager.USER_TRIGGER);
-					LaunchingStatus status = application.getLaunchManager().runLaunch(launch);
+					LaunchStatus status = application.getLaunchManager().runLaunch(launch);
 					if(!status.launched){
 						UiTools.infoDialog(status.message);
 					}

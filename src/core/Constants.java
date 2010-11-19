@@ -16,4 +16,5 @@ public class Constants {
 	
 	// temp config settings here
 	public static final int 		MAX_AGENTS = 3;
+	public static final int 		SCHEDULE_DELAY = 15 * 1000; // 5 * 60 * 1000; // 5 min
 }

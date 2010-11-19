@@ -4,6 +4,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 
+import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
@@ -65,16 +66,21 @@ public class Application {
 
 	public void shutdown(){
 		
-		logger.info("Shutdown");
-		try{
-			shutdownUI();
-			shutdownSystems();
-			shutdownPersistence();
-		}catch(Exception e){
-			handleException(e);
-			System.exit(Constants.PROCESS_NOK);
+		if(
+			!launchManager.isBusy() ||
+			UiTools.confirmDialog("Aboard running launches ?")
+		){
+			logger.info("Shutdown");
+			try{
+				shutdownUI();
+				shutdownSystems();
+				shutdownPersistence();
+			}catch(Exception e){
+				handleException(e);
+				System.exit(Constants.PROCESS_NOK);
+			}
+			System.exit(Constants.PROCESS_OK);
 		}
-		System.exit(Constants.PROCESS_OK);
 	}
 	
 	private void initFolders() {
@@ -121,6 +127,7 @@ public class Application {
 	private void initUI() throws Exception {
 		
 		window = new Window();
+		window.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		window.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e){ shutdown(); }
         });
@@ -139,7 +146,6 @@ public class Application {
 		
 		launchManager = new LaunchManager();
 		launchManager.init();
-		configuration.notifyListeners();
 	}
 	
 	private void shutdownSystems() {
