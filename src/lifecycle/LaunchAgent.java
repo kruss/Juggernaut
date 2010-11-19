@@ -10,6 +10,7 @@ import data.AbstractTrigger;
 import data.LaunchConfig;
 import util.FileTools;
 import util.Logger;
+import util.Logger.Mode;
 import lifecycle.StatusManager.Status;
 
 
@@ -20,7 +21,7 @@ public class LaunchAgent extends AbstractLifecycleObject {
 	private Logger logger;
 	
 	public LaunchAgent(LaunchConfig config, AbstractTrigger trigger){
-		
+
 		this.config = config.clone();
 		this.trigger = trigger.clone();
 	}
@@ -50,6 +51,7 @@ public class LaunchAgent extends AbstractLifecycleObject {
 		
 		// setup launch-logger
 		logger = new Logger(new File(getOutputFolder()+File.separator+Logger.OUTPUT_FILE));
+		logger.setMode(Mode.FILE_ONLY);
 		statusManager.setProgressMax(config.getOperationConfigs().size());
 	}
 	
@@ -76,10 +78,10 @@ public class LaunchAgent extends AbstractLifecycleObject {
 				// process operation status
 				Status operationStatus = operation.getStatusManager().getStatus();
 				if(operationStatus == Status.ERROR && operation.getConfig().isCritical()){
-					logger.log("Critical operation failed");
+					logger.emph("Critical operation failed");
 					statusManager.setStatus(Status.FAILURE);
 				}else if(operationStatus == Status.FAILURE){
-					logger.log("Operation failed");
+					logger.emph("Operation failed");
 					statusManager.setStatus(Status.FAILURE);
 				}
 				
@@ -93,8 +95,8 @@ public class LaunchAgent extends AbstractLifecycleObject {
 			currentIndex++;
 			
 			// process launch status
-			if(statusManager.getStatus() != Status.PROCESSING){
-				logger.error("Aboarding launch");
+			if(!aboarding && statusManager.getStatus() != Status.PROCESSING){
+				logger.emph("Aboarding launch");
 				aboarding=true;
 			}
 		}

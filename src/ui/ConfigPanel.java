@@ -16,8 +16,9 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 import lifecycle.LaunchAgent;
+import lifecycle.LaunchManager;
+import lifecycle.LaunchManager.LaunchingStatus;
 
-import trigger.UserTrigger;
 import util.IChangedListener;
 import util.UiTools;
 
@@ -134,7 +135,6 @@ public class ConfigPanel extends JPanel implements IChangedListener {
 		int index = launchCombo.getSelectedIndex();
 		if(index >= 0){
 			currentConfig = application.getConfiguration().getLaunchConfigs().get(index);
-			application.getWindow().setStatus("Launch ["+currentConfig.getId()+"]");
 		}else{
 			currentConfig = null;
 		}
@@ -254,14 +254,11 @@ public class ConfigPanel extends JPanel implements IChangedListener {
 			{
 				try{
 					LaunchConfig config = application.getConfiguration().getLaunchConfigs().get(index);
-					if(!config.isActive()){ 
-						config.setActive(true); 
-						config.setDirty(true);
+					LaunchAgent launch = config.createLaunch(LaunchManager.USER_TRIGGER);
+					LaunchingStatus status = application.getLaunchManager().runLaunch(launch);
+					if(!status.launched){
+						UiTools.infoDialog(status.message);
 					}
-					application.getConfiguration().save();
-					LaunchAgent launch = config.createLaunch(new UserTrigger());
-					application.getLaunchManager().runLaunch(launch);
-					refreshUI(config);
 				}catch(Exception e){
 					application.handleException(e);
 				}

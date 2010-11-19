@@ -12,4 +12,8 @@ public class Constants {
 	
 	public static final int 		PROCESS_OK = 0;
 	public static final int 		PROCESS_NOK = 0;
+	
+	
+	// temp config settings here
+	public static final int 		MAX_AGENTS = 3;
 }

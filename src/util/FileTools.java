@@ -106,34 +106,4 @@ public class FileTools {
 			}
 		}
 	}
-	
-	/** path of current working-directory */
-	public static String getWorkingDir(){
-		return System.getProperty("user.dir");
-	}
-	
-	/** name of current operating-system */
-	public static String getOSName(){
-		return System.getProperty("os.name");
-	}
-	
-	/** open system-browser on url */
-	public static void openBrowser(String url) throws IOException {
-		
-		if(getOSName().toLowerCase().contains("windows")){
-			openWindowsBrowser(url);
-		}else if(getOSName().toLowerCase().contains("linux")){
-			openLinuxBrowser(url);
-		}else{
-			throw new IOException("Unsuported OS: "+getOSName());
-		}
-	}
-	
-	private static void openWindowsBrowser(String target) throws IOException {
-		Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler \""+target+"\"");
-	}
-	
-	private static void openLinuxBrowser(String target) throws IOException {
-		Runtime.getRuntime().exec("firefox "+target); // the most probably one
-	}
 }

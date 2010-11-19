@@ -25,7 +25,7 @@ public class SampleOperationConfig extends AbstractOperationConfig {
 		));
 		optionContainer.getOptions().add(new Option(
 				OPTIONS.IDLE.toString(), "Idle time in seconds", 
-				Type.INTEGER, 10
+				Type.INTEGER, 5
 		));
 	}
 	
@@ -37,10 +37,21 @@ public class SampleOperationConfig extends AbstractOperationConfig {
 		return "An operation to test the framework";
 	}
 	
+	public boolean isThrowError(){
+		return optionContainer.getOption(OPTIONS.ERROR.toString()).getBooleanValue();
+	}
+	
+	public boolean isThrowException(){
+		return optionContainer.getOption(OPTIONS.EXCEPTION.toString()).getBooleanValue();
+	}
+	
+	public int getIdleTime(){
+		return optionContainer.getOption(OPTIONS.IDLE.toString()).getIntegerValue();
+	}
+	
 	@Override
 	public boolean isValid(){
-		return
-			optionContainer.getOption(OPTIONS.IDLE.toString()).getIntegerValue() >= 0;
+		return getIdleTime() >= 0;
 	}
 	
 	@Override

@@ -2,6 +2,8 @@ package lifecycle;
 
 import java.util.Date;
 
+import lifecycle.ILifecycleListener.Lifecycle;
+
 public class StatusManager {
 
 	public enum Status {
@@ -47,25 +49,18 @@ public class StatusManager {
 	public Status getStatus(){ return status; }
 	public void setStatus(Status status){
 		
-		if(setInternalStatus(status)){
-			lifecycleObject.notifyListeners();
-		}
-	}
-	private boolean setInternalStatus(Status status){
-		
 		if(getLevel(this.status) < getLevel(status)){
 			this.status = status;
-			return true;
-		}else{
-			return false;
+			lifecycleObject.notifyListeners(Lifecycle.PROCESSING);
 		}
 	}
 	
 	public void setProgressMax(int progress){ progressMax = progress; }
 	public void addProgress(int progress){ 
+		
 		if(progress > 0 && (this.progress += progress) <= progressMax){
 			this.progress += progress; 
-			lifecycleObject.notifyListeners();
+			lifecycleObject.notifyListeners(Lifecycle.PROCESSING);
 		}
 	}
 	public int getProgress(){ 
@@ -79,16 +74,14 @@ public class StatusManager {
 	
 	public void setStart(Date start){ 
 		this.start = start; 
-		setInternalStatus(Status.PROCESSING);
-		lifecycleObject.notifyListeners();
+		setStatus(Status.PROCESSING);
 	}
 	public Date getStart(){ return start; }
 	public void setEnd(Date end){ 
 		this.end = end; 
 		if(status == Status.PROCESSING){
-			setInternalStatus(Status.SUCCEED);
+			setStatus(Status.SUCCEED);
 		}
-		lifecycleObject.notifyListeners();
 	}
 	public Date getEnd(){ return end; }
 }

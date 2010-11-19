@@ -3,18 +3,17 @@ package lifecycle;
 import java.util.ArrayList;
 import java.util.Date;
 
+import lifecycle.ILifecycleListener.Lifecycle;
 import lifecycle.StatusManager.Status;
-import util.IChangedListener;
 import util.Logger;
 
-
 public abstract class AbstractLifecycleObject extends Thread {
-
+	
 	protected StatusManager statusManager;
 	protected ArtifactManager artifactManager;
 	protected PropertyManager propertyManager;
 	
-	private ArrayList<IChangedListener> listeners;
+	private ArrayList<ILifecycleListener> listeners;
 	
 	public StatusManager getStatusManager(){ return statusManager; }
 	public ArtifactManager getArtifactManager(){ return artifactManager; }
@@ -26,14 +25,14 @@ public abstract class AbstractLifecycleObject extends Thread {
 		artifactManager = new ArtifactManager(this);
 		propertyManager = new PropertyManager(this);
 		
-		listeners = new ArrayList<IChangedListener>();
+		listeners = new ArrayList<ILifecycleListener>();
 	}
 	
-	public void addListener(IChangedListener listener){ listeners.add(listener); }
+	public void addListener(ILifecycleListener listener){ listeners.add(listener); }
 	
-	public void notifyListeners(){
-		for(IChangedListener listener : listeners){
-			listener.changed(this);
+	public void notifyListeners(Lifecycle lifecycle){
+		for(ILifecycleListener listener : listeners){
+			listener.lifecycleChanged(this, lifecycle);
 		}
 	}
 	
@@ -46,6 +45,7 @@ public abstract class AbstractLifecycleObject extends Thread {
 	
 	public void run() {
 		
+		notifyListeners(Lifecycle.START);
 		try{
 			init();
 			statusManager.setStart(new Date());
@@ -57,5 +57,6 @@ public abstract class AbstractLifecycleObject extends Thread {
 			statusManager.setEnd(new Date());
 			finish();
 		}
+		notifyListeners(Lifecycle.FINISH);
 	}
 }

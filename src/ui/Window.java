@@ -2,6 +2,7 @@ package ui;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.util.Date;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -9,6 +10,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JTabbedPane;
 
 import util.IChangedListener;
+import util.StringTools;
 
 import core.Application;
 import core.Configuration;
@@ -67,6 +69,7 @@ public class Window extends JFrame implements IChangedListener {
 		statusPanel.init();
 		historyPanel.init();
 		preferencePanel.init();
+		setStatus(Constants.APP_NAME+" started at: "+StringTools.getTextDate(new Date()));
 		setVisible(true);
 	}
 	

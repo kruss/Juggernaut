@@ -13,8 +13,8 @@ import operation.SampleOperationConfig;
 import lifecycle.LaunchManager;
 import trigger.IntervallTriggerConfig;
 import ui.Window;
-import util.FileTools;
 import util.Logger;
+import util.SystemTools;
 import util.UiTools;
 
 public class Application {
@@ -154,7 +154,7 @@ public class Application {
 	}
 	
 	public String getOutputFolder(){
-		return FileTools.getWorkingDir()+File.separator+Constants.OUTPUT_FOLDER;
+		return SystemTools.getWorkingDir()+File.separator+Constants.OUTPUT_FOLDER;
 	}
 
 	/** drop any unsaved changes */
