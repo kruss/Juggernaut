@@ -9,10 +9,13 @@ import util.Option;
 import util.OptionContainer;
 import util.Option.Type;
 
+/**
+ * the configuration of an operation,- will be serialized
+ */
 public abstract class AbstractOperationConfig {
 
 	public enum OPTIONS {
-		ACTIVE, DESCRIPTION, CRITICAL, TIMEOUT
+		ACTIVE, CRITICAL
 	}
 	
 	private String id;
@@ -23,21 +26,14 @@ public abstract class AbstractOperationConfig {
 		id = UUID.randomUUID().toString();
 		
 		optionContainer = new OptionContainer();
+		optionContainer.setDescription(getDescription());
 		optionContainer.getOptions().add(new Option(
-				OPTIONS.ACTIVE.toString(), "The item's active state",
+				OPTIONS.ACTIVE.toString(), "The operation's active state",
 				Type.BOOLEAN, true
-		));
-		optionContainer.getOptions().add(new Option(
-				OPTIONS.DESCRIPTION.toString(), "The item's description", 
-				Type.TEXT, ""
 		));
 		optionContainer.getOptions().add(new Option(
 				OPTIONS.CRITICAL.toString(), "Erros will aboard the launch",
 				Type.BOOLEAN, true
-		));
-		optionContainer.getOptions().add(new Option(
-				OPTIONS.TIMEOUT.toString(), "Timeout in minutes (0 = no timeout)", 
-				Type.INTEGER, 0
 		));
 	}
 	
@@ -52,13 +48,15 @@ public abstract class AbstractOperationConfig {
 	@Override
 	public String toString(){ 
 		if(isActive()){
-			return getName();
+			return (isValid() ? "" : "~ ") + getName();
 		}else{
-			return "<"+getName()+">";
+			return (isValid() ? "" : "~ ") + "<"+getName()+">";
 		}
 	}
 	
 	public abstract String getName();
+	public abstract String getDescription();
+	public abstract boolean isValid();
 	public abstract AbstractOperation createOperation();
 	
 	public AbstractOperationConfig clone(){

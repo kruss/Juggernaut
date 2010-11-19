@@ -7,8 +7,9 @@ import util.Option;
 import util.OptionContainer;
 import util.Option.Type;
 
-
-
+/**
+ * the configuration of a trigger,- will be serialized
+ */
 public abstract class AbstractTriggerConfig {
 
 	public enum OPTIONS {
@@ -24,8 +25,9 @@ public abstract class AbstractTriggerConfig {
 		id = UUID.randomUUID().toString();
 		
 		optionContainer = new OptionContainer();
+		optionContainer.setDescription(getDescription());
 		optionContainer.getOptions().add(new Option(
-				OPTIONS.ACTIVE.toString(), "The item's active state",
+				OPTIONS.ACTIVE.toString(), "The trigger's active state",
 				Type.BOOLEAN, true
 		));
 	}
@@ -41,12 +43,14 @@ public abstract class AbstractTriggerConfig {
 	@Override
 	public String toString(){ 
 		if(isActive()){
-			return getName();
+			return (isValid() ? "" : "~ ") + getName();
 		}else{
-			return "<"+getName()+">";
+			return (isValid() ? "" : "~ ") + "<"+getName()+">";
 		}
 	}
 	
 	public abstract String getName();
+	public abstract String getDescription();
+	public abstract boolean isValid();
 	public abstract AbstractTrigger createTrigger();
 }

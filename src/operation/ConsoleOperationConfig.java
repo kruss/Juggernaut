@@ -31,6 +31,17 @@ public class ConsoleOperationConfig extends AbstractOperationConfig {
 	public String getName(){ return OPERATION_NAME; }
 	
 	@Override
+	public String getDescription(){
+		return "An operation to execute a command";
+	}
+	
+	@Override
+	public boolean isValid(){
+		return 
+			!optionContainer.getOption(OPTIONS.COMMAND.toString()).getStringValue().isEmpty();
+	}
+	
+	@Override
 	public AbstractOperation createOperation() {
 		// TODO
 		return null;

@@ -13,8 +13,13 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SpinnerModel;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 
 import util.IChangeListener;
@@ -49,6 +54,9 @@ public class OptionEditor extends JPanel {
 				panel.add(createPanel(option));
 			}
 			add(panel, BorderLayout.NORTH);
+			setToolTipText(container.getDescription());
+		}else{
+			setToolTipText("");
 		}
 	}
 
@@ -70,18 +78,18 @@ public class OptionEditor extends JPanel {
 			case DATE:
 				return createTextFieldPanel(option); 
 			case INTEGER:
-				return createTextFieldPanel(option);
+				return createIntegerSpinnerPanel(option);
 			case BOOLEAN:
 				return createCheckBoxPanel(option); 
 		}
 		return null;
 	}
 	
-	private Component createPanel(Option option, Component component) {
+	private Component createPanel(Option option, Component component, String orinetation) {
 		
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(new JLabel(" "+option.getName()+": "), BorderLayout.NORTH);
-		panel.add(component, BorderLayout.CENTER);
+		panel.add(component, orinetation);
 		return panel;
 	}
 
@@ -104,7 +112,7 @@ public class OptionEditor extends JPanel {
 			@Override
 			public void keyTyped(KeyEvent arg0) {}
 		});
-		return createPanel(option, component);
+		return createPanel(option, component, BorderLayout.CENTER);
 	}
 
 	private Component createTextAreaPanel(final Option option) {
@@ -126,9 +134,29 @@ public class OptionEditor extends JPanel {
 			@Override
 			public void keyTyped(KeyEvent arg0) {}
 		});
-		return createPanel(option, new JScrollPane(component));
+		return createPanel(option, new JScrollPane(component), BorderLayout.CENTER);
 	}
 
+	private Component createIntegerSpinnerPanel(final Option option) {
+
+		SpinnerModel model = new SpinnerNumberModel(
+				option.getIntegerValue(),
+                Integer.MIN_VALUE,
+                Integer.MAX_VALUE,
+                1);  
+		final JSpinner component = new JSpinner(model);
+		component.setToolTipText(option.getDescription());
+		component.addChangeListener(new ChangeListener(){
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				int value = ((Integer)component.getValue()).intValue();
+				container.getOption(option.getName()).setIntegerValue(value);
+				notifyListeners();
+			}
+		});
+		return createPanel(option, component, BorderLayout.WEST);
+	}
+	
 	private Component createCheckBoxPanel(final Option option) {
 
 		final JCheckBox component = new JCheckBox();
@@ -142,6 +170,6 @@ public class OptionEditor extends JPanel {
 				notifyListeners();
 			}
 		});
-		return createPanel(option, component);
+		return createPanel(option, component, BorderLayout.WEST);
 	}
 }

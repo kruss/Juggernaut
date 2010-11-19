@@ -12,7 +12,7 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 import launch.LaunchConfig;
 
 /**
- * the configuration of all launches
+ * the configuration of the application,- will be serialized
  */
 public class Configuration {
 

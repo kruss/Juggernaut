@@ -8,12 +8,17 @@ import java.util.ArrayList;
  */
 public class OptionContainer {
 	
+	private String description;
 	private ArrayList<Option> options;
 
 	public OptionContainer(){
 		
+		description = "";
 		options = new ArrayList<Option>();
 	}
+	
+	public void setDescription(String description){ this.description = description; }
+	public String getDescription(){ return description; }
 	
 	public void setOptions(ArrayList<Option> options){ this.options = options; }
 	public ArrayList<Option> getOptions(){ return options; }

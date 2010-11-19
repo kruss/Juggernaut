@@ -6,18 +6,19 @@ import java.util.UUID;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
-
 import operation.AbstractOperationConfig;
 import trigger.AbstractTriggerConfig;
 import util.Option;
 import util.OptionContainer;
 import util.Option.Type;
 
-
+/**
+ * the configuration of a launch,- will be serialized
+ */
 public class LaunchConfig implements Comparable<LaunchConfig> {
 	
 	public enum OPTIONS {
-		ACTIVE, DESCRIPTION, CLEAN, NOTIFY, ADMINISTRATORS
+		ACTIVE, DESCRIPTION, CLEAN, TIMEOUT, NOTIFY, ADMINISTRATORS, MESSAGE
 	}
 	
 	private String id;
@@ -25,7 +26,6 @@ public class LaunchConfig implements Comparable<LaunchConfig> {
 	private OptionContainer optionContainer;
 	private ArrayList<AbstractOperationConfig> operations;
 	private ArrayList<AbstractTriggerConfig> triggers;
-	
 	private transient boolean dirty;
 	
 	public LaunchConfig(String name){
@@ -34,17 +34,22 @@ public class LaunchConfig implements Comparable<LaunchConfig> {
 		this.name = name;
 		
 		optionContainer = new OptionContainer();
+		optionContainer.setDescription("the configuration of the launch");
 		optionContainer.getOptions().add(new Option(
-				OPTIONS.ACTIVE.toString(), "The item's active state",
+				OPTIONS.ACTIVE.toString(), "The launch's active state",
 				Type.BOOLEAN, false
 		));
 		optionContainer.getOptions().add(new Option(
-				OPTIONS.DESCRIPTION.toString(), "The item's description", 
+				OPTIONS.DESCRIPTION.toString(), "The launch's description", 
 				Type.TEXT, ""
 		));
 		optionContainer.getOptions().add(new Option(
 				OPTIONS.CLEAN.toString(), "Clean launch folder on start",
 				Type.BOOLEAN, true
+		));
+		optionContainer.getOptions().add(new Option(
+				OPTIONS.TIMEOUT.toString(), "Timeout in minutes (0 = no timeout)", 
+				Type.INTEGER, 0
 		));
 		optionContainer.getOptions().add(new Option(
 				OPTIONS.NOTIFY.toString(), "Enable status notification",
@@ -54,6 +59,10 @@ public class LaunchConfig implements Comparable<LaunchConfig> {
 				OPTIONS.ADMINISTRATORS.toString(), "eMail-list of administrators (comma seperated)", 
 				Type.TEXT, ""
 		));
+		optionContainer.getOptions().add(new Option(
+				OPTIONS.MESSAGE.toString(), "Optional notification message", 
+				Type.TEXTAREA, ""
+		));
 		
 		operations = new ArrayList<AbstractOperationConfig>();
 		triggers = new ArrayList<AbstractTriggerConfig>();
@@ -62,23 +71,36 @@ public class LaunchConfig implements Comparable<LaunchConfig> {
 	
 	public String getId(){ return id; }
 	
-	public boolean isDirty(){ return dirty; }
-	public void setDirty(boolean dirty){ this.dirty = dirty; }
-	
-	/** answers if configuration is ready and could be launched */
-	public boolean isReady(){
-		return isActive() && !dirty;
-	}
-	
 	public void setName(String name){ this.name = name; }
 	public String getName(){ return name; }
 	
+	/** answers if configuration could be launched */
+	public boolean isReady(){
+		return isActive() && !isDirty() && isValid();
+	}
+
 	public boolean isActive(){ 
 		return optionContainer.getOption(OPTIONS.ACTIVE.toString()).getBooleanValue(); 
 	}
 	
 	public void setActive(boolean active){ 
 		optionContainer.getOption(OPTIONS.ACTIVE.toString()).setBooleanValue(active); 
+	}
+	
+	public boolean isDirty(){ return dirty; }
+	public void setDirty(boolean dirty){ this.dirty = dirty; }
+	
+	public boolean isValid(){
+		
+		for(AbstractOperationConfig config : operations){
+			if(config.isActive() && !config.isValid()){ return false; }
+		}
+		for(AbstractTriggerConfig config : triggers){
+			if(config.isActive() && !config.isValid()){ return false; }
+		}
+		
+		return
+			optionContainer.getOption(OPTIONS.TIMEOUT.toString()).getIntegerValue() >= 0;
 	}
 	
 	public OptionContainer getOptionContainer(){ return optionContainer; }
@@ -92,9 +114,9 @@ public class LaunchConfig implements Comparable<LaunchConfig> {
 	@Override
 	public String toString(){ 
 		if(isActive()){
-			return name + (dirty ? " *" : "");
+			return (isValid() ? "" : "~ ") + name + (isDirty() ? " *" : "");
 		}else{
-			return "<"+name+">" + (dirty ? " *" : "");
+			return (isValid() ? "" : "~ ") + "<"+name+">" + (isDirty() ? " *" : "");
 		}
 	}
 

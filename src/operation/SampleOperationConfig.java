@@ -1,6 +1,5 @@
 package operation;
 
-
 import util.Option;
 import util.Option.Type;
 
@@ -27,13 +26,24 @@ public class SampleOperationConfig extends AbstractOperationConfig {
 				Type.BOOLEAN, false
 		));
 		optionContainer.getOptions().add(new Option(
-				OPTIONS.TIME.toString(), "Time in seconds to run", 
-				Type.INTEGER, 5
+				OPTIONS.TIME.toString(), "Idle time in seconds", 
+				Type.INTEGER, 0
 		));
 	}
 	
 	@Override
 	public String getName(){ return OPERATION_NAME; }
+	
+	@Override
+	public String getDescription(){
+		return "An operation to test the framework";
+	}
+	
+	@Override
+	public boolean isValid(){
+		return
+			optionContainer.getOption(OPTIONS.TIME.toString()).getIntegerValue() >= 0;
+	}
 	
 	@Override
 	public AbstractOperation createOperation() {
