@@ -58,7 +58,7 @@ public class StatusManager {
 	public void setProgressMax(int progress){ progressMax = progress; }
 	public void addProgress(int progress){ 
 		
-		if(progress > 0 && (this.progress += progress) <= progressMax){
+		if(progress > 0 && (this.progress + progress) <= progressMax){
 			this.progress += progress; 
 			lifecycleObject.notifyListeners(Lifecycle.PROCESSING);
 		}
