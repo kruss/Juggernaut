@@ -1,8 +1,11 @@
 package lifecycle;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+
+import lifecycle.StatusManager.Status;
 
 import util.IChangedListener;
 import util.StringTools;
@@ -23,7 +26,6 @@ public class LaunchManager implements ILifecycleListener {
 	
 	public ScheduleTask getSchedulerTask(){ return scheduler; }
 	public synchronized HashMap<String, String> getCache(){ return cache; }
-	public synchronized ArrayList<LaunchAgent> getAgents(){ return agents; }
 	
 	public LaunchManager(){
 		
@@ -73,7 +75,7 @@ public class LaunchManager implements ILifecycleListener {
 	public synchronized LaunchStatus runLaunch(LaunchAgent launch) {
 		
 		if(isReady() || launch.getTrigger() == USER_TRIGGER){
-			if(!isRunning(launch)){
+			if(!isRunning(launch.getConfig().getId())){
 				agents.add(launch);
 				launch.addListener(this);
 				launch.start();
@@ -86,6 +88,12 @@ public class LaunchManager implements ILifecycleListener {
 		}
 	}
 	
+	public void stopLaunch(String id) {
+		
+		LaunchAgent agent = getAgent(id);
+		if(agent != null){ agent.terminate(); }
+	}
+	
 	public synchronized boolean isBusy() {
 		return agents.size() > 0;
 	}
@@ -94,14 +102,20 @@ public class LaunchManager implements ILifecycleListener {
 		return agents.size() < application.getConfiguration().getMaximumAgents();
 	}
 	
-	private boolean isRunning(LaunchAgent launch) {
+	private boolean isRunning(String id) {
+		
+		LaunchAgent agent = getAgent(id);
+		return agent != null;
+	}
+	
+	private LaunchAgent getAgent(String id) {
 		
 		for(LaunchAgent agent : agents){
-			if(agent.getConfig().getId().equals(launch.getConfig().getId())){
-				return true;
+			if(agent.getConfig().getId().equals(id)){
+				return agent;
 			}
 		}
-		return false;
+		return null;
 	}
 
 	@Override
@@ -119,7 +133,7 @@ public class LaunchManager implements ILifecycleListener {
 				application.getWindow().setStatus(
 						"Launch ["+agent.getConfig().getName()+"] finished at "+date
 				);
-				agents.remove(object);
+				agents.remove(agent);
 			}
 			notifyListeners();
 		}
@@ -153,5 +167,39 @@ public class LaunchManager implements ILifecycleListener {
 			this.message = message;
 			this.launched = launched;
 		}
+	}
+	
+	public class LaunchInfo implements Comparable<LaunchInfo> {
+		
+		public String name;
+		public String id;
+		public String description;
+		public Date start;
+		public int progress;
+		public Status status;
+		
+		public LaunchInfo(LaunchAgent launch){
+			name = launch.getConfig().getName();
+			id = launch.getConfig().getId();
+			description = launch.getConfig().getDescription();
+			start = launch.getStatusManager().getStart();
+			progress = launch.getStatusManager().getProgress();
+			status = launch.getStatusManager().getStatus();
+		}
+		
+		@Override
+		public int compareTo(LaunchInfo o) {
+			return name.compareTo(o.name);
+		}
+	}
+	
+	public ArrayList<LaunchInfo> getLaunchInfo(){
+		
+		ArrayList<LaunchInfo> infos = new ArrayList<LaunchInfo>();
+		for(LaunchAgent agent : agents){
+			infos.add(new LaunchInfo(agent));
+		}
+		Collections.sort(infos);
+		return infos;
 	}
 }

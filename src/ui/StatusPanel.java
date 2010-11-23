@@ -3,7 +3,9 @@ package ui;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Date;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -16,7 +18,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
-import lifecycle.LaunchAgent;
+import lifecycle.LaunchManager.LaunchInfo;
 
 import util.IChangedListener;
 import util.StringTools;
@@ -34,9 +36,12 @@ public class StatusPanel extends JPanel implements IChangedListener {
 	private JTextArea loggingConsole;
 	private JButton stopLaunch;
 	
+	private ArrayList<LaunchInfo> launches;
+	
 	public StatusPanel()
 	{
 		application = Application.getInstance();
+		launches = new ArrayList<LaunchInfo>();
 		
 		tableModel = new DefaultTableModel();
 		tableModel.addColumn("Launch");
@@ -88,6 +93,11 @@ public class StatusPanel extends JPanel implements IChangedListener {
 		add(centerPanel, BorderLayout.CENTER);
 		add(buttonPanel, BorderLayout.SOUTH);
 		
+		launchTable.addMouseListener(new MouseAdapter(){
+			public void mouseClicked(MouseEvent e){
+				adjustSelection();
+			}
+		});
 		application.getLaunchManager().addListener(this);
 	}
 	
@@ -97,6 +107,7 @@ public class StatusPanel extends JPanel implements IChangedListener {
 
 	private void clearUI() {
 	
+		launchTable.changeSelection(-1, -1, false, false);
 		for(int i=tableModel.getRowCount()-1; i>=0; i--){
 			tableModel.removeRow(i);
 		}
@@ -104,55 +115,64 @@ public class StatusPanel extends JPanel implements IChangedListener {
 	
 	private void initUI() {
 		
-		for(LaunchAgent agent : application.getLaunchManager().getAgents()){
-			
-			Date start = agent.getStatusManager().getStart();
+		for(LaunchInfo launch : launches){
 			Object[] rowData = {
-				agent.getConfig().getName(),
-				agent.getConfig().getDescription(),
-				start != null ? StringTools.getTextDate(start) : "Starting",
-				agent.getStatusManager().getProgress()+" %",
-				agent.getStatusManager().getStatus().toString()
+				launch.name,
+				launch.description,
+				launch.start != null ? StringTools.getTextDate(launch.start) : "",
+				launch.progress+" %",
+				launch.status.toString()
 			};
 			tableModel.addRow(rowData);
 		}
 	}
 
-	private void refreshUI(LaunchAgent selected) {
+	private void refreshUI(LaunchInfo selected) {
 		
 		clearUI();
 		initUI();
-		if(selected != null){			
-			for(int i=0; i<tableModel.getRowCount(); i++){
-				LaunchAgent agent = application.getLaunchManager().getAgents().get(i);
-				if(agent != null && agent.getConfig().getId().equals(selected.getConfig().getId())){
+		if(selected != null){	
+			for(int i=0; i<launches.size(); i++){
+				if(launches.get(i).id.equals(selected.id)){
 					launchTable.changeSelection(i, -1, false, false);
+					adjustSelection();
 					break;
 				}
 			}
 		}
 	}
 	
+	private void adjustSelection() {
+		// TODO Auto-generated method stub
+		
+	}
+
 	@Override
 	public void changed(Object object) {
 		
 		if(object == application.getLaunchManager()){
-			int index = launchTable.getSelectedRow();
-			if(index >=0 && index < application.getLaunchManager().getAgents().size()){				
-				LaunchAgent agent = application.getLaunchManager().getAgents().get(index);
-				refreshUI(agent);
-			}else{
-				refreshUI(null);
-			}
+			
+			LaunchInfo selected = getSelectedLaunch();
+			launches = application.getLaunchManager().getLaunchInfo();
+			refreshUI(selected);
 		}
+	}
+
+	private LaunchInfo getSelectedLaunch() {
+		
+		LaunchInfo selected = null;
+		int index = launchTable.getSelectedRow();
+		if(index >=0){				
+			selected = launches.get(index);
+		}
+		return selected;
 	}
 	
 	public void stopLaunch(){
 		
-		int index = launchTable.getSelectedRow();
-		LaunchAgent agent = application.getLaunchManager().getAgents().get(index);
-		if(agent != null && UiTools.confirmDialog("Stop launch ["+agent.getConfig().getName()+"]?")){
-			agent.interrupt();
+		LaunchInfo selected = getSelectedLaunch();
+		if(selected != null && UiTools.confirmDialog("Stop launch ["+selected.name+"]?")){
+			application.getLaunchManager().stopLaunch(selected.id);
 		}
 	}
 }
