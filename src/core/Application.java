@@ -56,12 +56,9 @@ public class Application {
 	
 	public void init() throws Exception {
 		
-		initFolders();
-		initLogger();
 		initPersistence();
-		initRegistry();
-		initUI();
 		initSystems();
+		initUI();
 	}
 
 	public void shutdown(){
@@ -83,24 +80,18 @@ public class Application {
 		}
 	}
 	
-	private void initFolders() {
-
+	private void initPersistence() throws Exception {
+		
 		File folder = new File(getOutputFolder());
 		if(!folder.isDirectory()){
 			folder.mkdirs();
 		}
-	}
-
-	private void initLogger() {
+		// TODO clean legacy stuff
 		
 		logger = new Logger(
 				new File(getOutputFolder()+File.separator+Logger.OUTPUT_FILE)
 		);
-		logger.setVerbose(true);
 		logger.info(Constants.APP_FULL_NAME);
-	}
-	
-	private void initPersistence() throws Exception {
 		
 		File file = new File(getOutputFolder()+File.separator+Configuration.OUTPUT_FILE);
 		if(file.isFile()){
@@ -109,6 +100,7 @@ public class Application {
 			configuration = new Configuration(file.getAbsolutePath());
 			configuration.save();
 		}
+		logger.setVerbose(configuration.isVerbose());
 	}
 	
 	private void shutdownPersistence() throws Exception {
@@ -116,12 +108,20 @@ public class Application {
 		configuration.chekForSave();
 	}
 	
-	private void initRegistry() {
+	private void initSystems() {
 		
 		registry = new Registry();
 		registry.getOperationConfigs().add(new SampleOperationConfig());
 		registry.getOperationConfigs().add(new ConsoleOperationConfig());
 		registry.getTriggerConfigs().add(new IntervallTriggerConfig());
+		
+		launchManager = new LaunchManager();
+		launchManager.init();
+	}
+	
+	private void shutdownSystems() {
+		
+		launchManager.shutdown();
 	}
 	
 	private void initUI() throws Exception {
@@ -140,17 +140,6 @@ public class Application {
 	private void shutdownUI(){
 		
 		window.dispose();
-	}
-	
-	private void initSystems() {
-		
-		launchManager = new LaunchManager();
-		launchManager.init();
-	}
-	
-	private void shutdownSystems() {
-		
-		launchManager.shutdown();
 	}
 	
 	public void handleException(Exception e){

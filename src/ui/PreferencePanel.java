@@ -57,5 +57,6 @@ public class PreferencePanel extends JPanel implements IChangedListener {
 		}else{
 			launchManager.stopScheduler();
 		}
+		application.getLogger().setVerbose(configuration.isVerbose());
 	}
 }

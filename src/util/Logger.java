@@ -13,19 +13,19 @@ public class Logger {
 	public enum Level { DEBUG, NORMAL, EMPHASISED, ERROR, INFO }
 	public enum Mode { FILE_ONLY, CONSOLE_ONLY, FILE_AND_CONSOLE }
 	
+	private static boolean VERBOSE = false;
+
 	private File logfile;
 	private Mode mode;
-	private boolean verbose;
 	
 	public File getLogfile(){ return logfile; }
 	public void setMode(Mode mode){ this.mode = mode; };
-	public void setVerbose(boolean verbose){ this.verbose = verbose; }
+	public void setVerbose(boolean verbose){ VERBOSE = verbose; }
 	
 	public Logger(File logfile){
 
 		this.logfile = logfile;
 		mode = Mode.FILE_AND_CONSOLE;
-		verbose = false;
 		
 		if(logfile.exists()){
 			logfile.delete();
@@ -59,7 +59,7 @@ public class Logger {
 		if(mode != Mode.CONSOLE_ONLY){
 			writeFile(log);
 		}
-		if(mode != Mode.FILE_ONLY && (level != Level.DEBUG || verbose)){
+		if(mode != Mode.FILE_ONLY && (level != Level.DEBUG || VERBOSE)){
 			writeSystem(log);
 		}
 	}

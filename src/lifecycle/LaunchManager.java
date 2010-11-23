@@ -3,6 +3,8 @@ package lifecycle;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+
+import util.IChangedListener;
 import util.StringTools;
 import core.Application;
 import core.Configuration;
@@ -16,6 +18,7 @@ public class LaunchManager implements ILifecycleListener {
 	private ScheduleTask scheduler;
 	private HashMap<String, String> cache;
 	private ArrayList<LaunchAgent> agents;
+	private ArrayList<IChangedListener> listeners;
 	private boolean active;
 	
 	public ScheduleTask getSchedulerTask(){ return scheduler; }
@@ -31,6 +34,7 @@ public class LaunchManager implements ILifecycleListener {
 		scheduler = null;
 		cache = new HashMap<String, String>();
 		agents = new ArrayList<LaunchAgent>();
+		listeners = new ArrayList<IChangedListener>();
 		active = false;
 	}
 	
@@ -117,6 +121,15 @@ public class LaunchManager implements ILifecycleListener {
 				);
 				agents.remove(object);
 			}
+			notifyListeners();
+		}
+	}
+	
+	public void addListener(IChangedListener listener){ listeners.add(listener); }
+	
+	public void notifyListeners(){
+		for(IChangedListener listener : listeners){
+			listener.changed(this);
 		}
 	}
 	

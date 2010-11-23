@@ -21,7 +21,9 @@ import data.Option.Type;
 public class Configuration {
 
 	public enum OPTIONS {
-		SCHEDULER, SCHEDULER_INTERVALL, MAXIMUM_AGENTS, NOTIFY, ADMINISTRATORS, SMTP_SERVER, SMTP_USER, SMTP_ADDRESS
+		SCHEDULER, SCHEDULER_INTERVALL, MAXIMUM_AGENTS, 
+		NOTIFY, ADMINISTRATORS, SMTP_SERVER, SMTP_USER, SMTP_ADDRESS,
+		VERBOSE_LOGGING
 	}
 	
 	public enum State { CLEAN, DIRTY }
@@ -69,6 +71,10 @@ public class Configuration {
 				OPTIONS.SMTP_ADDRESS.toString(), "The SMTP-Address for notifications", 
 				Type.TEXT, "SMTP@"+Constants.APP_NAME
 		));
+		optionContainer.getOptions().add(new Option(
+				OPTIONS.VERBOSE_LOGGING.toString(), "Verbose logging shows more details on console",
+				Type.BOOLEAN, false
+		));
 		
 		launchConfigs = new ArrayList<LaunchConfig>();
 		listeners = new ArrayList<IChangedListener>();
@@ -94,6 +100,11 @@ public class Configuration {
 	/** maximum number of parallel agents started by scheduled */
 	public int getMaximumAgents(){ 
 		return optionContainer.getOption(OPTIONS.MAXIMUM_AGENTS.toString()).getIntegerValue(); 
+	}
+	
+	/** answers if logging is verbose */
+	public boolean isVerbose(){
+		return optionContainer.getOption(OPTIONS.VERBOSE_LOGGING.toString()).getBooleanValue();
 	}
 	
 	public void addListener(IChangedListener listener){ listeners.add(listener); }
