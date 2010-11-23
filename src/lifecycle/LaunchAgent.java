@@ -101,7 +101,7 @@ public class LaunchAgent extends AbstractLifecycleObject {
 				statusManager.addProgress(1);
 				if(!aboarding && statusManager.getStatus() != Status.PROCESSING){
 					logger.emph("Aboarding launch");
-					aboarding=true;
+					aboarding = true;
 				}
 			}
 		}
@@ -118,5 +118,6 @@ public class LaunchAgent extends AbstractLifecycleObject {
 		
 		// final status
 		logger.info("Status: "+statusManager.getStatus().toString());
+		logger.clearListeners();
 	}
 }

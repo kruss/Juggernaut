@@ -7,7 +7,7 @@ import java.util.Date;
 import core.Constants;
 
 
-public class Logger {
+public class Logger implements ILoggingProvider {
 
 	public static final String OUTPUT_FILE = Constants.APP_NAME+".log";
 	
@@ -17,7 +17,7 @@ public class Logger {
 	public static boolean VERBOSE = false;
 
 	private Mode mode;
-	private ArrayList<ILogListener> listeners;
+	private ArrayList<ILoggingListener> listeners;
 	private File logfile;
 	
 	public File getLogfile(){ return logfile; }
@@ -25,16 +25,31 @@ public class Logger {
 	public Logger(Mode mode){
 
 		this.mode = mode;
-		listeners = new ArrayList<ILogListener>();
+		listeners = new ArrayList<ILoggingListener>();
 		logfile = null;
 	}
 	
-	public void addListener(ILogListener listener){ listeners.add(listener); }
-	public void removeListener(ILogListener listener){ listeners.remove(listener); }
-	public void clearListeners(){ listeners.clear(); }
+	@Override
+	public void addListener(ILoggingListener listener){ 
+		listeners.add(listener); 
+		listener.setProvider(this);
+	}
+	
+	@Override
+	public void removeListener(ILoggingListener listener){ 
+		listeners.remove(listener); 
+		listener.setProvider(null);
+	}
+	
+	@Override
+	public void clearListeners(){ 
+		for(int i=listeners.size()-1; i>=0; i--){
+			removeListener(listeners.get(i));
+		}
+	}
 	
 	public void notifyListeners(String log){
-		for(ILogListener listener : listeners){
+		for(ILoggingListener listener : listeners){
 			listener.logged(log);
 		}
 	}

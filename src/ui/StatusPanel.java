@@ -1,6 +1,7 @@
 package ui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -12,30 +13,31 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
-import javax.swing.text.BadLocationException;
 
 import lifecycle.LaunchManager.LaunchInfo;
 
 import util.IChangedListener;
-import util.ILogListener;
+import util.ILoggingProvider;
 import util.StringTools;
 import util.UiTools;
 
 import core.Application;
 
-public class StatusPanel extends JPanel implements IChangedListener, ILogListener {
+public class StatusPanel extends JPanel implements IChangedListener {
 
 	private static final long serialVersionUID = 1L;
 
 	private Application application;
 	private JTable launchTable;
 	private DefaultTableModel tableModel;
-	private JTextArea loggingConsole;
+	private JTabbedPane loggingPanel;
+	private LoggingConsole applicationConsole;
+	private LoggingConsole launchConsole;
 	private JButton stopLaunch;
 	
 	private ArrayList<LaunchInfo> launches;
@@ -65,22 +67,13 @@ public class StatusPanel extends JPanel implements IChangedListener, ILogListene
 		
 		TableColumnModel columnModel = launchTable.getColumnModel();
 		columnModel.getColumn(0).setMinWidth(150);
-		columnModel.getColumn(1).setMinWidth(250);
+		columnModel.getColumn(1).setMinWidth(200);
 		columnModel.getColumn(2).setMinWidth(150);
 			columnModel.getColumn(2).setMaxWidth(150);
 		columnModel.getColumn(3).setMinWidth(100);
 			columnModel.getColumn(3).setMaxWidth(100);
 		columnModel.getColumn(4).setMinWidth(150);
 			columnModel.getColumn(4).setMaxWidth(150);
-		
-		loggingConsole = new JTextArea();
-		loggingConsole.setEditable(false);
-		
-		JSplitPane centerPanel = new JSplitPane(
-				JSplitPane.VERTICAL_SPLIT,
-				new JScrollPane(launchTable), 
-				new JScrollPane(loggingConsole));
-		centerPanel.setDividerLocation(150);
 		
 		stopLaunch = new JButton(" Stop ");
 		stopLaunch.addActionListener(new ActionListener(){
@@ -89,23 +82,42 @@ public class StatusPanel extends JPanel implements IChangedListener, ILogListene
 		
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-		buttonPanel.add(stopLaunch); 
+		buttonPanel.add(stopLaunch); stopLaunch.setAlignmentY(Component.TOP_ALIGNMENT);
+
+		
+		JPanel topPanel = new JPanel(new BorderLayout());
+		topPanel.add(new JScrollPane(launchTable), BorderLayout.CENTER);
+		topPanel.add(buttonPanel, BorderLayout.EAST);
+		
+		applicationConsole = new LoggingConsole();
+		launchConsole = new LoggingConsole();
+		
+		loggingPanel = new JTabbedPane(JTabbedPane.TOP);
+		loggingPanel.add("Application", applicationConsole);
+		loggingPanel.add("Launch", launchConsole);
+		
+		JSplitPane centerPanel = new JSplitPane(
+				JSplitPane.VERTICAL_SPLIT,
+				topPanel, 
+				loggingPanel);
+		centerPanel.setDividerLocation(150);
 		
 		setLayout(new BorderLayout());
 		add(centerPanel, BorderLayout.CENTER);
-		add(buttonPanel, BorderLayout.SOUTH);
 		
 		launchTable.addMouseListener(new MouseAdapter(){
 			public void mouseClicked(MouseEvent e){
 				adjustSelection();
 			}
 		});
+		
+		application.getLogger().addListener(applicationConsole);
 		application.getLaunchManager().addListener(this);
-		application.getLogger().addListener(this);
 	}
 	
 	public void init() {
 		initUI();
+		adjustSelection();
 	}
 
 	private void clearUI() {
@@ -138,16 +150,31 @@ public class StatusPanel extends JPanel implements IChangedListener, ILogListene
 			for(int i=0; i<launches.size(); i++){
 				if(launches.get(i).id.equals(selected.id)){
 					launchTable.changeSelection(i, -1, false, false);
-					adjustSelection();
 					break;
 				}
 			}
 		}
+		adjustSelection();
 	}
 	
 	private void adjustSelection() {
-		// TODO Auto-generated method stub
 		
+		LaunchInfo selected = getSelectedLaunch();
+		if(selected != null){
+			stopLaunch.setEnabled(true);
+			ILoggingProvider provider = launchConsole.getProvider();
+			launchConsole.deregister();
+			application.getLaunchManager().addListener(launchConsole, selected.id);
+			if(launchConsole.getProvider() != provider){
+				launchConsole.clearConsole();
+			}
+			loggingPanel.setSelectedIndex(1);
+		}else{
+			stopLaunch.setEnabled(false);
+			loggingPanel.setSelectedIndex(0);
+			launchConsole.deregister();
+			launchConsole.clearConsole();
+		}		
 	}
 
 	@Override
@@ -159,22 +186,6 @@ public class StatusPanel extends JPanel implements IChangedListener, ILogListene
 			launches = application.getLaunchManager().getLaunchInfo();
 			refreshUI(selected);
 		}
-	}
-	
-	@Override
-	public void logged(String log) {
-		
-		if(loggingConsole.getLineCount() > 100){
-			loggingConsole.setSelectionStart(0);
-			try{
-				loggingConsole.setSelectionEnd(loggingConsole.getLineEndOffset(50));
-			}catch(BadLocationException e){
-				loggingConsole.setSelectionEnd(loggingConsole.getText().length()/2);
-			}
-			loggingConsole.replaceSelection("...\n");
-		}
-		loggingConsole.append(log);
-		loggingConsole.setCaretPosition(loggingConsole.getText().length());
 	}
 
 	private LaunchInfo getSelectedLaunch() {

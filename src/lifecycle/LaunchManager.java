@@ -8,6 +8,7 @@ import java.util.HashMap;
 import lifecycle.StatusManager.Status;
 
 import util.IChangedListener;
+import util.ILoggingListener;
 import util.StringTools;
 import core.Application;
 import core.Configuration;
@@ -102,13 +103,13 @@ public class LaunchManager implements ILifecycleListener {
 		return agents.size() < application.getConfiguration().getMaximumAgents();
 	}
 	
-	private boolean isRunning(String id) {
+	private synchronized boolean isRunning(String id) {
 		
 		LaunchAgent agent = getAgent(id);
 		return agent != null;
 	}
 	
-	private LaunchAgent getAgent(String id) {
+	private synchronized LaunchAgent getAgent(String id) {
 		
 		for(LaunchAgent agent : agents){
 			if(agent.getConfig().getId().equals(id)){
@@ -201,5 +202,13 @@ public class LaunchManager implements ILifecycleListener {
 		}
 		Collections.sort(infos);
 		return infos;
+	}
+	
+	public void addListener(ILoggingListener listener, String id) {
+		
+		LaunchAgent agent = getAgent(id);
+		if(agent != null){
+			agent.getLogger().addListener(listener);
+		}
 	}
 }
