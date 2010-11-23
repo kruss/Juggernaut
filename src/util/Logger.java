@@ -20,6 +20,7 @@ public class Logger implements ILoggingProvider {
 	private ArrayList<ILoggingListener> listeners;
 	private File logfile;
 	
+	@Override
 	public File getLogfile(){ return logfile; }
 	
 	public Logger(Mode mode){

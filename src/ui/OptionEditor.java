@@ -86,10 +86,12 @@ public class OptionEditor extends JPanel {
 		return null;
 	}
 	
-	private Component createPanel(Option option, Component component, String orinetation) {
+	private Component createPanel(String name, Component component, String orinetation) {
 		
 		JPanel panel = new JPanel(new BorderLayout());
-		panel.add(new JLabel(" "+option.getName()+": "), BorderLayout.NORTH);
+		if(name != null){
+			panel.add(new JLabel(" "+name+": "), BorderLayout.NORTH);
+		}
 		panel.add(component, orinetation);
 		return panel;
 	}
@@ -113,7 +115,7 @@ public class OptionEditor extends JPanel {
 			@Override
 			public void keyTyped(KeyEvent arg0) {}
 		});
-		return createPanel(option, component, BorderLayout.CENTER);
+		return createPanel(option.getName(), component, BorderLayout.CENTER);
 	}
 
 	private Component createTextAreaPanel(final Option option) {
@@ -135,7 +137,7 @@ public class OptionEditor extends JPanel {
 			@Override
 			public void keyTyped(KeyEvent arg0) {}
 		});
-		return createPanel(option, new JScrollPane(component), BorderLayout.CENTER);
+		return createPanel(option.getName(), new JScrollPane(component), BorderLayout.CENTER);
 	}
 
 	private Component createIntegerSpinnerPanel(final Option option) {
@@ -155,12 +157,12 @@ public class OptionEditor extends JPanel {
 				notifyListeners();
 			}
 		});
-		return createPanel(option, component, BorderLayout.WEST);
+		return createPanel(option.getName(), component, BorderLayout.WEST);
 	}
 	
 	private Component createCheckBoxPanel(final Option option) {
 
-		final JCheckBox component = new JCheckBox();
+		final JCheckBox component = new JCheckBox(option.getName());
 		component.setToolTipText(option.getDescription());
 		component.setSelected(option.getBooleanValue());
 		component.addItemListener(new ItemListener(){
@@ -171,6 +173,6 @@ public class OptionEditor extends JPanel {
 				notifyListeners();
 			}
 		});
-		return createPanel(option, component, BorderLayout.WEST);
+		return createPanel(null, component, BorderLayout.WEST);
 	}
 }

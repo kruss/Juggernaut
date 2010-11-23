@@ -1,15 +1,17 @@
 package ui;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -39,6 +41,7 @@ public class StatusPanel extends JPanel implements IChangedListener {
 	private LoggingConsole applicationConsole;
 	private LoggingConsole launchConsole;
 	private JButton stopLaunch;
+	private JCheckBox consoleScrolling;
 	
 	private ArrayList<LaunchInfo> launches;
 	
@@ -80,10 +83,22 @@ public class StatusPanel extends JPanel implements IChangedListener {
 			public void actionPerformed(ActionEvent e){ stopLaunch(); }
 		});
 		
+		consoleScrolling = new JCheckBox("Pin");
+		consoleScrolling.setSelected(false);
+		consoleScrolling.setToolTipText("Pin console scrolling");
+		consoleScrolling.addItemListener(new ItemListener(){
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				boolean value = !((JCheckBox)e.getSource()).isSelected();
+				applicationConsole.setAutoScrolling(value);
+				launchConsole.setAutoScrolling(value);
+			}
+		});
+		
 		JPanel buttonPanel = new JPanel();
-		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-		buttonPanel.add(stopLaunch); stopLaunch.setAlignmentY(Component.TOP_ALIGNMENT);
-
+		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+		buttonPanel.add(stopLaunch);
+		buttonPanel.add(consoleScrolling);
 		
 		JPanel topPanel = new JPanel(new BorderLayout());
 		topPanel.add(new JScrollPane(launchTable), BorderLayout.CENTER);
@@ -162,18 +177,17 @@ public class StatusPanel extends JPanel implements IChangedListener {
 		LaunchInfo selected = getSelectedLaunch();
 		if(selected != null){
 			stopLaunch.setEnabled(true);
-			ILoggingProvider provider = launchConsole.getProvider();
-			launchConsole.deregister();
-			application.getLaunchManager().addListener(launchConsole, selected.id);
-			if(launchConsole.getProvider() != provider){
-				launchConsole.clearConsole();
+			ILoggingProvider provider = application.getLaunchManager().getLoggingProvider(selected.id); 
+			if(provider != launchConsole.getProvider()){
+				launchConsole.deregister();
+				launchConsole.initConsole(provider.getLogfile());
+				provider.addListener(launchConsole);
 			}
 			loggingPanel.setSelectedIndex(1);
 		}else{
 			stopLaunch.setEnabled(false);
-			loggingPanel.setSelectedIndex(0);
 			launchConsole.deregister();
-			launchConsole.clearConsole();
+			loggingPanel.setSelectedIndex(0);
 		}		
 	}
 

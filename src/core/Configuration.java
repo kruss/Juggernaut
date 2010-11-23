@@ -23,7 +23,7 @@ public class Configuration {
 	public enum OPTIONS {
 		SCHEDULER, SCHEDULER_INTERVALL, MAXIMUM_AGENTS, 
 		NOTIFY, ADMINISTRATORS, SMTP_SERVER, SMTP_USER, SMTP_ADDRESS,
-		VERBOSE_LOGGING
+		VERBOSE
 	}
 	
 	public enum State { CLEAN, DIRTY }
@@ -72,7 +72,7 @@ public class Configuration {
 				Type.TEXT, "SMTP@"+Constants.APP_NAME
 		));
 		optionContainer.getOptions().add(new Option(
-				OPTIONS.VERBOSE_LOGGING.toString(), "Verbose logging shows more details on console",
+				OPTIONS.VERBOSE.toString(), "Verbose logging shows more details on console",
 				Type.BOOLEAN, false
 		));
 		
@@ -104,7 +104,7 @@ public class Configuration {
 	
 	/** answers if logging is verbose */
 	public boolean isVerbose(){
-		return optionContainer.getOption(OPTIONS.VERBOSE_LOGGING.toString()).getBooleanValue();
+		return optionContainer.getOption(OPTIONS.VERBOSE.toString()).getBooleanValue();
 	}
 	
 	public void addListener(IChangedListener listener){ listeners.add(listener); }

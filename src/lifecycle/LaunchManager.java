@@ -8,7 +8,7 @@ import java.util.HashMap;
 import lifecycle.StatusManager.Status;
 
 import util.IChangedListener;
-import util.ILoggingListener;
+import util.ILoggingProvider;
 import util.StringTools;
 import core.Application;
 import core.Configuration;
@@ -204,11 +204,13 @@ public class LaunchManager implements ILifecycleListener {
 		return infos;
 	}
 	
-	public void addListener(ILoggingListener listener, String id) {
+	public ILoggingProvider getLoggingProvider(String id){
 		
 		LaunchAgent agent = getAgent(id);
 		if(agent != null){
-			agent.getLogger().addListener(listener);
+			return agent.getLogger();
+		}else{
+			return null;
 		}
 	}
 }
