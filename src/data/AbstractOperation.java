@@ -17,7 +17,7 @@ public abstract class AbstractOperation extends AbstractLifecycleObject {
 		
 		this.parent = parent;
 		this.config = config.clone();
-		setName(parent.getName()+"::Opperation("+getIndex()+"::"+config.getName()+")");
+		setName(parent.getName()+"::Opperation("+getIndex()+")");
 	}
 	
 	/** returns the 1-based index of this operation within the launch */
