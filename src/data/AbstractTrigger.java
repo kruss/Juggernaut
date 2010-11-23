@@ -1,5 +1,6 @@
 package data;
 
+import core.Application;
 import lifecycle.LaunchManager.TriggerStatus;
 import util.Logger;
 
@@ -13,6 +14,7 @@ public abstract class AbstractTrigger {
 	public AbstractTrigger(AbstractTriggerConfig config){
 		
 		this.config = config.clone();
+		logger = Application.getInstance().getLogger();
 	}
 	
 	public abstract TriggerStatus isTriggered();

@@ -56,7 +56,7 @@ public class IntervallTrigger extends AbstractTrigger {
 		if(lastDate == null){
 			return LaunchManager.INITIAL_TRIGGER;
 		}else{
-			if(lastDate.getTime() + config.getIntervall() >= newDate.getTime()){
+			if((lastDate.getTime() + config.getIntervall()) <= newDate.getTime()){
 				return application.getLaunchManager().new TriggerStatus(
 						"Intervall exceeded", true
 				);
