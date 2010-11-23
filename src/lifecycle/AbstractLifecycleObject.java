@@ -52,8 +52,13 @@ public abstract class AbstractLifecycleObject extends Task {
 			statusManager.setStart(new Date());
 			execute();
 		}catch(Exception e){
-			getLogger().error(e);
-			statusManager.setStatus(Status.FAILURE);
+			if(e instanceof InterruptedException){
+				getLogger().emph("Interrupted");
+				statusManager.setStatus(Status.CANCEL);
+			}else{
+				getLogger().error(e);
+				statusManager.setStatus(Status.FAILURE);
+			}
 		}finally{
 			statusManager.setEnd(new Date());
 			finish();

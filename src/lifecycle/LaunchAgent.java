@@ -63,38 +63,46 @@ public class LaunchAgent extends AbstractLifecycleObject {
 		for(AbstractOperationConfig operationConfig : config.getOperationConfigs()){
 			
 			AbstractOperation operation = operationConfig.createOperation(this);
-			logger.info(
-					operation.getIndex()+"/"+config.getOperationConfigs().size()+
-					" Operation ["+operationConfig.getName()+"]"
-			);
-			if(operationConfig.isActive() && !aboarding){
-				
-				// start operation
-				operation.start();
-				operation.join();
-				
-				// process operation status
-				Status operationStatus = operation.getStatusManager().getStatus();
-				if(operationStatus == Status.ERROR && operation.getConfig().isCritical()){
-					logger.emph("Critical operation failed");
-					statusManager.setStatus(Status.FAILURE);
-				}else if(operationStatus == Status.FAILURE){
-					logger.emph("Operation failed");
-					statusManager.setStatus(Status.FAILURE);
+			try{
+				logger.info(
+						operation.getIndex()+"/"+config.getOperationConfigs().size()+
+						" Operation ["+operationConfig.getName()+"]"
+				);
+				if(operationConfig.isActive() && !aboarding){
+					
+					// start operation
+					operation.start();
+					operation.join();
+					
+					// process status
+					Status operationStatus = operation.getStatusManager().getStatus();
+					if(operationStatus == Status.ERROR && operation.getConfig().isCritical()){
+						logger.emph("Critical operation failed");
+						statusManager.setStatus(Status.FAILURE);
+					}else if(operationStatus == Status.FAILURE){
+						logger.emph("Operation failed");
+						statusManager.setStatus(Status.FAILURE);
+					}
+					
+				}else{
+					operation.getStatusManager().setStatus(Status.CANCEL);
 				}
+				logger.log("Status: "+operation.getStatusManager().getStatus().toString());
 				
-			}else{
+
+			}catch(InterruptedException e){
+				logger.emph("Interrupted");
 				operation.getStatusManager().setStatus(Status.CANCEL);
-			}
-			logger.log("Status: "+operation.getStatusManager().getStatus().toString());
-			
-			// set progress
-			statusManager.addProgress(1);
-			
-			// process launch status
-			if(!aboarding && statusManager.getStatus() != Status.PROCESSING){
-				logger.emph("Aboarding launch");
-				aboarding=true;
+				operation.terminate();
+				statusManager.setStatus(Status.CANCEL);
+			}finally{
+				
+				// process progress
+				statusManager.addProgress(1);
+				if(!aboarding && statusManager.getStatus() != Status.PROCESSING){
+					logger.emph("Aboarding launch");
+					aboarding=true;
+				}
 			}
 		}
 	}

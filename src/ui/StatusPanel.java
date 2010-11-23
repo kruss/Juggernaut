@@ -40,6 +40,7 @@ public class StatusPanel extends JPanel implements IChangedListener {
 		
 		tableModel = new DefaultTableModel();
 		tableModel.addColumn("Launch");
+		tableModel.addColumn("Description");
 		tableModel.addColumn("Start");
 		tableModel.addColumn("Progress");
 		tableModel.addColumn("Status");
@@ -56,13 +57,14 @@ public class StatusPanel extends JPanel implements IChangedListener {
 		launchTable.setColumnSelectionAllowed(false);
 		
 		TableColumnModel columnModel = launchTable.getColumnModel();
-		columnModel.getColumn(0).setMinWidth(200);
-		columnModel.getColumn(1).setMinWidth(150);
-		columnModel.getColumn(1).setMaxWidth(150);
-		columnModel.getColumn(2).setMinWidth(100);
-		columnModel.getColumn(2).setMaxWidth(100);
-		columnModel.getColumn(3).setMinWidth(150);
-		columnModel.getColumn(3).setMaxWidth(150);
+		columnModel.getColumn(0).setMinWidth(150);
+		columnModel.getColumn(1).setMinWidth(250);
+		columnModel.getColumn(2).setMinWidth(150);
+			columnModel.getColumn(2).setMaxWidth(150);
+		columnModel.getColumn(3).setMinWidth(100);
+			columnModel.getColumn(3).setMaxWidth(100);
+		columnModel.getColumn(4).setMinWidth(150);
+			columnModel.getColumn(4).setMaxWidth(150);
 		
 		loggingConsole = new JTextArea();
 		loggingConsole.setEditable(false);
@@ -107,6 +109,7 @@ public class StatusPanel extends JPanel implements IChangedListener {
 			Date start = agent.getStatusManager().getStart();
 			Object[] rowData = {
 				agent.getConfig().getName(),
+				agent.getConfig().getDescription(),
 				start != null ? StringTools.getTextDate(start) : "Starting",
 				agent.getStatusManager().getProgress()+" %",
 				agent.getStatusManager().getStatus().toString()
