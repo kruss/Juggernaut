@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.HashMap;
 import util.StringTools;
 import core.Application;
-import core.Constants;
 
 public class LaunchManager implements ILifecycleListener {
 
@@ -16,6 +15,8 @@ public class LaunchManager implements ILifecycleListener {
 	private ScheduleTask scheduler;
 	private HashMap<String, String> cache;
 	private ArrayList<LaunchAgent> agents;
+	
+	public ScheduleTask getSchedulerTask(){ return scheduler; }
 	
 	public HashMap<String, String> getCache(){ return cache; }
 	
@@ -32,14 +33,28 @@ public class LaunchManager implements ILifecycleListener {
 	
 	public void init() {
 		
-		scheduler.start();
+		if(application.getConfiguration().isScheduler()){
+			startScheduler(ScheduleTask.getIntervall());
+		}
 	}
 	
 	public void shutdown() {
 		
-		scheduler.terminate();
+		stopScheduler();
 		for(LaunchAgent agent : agents){
 			agent.terminate();
+		}
+	}
+	
+	public void startScheduler(long delay){ 
+		if(!scheduler.isAlive()){
+			scheduler.start(delay); 
+		}
+	}
+	
+	public void stopScheduler(){ 
+		if(scheduler.isAlive()){
+			scheduler.terminate();
 		}
 	}
 
@@ -64,7 +79,7 @@ public class LaunchManager implements ILifecycleListener {
 	}
 	
 	public synchronized boolean isReady() {
-		return agents.size() < Constants.MAX_AGENTS;
+		return agents.size() < application.getConfiguration().getMaximumAgents();
 	}
 	
 	private boolean isRunning(LaunchAgent launch) {

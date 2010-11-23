@@ -7,7 +7,6 @@ import lifecycle.LaunchManager.LaunchStatus;
 import lifecycle.LaunchManager.TriggerStatus;
 
 import core.Application;
-import core.Constants;
 import data.AbstractTrigger;
 import data.AbstractTriggerConfig;
 import data.LaunchConfig;
@@ -19,10 +18,11 @@ public class ScheduleTask extends Task {
 	
 	public ScheduleTask(){
 		
-		setCyclic(Constants.SCHEDULE_DELAY);
 		this.application = Application.getInstance();
+		setCyclic(getIntervall());
+		setName("Scheduler");
 	}
-	
+
 	@Override
 	protected void runTask() {
 		
@@ -39,6 +39,7 @@ public class ScheduleTask extends Task {
 				break;
 			}
 		}
+		setCyclic(getIntervall()); // configuration may have changed
 	}
 
 	private boolean triggerLaunch(LaunchConfig launchConfig) {
@@ -77,5 +78,15 @@ public class ScheduleTask extends Task {
 		}
 		Collections.shuffle(configs);
 		return configs;
+	}
+	
+	public static long getIntervall() {
+		
+		int intervall = Application.getInstance().getConfiguration().getSchedulerIntervall();
+		if(intervall >= 0){
+			return intervall * 60 * 1000;
+		}else{
+			return 0;
+		}
 	}
 }

@@ -22,6 +22,7 @@ public class LaunchAgent extends AbstractLifecycleObject {
 
 		this.config = config.clone();
 		this.trigger = trigger;
+		setName(config.getName());
 	}
 	
 	public LaunchConfig getConfig(){ return config; }

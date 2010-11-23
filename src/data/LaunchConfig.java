@@ -52,11 +52,11 @@ public class LaunchConfig implements Comparable<LaunchConfig> {
 				Type.INTEGER, 0
 		));
 		optionContainer.getOptions().add(new Option(
-				OPTIONS.NOTIFY.toString(), "Enable status notification",
+				OPTIONS.NOTIFY.toString(), "Enable mail notification for launch",
 				Type.BOOLEAN, false
 		));
 		optionContainer.getOptions().add(new Option(
-				OPTIONS.ADMINISTRATORS.toString(), "eMail-list of administrators (comma seperated)", 
+				OPTIONS.ADMINISTRATORS.toString(), "mail-list of launch admins (comma seperated)", 
 				Type.TEXT, ""
 		));
 		optionContainer.getOptions().add(new Option(

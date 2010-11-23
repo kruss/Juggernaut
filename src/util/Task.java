@@ -1,38 +1,62 @@
 package util;
 
+import core.Application;
+
 public abstract class Task extends Thread {
 
+	private Application application;
+	private long startupDelay;
 	private boolean cyclic;
-	private long delay;
+	private long cyclicDelay;
 	
 	public Task(){
+		
+		application = Application.getInstance();
+		startupDelay = 0;
 		cyclic = false;
-		delay = 0;
+		cyclicDelay = 0;
 	}
 	
 	public void setCyclic(long delay){ 
+		
 		this.cyclic = true; 
-		this.delay = delay;
+		this.cyclicDelay = delay;
 	}
 	
 	public void run(){
 		
+		application.getLogger().debug("Starting Task ["+getName()+"]");
 		try{
+			Thread.sleep(startupDelay);
 			if(cyclic){
 				while(cyclic && !isInterrupted()){
-					Thread.sleep(delay);
 					runTask();
+					Thread.sleep(cyclicDelay);
 				}
 			}else{
 				runTask();
 			}
-		}catch(InterruptedException e){ /* NOTHING */ }
+		}catch(InterruptedException e){ 
+			/* NOTHING */ 
+		}finally{
+			application.getLogger().debug("Stopping Task ["+getName()+"]");
+		}
+	}
+	
+	public void start(long delay){
+		
+		startupDelay = delay;
+		start();
 	}
 	
 	public void terminate(){
 		
-		cyclic = false;
-		interrupt();
+		if(isAlive()){
+			interrupt();
+			while(isAlive()){ 
+				SystemTools.sleep(50);
+			}
+		}
 	}
 	
 	protected abstract void runTask();

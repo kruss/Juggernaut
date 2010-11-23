@@ -16,6 +16,7 @@ public abstract class AbstractOperation extends AbstractLifecycleObject {
 	public AbstractOperation(AbstractOperationConfig config){
 		
 		this.config = config.clone();
+		setName(parent.getName()+"::"+config.getName());
 	}
 	
 	public void setParent(LaunchAgent parent){ this.parent = parent; }
