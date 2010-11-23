@@ -49,8 +49,8 @@ public class LaunchAgent extends AbstractLifecycleObject {
 		}
 		
 		// setup launch-logger
-		logger = new Logger(new File(getOutputFolder()+File.separator+Logger.OUTPUT_FILE));
-		logger.setMode(Mode.FILE_ONLY);
+		logger = new Logger(Mode.FILE_ONLY);
+		logger.setLogiFile(new File(getOutputFolder()+File.separator+Logger.OUTPUT_FILE));
 		statusManager.setProgressMax(config.getOperationConfigs().size());
 	}
 	

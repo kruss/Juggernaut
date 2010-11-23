@@ -17,6 +17,7 @@ import ui.Window;
 import util.Logger;
 import util.SystemTools;
 import util.UiTools;
+import util.Logger.Mode;
 
 public class Application {
 
@@ -88,9 +89,8 @@ public class Application {
 		}
 		// TODO clean legacy stuff
 		
-		logger = new Logger(
-				new File(getOutputFolder()+File.separator+Logger.OUTPUT_FILE)
-		);
+		logger = new Logger(Mode.FILE_AND_CONSOLE);
+		logger.setLogiFile(new File(getOutputFolder()+File.separator+Logger.OUTPUT_FILE));
 		logger.info(Constants.APP_FULL_NAME);
 		
 		File file = new File(getOutputFolder()+File.separator+Configuration.OUTPUT_FILE);
@@ -100,7 +100,8 @@ public class Application {
 			configuration = new Configuration(file.getAbsolutePath());
 			configuration.save();
 		}
-		logger.setVerbose(configuration.isVerbose());
+		
+		Logger.VERBOSE = configuration.isVerbose();
 	}
 	
 	private void shutdownPersistence() throws Exception {

@@ -1,6 +1,7 @@
 package util;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
 
 import core.Constants;
@@ -13,20 +14,34 @@ public class Logger {
 	public enum Level { DEBUG, NORMAL, EMPHASISED, ERROR, INFO }
 	public enum Mode { FILE_ONLY, CONSOLE_ONLY, FILE_AND_CONSOLE }
 	
-	private static boolean VERBOSE = false;
+	public static boolean VERBOSE = false;
 
-	private File logfile;
 	private Mode mode;
+	private ArrayList<ILogListener> listeners;
+	private File logfile;
 	
 	public File getLogfile(){ return logfile; }
-	public void setMode(Mode mode){ this.mode = mode; };
-	public void setVerbose(boolean verbose){ VERBOSE = verbose; }
 	
-	public Logger(File logfile){
+	public Logger(Mode mode){
 
-		this.logfile = logfile;
-		mode = Mode.FILE_AND_CONSOLE;
+		this.mode = mode;
+		listeners = new ArrayList<ILogListener>();
+		logfile = null;
+	}
+	
+	public void addListener(ILogListener listener){ listeners.add(listener); }
+	public void removeListener(ILogListener listener){ listeners.remove(listener); }
+	public void clearListeners(){ listeners.clear(); }
+	
+	public void notifyListeners(String log){
+		for(ILogListener listener : listeners){
+			listener.logged(log);
+		}
+	}
+	
+	public void setLogiFile(File logfile){
 		
+		this.logfile = logfile;
 		if(logfile.exists()){
 			logfile.delete();
 		}
@@ -56,11 +71,14 @@ public class Logger {
 			log = time+" "+text+"\n";
 		}
 		
-		if(mode != Mode.CONSOLE_ONLY){
+		if(mode != Mode.CONSOLE_ONLY && logfile != null){
 			writeFile(log);
 		}
 		if(mode != Mode.FILE_ONLY && (level != Level.DEBUG || VERBOSE)){
 			writeSystem(log);
+		}
+		if(level != Level.DEBUG || VERBOSE){
+			notifyListeners(log);
 		}
 	}
     

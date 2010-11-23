@@ -17,16 +17,18 @@ import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
+import javax.swing.text.BadLocationException;
 
 import lifecycle.LaunchManager.LaunchInfo;
 
 import util.IChangedListener;
+import util.ILogListener;
 import util.StringTools;
 import util.UiTools;
 
 import core.Application;
 
-public class StatusPanel extends JPanel implements IChangedListener {
+public class StatusPanel extends JPanel implements IChangedListener, ILogListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -99,6 +101,7 @@ public class StatusPanel extends JPanel implements IChangedListener {
 			}
 		});
 		application.getLaunchManager().addListener(this);
+		application.getLogger().addListener(this);
 	}
 	
 	public void init() {
@@ -156,6 +159,22 @@ public class StatusPanel extends JPanel implements IChangedListener {
 			launches = application.getLaunchManager().getLaunchInfo();
 			refreshUI(selected);
 		}
+	}
+	
+	@Override
+	public void logged(String log) {
+		
+		if(loggingConsole.getLineCount() > 100){
+			loggingConsole.setSelectionStart(0);
+			try{
+				loggingConsole.setSelectionEnd(loggingConsole.getLineEndOffset(50));
+			}catch(BadLocationException e){
+				loggingConsole.setSelectionEnd(loggingConsole.getText().length()/2);
+			}
+			loggingConsole.replaceSelection("...\n");
+		}
+		loggingConsole.append(log);
+		loggingConsole.setCaretPosition(loggingConsole.getText().length());
 	}
 
 	private LaunchInfo getSelectedLaunch() {

@@ -8,6 +8,7 @@ import javax.swing.JScrollPane;
 import lifecycle.LaunchManager;
 
 import util.IChangedListener;
+import util.Logger;
 
 import core.Application;
 import core.Configuration;
@@ -57,6 +58,7 @@ public class PreferencePanel extends JPanel implements IChangedListener {
 		}else{
 			launchManager.stopScheduler();
 		}
-		application.getLogger().setVerbose(configuration.isVerbose());
+		
+		Logger.VERBOSE = configuration.isVerbose();
 	}
 }
