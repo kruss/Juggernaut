@@ -4,10 +4,10 @@ import core.Application;
 
 public abstract class Task extends Thread {
 
-	private Application application;
-	private long startupDelay;
-	private boolean cyclic;
-	private long cyclicDelay;
+	protected Application application;
+	protected long startupDelay;
+	protected boolean cyclic;
+	protected long cyclicDelay;
 	
 	public Task(){
 		
@@ -37,7 +37,7 @@ public abstract class Task extends Thread {
 				runTask();
 			}
 		}catch(InterruptedException e){ 
-			/* NOTHING */ 
+			application.getLogger().debug("Interrupting Task ["+getName()+"]");
 		}finally{
 			application.getLogger().debug("Stopping Task ["+getName()+"]");
 		}

@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import util.StringTools;
 import core.Application;
+import core.Configuration;
 
 public class LaunchManager implements ILifecycleListener {
 
@@ -15,10 +16,11 @@ public class LaunchManager implements ILifecycleListener {
 	private ScheduleTask scheduler;
 	private HashMap<String, String> cache;
 	private ArrayList<LaunchAgent> agents;
+	private boolean active;
 	
 	public ScheduleTask getSchedulerTask(){ return scheduler; }
-	
-	public HashMap<String, String> getCache(){ return cache; }
+	public synchronized HashMap<String, String> getCache(){ return cache; }
+	public synchronized ArrayList<LaunchAgent> getAgents(){ return agents; }
 	
 	public LaunchManager(){
 		
@@ -26,35 +28,41 @@ public class LaunchManager implements ILifecycleListener {
 		INITIAL_TRIGGER = new TriggerStatus("Initial run", true);
 		
 		application = Application.getInstance();
-		scheduler = new ScheduleTask();
+		scheduler = null;
 		cache = new HashMap<String, String>();
 		agents = new ArrayList<LaunchAgent>();
+		active = false;
 	}
 	
 	public void init() {
 		
-		if(application.getConfiguration().isScheduler()){
-			startScheduler(ScheduleTask.getIntervall());
+		Configuration configuration = application.getConfiguration();
+		if(configuration.isScheduler()){
+			startScheduler(configuration.getSchedulerIntervall());
 		}
+		active = true;
 	}
 	
 	public void shutdown() {
 		
+		active = false;
 		stopScheduler();
 		for(LaunchAgent agent : agents){
 			agent.terminate();
 		}
 	}
 	
-	public void startScheduler(long delay){ 
-		if(!scheduler.isAlive()){
+	public synchronized void startScheduler(long delay){ 
+		if(scheduler == null){
+			scheduler = new ScheduleTask();
 			scheduler.start(delay); 
 		}
 	}
 	
-	public void stopScheduler(){ 
-		if(scheduler.isAlive()){
+	public synchronized void stopScheduler(){ 
+		if(scheduler != null){
 			scheduler.terminate();
+			scheduler = null;
 		}
 	}
 
@@ -95,18 +103,20 @@ public class LaunchManager implements ILifecycleListener {
 	@Override
 	public void lifecycleChanged(AbstractLifecycleObject object, Lifecycle lifecycle) {
 		
-		LaunchAgent agent = (LaunchAgent)object;
-		String date = StringTools.getTextDate(new Date());
-		if(lifecycle == Lifecycle.START){
-			application.getWindow().setStatus(
-					"Launch ["+agent.getConfig().getName()+"] started at "+date
-			);
-		}
-		if(lifecycle == Lifecycle.FINISH){
-			application.getWindow().setStatus(
-					"Launch ["+agent.getConfig().getName()+"] finished at "+date
-			);
-			agents.remove(object);
+		if(active){
+			LaunchAgent agent = (LaunchAgent)object;
+			String date = StringTools.getTextDate(new Date());
+			if(lifecycle == Lifecycle.START){
+				application.getWindow().setStatus(
+						"Launch ["+agent.getConfig().getName()+"] started at "+date
+				);
+			}
+			if(lifecycle == Lifecycle.FINISH){
+				application.getWindow().setStatus(
+						"Launch ["+agent.getConfig().getName()+"] finished at "+date
+				);
+				agents.remove(object);
+			}
 		}
 	}
 	

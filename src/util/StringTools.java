@@ -58,6 +58,39 @@ public class StringTools {
 		return (int)((end.getTime() - start.getTime()) / (1000 * 60));
 	}
 	
+	public static long millis2sec(long millis){
+		return millis / 1000;
+	}
+	
+	public static long millis2min(long millis){
+		return millis2sec(millis) / 60;
+	}
+	
+	public static long millis2hour(long millis){
+		return millis2min(millis) / 60;
+	}
+	
+	public static long millis2days(long millis){
+		return millis2hour(millis) / 24;
+	}
+	
+	public static long sec2millis(long sec){
+		return sec * 1000;
+	}
+	
+	public static long min2millis(long min){
+		return sec2millis(min * 60);
+	}
+	
+	public static long hour2millis(long hour){
+		return min2millis(hour * 60);
+	}
+	
+	public static long day2millis(long day){
+		return hour2millis(day * 24);
+	}
+
+	
 	/** get stack-trace of an exception */
 	public static String trace(Exception e){
 

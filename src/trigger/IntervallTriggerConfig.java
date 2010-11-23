@@ -1,5 +1,6 @@
 package trigger;
 
+import util.StringTools;
 import data.AbstractTrigger;
 import data.AbstractTriggerConfig;
 import data.Option;
@@ -40,9 +41,9 @@ public class IntervallTriggerConfig extends AbstractTriggerConfig {
 	public long getIntervall(){
 		
 		return
-			optionContainer.getOption(OPTIONS.DAYS.toString()).getIntegerValue() * 24 * 60 * 60 * 1000 +
-			optionContainer.getOption(OPTIONS.HOURS.toString()).getIntegerValue() * 60 * 60 * 1000 +
-			optionContainer.getOption(OPTIONS.MINUTES.toString()).getIntegerValue() * 60 * 1000;
+			StringTools.day2millis(optionContainer.getOption(OPTIONS.DAYS.toString()).getIntegerValue()) +
+			StringTools.hour2millis(optionContainer.getOption(OPTIONS.HOURS.toString()).getIntegerValue()) +
+			StringTools.min2millis(optionContainer.getOption(OPTIONS.MINUTES.toString()).getIntegerValue());
 	}
 	
 	@Override

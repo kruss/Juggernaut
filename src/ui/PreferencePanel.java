@@ -6,7 +6,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import lifecycle.LaunchManager;
-import lifecycle.ScheduleTask;
 
 import util.IChangedListener;
 
@@ -54,7 +53,6 @@ public class PreferencePanel extends JPanel implements IChangedListener {
 		
 		LaunchManager launchManager = application.getLaunchManager();
 		if(configuration.isScheduler()){
-			launchManager.getSchedulerTask().setCyclic(ScheduleTask.getIntervall());
 			launchManager.startScheduler(0);
 		}else{
 			launchManager.stopScheduler();

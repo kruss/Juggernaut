@@ -5,8 +5,8 @@ import util.Logger;
 
 public abstract class AbstractTrigger {
 	
+	protected transient Logger logger;
 	protected AbstractTriggerConfig config;
-	protected Logger logger;
 	
 	public AbstractTriggerConfig getConfig(){ return config; }
 	

@@ -7,18 +7,32 @@ import lifecycle.LaunchAgent;
 
 public abstract class AbstractOperation extends AbstractLifecycleObject {
 
-	protected LaunchAgent parent;
+	protected transient LaunchAgent parent;
+	protected transient Logger logger;
 	protected AbstractOperationConfig config;
-	protected Logger logger;
 	
 	public AbstractOperationConfig getConfig(){ return config; }
 
-	public AbstractOperation(AbstractOperationConfig config){
+	public AbstractOperation(LaunchAgent parent, AbstractOperationConfig config){
 		
+		this.parent = parent;
 		this.config = config.clone();
-		setName(parent.getName()+"::"+config.getName());
+		setName(parent.getName()+"::Opperation("+getIndex()+"::"+config.getName()+")");
 	}
 	
+	/** returns the 1-based index of this operation within the launch */
+	public int getIndex() {
+
+		int index = 1;
+		for(AbstractOperationConfig config : parent.getConfig().getOperationConfigs()){
+			if(config.getId().equals(this.config.getId())){
+				break;
+			}
+			index++;
+		}
+		return index;
+	}
+
 	public void setParent(LaunchAgent parent){ this.parent = parent; }
 	
 	@Override

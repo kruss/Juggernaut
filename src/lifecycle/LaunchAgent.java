@@ -22,7 +22,7 @@ public class LaunchAgent extends AbstractLifecycleObject {
 
 		this.config = config.clone();
 		this.trigger = trigger;
-		setName(config.getName());
+		setName("Launch("+config.getName()+")");
 	}
 	
 	public LaunchConfig getConfig(){ return config; }
@@ -59,15 +59,14 @@ public class LaunchAgent extends AbstractLifecycleObject {
 		
 		logger.info("Launch ["+config.getName()+"]");
 		logger.log("Trigger: "+trigger.message);
-		int currentIndex = 1;
-		int maxIndex = config.getOperationConfigs().size();
 		boolean aboarding = false;
 		for(AbstractOperationConfig operationConfig : config.getOperationConfigs()){
 			
-			logger.info(currentIndex+"/"+maxIndex+" Operation ["+operationConfig.getName()+"]");
-			AbstractOperation operation = operationConfig.createOperation();
-			operation.setParent(this);
-			
+			AbstractOperation operation = operationConfig.createOperation(this);
+			logger.info(
+					operation.getIndex()+"/"+config.getOperationConfigs().size()+
+					" Operation ["+operationConfig.getName()+"]"
+			);
 			if(operationConfig.isActive() && !aboarding){
 				
 				// start operation
@@ -91,7 +90,6 @@ public class LaunchAgent extends AbstractLifecycleObject {
 			
 			// set progress
 			statusManager.addProgress(1);
-			currentIndex++;
 			
 			// process launch status
 			if(!aboarding && statusManager.getStatus() != Status.PROCESSING){

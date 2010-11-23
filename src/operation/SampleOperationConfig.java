@@ -1,5 +1,6 @@
 package operation;
 
+import lifecycle.LaunchAgent;
 import data.AbstractOperation;
 import data.AbstractOperationConfig;
 import data.Option;
@@ -55,7 +56,7 @@ public class SampleOperationConfig extends AbstractOperationConfig {
 	}
 	
 	@Override
-	public AbstractOperation createOperation() {
-		return new SampleOperation(this);
+	public AbstractOperation createOperation(LaunchAgent parent) {
+		return new SampleOperation(parent, this);
 	}
 }

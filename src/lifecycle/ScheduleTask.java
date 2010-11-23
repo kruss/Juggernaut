@@ -19,8 +19,8 @@ public class ScheduleTask extends Task {
 	public ScheduleTask(){
 		
 		this.application = Application.getInstance();
-		setCyclic(getIntervall());
 		setName("Scheduler");
+		cyclic = true;
 	}
 
 	@Override
@@ -28,44 +28,38 @@ public class ScheduleTask extends Task {
 		
 		application.getLogger().debug("Checking schedules");
 		ArrayList<LaunchConfig> launchConfigs = getRandomizedConfigurations();
-		while(application.getLaunchManager().isReady()){
-			boolean idle = true;
-			for(LaunchConfig launchConfig : launchConfigs){
-				if(triggerLaunch(launchConfig)){
-					idle = false;
-				}
-			}
-			if(idle){
+		for(LaunchConfig launchConfig : launchConfigs){
+			if(application.getLaunchManager().isReady()){
+				triggerLaunch(launchConfig);
+			}else{
 				break;
 			}
 		}
-		setCyclic(getIntervall()); // configuration may have changed
+
+		cyclicDelay = application.getConfiguration().getSchedulerIntervall();
 	}
 
-	private boolean triggerLaunch(LaunchConfig launchConfig) {
+	private void triggerLaunch(LaunchConfig launchConfig) {
 		
 		for(AbstractTriggerConfig triggerConfig : launchConfig.getTriggerConfigs()){
 			AbstractTrigger trigger = triggerConfig.createTrigger();
 			TriggerStatus triggerStatus = trigger.isTriggered();
 			if(triggerStatus.triggered){
+				application.getLogger().log(
+						"Launch ["+launchConfig.getName()+"] triggered: "+triggerStatus.message
+				);
 				LaunchAgent launch = launchConfig.createLaunch(triggerStatus);
 				LaunchStatus launchStatus = application.getLaunchManager().runLaunch(launch);
 				if(launchStatus.launched){
-					application.getLogger().log(
-							"Trigger for Launch ["+launchConfig.getName()+"] fired: "+triggerStatus.message
-					);
 					trigger.wasTriggered(true);
-					return true;
 				}else{
 					application.getLogger().log(
-							"Trigger for Launch ["+launchConfig.getName()+"] aborded: "+launchStatus.message
+							"Launch ["+launchConfig.getName()+"] aborded: "+launchStatus.message
 					);
 					trigger.wasTriggered(false);
-					return false;
 				}
 			}
 		}
-		return false;
 	}
 	
 	public ArrayList<LaunchConfig> getRandomizedConfigurations(){
@@ -78,15 +72,5 @@ public class ScheduleTask extends Task {
 		}
 		Collections.shuffle(configs);
 		return configs;
-	}
-	
-	public static long getIntervall() {
-		
-		int intervall = Application.getInstance().getConfiguration().getSchedulerIntervall();
-		if(intervall >= 0){
-			return intervall * 60 * 1000;
-		}else{
-			return 0;
-		}
 	}
 }

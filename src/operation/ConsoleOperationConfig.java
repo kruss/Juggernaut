@@ -1,5 +1,6 @@
 package operation;
 
+import lifecycle.LaunchAgent;
 import data.AbstractOperation;
 import data.AbstractOperationConfig;
 import data.Option;
@@ -48,7 +49,7 @@ public class ConsoleOperationConfig extends AbstractOperationConfig {
 	}
 	
 	@Override
-	public AbstractOperation createOperation() {
+	public AbstractOperation createOperation(LaunchAgent parent) {
 		// TODO
 		return null;
 	}

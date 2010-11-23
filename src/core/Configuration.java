@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import util.FileTools;
 import util.IChangedListener;
+import util.StringTools;
 import util.UiTools;
 
 import com.thoughtworks.xstream.XStream;
@@ -75,12 +76,22 @@ public class Configuration {
 		dirty = true;
 	}
 	
+	/** answers if scheduler is active */
 	public boolean isScheduler(){
 		return optionContainer.getOption(OPTIONS.SCHEDULER.toString()).getBooleanValue();
 	}
+	
+	/** the scheduler-interval in millis */
 	public int getSchedulerIntervall(){ 
-		return optionContainer.getOption(OPTIONS.SCHEDULER_INTERVALL.toString()).getIntegerValue(); 
+		int min = optionContainer.getOption(OPTIONS.SCHEDULER_INTERVALL.toString()).getIntegerValue(); 
+		if(min >= 0){
+			return (int)StringTools.min2millis(min);
+		}else{
+			return 0;
+		}
 	}
+	
+	/** maximum number of parallel agents started by scheduled */
 	public int getMaximumAgents(){ 
 		return optionContainer.getOption(OPTIONS.MAXIMUM_AGENTS.toString()).getIntegerValue(); 
 	}

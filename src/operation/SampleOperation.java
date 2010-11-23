@@ -1,6 +1,8 @@
 package operation;
 
+import util.StringTools;
 import util.SystemTools;
+import lifecycle.LaunchAgent;
 import lifecycle.StatusManager.Status;
 import data.AbstractOperation;
 
@@ -8,8 +10,8 @@ public class SampleOperation extends AbstractOperation {
 
 	private SampleOperationConfig config;
 	
-	public SampleOperation(SampleOperationConfig config) {
-		super(config);
+	public SampleOperation(LaunchAgent parent, SampleOperationConfig config) {
+		super(parent, config);
 		this.config = config;
 	}
 
@@ -20,7 +22,7 @@ public class SampleOperation extends AbstractOperation {
 		if(idle > 0){
 			for(int i=1; i<=idle; i++){
 				logger.log("staying idle... ("+i+"/"+idle+")");
-				SystemTools.sleep(1000);
+				SystemTools.sleep(StringTools.sec2millis(1));
 			}
 		}else{
 			logger.log("nothing todo...");

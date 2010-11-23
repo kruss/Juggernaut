@@ -2,6 +2,8 @@ package data;
 
 import java.util.UUID;
 
+import lifecycle.LaunchAgent;
+
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
@@ -61,7 +63,7 @@ public abstract class AbstractOperationConfig {
 	public abstract String getName();
 	public abstract String getDescription();
 	public abstract boolean isValid();
-	public abstract AbstractOperation createOperation();
+	public abstract AbstractOperation createOperation(LaunchAgent parent);
 	
 	public AbstractOperationConfig clone(){
 		
