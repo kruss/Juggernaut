@@ -63,12 +63,16 @@ public class Logger implements ILoggingProvider {
 		}
 	}
 	
-	public synchronized void info(String text){ 		writeLog(text, Level.INFO); 					}
-	public synchronized void emph(String text){ 		writeLog(text, Level.EMPHASISED); 				}
-	public synchronized void log(String text){ 			writeLog(text, Level.NORMAL); 					}
-    public synchronized void error(String text){ 		writeLog(text, Level.ERROR); 					}
-    public synchronized void error(Exception e){ 		writeLog(StringTools.trace(e), Level.ERROR); 	}
-    public synchronized void debug(String text){ 		writeLog(text, Level.DEBUG);					}
+	public synchronized void info(String text){ 	writeLog(text, Level.INFO); 					}
+	public synchronized void emph(String text){ 	writeLog(text, Level.EMPHASISED); 				}
+	public synchronized void log(String text){ 		writeLog(text, Level.NORMAL); 					}
+    public synchronized void error(String text){ 	writeLog(text, Level.ERROR); 					}
+    public synchronized void error(Exception e){ 	writeLog(StringTools.trace(e), Level.ERROR); 	}
+    public synchronized void debug(String text){ 
+    	if(VERBOSE){
+    		writeLog(text, Level.DEBUG);					
+    	}
+    }
     
     private void writeLog(String text, Level level) {
 
@@ -90,12 +94,10 @@ public class Logger implements ILoggingProvider {
 		if(mode != Mode.CONSOLE_ONLY && logfile != null){
 			writeFile(log);
 		}
-		if(mode != Mode.FILE_ONLY && (level != Level.DEBUG || VERBOSE)){
+		if(mode != Mode.FILE_ONLY){
 			writeSystem(log);
 		}
-		if(level != Level.DEBUG || VERBOSE){
-			notifyListeners(log);
-		}
+		notifyListeners(log);
 	}
     
     private void writeFile(String log){

@@ -20,8 +20,9 @@ public class SampleOperation extends AbstractOperation {
 		
 		int idle = config.getIdleTime();
 		if(idle > 0){
+			logger.log("doing some work...");
 			for(int i=1; i<=idle; i++){
-				logger.log("staying idle... ("+i+"/"+idle+")");
+				logger.debug("some work ("+i+"/"+idle+")");
 				SystemTools.sleep(StringTools.sec2millis(1));
 			}
 		}else{
