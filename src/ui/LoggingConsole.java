@@ -124,7 +124,7 @@ public class LoggingConsole extends JPanel implements ILoggingListener {
 			try{
 				console.setText(FileTools.readFile(logfile.getAbsolutePath()));
 			}catch(Exception e){
-				application.handleException(e);
+				application.getLogger().error(e);
 			}
 		}
 	}

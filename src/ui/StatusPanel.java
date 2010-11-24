@@ -48,7 +48,16 @@ public class StatusPanel extends JPanel implements IChangedListener {
 		application = Application.getInstance();
 		launches = new ArrayList<LaunchInfo>();
 		
-		tableModel = new DefaultTableModel();
+		tableModel = new DefaultTableModel(){
+			private static final long serialVersionUID = 1L;
+			public Object getValueAt(int row, int column){
+				try{
+					return super.getValueAt(row, column);
+				}catch(Exception e){
+					return null;
+				}
+			}
+		};
 		tableModel.addColumn("Launch");
 		tableModel.addColumn("Description");
 		tableModel.addColumn("Start");
@@ -128,7 +137,7 @@ public class StatusPanel extends JPanel implements IChangedListener {
 
 	private void clearUI() {
 	
-		launchTable.changeSelection(-1, -1, false, false);
+		launchTable.clearSelection();
 		for(int i=tableModel.getRowCount()-1; i>=0; i--){
 			tableModel.removeRow(i);
 		}
@@ -185,7 +194,6 @@ public class StatusPanel extends JPanel implements IChangedListener {
 	public void changed(Object object) {
 		
 		if(object == application.getLaunchManager()){
-			
 			LaunchInfo selected = getSelectedLaunch();
 			launches = application.getLaunchManager().getLaunchInfo();
 			refreshUI(selected);
