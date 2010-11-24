@@ -149,7 +149,7 @@ public class OptionEditor extends JPanel {
 		final JSpinner component = new JSpinner(model);
 		((JSpinner.DefaultEditor)component.getEditor()).getTextField().setColumns(8);
 		component.setToolTipText(
-				option.getDescription()+" <"+option.getIntegerMinimum()+" - "+option.getIntegerMaximum()+">"
+				option.getDescription()+" : "+option.getIntegerMinimum()+" - "+option.getIntegerMaximum()
 		);
 		component.addChangeListener(new ChangeListener(){
 			@Override

@@ -21,9 +21,8 @@ import data.Option.Type;
 public class Configuration {
 
 	public enum OPTIONS {
-		SCHEDULER, SCHEDULER_INTERVALL, MAXIMUM_AGENTS, 
-		NOTIFY, ADMINISTRATORS, SMTP_SERVER, SMTP_USER, SMTP_ADDRESS,
-		VERBOSE
+		SCHEDULER, SCHEDULER_INTERVALL, MAXIMUM_AGENTS, MAXIMUM_HISTORY,
+		NOTIFY, ADMINISTRATORS, SMTP_SERVER, SMTP_USER, SMTP_ADDRESS, VERBOSE
 	}
 	
 	public enum State { CLEAN, DIRTY }
@@ -50,6 +49,10 @@ public class Configuration {
 		optionContainer.getOptions().add(new Option(
 				OPTIONS.MAXIMUM_AGENTS.toString(), "Maximum number of parallel launches", 
 				Type.INTEGER, 3, 1, 10
+		));
+		optionContainer.getOptions().add(new Option(
+				OPTIONS.MAXIMUM_HISTORY.toString(), "Maximum number of launches in history (0 = unlimited)", 
+				Type.INTEGER, 1000, 0, 1000
 		));
 		optionContainer.getOptions().add(new Option(
 				OPTIONS.NOTIFY.toString(), "Enable mail notification for application",
