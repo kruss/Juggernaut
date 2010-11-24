@@ -8,7 +8,7 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-import operation.ConsoleOperationConfig;
+import operation.CommandOperationConfig;
 import operation.SampleOperationConfig;
 
 import lifecycle.LaunchManager;
@@ -113,7 +113,7 @@ public class Application {
 		
 		registry = new Registry();
 		registry.getOperationConfigs().add(new SampleOperationConfig());
-		registry.getOperationConfigs().add(new ConsoleOperationConfig());
+		registry.getOperationConfigs().add(new CommandOperationConfig());
 		registry.getTriggerConfigs().add(new IntervallTriggerConfig());
 		
 		launchManager = new LaunchManager();

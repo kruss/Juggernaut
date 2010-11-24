@@ -12,11 +12,11 @@ import data.AbstractTriggerConfig;
 import data.LaunchConfig;
 import util.Task;
 
-public class LaunchScheduler extends Task {
+public class SchedulerTask extends Task {
 
 	private Application application;
 	
-	public LaunchScheduler(){
+	public SchedulerTask(){
 		
 		this.application = Application.getInstance();
 		setName("Scheduler");

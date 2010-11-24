@@ -18,7 +18,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
-import lifecycle.LaunchScheduler;
+import lifecycle.SchedulerTask;
 import lifecycle.LaunchManager.LaunchInfo;
 
 import util.IChangedListener;
@@ -212,7 +212,8 @@ public class StatusPanel extends JPanel implements IChangedListener {
 	
 	public void triggerScheduler(){
 		
-		LaunchScheduler scheduler = new LaunchScheduler();
+		// TODO this should be done within task
+		SchedulerTask scheduler = new SchedulerTask();
 		scheduler.checkSchedules();
 	}
 	

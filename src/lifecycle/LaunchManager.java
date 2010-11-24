@@ -19,13 +19,13 @@ public class LaunchManager implements ILifecycleListener {
 	public static TriggerStatus INITIAL_TRIGGER;
 	
 	private Application application;
-	private LaunchScheduler scheduler;
+	private SchedulerTask scheduler;
 	private HashMap<String, String> cache;
 	private ArrayList<LaunchAgent> agents;
 	private ArrayList<IChangedListener> listeners;
 	private boolean active;
 	
-	public LaunchScheduler getScheduler(){ return scheduler; }
+	public SchedulerTask getScheduler(){ return scheduler; }
 	public synchronized HashMap<String, String> getCache(){ return cache; }
 	
 	public LaunchManager(){
@@ -61,7 +61,7 @@ public class LaunchManager implements ILifecycleListener {
 	
 	public synchronized void startScheduler(long delay){ 
 		if(scheduler == null){
-			scheduler = new LaunchScheduler();
+			scheduler = new SchedulerTask();
 			scheduler.asyncRun(delay); 
 		}
 	}

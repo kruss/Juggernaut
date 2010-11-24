@@ -1,6 +1,7 @@
 package util;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -90,7 +91,6 @@ public class StringTools {
 		return hour2millis(day * 24);
 	}
 
-	
 	/** get stack-trace of an exception */
 	public static String trace(Exception e){
 
@@ -109,5 +109,18 @@ public class StringTools {
 		if(len < stack.length){ trace.append("...\n"); }
 		
 		return trace.toString();
+	}
+	
+	public static String join(ArrayList<String> list, String delim){
+		
+		StringBuilder join = new StringBuilder();
+		for(int i=0; i<list.size(); i++){
+			if(i < list.size()-1){
+				join.append(list.get(i)+delim);
+			}else{
+				join.append(list.get(i));
+			}
+		}
+		return join.toString();
 	}
 }

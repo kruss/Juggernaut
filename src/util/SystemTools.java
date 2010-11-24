@@ -16,6 +16,16 @@ public class SystemTools {
 		return System.getProperty("os.name");
 	}
 	
+	/** answers if current os is windows */
+	public static boolean isWindowsOS(){
+		return getOSName().toLowerCase().contains("windows");
+	}
+	
+	/** answers if current os is linux */
+	public static boolean isLinuxOS(){
+		return getOSName().toLowerCase().contains("linux");
+	}
+	
 	/** get the local host-name */
 	public static String getHostName() throws UnknownHostException {
 		
