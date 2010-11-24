@@ -12,11 +12,11 @@ import data.AbstractTriggerConfig;
 import data.LaunchConfig;
 import util.Task;
 
-public class SchedulerTask extends Task {
+public class LaunchScheduler extends Task {
 
 	private Application application;
 	
-	public SchedulerTask(){
+	public LaunchScheduler(){
 		
 		this.application = Application.getInstance();
 		setName("Scheduler");
@@ -30,7 +30,7 @@ public class SchedulerTask extends Task {
 		cyclicDelay = application.getConfiguration().getSchedulerIntervall();
 	}
 
-	public synchronized void checkSchedules() {
+	public void checkSchedules() {
 		
 		application.getLogger().debug("Checking schedules");
 		ArrayList<LaunchConfig> launchConfigs = getRandomizedLaunchConfigs();

@@ -37,7 +37,7 @@ public class LaunchConfig implements Comparable<LaunchConfig> {
 		optionContainer.setDescription("the configuration of the launch");
 		optionContainer.getOptions().add(new Option(
 				OPTIONS.ACTIVE.toString(), "The launch's active state",
-				Type.BOOLEAN, false
+				Type.BOOLEAN, true
 		));
 		optionContainer.getOptions().add(new Option(
 				OPTIONS.DESCRIPTION.toString(), "The launch's description", 

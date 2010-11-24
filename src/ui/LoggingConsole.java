@@ -49,6 +49,13 @@ public class LoggingConsole extends JPanel implements ILoggingListener {
 		autoScrolling = true;
 		
 		popup = new JPopupMenu();
+		JMenuItem clearConsole = new JMenuItem("Clear");
+		clearConsole.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){ 
+				console.setText(""); 
+			}
+		});
+		popup.add(clearConsole);
 		JCheckBoxMenuItem pinConsole = new JCheckBoxMenuItem("Pin");
 		pinConsole.setSelected(!autoScrolling);
 		pinConsole.addItemListener(new ItemListener(){
@@ -59,13 +66,6 @@ public class LoggingConsole extends JPanel implements ILoggingListener {
 			}
 		});
 		popup.add(pinConsole);
-		JMenuItem clearConsole = new JMenuItem("Clear");
-		clearConsole.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){ 
-				console.setText(""); 
-			}
-		});
-		popup.add(clearConsole);
 		
 		console = new JTextArea();
 		console.setEditable(false);

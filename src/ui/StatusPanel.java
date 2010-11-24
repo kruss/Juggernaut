@@ -18,6 +18,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
+import lifecycle.LaunchScheduler;
 import lifecycle.LaunchManager.LaunchInfo;
 
 import util.IChangedListener;
@@ -203,7 +204,8 @@ public class StatusPanel extends JPanel implements IChangedListener {
 	
 	public void triggerScheduler(){
 		
-		application.getLaunchManager().getScheduler().checkSchedules();
+		LaunchScheduler scheduler = new LaunchScheduler();
+		scheduler.checkSchedules();
 	}
 	
 	public void stopLaunch(){

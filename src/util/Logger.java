@@ -72,19 +72,19 @@ public class Logger implements ILoggingProvider {
     
     private void writeLog(String text, Level level) {
 
-    	String time = "["+StringTools.getTextDate(new Date())+"]";
+    	String time = "["+StringTools.getTextDate(new Date())+"] ";
     	String log;
     	
 		if(level == Level.INFO){
 			log = "\n\t>>> "+text+" <<<\n\n";
 		}else if(level == Level.EMPHASISED){
-			log = time+" "+text.toUpperCase()+"\n";
+			log = time+text.toUpperCase()+"\n";
 		}else if(level == Level.ERROR){
-			log = time+" "+"!!!\n"+text+"\n!!!\n";
+			log = time+"!!!\n"+text+"\n!!!\n";
 		}else if(level == Level.DEBUG){
-			log = time+" ~> "+text+"\n";
+			log = time+"~> "+text+"\n";
 		}else{
-			log = time+" "+text+"\n";
+			log = time+text+"\n";
 		}
 		
 		if(mode != Mode.CONSOLE_ONLY && logfile != null){
