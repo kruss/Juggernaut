@@ -8,6 +8,7 @@ import data.AbstractOperationConfig;
 import data.LaunchConfig;
 import util.FileTools;
 import util.Logger;
+import util.StringTools;
 import util.Logger.Mode;
 import lifecycle.LaunchManager.TriggerStatus;
 import lifecycle.StatusManager.Status;
@@ -59,6 +60,9 @@ public class LaunchAgent extends AbstractLifecycleObject {
 		
 		logger.info("Launch ["+config.getName()+"]");
 		logger.log("Trigger: "+trigger.message);
+		logger.log("Clean: "+config.isClean());
+		logger.log("Timeout: "+StringTools.millis2min(config.getTimeout())+" min");
+		
 		boolean aboarding = false;
 		for(AbstractOperationConfig operationConfig : config.getOperationConfigs()){
 			
@@ -68,6 +72,8 @@ public class LaunchAgent extends AbstractLifecycleObject {
 						operation.getIndex()+"/"+config.getOperationConfigs().size()+
 						" Operation ["+operationConfig.getName()+"]"
 				);
+				logger.debug("Options:\n"+operationConfig.getOptionContainer().toString());
+				
 				if(operationConfig.isActive() && !aboarding){
 					
 					// start operation

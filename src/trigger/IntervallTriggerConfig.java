@@ -38,6 +38,7 @@ public class IntervallTriggerConfig extends AbstractTriggerConfig {
 		return "A trigger for a cyclic intervall";
 	}
 	
+	/** the total interval in millis */
 	public long getIntervall(){
 		
 		return
@@ -47,12 +48,7 @@ public class IntervallTriggerConfig extends AbstractTriggerConfig {
 	}
 	
 	@Override
-	public boolean isValid(){
-		return 
-			optionContainer.getOption(OPTIONS.DAYS.toString()).getIntegerValue() >= 0 &&
-			optionContainer.getOption(OPTIONS.HOURS.toString()).getIntegerValue() >= 0 &&
-			optionContainer.getOption(OPTIONS.MINUTES.toString()).getIntegerValue() >= 0;
-	}
+	public boolean isValid(){ return true; }
 	
 	@Override
 	public AbstractTrigger createTrigger() {

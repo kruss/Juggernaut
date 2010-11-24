@@ -42,4 +42,13 @@ public class OptionContainer {
 		}
 		return null;
 	}
+	
+	public String toString(){
+		
+		StringBuilder info = new StringBuilder();
+		for(Option option : options){
+			info.append(option.getName()+": "+option.getStringValue()+"\n");
+		}
+		return info.toString();
+	}
 }

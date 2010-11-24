@@ -51,9 +51,7 @@ public class SampleOperationConfig extends AbstractOperationConfig {
 	}
 	
 	@Override
-	public boolean isValid(){
-		return getIdleTime() >= 0;
-	}
+	public boolean isValid(){ return true; }
 	
 	@Override
 	public AbstractOperation createOperation(LaunchAgent parent) {

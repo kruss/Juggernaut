@@ -3,6 +3,8 @@ package data;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import util.StringTools;
+
 import lifecycle.LaunchAgent;
 import lifecycle.LaunchManager.TriggerStatus;
 
@@ -95,6 +97,11 @@ public class LaunchConfig implements Comparable<LaunchConfig> {
 		return optionContainer.getOption(OPTIONS.CLEAN.toString()).getBooleanValue();
 	}
 	
+	/** the timout in millis */
+	public long getTimeout() {
+		return StringTools.min2millis(optionContainer.getOption(OPTIONS.TIMEOUT.toString()).getIntegerValue());
+	}
+	
 	public void setDirty(boolean dirty){ this.dirty = dirty; }
 	public boolean isDirty(){ return dirty; }
 	
@@ -106,9 +113,7 @@ public class LaunchConfig implements Comparable<LaunchConfig> {
 		for(AbstractTriggerConfig config : triggers){
 			if(config.isActive() && !config.isValid()){ return false; }
 		}
-		
-		return
-			optionContainer.getOption(OPTIONS.TIMEOUT.toString()).getIntegerValue() >= 0;
+		return true;
 	}
 	
 	public OptionContainer getOptionContainer(){ return optionContainer; }
