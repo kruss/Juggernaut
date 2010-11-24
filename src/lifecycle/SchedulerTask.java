@@ -12,11 +12,11 @@ import data.AbstractTriggerConfig;
 import data.LaunchConfig;
 import util.Task;
 
-public class ScheduleTask extends Task {
+public class SchedulerTask extends Task {
 
 	private Application application;
 	
-	public ScheduleTask(){
+	public SchedulerTask(){
 		
 		this.application = Application.getInstance();
 		setName("Scheduler");
@@ -26,20 +26,24 @@ public class ScheduleTask extends Task {
 	@Override
 	protected void runTask() {
 		
+		checkSchedules();
+		cyclicDelay = application.getConfiguration().getSchedulerIntervall();
+	}
+
+	public synchronized void checkSchedules() {
+		
 		application.getLogger().debug("Checking schedules");
-		ArrayList<LaunchConfig> launchConfigs = getRandomizedConfigurations();
+		ArrayList<LaunchConfig> launchConfigs = getRandomizedLaunchConfigs();
 		for(LaunchConfig launchConfig : launchConfigs){
 			if(application.getLaunchManager().isReady()){
-				triggerLaunch(launchConfig);
+				checkSchedules(launchConfig);
 			}else{
 				break;
 			}
 		}
-
-		cyclicDelay = application.getConfiguration().getSchedulerIntervall();
 	}
 
-	private void triggerLaunch(LaunchConfig launchConfig) {
+	private void checkSchedules(LaunchConfig launchConfig) {
 		
 		for(AbstractTriggerConfig triggerConfig : launchConfig.getTriggerConfigs()){
 			AbstractTrigger trigger = triggerConfig.createTrigger();
@@ -62,7 +66,7 @@ public class ScheduleTask extends Task {
 		}
 	}
 	
-	public ArrayList<LaunchConfig> getRandomizedConfigurations(){
+	private ArrayList<LaunchConfig> getRandomizedLaunchConfigs(){
 		
 		ArrayList<LaunchConfig> configs = new ArrayList<LaunchConfig>();
 		for(LaunchConfig config : application.getConfiguration().getLaunchConfigs()){

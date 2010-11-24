@@ -19,13 +19,13 @@ public class LaunchManager implements ILifecycleListener {
 	public static TriggerStatus INITIAL_TRIGGER;
 	
 	private Application application;
-	private ScheduleTask scheduler;
+	private SchedulerTask scheduler;
 	private HashMap<String, String> cache;
 	private ArrayList<LaunchAgent> agents;
 	private ArrayList<IChangedListener> listeners;
 	private boolean active;
 	
-	public ScheduleTask getSchedulerTask(){ return scheduler; }
+	public SchedulerTask getScheduler(){ return scheduler; }
 	public synchronized HashMap<String, String> getCache(){ return cache; }
 	
 	public LaunchManager(){
@@ -55,20 +55,20 @@ public class LaunchManager implements ILifecycleListener {
 		active = false;
 		stopScheduler();
 		for(LaunchAgent agent : agents){
-			agent.terminate();
+			agent.terminate(true);
 		}
 	}
 	
 	public synchronized void startScheduler(long delay){ 
 		if(scheduler == null){
-			scheduler = new ScheduleTask();
+			scheduler = new SchedulerTask();
 			scheduler.start(delay); 
 		}
 	}
 	
 	public synchronized void stopScheduler(){ 
 		if(scheduler != null){
-			scheduler.terminate();
+			scheduler.terminate(true);
 			scheduler = null;
 		}
 	}
@@ -89,10 +89,10 @@ public class LaunchManager implements ILifecycleListener {
 		}
 	}
 	
-	public void stopLaunch(String id) {
+	public void stopLaunch(String id, boolean waitfor) {
 		
 		LaunchAgent agent = getAgent(id);
-		if(agent != null){ agent.terminate(); }
+		if(agent != null){ agent.terminate(waitfor); }
 	}
 	
 	public synchronized boolean isBusy() {

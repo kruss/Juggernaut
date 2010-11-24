@@ -1,9 +1,18 @@
 package ui;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.text.BadLocationException;
@@ -17,12 +26,13 @@ import util.ILoggingProvider;
 public class LoggingConsole extends JPanel implements ILoggingListener {
 
 	public static final int UNLIMITED = 0;
-	public static final int MAX_LINES = 1000;
+	public static final int MAX_LINES = 500;
 	
 	private static final long serialVersionUID = 1L;
 
 	private Application application;
 	private ILoggingProvider provider;
+	private JPopupMenu popup;
 	private JTextArea console;
 	
 	private int maxLines;
@@ -35,11 +45,37 @@ public class LoggingConsole extends JPanel implements ILoggingListener {
 		
 		application = Application.getInstance();
 		provider = null;
-		console = new JTextArea();
-		console.setEditable(false);
-		
 		maxLines = MAX_LINES;
 		autoScrolling = true;
+		
+		popup = new JPopupMenu();
+		JCheckBoxMenuItem pinConsole = new JCheckBoxMenuItem("Pin");
+		pinConsole.setSelected(!autoScrolling);
+		pinConsole.addItemListener(new ItemListener(){
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				JCheckBoxMenuItem item = (JCheckBoxMenuItem)e.getSource();
+				autoScrolling = !item.isSelected();
+			}
+		});
+		popup.add(pinConsole);
+		JMenuItem clearConsole = new JMenuItem("Clear");
+		clearConsole.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){ 
+				console.setText(""); 
+			}
+		});
+		popup.add(clearConsole);
+		
+		console = new JTextArea();
+		console.setEditable(false);
+		console.addMouseListener(new MouseAdapter(){
+			public void mouseClicked(MouseEvent e){
+				if(e.getButton() == MouseEvent.BUTTON3){
+					popup.show(e.getComponent(), e.getX(), e.getY());
+				}
+			}
+		});
 		
 		setLayout(new BorderLayout());
 		add(new JScrollPane(console), BorderLayout.CENTER);

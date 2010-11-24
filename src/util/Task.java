@@ -49,11 +49,11 @@ public abstract class Task extends Thread {
 		start();
 	}
 	
-	public void terminate(){
+	public void terminate(boolean waitfor){
 		
 		if(isAlive()){
 			interrupt();
-			while(isAlive()){ 
+			while(waitfor && isAlive()){ 
 				SystemTools.sleep(50);
 			}
 		}

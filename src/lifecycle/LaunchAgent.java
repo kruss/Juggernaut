@@ -93,7 +93,7 @@ public class LaunchAgent extends AbstractLifecycleObject {
 			}catch(InterruptedException e){
 				logger.emph("Interrupted");
 				operation.getStatusManager().setStatus(Status.CANCEL);
-				operation.terminate();
+				operation.terminate(true);
 				statusManager.setStatus(Status.CANCEL);
 			}finally{
 				

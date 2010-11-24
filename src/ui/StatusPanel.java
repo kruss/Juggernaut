@@ -3,15 +3,12 @@ package ui;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -40,8 +37,8 @@ public class StatusPanel extends JPanel implements IChangedListener {
 	private JTabbedPane loggingPanel;
 	private LoggingConsole applicationConsole;
 	private LoggingConsole launchConsole;
+	private JButton triggerScheduler;
 	private JButton stopLaunch;
-	private JCheckBox consoleScrolling;
 	
 	private ArrayList<LaunchInfo> launches;
 	
@@ -78,27 +75,20 @@ public class StatusPanel extends JPanel implements IChangedListener {
 		columnModel.getColumn(4).setMinWidth(150);
 			columnModel.getColumn(4).setMaxWidth(150);
 		
+		triggerScheduler = new JButton(" Trigger ");
+		triggerScheduler.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){ triggerScheduler(); }
+		});
+			
 		stopLaunch = new JButton(" Stop ");
 		stopLaunch.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){ stopLaunch(); }
 		});
 		
-		consoleScrolling = new JCheckBox("Pin");
-		consoleScrolling.setSelected(false);
-		consoleScrolling.setToolTipText("Pin console scrolling");
-		consoleScrolling.addItemListener(new ItemListener(){
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				boolean value = !((JCheckBox)e.getSource()).isSelected();
-				applicationConsole.setAutoScrolling(value);
-				launchConsole.setAutoScrolling(value);
-			}
-		});
-		
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+		buttonPanel.add(triggerScheduler);
 		buttonPanel.add(stopLaunch);
-		buttonPanel.add(consoleScrolling);
 		
 		JPanel topPanel = new JPanel(new BorderLayout());
 		topPanel.add(new JScrollPane(launchTable), BorderLayout.CENTER);
@@ -182,12 +172,11 @@ public class StatusPanel extends JPanel implements IChangedListener {
 				launchConsole.deregister();
 				launchConsole.initConsole(provider.getLogfile());
 				provider.addListener(launchConsole);
+				loggingPanel.setSelectedIndex(1);
 			}
-			loggingPanel.setSelectedIndex(1);
 		}else{
 			stopLaunch.setEnabled(false);
 			launchConsole.deregister();
-			loggingPanel.setSelectedIndex(0);
 		}		
 	}
 
@@ -212,11 +201,16 @@ public class StatusPanel extends JPanel implements IChangedListener {
 		return selected;
 	}
 	
+	public void triggerScheduler(){
+		
+		application.getLaunchManager().getScheduler().checkSchedules();
+	}
+	
 	public void stopLaunch(){
 		
 		LaunchInfo selected = getSelectedLaunch();
 		if(selected != null && UiTools.confirmDialog("Stop launch ["+selected.name+"]?")){
-			application.getLaunchManager().stopLaunch(selected.id);
+			application.getLaunchManager().stopLaunch(selected.id, false);
 		}
 	}
 }
