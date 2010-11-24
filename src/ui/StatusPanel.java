@@ -220,7 +220,7 @@ public class StatusPanel extends JPanel implements IChangedListener {
 		
 		LaunchInfo selected = getSelectedLaunch();
 		if(selected != null && UiTools.confirmDialog("Stop launch ["+selected.name+"]?")){
-			application.getLaunchManager().stopLaunch(selected.id, false);
+			application.getLaunchManager().stopLaunch(selected.id);
 		}
 	}
 }

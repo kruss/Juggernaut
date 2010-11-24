@@ -43,19 +43,30 @@ public abstract class Task extends Thread {
 		}
 	}
 	
-	public void start(long delay){
+	public void asyncRun(long delay){
 		
 		startupDelay = delay;
 		start();
 	}
 	
-	public void terminate(boolean waitfor){
+	public void syncRun(long delay) throws InterruptedException {
+		
+		asyncRun(delay);
+		join();
+	}
+	
+	public void asyncKill(){
 		
 		if(isAlive()){
 			interrupt();
-			while(waitfor && isAlive()){ 
-				SystemTools.sleep(50);
-			}
+		}
+	}
+	
+	public void syncKill(){
+		
+		asyncKill();
+		while(isAlive()){ 
+			SystemTools.sleep(50);
 		}
 	}
 	

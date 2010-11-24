@@ -55,20 +55,20 @@ public class LaunchManager implements ILifecycleListener {
 		active = false;
 		stopScheduler();
 		for(LaunchAgent agent : agents){
-			agent.terminate(true);
+			agent.syncKill();
 		}
 	}
 	
 	public synchronized void startScheduler(long delay){ 
 		if(scheduler == null){
 			scheduler = new LaunchScheduler();
-			scheduler.start(delay); 
+			scheduler.asyncRun(delay); 
 		}
 	}
 	
 	public synchronized void stopScheduler(){ 
 		if(scheduler != null){
-			scheduler.terminate(true);
+			scheduler.syncKill();
 			scheduler = null;
 		}
 	}
@@ -79,7 +79,7 @@ public class LaunchManager implements ILifecycleListener {
 			if(!isRunning(launch.getConfig().getId())){
 				agents.add(launch);
 				launch.addListener(this);
-				launch.start();
+				launch.asyncRun(0);
 				return new LaunchStatus("Launch started", true);
 			}else{
 				return new LaunchStatus("Already running", false);
@@ -89,10 +89,10 @@ public class LaunchManager implements ILifecycleListener {
 		}
 	}
 	
-	public void stopLaunch(String id, boolean waitfor) {
+	public void stopLaunch(String id) {
 		
 		LaunchAgent agent = getAgent(id);
-		if(agent != null){ agent.terminate(waitfor); }
+		if(agent != null){ agent.asyncKill(); }
 	}
 	
 	public synchronized boolean isBusy() {

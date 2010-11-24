@@ -71,8 +71,7 @@ public class LaunchAgent extends AbstractLifecycleObject {
 				if(operationConfig.isActive() && !aboarding){
 					
 					// start operation
-					operation.start();
-					operation.join();
+					operation.syncRun(0);
 					
 					// process status
 					Status operationStatus = operation.getStatusManager().getStatus();
@@ -93,7 +92,7 @@ public class LaunchAgent extends AbstractLifecycleObject {
 			}catch(InterruptedException e){
 				logger.emph("Interrupted");
 				operation.getStatusManager().setStatus(Status.CANCEL);
-				operation.terminate(true);
+				operation.syncKill();
 				statusManager.setStatus(Status.CANCEL);
 			}finally{
 				
