@@ -28,7 +28,6 @@ import data.OptionContainer;
 import util.IChangedListener;
 import util.KeyInput;
 
-
 public class OptionEditor extends JPanel {
 
 	private static final long serialVersionUID = 1L;
@@ -141,14 +140,17 @@ public class OptionEditor extends JPanel {
 	}
 
 	private Component createIntegerSpinnerPanel(final Option option) {
-
+		
 		SpinnerModel model = new SpinnerNumberModel(
 				option.getIntegerValue(),
-                Integer.MIN_VALUE,
-                Integer.MAX_VALUE,
+				option.getIntegerMinimum(),
+				option.getIntegerMaximum(),
                 1);  
 		final JSpinner component = new JSpinner(model);
-		component.setToolTipText(option.getDescription());
+		((JSpinner.DefaultEditor)component.getEditor()).getTextField().setColumns(8);
+		component.setToolTipText(
+				option.getDescription()+" <"+option.getIntegerMinimum()+" - "+option.getIntegerMaximum()+">"
+		);
 		component.addChangeListener(new ChangeListener(){
 			@Override
 			public void stateChanged(ChangeEvent e) {

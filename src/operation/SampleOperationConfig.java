@@ -26,7 +26,7 @@ public class SampleOperationConfig extends AbstractOperationConfig {
 		));
 		optionContainer.getOptions().add(new Option(
 				OPTIONS.IDLE.toString(), "Idle time in seconds", 
-				Type.INTEGER, 5
+				Type.INTEGER, 5, 0, 3600
 		));
 	}
 	

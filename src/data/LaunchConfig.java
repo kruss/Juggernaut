@@ -49,7 +49,7 @@ public class LaunchConfig implements Comparable<LaunchConfig> {
 		));
 		optionContainer.getOptions().add(new Option(
 				OPTIONS.TIMEOUT.toString(), "Timeout in minutes (0 = no timeout)", 
-				Type.INTEGER, 0
+				Type.INTEGER, 0, 0, 300
 		));
 		optionContainer.getOptions().add(new Option(
 				OPTIONS.NOTIFY.toString(), "Enable mail notification for launch",

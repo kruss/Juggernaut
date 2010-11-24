@@ -45,11 +45,11 @@ public class Configuration {
 		));
 		optionContainer.getOptions().add(new Option(
 				OPTIONS.SCHEDULER_INTERVALL.toString(), "The scheduler intervall in minutes", 
-				Type.INTEGER, 5
+				Type.INTEGER, 5, 1, 180
 		));
 		optionContainer.getOptions().add(new Option(
 				OPTIONS.MAXIMUM_AGENTS.toString(), "Maximum number of parallel launches", 
-				Type.INTEGER, 3
+				Type.INTEGER, 3, 1, 10
 		));
 		optionContainer.getOptions().add(new Option(
 				OPTIONS.NOTIFY.toString(), "Enable mail notification for application",
