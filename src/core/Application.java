@@ -3,6 +3,7 @@ package core;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -14,6 +15,7 @@ import operation.SampleOperationConfig;
 import lifecycle.LaunchManager;
 import trigger.IntervallTriggerConfig;
 import ui.Window;
+import util.PersistenceManager;
 import util.Logger;
 import util.SystemTools;
 import util.UiTools;
@@ -83,21 +85,21 @@ public class Application {
 	
 	private void initPersistence() throws Exception {
 		
-		File folder = new File(getOutputFolder());
-		if(!folder.isDirectory()){
-			folder.mkdirs();
-		}
-		// TODO clean legacy stuff
+		ArrayList<File> folders = new ArrayList<File>();
+		folders.add(new File(getDataFolder()));
+		folders.add(new File(getBuildFolder()));
+		folders.add(new File(getHistoryFolder()));
+		PersistenceManager.initialize(folders);
 		
 		logger = new Logger(Mode.FILE_AND_CONSOLE);
-		logger.setLogiFile(new File(getOutputFolder()+File.separator+Logger.OUTPUT_FILE));
+		logger.setLogiFile(new File(getDataFolder()+File.separator+Logger.OUTPUT_FILE));
 		logger.info(Constants.APP_FULL_NAME);
 		
-		File file = new File(getOutputFolder()+File.separator+Configuration.OUTPUT_FILE);
-		if(file.isFile()){
-			configuration = Configuration.load(file.getAbsolutePath());
+		File configurationFile = new File(getDataFolder()+File.separator+Configuration.OUTPUT_FILE);
+		if(configurationFile.isFile()){
+			configuration = Configuration.load(configurationFile.getAbsolutePath());
 		}else{
-			configuration = new Configuration(file.getAbsolutePath());
+			configuration = new Configuration(configurationFile.getAbsolutePath());
 			configuration.save();
 		}
 		
@@ -107,6 +109,7 @@ public class Application {
 	private void shutdownPersistence() throws Exception {
 		
 		configuration.chekForSave();
+		PersistenceManager.cleanup(configuration, new File(getBuildFolder()), logger);
 	}
 	
 	private void initSystems() {
@@ -149,8 +152,16 @@ public class Application {
 		UiTools.errorDialog(e.getClass().getSimpleName()+"\n\n"+e.getMessage());
 	}
 	
-	public String getOutputFolder(){
-		return SystemTools.getWorkingDir()+File.separator+Constants.OUTPUT_FOLDER;
+	public String getDataFolder(){
+		return SystemTools.getWorkingDir()+File.separator+Constants.DATA_FOLDER;
+	}
+	
+	public String getBuildFolder(){
+		return SystemTools.getWorkingDir()+File.separator+Constants.BUILD_FOLDER;
+	}
+	
+	public String getHistoryFolder(){
+		return SystemTools.getWorkingDir()+File.separator+Constants.HISTORY_FOLDER;
 	}
 
 	/** drop any unsaved changes */

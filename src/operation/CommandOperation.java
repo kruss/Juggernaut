@@ -30,7 +30,7 @@ public class CommandOperation extends AbstractOperation {
 		CommandTask commandTask = new CommandTask(
 				command, 
 				arguments,
-				parent.getOutputFolder()+File.separator+directory, 
+				parent.getFolder()+File.separator+directory, 
 				logger
 		);
 		commandTask.syncRun(0);

@@ -29,11 +29,11 @@ public class LaunchAgent extends AbstractLifecycleObject {
 		
 		setName("Launch("+config.getName()+")");
 		logger = new Logger(Mode.FILE_ONLY);
-		logger.setLogiFile(new File(getLogFile()));
+		logger.setLogiFile(new File(getLogfile()));
 		
 		propertyManager = new PropertyManager();
 		propertyManager.addProperty(config.getId(), "Name", config.getName());
-		propertyManager.addProperty(config.getId(), "Folder", getOutputFolder());
+		propertyManager.addProperty(config.getId(), "Folder", getFolder());
 		propertyManager.addProperty(config.getId(), "Trigger", trigger.message);
 		propertyManager.addProperty(config.getId(), "Clean", ""+config.isClean());
 		propertyManager.addProperty(config.getId(), "Timeout", StringTools.millis2min(config.getTimeout())+" min");
@@ -46,12 +46,12 @@ public class LaunchAgent extends AbstractLifecycleObject {
 	public PropertyManager getPropertyManager(){ return propertyManager; }
 	
 	@Override
-	public String getOutputFolder() {
-		return Application.getInstance().getOutputFolder()+File.separator+config.getId();
+	public String getFolder() {
+		return Application.getInstance().getBuildFolder()+File.separator+config.getId();
 	}
 	
-	public String getLogFile() {
-		return Application.getInstance().getOutputFolder()+File.separator+config.getId()+".log";
+	public String getLogfile() {
+		return Application.getInstance().getBuildFolder()+File.separator+config.getId()+".log";
 	}
 
 	@Override
@@ -61,7 +61,7 @@ public class LaunchAgent extends AbstractLifecycleObject {
 	protected void init() throws Exception {
 		
 		// setup launch-folder
-		File folder = new File(getOutputFolder());
+		File folder = new File(getFolder());
 		if(config.isClean() && folder.isDirectory()){
 			FileTools.deleteFolder(folder.getAbsolutePath());
 		}

@@ -41,8 +41,8 @@ public abstract class AbstractOperation extends AbstractLifecycleObject {
 	public void setParent(LaunchAgent parent){ this.parent = parent; }
 	
 	@Override
-	public String getOutputFolder() {
-		return parent.getOutputFolder();
+	public String getFolder() {
+		return parent.getFolder();
 	}
 	
 	@Override

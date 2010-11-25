@@ -32,7 +32,7 @@ public abstract class AbstractLifecycleObject extends Task {
 		}
 	}
 	
-	public abstract String getOutputFolder();
+	public abstract String getFolder();
 	public abstract Logger getLogger();
 	
 	protected abstract void init() throws Exception;
