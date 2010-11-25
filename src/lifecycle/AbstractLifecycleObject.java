@@ -1,7 +1,10 @@
 package lifecycle;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+
+import data.Artifact;
 
 import lifecycle.ILifecycleListener.Lifecycle;
 import lifecycle.StatusManager.Status;
@@ -11,16 +14,19 @@ import util.Task;
 public abstract class AbstractLifecycleObject extends Task {
 	
 	protected StatusManager statusManager;
-	protected ArtifactManager artifactManager;
+	protected ArrayList<Artifact> artifacts;
 	private ArrayList<ILifecycleListener> listeners;
 	
 	public StatusManager getStatusManager(){ return statusManager; }
-	public ArtifactManager getArtifactManager(){ return artifactManager; }
+	public ArrayList<Artifact> getArtifacts(){ 
+		Collections.sort(artifacts);
+		return artifacts; 
+	}
 	
 	public AbstractLifecycleObject(){
 		
 		statusManager = new StatusManager(this);
-		artifactManager = new ArtifactManager(this);
+		artifacts = new ArrayList<Artifact>();
 		listeners = new ArrayList<ILifecycleListener>();
 	}
 	

@@ -11,7 +11,7 @@ public class StringTools {
 	private static final int MAX_EXCEPTION_TRACE = 25;
 
 	/** get date of format e.g: 2008.11.22_02.52.11 */
-	public String getFileSystemDate(Date date){
+	public static String getFileSystemDate(Date date){
 
 		GregorianCalendar calendar = new GregorianCalendar();
 		calendar.setTime(date);
@@ -25,6 +25,22 @@ public class StringTools {
 			df2.format(calendar.get(Calendar.MINUTE))+"."+
 			df2.format(calendar.get(Calendar.SECOND));
 
+	}
+	
+	/** parse string of format e.g: 2008.11.22_02.52.11 */
+	public static Date parseFileSystemDate(String dateString){
+
+		GregorianCalendar calendar = new GregorianCalendar();
+		calendar.clear();
+		calendar.set(
+			new Integer(dateString.substring(0, 4)).intValue(), 
+			new Integer(dateString.substring(5, 7)).intValue()-1, 
+			new Integer(dateString.substring(8, 10)).intValue(), 
+			new Integer(dateString.substring(11, 13)).intValue(), 
+			new Integer(dateString.substring(14, 16)).intValue(), 
+			new Integer(dateString.substring(17, 19)).intValue()
+		);
+		return calendar.getTime();
 	}
 	
 	/** get date of format e.g: 22.11.2008 02:52:11 */

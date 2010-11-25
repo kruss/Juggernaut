@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import core.Configuration;
 import data.LaunchConfig;
 
+// TODO temp draft
 public class PersistenceManager {
 	
 	public static void initialize(ArrayList<File> folders) {

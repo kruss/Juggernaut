@@ -11,6 +11,7 @@ public abstract class AbstractOperation extends AbstractLifecycleObject {
 	protected transient Logger logger;
 	protected AbstractOperationConfig config;
 	
+	public LaunchAgent getParent(){ return parent; }
 	public AbstractOperationConfig getConfig(){ return config; }
 
 	public AbstractOperation(LaunchAgent parent, AbstractOperationConfig config){

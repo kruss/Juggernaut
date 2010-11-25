@@ -46,12 +46,14 @@ public class Application {
 	private Logger logger;
 	private Window window;
 	private Configuration configuration;
+	private History history;
 	private Registry registry;
 	private LaunchManager launchManager;
 	
 	public Logger getLogger(){ return logger; }
 	public Window getWindow(){ return window; }
 	public Configuration getConfiguration(){ return configuration; }
+	public History getHistory(){ return history; }
 	public Registry getRegistry(){ return registry; }
 	public LaunchManager getLaunchManager(){ return launchManager; }
 	
@@ -101,9 +103,16 @@ public class Application {
 		}else{
 			configuration = new Configuration(configurationFile.getAbsolutePath());
 			configuration.save();
-		}
-		
+		}		
 		Logger.VERBOSE = configuration.isVerbose();
+		
+		File historyFile = new File(getDataFolder()+File.separator+History.OUTPUT_FILE);
+		if(historyFile.isFile()){
+			history = History.load(historyFile.getAbsolutePath());
+		}else{
+			history = new History(historyFile.getAbsolutePath());
+			history.save();
+		}
 	}
 	
 	private void shutdownPersistence() throws Exception {

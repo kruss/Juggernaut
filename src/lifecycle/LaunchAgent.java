@@ -7,7 +7,10 @@ import java.util.HashMap;
 import core.Application;
 import data.AbstractOperation;
 import data.AbstractOperationConfig;
+import data.Artifact;
+import data.HistoryEntry;
 import data.LaunchConfig;
+import data.Artifact.Attachment;
 import util.FileTools;
 import util.Logger;
 import util.StringTools;
@@ -20,6 +23,7 @@ public class LaunchAgent extends AbstractLifecycleObject {
 	private LaunchConfig config;
 	private TriggerStatus triggerStatus;
 	protected PropertyManager propertyManager;
+	private ArrayList<AbstractOperation> operations;
 	private Logger logger;
 	
 	public LaunchAgent(LaunchConfig config, TriggerStatus trigger){
@@ -39,11 +43,13 @@ public class LaunchAgent extends AbstractLifecycleObject {
 		propertyManager.addProperty(config.getId(), "Timeout", StringTools.millis2min(config.getTimeout())+" min");
 		
 		statusManager.setProgressMax(config.getOperationConfigs().size());
+		operations = new ArrayList<AbstractOperation>();
 	}
 	
 	public LaunchConfig getConfig(){ return config; }
 	public TriggerStatus getTriggerStatus(){ return triggerStatus; }
 	public PropertyManager getPropertyManager(){ return propertyManager; }
+	public ArrayList<AbstractOperation> getOperations(){ return operations; }
 	
 	@Override
 	public String getFolder() {
@@ -68,6 +74,16 @@ public class LaunchAgent extends AbstractLifecycleObject {
 		if(!folder.isDirectory()){
 			FileTools.createFolder(folder.getAbsolutePath());
 		}
+		
+		// create operations
+		for(AbstractOperationConfig operationConfig : config.getOperationConfigs()){
+			AbstractOperation operation = operationConfig.createOperation(this);
+			operations.add(operation);
+			propertyManager.addProperties(
+					operationConfig.getId(), 
+					operationConfig.getOptionContainer().getProperties()
+			);
+		}
 	}
 	
 	@Override
@@ -77,29 +93,21 @@ public class LaunchAgent extends AbstractLifecycleObject {
 		debugProperties(propertyManager.getProperties(config.getId()));
 		
 		boolean aboarding = false;
-		for(AbstractOperationConfig operationConfig : config.getOperationConfigs()){
-			
-			AbstractOperation operation = operationConfig.createOperation(this);
-			propertyManager.addProperties(
-					operationConfig.getId(), 
-					operationConfig.getOptionContainer().getProperties()
-			);
-			
+		for(AbstractOperation operation : operations){
 			try{
 				logger.info(
 						operation.getIndex()+"/"+config.getOperationConfigs().size()+
-						" Operation ["+operationConfig.getName()+"]"
+						" Operation ["+operation.getConfig().getName()+"]"
 				);
-				debugProperties(propertyManager.getProperties(operationConfig.getId()));
-				
-				if(operationConfig.isActive() && !aboarding){
+				debugProperties(propertyManager.getProperties(operation.getConfig().getId()));
+				if(operation.getConfig().isActive() && !aboarding){
 					
 					// start operation
 					operation.syncRun(0);
 					
 					// process status
 					propertyManager.addProperties(
-							operationConfig.getId(), 
+							operation.getConfig().getId(), 
 							operation.getStatusManager().getProperties()
 					);
 					Status operationStatus = operation.getStatusManager().getStatus();
@@ -142,15 +150,30 @@ public class LaunchAgent extends AbstractLifecycleObject {
 				config.getId(), 
 				statusManager.getProperties()
 		);
+		logger.info("Status: "+statusManager.getStatus().toString());
 		
-		// perform output
-		// TODO
 		
 		// perform notification
 		// TODO
+
+		// create artifacts
+		Artifact logfileArtifact = new Artifact(
+				Artifact.Type.GENERATED.toString(), "Logifile"
+		);
+		Attachment logfileAttachment = logfileArtifact.new Attachment(
+				Artifact.Name.LOGFILE.toString(), logger.getLogfile().getAbsolutePath()
+		);
+		logfileArtifact.attachments.add(logfileAttachment);
+		artifacts.add(logfileArtifact);
 		
-		// final status
-		logger.info("Status: "+statusManager.getStatus().toString());
+		// perform output
+		HistoryEntry entry = new HistoryEntry(this);
+		try{ 
+			application.getHistory().addEntry(entry); 
+		}catch(Exception e){
+			logger.error(e);
+		}
+		
 		logger.clearListeners();
 	}
 	
