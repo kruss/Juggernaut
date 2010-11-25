@@ -12,20 +12,15 @@ public abstract class AbstractLifecycleObject extends Task {
 	
 	protected StatusManager statusManager;
 	protected ArtifactManager artifactManager;
-	protected PropertyManager propertyManager;
-	
 	private ArrayList<ILifecycleListener> listeners;
 	
 	public StatusManager getStatusManager(){ return statusManager; }
 	public ArtifactManager getArtifactManager(){ return artifactManager; }
-	public PropertyManager getPropertyManager(){ return propertyManager; }
 	
 	public AbstractLifecycleObject(){
 		
 		statusManager = new StatusManager(this);
 		artifactManager = new ArtifactManager(this);
-		propertyManager = new PropertyManager(this);
-		
 		listeners = new ArrayList<ILifecycleListener>();
 	}
 	

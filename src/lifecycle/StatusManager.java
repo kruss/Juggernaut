@@ -1,6 +1,9 @@
 package lifecycle;
 
 import java.util.Date;
+import java.util.HashMap;
+
+import util.StringTools;
 
 import lifecycle.ILifecycleListener.Lifecycle;
 
@@ -84,4 +87,20 @@ public class StatusManager {
 		}
 	}
 	public Date getEnd(){ return end; }
+	
+	public HashMap<String, String> getProperties(){
+		
+		HashMap<String, String> map = new HashMap<String, String>();
+		map.put("Status", status.toString());
+		if(start != null){
+			map.put("Start", StringTools.getTextDate(start));
+		}
+		if(end != null){
+			map.put("End", StringTools.getTextDate(end));
+		}
+		if(start != null &&end != null){
+			map.put("Time", StringTools.getTimeDiff(start, end)+" min");
+		}
+		return map;
+	}
 }

@@ -15,6 +15,8 @@ public class CommandStreamer extends Task {
 		this.name = name;
 		this.stream = stream;
 		this.logger = logger;
+		
+		setName("Stream("+name+")");
 	}
 	
 	@Override
@@ -26,7 +28,7 @@ public class CommandStreamer extends Task {
 	    	
 	        String line=null;
 	        while( (line = bufferedReader.readLine()) != null){
-	        	logger.debug(name+": "+line);
+	        	logger.log(name+": "+line);
 	        }
 	        
 			bufferedReader.close();

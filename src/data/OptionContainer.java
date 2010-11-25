@@ -1,6 +1,7 @@
 package data;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 
@@ -43,12 +44,12 @@ public class OptionContainer {
 		return null;
 	}
 	
-	public String toString(){
+	public HashMap<String, String> getProperties(){
 		
-		StringBuilder info = new StringBuilder();
+		HashMap<String, String> map = new HashMap<String, String>();
 		for(Option option : options){
-			info.append(option.getName()+": "+option.getStringValue()+"\n");
+			map.put(option.getName(), option.getStringValue());
 		}
-		return info.toString();
+		return map;
 	}
 }

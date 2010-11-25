@@ -16,8 +16,13 @@ public abstract class AbstractOperation extends AbstractLifecycleObject {
 	public AbstractOperation(LaunchAgent parent, AbstractOperationConfig config){
 		
 		this.parent = parent;
+		this.logger = parent.getLogger();
 		this.config = config.clone();
+		
 		setName(parent.getName()+"::Opperation("+getIndex()+")");
+		parent.getPropertyManager().addProperties(
+				config.getId(), config.getOptionContainer().getProperties()
+		);
 	}
 	
 	/** returns the 1-based index of this operation within the launch */
@@ -44,12 +49,8 @@ public abstract class AbstractOperation extends AbstractLifecycleObject {
 	public Logger getLogger() { return logger; }
 	
 	@Override
-	protected void init() throws Exception {
-		logger = parent.getLogger();
-	}
+	protected void init() throws Exception {}
 	
 	@Override
-	protected void finish() {
-		// TODO Auto-generated method stub
-	}
+	protected void finish() {}
 }

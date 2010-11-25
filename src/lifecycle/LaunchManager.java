@@ -75,7 +75,7 @@ public class LaunchManager implements ILifecycleListener {
 
 	public synchronized LaunchStatus runLaunch(LaunchAgent launch) {
 		
-		if(isReady() || launch.getTrigger() == USER_TRIGGER){
+		if(isReady() || launch.getTriggerStatus() == USER_TRIGGER){
 			if(!isRunning(launch.getConfig().getId())){
 				agents.add(launch);
 				launch.addListener(this);

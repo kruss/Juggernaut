@@ -54,7 +54,7 @@ public class StringTools {
 	}
 	
 	/** get time difference in minutes */
-	public static int TimeDiff(Date start, Date end) {
+	public static int getTimeDiff(Date start, Date end) {
 
 		return (int)((end.getTime() - start.getTime()) / (1000 * 60));
 	}

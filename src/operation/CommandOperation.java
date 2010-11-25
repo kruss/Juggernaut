@@ -1,6 +1,7 @@
 package operation;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import util.CommandTask;
 import lifecycle.LaunchAgent;
@@ -19,14 +20,22 @@ public class CommandOperation extends AbstractOperation {
 	@Override
 	protected void execute() throws Exception {
 		
-		CommandTask command = new CommandTask(
-				config.getCommand(), config.getArguments(),
-				parent.getOutputFolder()+File.separator+config.getDirectory(), 
+		String command = parent.getPropertyManager().expand(config.getCommand());
+		ArrayList<String> arguments = new ArrayList<String>();
+		for(String argument : config.getArguments()){
+			arguments.add(parent.getPropertyManager().expand(argument));
+		}
+		String directory = parent.getPropertyManager().expand(config.getDirectory());
+		
+		CommandTask commandTask = new CommandTask(
+				command, 
+				arguments,
+				parent.getOutputFolder()+File.separator+directory, 
 				logger
 		);
-		command.syncRun(0);
+		commandTask.syncRun(0);
 		
-		if(command.hasSucceded()){
+		if(commandTask.hasSucceded()){
 			statusManager.setStatus(Status.SUCCEED);
 		}else{
 			statusManager.setStatus(Status.ERROR);

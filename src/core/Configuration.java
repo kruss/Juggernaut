@@ -26,7 +26,7 @@ public class Configuration {
 	}
 	
 	public enum State { CLEAN, DIRTY }
-	public static final String OUTPUT_FILE = "configuration.xml";
+	public static final String OUTPUT_FILE = "Configuration.xml";
 	
 	private OptionContainer optionContainer;
 	private ArrayList<LaunchConfig> launchConfigs;

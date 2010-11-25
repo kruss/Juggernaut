@@ -23,6 +23,7 @@ public class CommandTask extends Task {
 		this.path = path;
 		this.logger = logger;
 
+		setName("Command("+command+")");
 		value = Constants.PROCESS_NOK;
 	}
 	
@@ -39,6 +40,7 @@ public class CommandTask extends Task {
 			
 			logger.log("command: "+commandline);
 			logger.log("path: "+path);
+			
 			Process process = processBuilder.start();
 			CommandStreamer errorStream = new CommandStreamer("ERR", process.getErrorStream(), logger);            
 			CommandStreamer inputStream = new CommandStreamer("CMD", process.getInputStream(), logger);
@@ -48,7 +50,6 @@ public class CommandTask extends Task {
 			try{
 				process.waitFor();
 				value = process.exitValue();
-				logger.log("return: "+value);
 			}catch(InterruptedException e){ 
 				process.destroy();	 // not destroying sub-processes on windows
 			}
@@ -59,6 +60,8 @@ public class CommandTask extends Task {
 			
 		}catch(Exception e){
 			logger.error(e);
+		}finally{
+			logger.log("return: "+value);
 		}
 	}
 

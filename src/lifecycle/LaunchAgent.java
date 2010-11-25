@@ -1,6 +1,8 @@
 package lifecycle;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import core.Application;
 import data.AbstractOperation;
@@ -16,22 +18,40 @@ import lifecycle.StatusManager.Status;
 public class LaunchAgent extends AbstractLifecycleObject {
 
 	private LaunchConfig config;
-	private TriggerStatus trigger;
+	private TriggerStatus triggerStatus;
+	protected PropertyManager propertyManager;
 	private Logger logger;
 	
 	public LaunchAgent(LaunchConfig config, TriggerStatus trigger){
 
 		this.config = config.clone();
-		this.trigger = trigger;
+		this.triggerStatus = trigger;
+		
 		setName("Launch("+config.getName()+")");
+		logger = new Logger(Mode.FILE_ONLY);
+		logger.setLogiFile(new File(getLogFile()));
+		
+		propertyManager = new PropertyManager();
+		propertyManager.addProperty(config.getId(), "Name", config.getName());
+		propertyManager.addProperty(config.getId(), "Folder", getOutputFolder());
+		propertyManager.addProperty(config.getId(), "Trigger", trigger.message);
+		propertyManager.addProperty(config.getId(), "Clean", ""+config.isClean());
+		propertyManager.addProperty(config.getId(), "Timeout", StringTools.millis2min(config.getTimeout())+" min");
+		
+		statusManager.setProgressMax(config.getOperationConfigs().size());
 	}
 	
 	public LaunchConfig getConfig(){ return config; }
-	public TriggerStatus getTrigger(){ return trigger; }
+	public TriggerStatus getTriggerStatus(){ return triggerStatus; }
+	public PropertyManager getPropertyManager(){ return propertyManager; }
 	
 	@Override
 	public String getOutputFolder() {
 		return Application.getInstance().getOutputFolder()+File.separator+config.getId();
+	}
+	
+	public String getLogFile() {
+		return Application.getInstance().getOutputFolder()+File.separator+config.getId()+".log";
 	}
 
 	@Override
@@ -48,31 +68,29 @@ public class LaunchAgent extends AbstractLifecycleObject {
 		if(!folder.isDirectory()){
 			FileTools.createFolder(folder.getAbsolutePath());
 		}
-		
-		// setup launch-logger
-		logger = new Logger(Mode.FILE_ONLY);
-		logger.setLogiFile(new File(getOutputFolder()+File.separator+Logger.OUTPUT_FILE));
-		statusManager.setProgressMax(config.getOperationConfigs().size());
 	}
 	
 	@Override
 	protected void execute() throws Exception {
 		
 		logger.info("Launch ["+config.getName()+"]");
-		logger.log("Trigger: "+trigger.message);
-		logger.log("Clean: "+config.isClean());
-		logger.log("Timeout: "+StringTools.millis2min(config.getTimeout())+" min");
+		debugProperties(propertyManager.getProperties(config.getId()));
 		
 		boolean aboarding = false;
 		for(AbstractOperationConfig operationConfig : config.getOperationConfigs()){
 			
 			AbstractOperation operation = operationConfig.createOperation(this);
+			propertyManager.addProperties(
+					operationConfig.getId(), 
+					operationConfig.getOptionContainer().getProperties()
+			);
+			
 			try{
 				logger.info(
 						operation.getIndex()+"/"+config.getOperationConfigs().size()+
 						" Operation ["+operationConfig.getName()+"]"
 				);
-				logger.debug("Options:\n"+operationConfig.getOptionContainer().toString());
+				debugProperties(propertyManager.getProperties(operationConfig.getId()));
 				
 				if(operationConfig.isActive() && !aboarding){
 					
@@ -80,6 +98,10 @@ public class LaunchAgent extends AbstractLifecycleObject {
 					operation.syncRun(0);
 					
 					// process status
+					propertyManager.addProperties(
+							operationConfig.getId(), 
+							operation.getStatusManager().getProperties()
+					);
 					Status operationStatus = operation.getStatusManager().getStatus();
 					if(operationStatus == Status.ERROR && operation.getConfig().isCritical()){
 						logger.emph("Critical operation failed");
@@ -115,6 +137,12 @@ public class LaunchAgent extends AbstractLifecycleObject {
 	@Override
 	protected void finish() {
 
+		// process status
+		propertyManager.addProperties(
+				config.getId(), 
+				statusManager.getProperties()
+		);
+		
 		// perform output
 		// TODO
 		
@@ -124,5 +152,15 @@ public class LaunchAgent extends AbstractLifecycleObject {
 		// final status
 		logger.info("Status: "+statusManager.getStatus().toString());
 		logger.clearListeners();
+	}
+	
+	private void debugProperties(HashMap<String, String> properties) {
+		
+		StringBuilder info = new StringBuilder();
+		ArrayList<String> keys = PropertyManager.getKeys(properties);
+		for(String key : keys){
+			info.append("\t"+key+": "+properties.get(key)+"\n");
+		}
+		logger.debug("Properties [\n"+info.toString()+"]");
 	}
 }
