@@ -1,0 +1,346 @@
+<core.Configuration>
+  <optionContainer>
+    <description>The application preferences</description>
+    <options>
+      <data.Option>
+        <name>SCHEDULER</name>
+        <description>Run the launch scheduler</description>
+        <type>BOOLEAN</type>
+        <value>false</value>
+        <properties/>
+      </data.Option>
+      <data.Option>
+        <name>SCHEDULER_INTERVALL</name>
+        <description>The scheduler intervall in minutes</description>
+        <type>INTEGER</type>
+        <value>5</value>
+        <properties>
+          <entry>
+            <string>INTEGER_MAX</string>
+            <string>180</string>
+          </entry>
+          <entry>
+            <string>INTEGER_MIN</string>
+            <string>1</string>
+          </entry>
+        </properties>
+      </data.Option>
+      <data.Option>
+        <name>MAXIMUM_AGENTS</name>
+        <description>Maximum number of parallel launches</description>
+        <type>INTEGER</type>
+        <value>3</value>
+        <properties>
+          <entry>
+            <string>INTEGER_MAX</string>
+            <string>10</string>
+          </entry>
+          <entry>
+            <string>INTEGER_MIN</string>
+            <string>1</string>
+          </entry>
+        </properties>
+      </data.Option>
+      <data.Option>
+        <name>MAXIMUM_HISTORY</name>
+        <description>Maximum number of launches in history (0 = unlimited)</description>
+        <type>INTEGER</type>
+        <value>1000</value>
+        <properties>
+          <entry>
+            <string>INTEGER_MAX</string>
+            <string>1000</string>
+          </entry>
+          <entry>
+            <string>INTEGER_MIN</string>
+            <string>0</string>
+          </entry>
+        </properties>
+      </data.Option>
+      <data.Option>
+        <name>NOTIFY</name>
+        <description>Enable mail notification for application</description>
+        <type>BOOLEAN</type>
+        <value>false</value>
+        <properties/>
+      </data.Option>
+      <data.Option>
+        <name>ADMINISTRATORS</name>
+        <description>mail-list of application admins (comma seperated)</description>
+        <type>TEXT</type>
+        <value></value>
+        <properties/>
+      </data.Option>
+      <data.Option>
+        <name>SMTP_SERVER</name>
+        <description>The SMTP-Server for notifications</description>
+        <type>TEXT</type>
+        <value></value>
+        <properties/>
+      </data.Option>
+      <data.Option>
+        <name>SMTP_USER</name>
+        <description>The SMTP-User for notifications</description>
+        <type>TEXT</type>
+        <value></value>
+        <properties/>
+      </data.Option>
+      <data.Option>
+        <name>SMTP_ADDRESS</name>
+        <description>The SMTP-Address for notifications</description>
+        <type>TEXT</type>
+        <value>SMTP@Juggernaut</value>
+        <properties/>
+      </data.Option>
+      <data.Option>
+        <name>VERBOSE</name>
+        <description>Verbose logging shows more details on console</description>
+        <type>BOOLEAN</type>
+        <value>true</value>
+        <properties/>
+      </data.Option>
+    </options>
+  </optionContainer>
+  <launchConfigs>
+    <data.LaunchConfig>
+      <id>288de585-e4a2-40a1-91b9-4937562ba1ea</id>
+      <name>test-1</name>
+      <optionContainer>
+        <description>the configuration of the launch</description>
+        <options>
+          <data.Option>
+            <name>ACTIVE</name>
+            <description>The launch&apos;s active state</description>
+            <type>BOOLEAN</type>
+            <value>true</value>
+            <properties/>
+          </data.Option>
+          <data.Option>
+            <name>DESCRIPTION</name>
+            <description>The launch&apos;s description</description>
+            <type>TEXT</type>
+            <value></value>
+            <properties/>
+          </data.Option>
+          <data.Option>
+            <name>CLEAN</name>
+            <description>Clean launch-folder on start</description>
+            <type>BOOLEAN</type>
+            <value>true</value>
+            <properties/>
+          </data.Option>
+          <data.Option>
+            <name>TIMEOUT</name>
+            <description>Timeout in minutes (0 = no timeout)</description>
+            <type>INTEGER</type>
+            <value>0</value>
+            <properties>
+              <entry>
+                <string>INTEGER_MAX</string>
+                <string>300</string>
+              </entry>
+              <entry>
+                <string>INTEGER_MIN</string>
+                <string>0</string>
+              </entry>
+            </properties>
+          </data.Option>
+          <data.Option>
+            <name>NOTIFY</name>
+            <description>Enable mail notification for launch</description>
+            <type>BOOLEAN</type>
+            <value>false</value>
+            <properties/>
+          </data.Option>
+          <data.Option>
+            <name>ADMINISTRATORS</name>
+            <description>mail-list of launch admins (comma seperated)</description>
+            <type>TEXT</type>
+            <value></value>
+            <properties/>
+          </data.Option>
+          <data.Option>
+            <name>MESSAGE</name>
+            <description>Optional notification message</description>
+            <type>TEXTAREA</type>
+            <value></value>
+            <properties/>
+          </data.Option>
+        </options>
+      </optionContainer>
+      <operations>
+        <operation.CommandOperationConfig>
+          <id>fa955eeb-762f-4b23-8f83-8c96af00fb1b</id>
+          <optionContainer>
+            <description>An operation to execute a command</description>
+            <options>
+              <data.Option>
+                <name>ACTIVE</name>
+                <description>The operation&apos;s active state</description>
+                <type>BOOLEAN</type>
+                <value>true</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>CRITICAL</name>
+                <description>Errors will aboard the launch</description>
+                <type>BOOLEAN</type>
+                <value>false</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>COMMAND</name>
+                <description>The command to execute</description>
+                <type>TEXT</type>
+                <value>svn</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>DIRECTORY</name>
+                <description>The command&apos;s directory within the launch-folder</description>
+                <type>TEXT</type>
+                <value></value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>ARGUMENTS</name>
+                <description>The command&apos;s arguments (linewise, commented with &apos;//&apos;)</description>
+                <type>TEXTAREA</type>
+                <value>checkout
+svn://10.40.38.84:3690/cppdemo/trunk
+./</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>OUTPUT</name>
+                <description>List of glob-pattern to collect output (comma seperated)</description>
+                <type>TEXT</type>
+                <value></value>
+                <properties/>
+              </data.Option>
+            </options>
+          </optionContainer>
+        </operation.CommandOperationConfig>
+        <operation.CommandOperationConfig>
+          <id>6eb7c995-af40-4d52-85a5-32ae57451977</id>
+          <optionContainer>
+            <description>An operation to execute a command</description>
+            <options>
+              <data.Option>
+                <name>ACTIVE</name>
+                <description>The operation&apos;s active state</description>
+                <type>BOOLEAN</type>
+                <value>true</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>CRITICAL</name>
+                <description>Errors will aboard the launch</description>
+                <type>BOOLEAN</type>
+                <value>false</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>COMMAND</name>
+                <description>The command to execute</description>
+                <type>TEXT</type>
+                <value>C:\Tool\Eclipse\eclipse-3.4.2-cpp\eclipse.exe</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>DIRECTORY</name>
+                <description>The command&apos;s directory within the launch-folder</description>
+                <type>TEXT</type>
+                <value></value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>ARGUMENTS</name>
+                <description>The command&apos;s arguments (linewise, commented with &apos;//&apos;)</description>
+                <type>TEXTAREA</type>
+                <value>-data {288de585-e4a2-40a1-91b9-4937562ba1ea::Folder}
+-cdt.builder 
+-cdt.verbose
+-cdt.import
+-cdt.build &quot;Dummy|Debug&quot;</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>OUTPUT</name>
+                <description>List of glob-pattern to collect output (comma seperated)</description>
+                <type>TEXT</type>
+                <value></value>
+                <properties/>
+              </data.Option>
+            </options>
+          </optionContainer>
+        </operation.CommandOperationConfig>
+      </operations>
+      <triggers>
+        <trigger.IntervallTriggerConfig>
+          <id>fad31500-d78b-4dad-9ec7-90d789820070</id>
+          <optionContainer>
+            <description>A trigger for a cyclic intervall</description>
+            <options>
+              <data.Option>
+                <name>ACTIVE</name>
+                <description>The trigger&apos;s active state</description>
+                <type>BOOLEAN</type>
+                <value>true</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>DAYS</name>
+                <description>Intervall in days</description>
+                <type>INTEGER</type>
+                <value>0</value>
+                <properties>
+                  <entry>
+                    <string>INTEGER_MAX</string>
+                    <string>356</string>
+                  </entry>
+                  <entry>
+                    <string>INTEGER_MIN</string>
+                    <string>0</string>
+                  </entry>
+                </properties>
+              </data.Option>
+              <data.Option>
+                <name>HOURS</name>
+                <description>Intervall in hours</description>
+                <type>INTEGER</type>
+                <value>0</value>
+                <properties>
+                  <entry>
+                    <string>INTEGER_MAX</string>
+                    <string>23</string>
+                  </entry>
+                  <entry>
+                    <string>INTEGER_MIN</string>
+                    <string>0</string>
+                  </entry>
+                </properties>
+              </data.Option>
+              <data.Option>
+                <name>MINUTES</name>
+                <description>Intervall in minutes</description>
+                <type>INTEGER</type>
+                <value>0</value>
+                <properties>
+                  <entry>
+                    <string>INTEGER_MAX</string>
+                    <string>59</string>
+                  </entry>
+                  <entry>
+                    <string>INTEGER_MIN</string>
+                    <string>0</string>
+                  </entry>
+                </properties>
+              </data.Option>
+            </options>
+          </optionContainer>
+        </trigger.IntervallTriggerConfig>
+      </triggers>
+    </data.LaunchConfig>
+  </launchConfigs>
+</core.Configuration>

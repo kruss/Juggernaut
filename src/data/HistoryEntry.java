@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import util.FileTools;
-import util.StringTools;
 
 import core.Application;
 import data.Artifact.Attachment;
@@ -38,7 +37,7 @@ public class HistoryEntry {
 		status = launch.getStatusManager().getStatus();
 		folder = 
 			Application.getInstance().getHistoryFolder()+
-			File.separator+StringTools.getFileSystemDate(start);		
+			File.separator+launch.getStatusManager().getStart().getTime();		
 		artifacts = launch.getArtifacts();
 		entries = new ArrayList<HistoryEntry>();
 		for(AbstractOperation operation : launch.getOperations()){

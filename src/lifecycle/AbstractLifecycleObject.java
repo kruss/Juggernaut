@@ -49,8 +49,8 @@ public abstract class AbstractLifecycleObject extends Task {
 		
 		notifyListeners(Lifecycle.START);
 		try{
-			init();
 			statusManager.setStart(new Date());
+			init();
 			execute();
 		}catch(Exception e){
 			if(e instanceof InterruptedException){
