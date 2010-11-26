@@ -1,17 +1,17 @@
 package util;
 
-import core.Application;
-
 public abstract class Task extends Thread {
 
-	protected Application application;
 	protected long startupDelay;
 	protected boolean cyclic;
 	protected long cyclicDelay;
+	private Logger observer;
 	
-	public Task(){
+	public Logger getObserver(){ return observer; }
+	
+	public Task(Logger observer){
 		
-		application = Application.getInstance();
+		this.observer = observer;
 		startupDelay = 0;
 		cyclic = false;
 		cyclicDelay = 0;
@@ -25,7 +25,7 @@ public abstract class Task extends Thread {
 	
 	public void run(){
 		
-		application.getLogger().debug("Starting Task ["+getName()+"]");
+		observer.debug("Starting Task ["+getName()+"]");
 		try{
 			Thread.sleep(startupDelay);
 			if(cyclic){
@@ -37,9 +37,9 @@ public abstract class Task extends Thread {
 				runTask();
 			}
 		}catch(InterruptedException e){ 
-			application.getLogger().debug("Interrupting Task ["+getName()+"]");
+			observer.debug("Interrupting Task ["+getName()+"]");
 		}finally{
-			application.getLogger().debug("Stopping Task ["+getName()+"]");
+			observer.debug("Stopping Task ["+getName()+"]");
 		}
 	}
 	

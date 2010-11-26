@@ -20,6 +20,8 @@ import lifecycle.StatusManager.Status;
 
 public class LaunchAgent extends AbstractLifecycleObject {
 
+	private Application application;
+	
 	private LaunchConfig config;
 	private TriggerStatus triggerStatus;
 	protected PropertyManager propertyManager;
@@ -28,6 +30,8 @@ public class LaunchAgent extends AbstractLifecycleObject {
 	
 	public LaunchAgent(LaunchConfig config, TriggerStatus trigger){
 
+		this.application = Application.getInstance();
+		
 		this.config = config.clone();
 		this.triggerStatus = trigger;
 		

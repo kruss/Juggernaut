@@ -12,26 +12,31 @@ public class CommandTask extends Task {
 	private String path;
 	private Logger logger;
 
-	private int returnValue;
+	private String output;
+	private int result;
 	
 	public CommandTask(
 			String command, ArrayList<String> arguments, 
 			String path, Logger logger
 	){
+		super(logger);
+		
 		this.command = command;
 		this.arguments = arguments;
 		this.path = path;
 		this.logger = logger;
 
 		setName("Command("+command+")");
-		returnValue = Constants.PROCESS_NOK;
+		output = "";
+		result = Constants.PROCESS_NOK;
 	}
 	
 	public boolean hasSucceded(){
-		return returnValue == Constants.PROCESS_OK;
+		return result == Constants.PROCESS_OK;
 	}
 	
-	public int getReturnValue(){ return returnValue; }
+	public String getOutput(){ return output; }
+	public int getResult(){ return result; }
 	
 	@Override
 	protected void runTask() {
@@ -44,26 +49,27 @@ public class CommandTask extends Task {
 			logger.log("path: "+path);
 			
 			Process process = processBuilder.start();
+			CommandStreamer outputStream = new CommandStreamer("OUT", process.getInputStream(), logger);
 			CommandStreamer errorStream = new CommandStreamer("ERR", process.getErrorStream(), logger);            
-			CommandStreamer inputStream = new CommandStreamer("CMD", process.getInputStream(), logger);
+			outputStream.start();
 			errorStream.start(); 
-			inputStream.start();
 			
 			try{
 				process.waitFor();
-				returnValue = process.exitValue();
+				result = process.exitValue();
 			}catch(InterruptedException e){ 
 				process.destroy();	 // not destroying sub-processes on windows
 			}
 			
-			while(errorStream.isAlive() || inputStream.isAlive()){ 
+			while(errorStream.isAlive() || outputStream.isAlive()){ 
 				SystemTools.sleep(50);
 			}
+			output = outputStream.getBuffer();
 			
 		}catch(Exception e){
 			logger.error(e);
 		}finally{
-			logger.log("return: "+returnValue);
+			logger.log("return: "+result);
 		}
 	}
 

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 
+import core.Application;
+
 import data.Artifact;
 
 import lifecycle.ILifecycleListener.Lifecycle;
@@ -24,6 +26,7 @@ public abstract class AbstractLifecycleObject extends Task {
 	}
 	
 	public AbstractLifecycleObject(){
+		super(Application.getInstance().getLogger());
 		
 		statusManager = new StatusManager(this);
 		artifacts = new ArrayList<Artifact>();
