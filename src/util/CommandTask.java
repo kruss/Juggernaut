@@ -12,7 +12,7 @@ public class CommandTask extends Task {
 	private String path;
 	private Logger logger;
 
-	private int value;
+	private int returnValue;
 	
 	public CommandTask(
 			String command, ArrayList<String> arguments, 
@@ -24,12 +24,14 @@ public class CommandTask extends Task {
 		this.logger = logger;
 
 		setName("Command("+command+")");
-		value = Constants.PROCESS_NOK;
+		returnValue = Constants.PROCESS_NOK;
 	}
 	
 	public boolean hasSucceded(){
-		return value == Constants.PROCESS_OK;
+		return returnValue == Constants.PROCESS_OK;
 	}
+	
+	public int getReturnValue(){ return returnValue; }
 	
 	@Override
 	protected void runTask() {
@@ -49,7 +51,7 @@ public class CommandTask extends Task {
 			
 			try{
 				process.waitFor();
-				value = process.exitValue();
+				returnValue = process.exitValue();
 			}catch(InterruptedException e){ 
 				process.destroy();	 // not destroying sub-processes on windows
 			}
@@ -61,7 +63,7 @@ public class CommandTask extends Task {
 		}catch(Exception e){
 			logger.error(e);
 		}finally{
-			logger.log("return: "+value);
+			logger.log("return: "+returnValue);
 		}
 	}
 
