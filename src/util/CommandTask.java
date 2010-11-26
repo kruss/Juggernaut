@@ -1,14 +1,13 @@
 package util;
 
 import java.io.File;
-import java.util.ArrayList;
 
 import core.Constants;
 
 public class CommandTask extends Task {
 
 	private String command;
-	private ArrayList<String> arguments;
+	private String arguments;
 	private String path;
 	private Logger logger;
 
@@ -16,7 +15,7 @@ public class CommandTask extends Task {
 	private int result;
 	
 	public CommandTask(
-			String command, ArrayList<String> arguments, 
+			String command, String arguments, 
 			String path, Logger logger
 	){
 		super(logger);
@@ -42,7 +41,7 @@ public class CommandTask extends Task {
 	protected void runTask() {
 		
 		try{
-			String commandline = getCommandline(command, arguments);
+			String commandline = arguments.isEmpty() ? command : command+" "+arguments;
 			ProcessBuilder processBuilder = getProcessBuilder(commandline, path);
 			
 			logger.log("command: "+commandline);
@@ -93,9 +92,5 @@ public class CommandTask extends Task {
 		}
 		
 		return processBuilder;
-	}
-	
-	private String getCommandline(String command, ArrayList<String> arguments) {
-		return command+" "+StringTools.join(arguments, " ");
 	}
 }

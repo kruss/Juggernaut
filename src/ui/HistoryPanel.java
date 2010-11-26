@@ -22,6 +22,7 @@ import util.FileTools;
 import util.IChangedListener;
 import util.StringTools;
 
+// TODO history selection must be guranteed by some id
 public class HistoryPanel extends JPanel implements IChangedListener {
 
 	private static final long serialVersionUID = 1L;
@@ -114,7 +115,7 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 		History history = application.getHistory();
 		int size = history.getEntries().size();
 		
-		for(int i=size-1; i>=0; i--){
+		for(int i=0; i<size; i++){
 			HistoryEntry entry = history.getEntries().get(i);
 			Object[] rowData = {
 				entry.name,

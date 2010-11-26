@@ -52,24 +52,27 @@ public class CommandOperationConfig extends AbstractOperationConfig {
 		return optionContainer.getOption(OPTIONS.DIRECTORY.toString()).getStringValue(); 
 	}
 	
-	public ArrayList<String> getArguments(){ 
+	public String getArguments(){ 
 		
-		ArrayList<String> list = new ArrayList<String>();
-		String arguments = optionContainer.getOption(OPTIONS.ARGUMENTS.toString()).getStringValue();
-		String[] strings = arguments.split("\\n");
-		for(String string : strings){
-			if(!string.isEmpty() && !string.startsWith("//")){
-				list.add(string);
+		StringBuilder arguments = new StringBuilder();
+		String value = optionContainer.getOption(OPTIONS.ARGUMENTS.toString()).getStringValue();
+		String[] strings = value.split("\\n");
+		for(int i=0; i<strings.length; i++){
+			if(!strings[i].startsWith("//")){
+				if(arguments.length() > 0){ 
+					arguments.append(" "); 
+				}
+				arguments.append(strings[i]);
 			}
 		}
-		return list;
+		return arguments.toString();
 	}
 	
-	public ArrayList<String> getOutputPattern(){ 
+	public ArrayList<String> getGlobPattern(){ 
 		
 		ArrayList<String> list = new ArrayList<String>();
-		String arguments = optionContainer.getOption(OPTIONS.ARGUMENTS.toString()).getStringValue();
-		String[] strings = arguments.split(", ");
+		String value = optionContainer.getOption(OPTIONS.OUTPUT.toString()).getStringValue();
+		String[] strings = value.split(", ");
 		for(String string : strings){
 				list.add(string);
 		}

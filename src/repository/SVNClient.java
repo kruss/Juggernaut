@@ -22,9 +22,7 @@ public class SVNClient implements IRepositoryClient {
 
 		String path =  SystemTools.getWorkingDir();
 		String command = "svn"; 
-		ArrayList<String> arguments = new ArrayList<String>();
-		arguments.add("info");
-		arguments.add(uri);
+		String arguments = "info "+uri;
 
 		// perform task
 		CommandTask task = new CommandTask(command, arguments, path, logger);
@@ -58,10 +56,7 @@ public class SVNClient implements IRepositoryClient {
 		
 		String path =  SystemTools.getWorkingDir();
 		String command = "svn"; 
-		ArrayList<String> arguments = new ArrayList<String>();
-		arguments.add("checkout -r "+revision);
-		arguments.add(uri);
-		arguments.add(destination);
+		String arguments = "checkout -r "+revision+" "+uri+" "+destination;
 
 		// perform task
 		CommandTask task = new CommandTask(command, arguments, path, logger);
@@ -88,9 +83,7 @@ public class SVNClient implements IRepositoryClient {
 
 		String path =  SystemTools.getWorkingDir();
 		String command = "svn"; 
-		ArrayList<String> arguments = new ArrayList<String>();
-		arguments.add("log -r "+revision1+":"+revision2);
-		arguments.add(uri);
+		String arguments = "log -r "+revision1+":"+revision2+" "+uri;
 
 		// perform task
 		CommandTask task = new CommandTask(command, arguments, path, logger);

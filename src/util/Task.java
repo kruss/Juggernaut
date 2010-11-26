@@ -5,7 +5,7 @@ public abstract class Task extends Thread {
 	protected long startupDelay;
 	protected boolean cyclic;
 	protected long cyclicDelay;
-	private Logger observer;
+	protected Logger observer;
 	
 	public Logger getObserver(){ return observer; }
 	

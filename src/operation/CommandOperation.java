@@ -1,7 +1,6 @@
 package operation;
 
 import java.io.File;
-import java.util.ArrayList;
 
 import util.CommandTask;
 import lifecycle.LaunchAgent;
@@ -21,16 +20,13 @@ public class CommandOperation extends AbstractOperation {
 	protected void execute() throws Exception {
 		
 		String command = parent.getPropertyManager().expand(config.getCommand());
-		ArrayList<String> arguments = new ArrayList<String>();
-		for(String argument : config.getArguments()){
-			arguments.add(parent.getPropertyManager().expand(argument));
-		}
+		String arguments = parent.getPropertyManager().expand(config.getArguments());
 		String directory = parent.getPropertyManager().expand(config.getDirectory());
 		
 		CommandTask commandTask = new CommandTask(
 				command, 
 				arguments,
-				parent.getFolder()+File.separator+directory, 
+				directory.isEmpty() ? parent.getFolder() : parent.getFolder()+File.separator+directory, 
 				logger
 		);
 		commandTask.syncRun(0);
@@ -40,5 +36,7 @@ public class CommandOperation extends AbstractOperation {
 		}else{
 			statusManager.setStatus(Status.ERROR);
 		}
+		
+		//TODO provide the command-output as artifact
 	}
 }

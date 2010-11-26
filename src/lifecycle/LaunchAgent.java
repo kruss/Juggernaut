@@ -126,7 +126,7 @@ public class LaunchAgent extends AbstractLifecycleObject {
 				}else{
 					operation.getStatusManager().setStatus(Status.CANCEL);
 				}
-				logger.log("Status: "+operation.getStatusManager().getStatus().toString());
+				logger.log("Operation: "+operation.getStatusManager().getStatus().toString());
 				
 
 			}catch(InterruptedException e){
@@ -154,7 +154,7 @@ public class LaunchAgent extends AbstractLifecycleObject {
 				config.getId(), 
 				statusManager.getProperties()
 		);
-		logger.info("Status: "+statusManager.getStatus().toString());
+		logger.info("Launch: "+statusManager.getStatus().toString());
 		
 		
 		// perform notification

@@ -71,7 +71,7 @@ public class History {
 	public synchronized void addEntry(HistoryEntry entry) throws Exception {
 		
 		entry.init();
-		entries.add(entry);
+		entries.add(0, entry);
 		cleanup();
 		dirty = true;
 		save();

@@ -9,16 +9,14 @@ public class CommandStreamer extends Task {
 	private String name;
 	private InputStream stream;
 	private StringBuilder buffer;
-	private Logger logger;
 	
 	public CommandStreamer(String name, InputStream stream, Logger logger){
 		super(logger);
 		
 		this.name = name;
 		this.stream = stream;
-		this.logger = logger;
 		
-		setName("Stream("+name+")");
+		setName("Streamer("+name+")");
 		buffer = new StringBuilder();
 	}
 	
@@ -34,13 +32,13 @@ public class CommandStreamer extends Task {
 	        String line=null;
 	        while( (line = bufferedReader.readLine()) != null){
 	        	buffer.append(line+"\n"); // unix-style for regex-processing
-	        	logger.log(name+": "+line);
+	        	observer.log(name+": "+line);
 	        }
 	        
 			bufferedReader.close();
 			streamReader.close();
 		}catch(Exception e){ 
-			logger.error(e); 
+			observer.error(e); 
 		}
 	}
 }
