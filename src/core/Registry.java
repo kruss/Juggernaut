@@ -3,6 +3,7 @@ package core;
 import java.util.ArrayList;
 
 import operation.CommandOperationConfig;
+import operation.EclipseOperationConfig;
 import operation.SVNOperationConfig;
 import operation.SampleOperationConfig;
 import trigger.IntervallTriggerConfig;
@@ -30,6 +31,7 @@ public class Registry {
 		operationConfigs.add(new SampleOperationConfig());
 		operationConfigs.add(new CommandOperationConfig());
 		operationConfigs.add(new SVNOperationConfig());
+		operationConfigs.add(new EclipseOperationConfig());
 		
 		triggerConfigs.add(new IntervallTriggerConfig());
 		triggerConfigs.add(new SVNTriggerConfig());

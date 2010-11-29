@@ -6,14 +6,14 @@
         <name>SCHEDULER</name>
         <description>Run the launch scheduler</description>
         <type>BOOLEAN</type>
-        <value>false</value>
+        <value>true</value>
         <properties/>
       </data.Option>
       <data.Option>
         <name>SCHEDULER_INTERVALL</name>
         <description>The scheduler intervall in minutes</description>
         <type>INTEGER</type>
-        <value>5</value>
+        <value>1</value>
         <properties>
           <entry>
             <string>INTEGER_MAX</string>
@@ -103,8 +103,8 @@
   </optionContainer>
   <launchConfigs>
     <data.LaunchConfig>
-      <id>288de585-e4a2-40a1-91b9-4937562ba1ea</id>
-      <name>test-1</name>
+      <id>60668d3f-fec8-45d9-8653-3cda6891aa95</id>
+      <name>cpp-demo</name>
       <optionContainer>
         <description>the configuration of the launch</description>
         <options>
@@ -119,7 +119,7 @@
             <name>DESCRIPTION</name>
             <description>The launch&apos;s description</description>
             <type>TEXT</type>
-            <value></value>
+            <value>testing the svn-opperation</value>
             <properties/>
           </data.Option>
           <data.Option>
@@ -169,8 +169,37 @@
         </options>
       </optionContainer>
       <operations>
+        <operation.SVNOperationConfig>
+          <id>ba39313b-c05c-4256-ae62-e21c524f8329</id>
+          <optionContainer>
+            <description>An operation to checkout a SVN Repository</description>
+            <options>
+              <data.Option>
+                <name>ACTIVE</name>
+                <description>The operation&apos;s active state</description>
+                <type>BOOLEAN</type>
+                <value>true</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>CRITICAL</name>
+                <description>Errors will aboard the launch</description>
+                <type>BOOLEAN</type>
+                <value>false</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>URL</name>
+                <description>SVN Repository Url</description>
+                <type>TEXT</type>
+                <value>svn://10.40.38.84:3690/cppdemo/trunk</value>
+                <properties/>
+              </data.Option>
+            </options>
+          </optionContainer>
+        </operation.SVNOperationConfig>
         <operation.CommandOperationConfig>
-          <id>fa955eeb-762f-4b23-8f83-8c96af00fb1b</id>
+          <id>33779c9b-bd73-412b-80bc-88bae317bd3d</id>
           <optionContainer>
             <description>An operation to execute a command</description>
             <options>
@@ -192,7 +221,108 @@
                 <name>COMMAND</name>
                 <description>The command to execute</description>
                 <type>TEXT</type>
-                <value>svn</value>
+                <value>doxygen</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>DIRECTORY</name>
+                <description>The command&apos;s directory within the launch-folder</description>
+                <type>TEXT</type>
+                <value>Dummy</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>ARGUMENTS</name>
+                <description>The command&apos;s arguments (linewise, commented with &apos;//&apos;)</description>
+                <type>TEXTAREA</type>
+                <value>doxygen.cfg</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>OUTPUT</name>
+                <description>List of glob-pattern to collect output (comma seperated)</description>
+                <type>TEXT</type>
+                <value></value>
+                <properties/>
+              </data.Option>
+            </options>
+          </optionContainer>
+        </operation.CommandOperationConfig>
+        <operation.EclipseOperationConfig>
+          <id>33ca8149-9997-4363-b659-487f5f652689</id>
+          <optionContainer>
+            <description>An operation to run Eclipse with CDT-Builder Plugin</description>
+            <options>
+              <data.Option>
+                <name>ACTIVE</name>
+                <description>The operation&apos;s active state</description>
+                <type>BOOLEAN</type>
+                <value>true</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>CRITICAL</name>
+                <description>Errors will aboard the launch</description>
+                <type>BOOLEAN</type>
+                <value>false</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>ECLIPSE</name>
+                <description>The path to Eclipse</description>
+                <type>TEXT</type>
+                <value>C:\Tool\Eclipse\eclipse-3.4.2-cpp\eclipse.exe</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>BUILD</name>
+                <description>[project|configuration] pattern to include in build (linewise, commented with &apos;//&apos;)</description>
+                <type>TEXTAREA</type>
+                <value>Dummy|Debug
+*|UnitTest</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>EXCLUDE</name>
+                <description>[project|configuration] pattern to exclude from build (comma seperated)</description>
+                <type>TEXT</type>
+                <value></value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>CLEAN</name>
+                <description>Perform a clean build</description>
+                <type>BOOLEAN</type>
+                <value>true</value>
+                <properties/>
+              </data.Option>
+            </options>
+          </optionContainer>
+        </operation.EclipseOperationConfig>
+        <operation.CommandOperationConfig>
+          <id>965fd18c-ab92-4370-a186-6980be9b8ee0</id>
+          <optionContainer>
+            <description>An operation to execute a command</description>
+            <options>
+              <data.Option>
+                <name>ACTIVE</name>
+                <description>The operation&apos;s active state</description>
+                <type>BOOLEAN</type>
+                <value>true</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>CRITICAL</name>
+                <description>Errors will aboard the launch</description>
+                <type>BOOLEAN</type>
+                <value>false</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>COMMAND</name>
+                <description>The command to execute</description>
+                <type>TEXT</type>
+                <value>testrunner</value>
                 <properties/>
               </data.Option>
               <data.Option>
@@ -206,9 +336,7 @@
                 <name>ARGUMENTS</name>
                 <description>The command&apos;s arguments (linewise, commented with &apos;//&apos;)</description>
                 <type>TEXTAREA</type>
-                <value>checkout
-svn://10.40.38.84:3690/cppdemo/trunk
-./</value>
+                <value>.</value>
                 <properties/>
               </data.Option>
               <data.Option>
@@ -222,7 +350,7 @@ svn://10.40.38.84:3690/cppdemo/trunk
           </optionContainer>
         </operation.CommandOperationConfig>
         <operation.CommandOperationConfig>
-          <id>6eb7c995-af40-4d52-85a5-32ae57451977</id>
+          <id>c409a5e5-d774-4a33-9a5f-116014a7f7fa</id>
           <optionContainer>
             <description>An operation to execute a command</description>
             <options>
@@ -244,7 +372,7 @@ svn://10.40.38.84:3690/cppdemo/trunk
                 <name>COMMAND</name>
                 <description>The command to execute</description>
                 <type>TEXT</type>
-                <value>C:\Tool\Eclipse\eclipse-3.4.2-cpp\eclipse.exe</value>
+                <value>gcover</value>
                 <properties/>
               </data.Option>
               <data.Option>
@@ -258,11 +386,7 @@ svn://10.40.38.84:3690/cppdemo/trunk
                 <name>ARGUMENTS</name>
                 <description>The command&apos;s arguments (linewise, commented with &apos;//&apos;)</description>
                 <type>TEXTAREA</type>
-                <value>-data {288de585-e4a2-40a1-91b9-4937562ba1ea::Folder}
--cdt.builder 
--cdt.verbose
--cdt.import
--cdt.build &quot;Dummy|Debug&quot;</value>
+                <value>.</value>
                 <properties/>
               </data.Option>
               <data.Option>
@@ -277,8 +401,273 @@ svn://10.40.38.84:3690/cppdemo/trunk
         </operation.CommandOperationConfig>
       </operations>
       <triggers>
+        <trigger.SVNTriggerConfig>
+          <id>3cda9212-19fa-4df3-869c-a22516b5bf1d</id>
+          <optionContainer>
+            <description>A trigger for SVN Repository changes</description>
+            <options>
+              <data.Option>
+                <name>ACTIVE</name>
+                <description>The trigger&apos;s active state</description>
+                <type>BOOLEAN</type>
+                <value>true</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>URL</name>
+                <description>SVN Repository Url</description>
+                <type>TEXT</type>
+                <value>svn://10.40.38.84:3690/cppdemo/trunk</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>DELAY</name>
+                <description>Trigger delay in minutes</description>
+                <type>INTEGER</type>
+                <value>2</value>
+                <properties>
+                  <entry>
+                    <string>INTEGER_MAX</string>
+                    <string>15</string>
+                  </entry>
+                  <entry>
+                    <string>INTEGER_MIN</string>
+                    <string>0</string>
+                  </entry>
+                </properties>
+              </data.Option>
+            </options>
+          </optionContainer>
+        </trigger.SVNTriggerConfig>
+      </triggers>
+    </data.LaunchConfig>
+    <data.LaunchConfig>
+      <id>aba878ca-52df-476b-a702-0355df0adc9b</id>
+      <name>sample</name>
+      <optionContainer>
+        <description>the configuration of the launch</description>
+        <options>
+          <data.Option>
+            <name>ACTIVE</name>
+            <description>The launch&apos;s active state</description>
+            <type>BOOLEAN</type>
+            <value>true</value>
+            <properties/>
+          </data.Option>
+          <data.Option>
+            <name>DESCRIPTION</name>
+            <description>The launch&apos;s description</description>
+            <type>TEXT</type>
+            <value>some samples</value>
+            <properties/>
+          </data.Option>
+          <data.Option>
+            <name>CLEAN</name>
+            <description>Clean launch-folder on start</description>
+            <type>BOOLEAN</type>
+            <value>true</value>
+            <properties/>
+          </data.Option>
+          <data.Option>
+            <name>TIMEOUT</name>
+            <description>Timeout in minutes (0 = no timeout)</description>
+            <type>INTEGER</type>
+            <value>0</value>
+            <properties>
+              <entry>
+                <string>INTEGER_MAX</string>
+                <string>300</string>
+              </entry>
+              <entry>
+                <string>INTEGER_MIN</string>
+                <string>0</string>
+              </entry>
+            </properties>
+          </data.Option>
+          <data.Option>
+            <name>NOTIFY</name>
+            <description>Enable mail notification for launch</description>
+            <type>BOOLEAN</type>
+            <value>false</value>
+            <properties/>
+          </data.Option>
+          <data.Option>
+            <name>ADMINISTRATORS</name>
+            <description>mail-list of launch admins (comma seperated)</description>
+            <type>TEXT</type>
+            <value></value>
+            <properties/>
+          </data.Option>
+          <data.Option>
+            <name>MESSAGE</name>
+            <description>Optional notification message</description>
+            <type>TEXTAREA</type>
+            <value></value>
+            <properties/>
+          </data.Option>
+        </options>
+      </optionContainer>
+      <operations>
+        <operation.SampleOperationConfig>
+          <id>641230f9-fef7-4a2f-9a89-1a305e999f47</id>
+          <optionContainer>
+            <description>An operation to test the framework</description>
+            <options>
+              <data.Option>
+                <name>ACTIVE</name>
+                <description>The operation&apos;s active state</description>
+                <type>BOOLEAN</type>
+                <value>true</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>CRITICAL</name>
+                <description>Errors will aboard the launch</description>
+                <type>BOOLEAN</type>
+                <value>false</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>ERROR</name>
+                <description>Throw an error</description>
+                <type>BOOLEAN</type>
+                <value>false</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>EXCEPTION</name>
+                <description>Throw an exception</description>
+                <type>BOOLEAN</type>
+                <value>false</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>IDLE</name>
+                <description>Idle time in seconds</description>
+                <type>INTEGER</type>
+                <value>5</value>
+                <properties>
+                  <entry>
+                    <string>INTEGER_MAX</string>
+                    <string>3600</string>
+                  </entry>
+                  <entry>
+                    <string>INTEGER_MIN</string>
+                    <string>0</string>
+                  </entry>
+                </properties>
+              </data.Option>
+            </options>
+          </optionContainer>
+        </operation.SampleOperationConfig>
+        <operation.SampleOperationConfig>
+          <id>e32078f9-5051-4e1c-8626-326715e7c046</id>
+          <optionContainer>
+            <description>An operation to test the framework</description>
+            <options>
+              <data.Option>
+                <name>ACTIVE</name>
+                <description>The operation&apos;s active state</description>
+                <type>BOOLEAN</type>
+                <value>true</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>CRITICAL</name>
+                <description>Errors will aboard the launch</description>
+                <type>BOOLEAN</type>
+                <value>false</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>ERROR</name>
+                <description>Throw an error</description>
+                <type>BOOLEAN</type>
+                <value>false</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>EXCEPTION</name>
+                <description>Throw an exception</description>
+                <type>BOOLEAN</type>
+                <value>false</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>IDLE</name>
+                <description>Idle time in seconds</description>
+                <type>INTEGER</type>
+                <value>5</value>
+                <properties>
+                  <entry>
+                    <string>INTEGER_MAX</string>
+                    <string>3600</string>
+                  </entry>
+                  <entry>
+                    <string>INTEGER_MIN</string>
+                    <string>0</string>
+                  </entry>
+                </properties>
+              </data.Option>
+            </options>
+          </optionContainer>
+        </operation.SampleOperationConfig>
+        <operation.SampleOperationConfig>
+          <id>c484253a-19c1-4c30-85e9-2ba23ec8364f</id>
+          <optionContainer>
+            <description>An operation to test the framework</description>
+            <options>
+              <data.Option>
+                <name>ACTIVE</name>
+                <description>The operation&apos;s active state</description>
+                <type>BOOLEAN</type>
+                <value>true</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>CRITICAL</name>
+                <description>Errors will aboard the launch</description>
+                <type>BOOLEAN</type>
+                <value>false</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>ERROR</name>
+                <description>Throw an error</description>
+                <type>BOOLEAN</type>
+                <value>false</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>EXCEPTION</name>
+                <description>Throw an exception</description>
+                <type>BOOLEAN</type>
+                <value>false</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>IDLE</name>
+                <description>Idle time in seconds</description>
+                <type>INTEGER</type>
+                <value>5</value>
+                <properties>
+                  <entry>
+                    <string>INTEGER_MAX</string>
+                    <string>3600</string>
+                  </entry>
+                  <entry>
+                    <string>INTEGER_MIN</string>
+                    <string>0</string>
+                  </entry>
+                </properties>
+              </data.Option>
+            </options>
+          </optionContainer>
+        </operation.SampleOperationConfig>
+      </operations>
+      <triggers>
         <trigger.IntervallTriggerConfig>
-          <id>fad31500-d78b-4dad-9ec7-90d789820070</id>
+          <id>d7a85c2a-1507-495b-8743-2d27b0b7ec77</id>
           <optionContainer>
             <description>A trigger for a cyclic intervall</description>
             <options>
@@ -325,7 +714,7 @@ svn://10.40.38.84:3690/cppdemo/trunk
                 <name>MINUTES</name>
                 <description>Intervall in minutes</description>
                 <type>INTEGER</type>
-                <value>0</value>
+                <value>5</value>
                 <properties>
                   <entry>
                     <string>INTEGER_MAX</string>
