@@ -74,7 +74,7 @@ public class Application {
 				shutdownSystems();
 				shutdownPersistence();
 			}catch(Exception e){
-				handleException(e);
+				error(e);
 				System.exit(Constants.PROCESS_NOK);
 			}
 			System.exit(Constants.PROCESS_OK);
@@ -87,6 +87,7 @@ public class Application {
 		folders.add(new File(getDataFolder()));
 		folders.add(new File(getBuildFolder()));
 		folders.add(new File(getHistoryFolder()));
+		folders.add(new File(getTempFolder()));
 		PersistenceManager.initialize(folders);
 		
 		logger = new Logger(Mode.FILE_AND_CONSOLE);
@@ -115,6 +116,7 @@ public class Application {
 		
 		configuration.chekForSave();
 		PersistenceManager.cleanup(configuration, new File(getBuildFolder()), logger);
+		PersistenceManager.delete(new File(getTempFolder()), logger);
 	}
 	
 	private void initSystems() {
@@ -149,7 +151,7 @@ public class Application {
 		window.dispose();
 	}
 	
-	public void handleException(Exception e){
+	public void error(Exception e){
 		
 		logger.error(e);
 		UiTools.errorDialog(e.getClass().getSimpleName()+"\n\n"+e.getMessage());
@@ -165,6 +167,10 @@ public class Application {
 	
 	public String getHistoryFolder(){
 		return SystemTools.getWorkingDir()+File.separator+Constants.HISTORY_FOLDER;
+	}
+	
+	public String getTempFolder(){
+		return SystemTools.getWorkingDir()+File.separator+Constants.TEMP_FOLDER;
 	}
 
 	/** drop any unsaved changes */

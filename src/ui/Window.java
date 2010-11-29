@@ -34,6 +34,7 @@ public class Window extends JFrame implements IChangedListener {
 		
 		menuBar = new JMenuBar();
 		menuBar.add(new ProjectMenu());
+		menuBar.add(new ToolsMenu());
 		setJMenuBar(menuBar);
 		
 		statusBar = new JLabel();

@@ -3,6 +3,8 @@ package data;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import data.Option.Type;
+
 
 
 /**
@@ -51,5 +53,22 @@ public class OptionContainer {
 			map.put(option.getName(), option.getStringValue());
 		}
 		return map;
+	}
+
+	public String toHtml() {
+		
+		StringBuilder html = new StringBuilder();
+		html.append("<ul>");
+		for(Option option : options){
+			String value = null;
+			if(option.getType() == Type.TEXTAREA){
+				value = "<br>"+option.getStringValue().replaceAll("\\n", "<br>");
+			}else{
+				value = option.getStringValue();
+			}
+			html.append("<li><b>"+option.getName()+"</b>: "+value+"</li>");
+		}
+		html.append("</ul>");
+		return html.toString();
 	}
 }

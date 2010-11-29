@@ -217,7 +217,7 @@ public class TriggerConfigPanel extends JPanel implements IChangedListener {
 				application.getConfiguration().notifyListeners();
 				refreshUI(triggerConfig);
 			}catch(Exception e){
-				application.handleException(e);
+				application.error(e);
 			}
 		}
 	}

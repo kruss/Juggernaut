@@ -13,6 +13,7 @@ public class Constants {
 	public static final String 		DATA_FOLDER = "data";
 	public static final String 		BUILD_FOLDER = DATA_FOLDER+File.separator+"build";
 	public static final String 		HISTORY_FOLDER = DATA_FOLDER+File.separator+"history";
+	public static final String 		TEMP_FOLDER = DATA_FOLDER+File.separator+"temp";
 	
 	public static final int 		PROCESS_OK = 0;
 	public static final int 		PROCESS_NOK = 0;

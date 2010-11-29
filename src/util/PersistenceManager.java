@@ -23,12 +23,7 @@ public class PersistenceManager {
 		
 		for(File file : folder.listFiles()){
 			if(isLegacy(configuration, file)){
-				logger.log("cleanup: "+file.getAbsolutePath());
-				if(file.isFile()){
-					FileTools.deleteFile(file.getAbsolutePath());
-				}else if(file.isDirectory()){
-					FileTools.deleteFolder(file.getAbsolutePath());
-				}
+				delete(file, logger);
 			}
 		}
 	}
@@ -41,5 +36,15 @@ public class PersistenceManager {
 			}
 		}
 		return true;
+	}
+	
+	public static void delete(File file, Logger logger) throws Exception {
+		
+		logger.debug("delete: "+file.getAbsolutePath());
+		if(file.isFile()){
+			FileTools.deleteFile(file.getAbsolutePath());
+		}else if(file.isDirectory()){
+			FileTools.deleteFolder(file.getAbsolutePath());
+		}
 	}
 }

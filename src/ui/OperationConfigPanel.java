@@ -219,7 +219,7 @@ public class OperationConfigPanel extends JPanel implements IChangedListener {
 				application.getConfiguration().notifyListeners();
 				refreshUI(operationConfig);
 			}catch(Exception e){
-				application.handleException(e);
+				application.error(e);
 			}
 		}
 	}

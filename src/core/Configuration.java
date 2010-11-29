@@ -1,6 +1,7 @@
 package core;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import util.FileTools;
 import util.IChangedListener;
@@ -10,6 +11,8 @@ import util.UiTools;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
+import data.AbstractOperationConfig;
+import data.AbstractTriggerConfig;
 import data.LaunchConfig;
 import data.Option;
 import data.OptionContainer;
@@ -169,5 +172,37 @@ public class Configuration {
 		if(isDirty() && UiTools.confirmDialog("Save changes ?")){
 			save();
 		}
+	}
+
+	public String toHtml() {
+		
+		StringBuilder html = new StringBuilder();
+		html.append("<html>");
+		html.append("<hr><h1>"+Constants.APP_NAME+" -  Configuration</h1>");
+		html.append("<hr><h2>Preferences</h2>");
+		html.append(optionContainer.toHtml());
+		for(LaunchConfig launchConfig : launchConfigs){
+			html.append("<hr><h2>Launch ["+launchConfig.getName()+"]</h2>");
+			html.append(launchConfig.getOptionContainer().toHtml());
+			html.append("<h3>Operation(s):</h3>");
+			html.append("<ol>");
+			for(AbstractOperationConfig operationConfig : launchConfig.getOperationConfigs()){
+				html.append("<li><b>["+operationConfig.getName()+"] Operation</b>");
+				html.append(operationConfig.getOptionContainer().toHtml());
+				html.append("</li>");
+			}
+			html.append("</ol>");
+			html.append("<h3>Trigger(s):</h3>");
+			html.append("<ol>");
+			for(AbstractTriggerConfig triggerConfig : launchConfig.getTriggerConfigs()){
+				html.append("<li><b>["+triggerConfig.getName()+"] Trigger</b>");
+				html.append(triggerConfig.getOptionContainer().toHtml());
+				html.append("</li>");
+			}
+			html.append("</ol>");
+		}
+		html.append("<hr><p>"+Constants.APP_FULL_NAME+" - "+StringTools.getTextDate(new Date())+"</p><hr>");
+		html.append("</html>");
+		return html.toString();
 	}
 }
