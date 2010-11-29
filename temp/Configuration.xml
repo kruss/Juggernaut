@@ -6,7 +6,7 @@
         <name>SCHEDULER</name>
         <description>Run the launch scheduler</description>
         <type>BOOLEAN</type>
-        <value>true</value>
+        <value>false</value>
         <properties/>
       </data.Option>
       <data.Option>
@@ -96,12 +96,204 @@
         <name>VERBOSE</name>
         <description>Verbose logging shows more details on console</description>
         <type>BOOLEAN</type>
-        <value>true</value>
+        <value>false</value>
         <properties/>
       </data.Option>
     </options>
   </optionContainer>
   <launchConfigs>
+    <data.LaunchConfig>
+      <id>2ab71a94-6a9b-4d0f-bf89-9aa7bcdb88e0</id>
+      <name>avn</name>
+      <optionContainer>
+        <description>the configuration of the launch</description>
+        <options>
+          <data.Option>
+            <name>ACTIVE</name>
+            <description>The launch&apos;s active state</description>
+            <type>BOOLEAN</type>
+            <value>true</value>
+            <properties/>
+          </data.Option>
+          <data.Option>
+            <name>DESCRIPTION</name>
+            <description>The launch&apos;s description</description>
+            <type>TEXT</type>
+            <value>ethernet pilot project build</value>
+            <properties/>
+          </data.Option>
+          <data.Option>
+            <name>CLEAN</name>
+            <description>Clean launch-folder on start</description>
+            <type>BOOLEAN</type>
+            <value>true</value>
+            <properties/>
+          </data.Option>
+          <data.Option>
+            <name>TIMEOUT</name>
+            <description>Timeout in minutes (0 = no timeout)</description>
+            <type>INTEGER</type>
+            <value>0</value>
+            <properties>
+              <entry>
+                <string>INTEGER_MAX</string>
+                <string>300</string>
+              </entry>
+              <entry>
+                <string>INTEGER_MIN</string>
+                <string>0</string>
+              </entry>
+            </properties>
+          </data.Option>
+          <data.Option>
+            <name>NOTIFY</name>
+            <description>Enable mail notification for launch</description>
+            <type>BOOLEAN</type>
+            <value>false</value>
+            <properties/>
+          </data.Option>
+          <data.Option>
+            <name>ADMINISTRATORS</name>
+            <description>mail-list of launch admins (comma seperated)</description>
+            <type>TEXT</type>
+            <value></value>
+            <properties/>
+          </data.Option>
+          <data.Option>
+            <name>MESSAGE</name>
+            <description>Optional notification message</description>
+            <type>TEXTAREA</type>
+            <value></value>
+            <properties/>
+          </data.Option>
+        </options>
+      </optionContainer>
+      <operations>
+        <operation.SVNOperationConfig>
+          <id>8ea72423-a9e2-4d79-90cb-d20308e3fa65</id>
+          <optionContainer>
+            <description>An operation to checkout a SVN Repository</description>
+            <options>
+              <data.Option>
+                <name>ACTIVE</name>
+                <description>The operation&apos;s active state</description>
+                <type>BOOLEAN</type>
+                <value>true</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>CRITICAL</name>
+                <description>Errors will aboard the launch</description>
+                <type>BOOLEAN</type>
+                <value>false</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>URL</name>
+                <description>SVN Repository Url</description>
+                <type>TEXT</type>
+                <value>https://websvn.teststatt.de/svn/Ethernet/trunk</value>
+                <properties/>
+              </data.Option>
+            </options>
+          </optionContainer>
+        </operation.SVNOperationConfig>
+        <operation.EclipseOperationConfig>
+          <id>118bb8b9-89f2-4c5c-b647-3401723599bc</id>
+          <optionContainer>
+            <description>An operation to run Eclipse with CDT-Builder Plugin</description>
+            <options>
+              <data.Option>
+                <name>ACTIVE</name>
+                <description>The operation&apos;s active state</description>
+                <type>BOOLEAN</type>
+                <value>true</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>CRITICAL</name>
+                <description>Errors will aboard the launch</description>
+                <type>BOOLEAN</type>
+                <value>false</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>ECLIPSE</name>
+                <description>The path to Eclipse</description>
+                <type>TEXT</type>
+                <value>C:\Tool\Eclipse\eclipse-3.4.2-cpp\eclipse.exe</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>BUILD</name>
+                <description>[project|configuration] pattern to include in build (linewise, commented with &apos;//&apos;)</description>
+                <type>TEXTAREA</type>
+                <value>cam_integration_main|Debug_Fado_Camera
+cam_bootloader|Debug_Fado_Camera
+cam_bootloader_updater|Debug_Fado
+icam_integration_main|Debug_Fado_AVB
+</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>EXCLUDE</name>
+                <description>[project|configuration] pattern to exclude from build (comma seperated)</description>
+                <type>TEXT</type>
+                <value></value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>CLEAN</name>
+                <description>Perform a clean build</description>
+                <type>BOOLEAN</type>
+                <value>true</value>
+                <properties/>
+              </data.Option>
+            </options>
+          </optionContainer>
+        </operation.EclipseOperationConfig>
+      </operations>
+      <triggers>
+        <trigger.SVNTriggerConfig>
+          <id>50da7a8d-d564-4828-ac39-e995cb244ae1</id>
+          <optionContainer>
+            <description>A trigger for SVN Repository changes</description>
+            <options>
+              <data.Option>
+                <name>ACTIVE</name>
+                <description>The trigger&apos;s active state</description>
+                <type>BOOLEAN</type>
+                <value>true</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>URL</name>
+                <description>SVN Repository Url</description>
+                <type>TEXT</type>
+                <value>https://websvn.teststatt.de/svn/Ethernet/trunk</value>
+                <properties/>
+              </data.Option>
+              <data.Option>
+                <name>DELAY</name>
+                <description>Trigger delay in minutes</description>
+                <type>INTEGER</type>
+                <value>5</value>
+                <properties>
+                  <entry>
+                    <string>INTEGER_MAX</string>
+                    <string>15</string>
+                  </entry>
+                  <entry>
+                    <string>INTEGER_MIN</string>
+                    <string>0</string>
+                  </entry>
+                </properties>
+              </data.Option>
+            </options>
+          </optionContainer>
+        </trigger.SVNTriggerConfig>
+      </triggers>
+    </data.LaunchConfig>
     <data.LaunchConfig>
       <id>60668d3f-fec8-45d9-8653-3cda6891aa95</id>
       <name>cpp-demo</name>
