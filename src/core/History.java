@@ -8,7 +8,7 @@ import util.IChangedListener;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
-import data.HistoryEntry;
+import data.LaunchHistory;
 
 /**
  * the configuration of the application,- will be serialized
@@ -17,14 +17,14 @@ public class History {
 
 	public static final String OUTPUT_FILE = "History.xml";
 	
-	private ArrayList<HistoryEntry> entries;
+	private ArrayList<LaunchHistory> entries;
 	private transient ArrayList<IChangedListener> listeners;
 	private transient String path;
 	private transient boolean dirty;
 
 	public History(String path){
 		
-		entries = new ArrayList<HistoryEntry>();
+		entries = new ArrayList<LaunchHistory>();
 		listeners = new ArrayList<IChangedListener>();
 		this.path = path;
 		dirty = true;
@@ -38,7 +38,7 @@ public class History {
 		}
 	}
 	
-	public ArrayList<HistoryEntry> getEntries(){ return entries; }
+	public ArrayList<LaunchHistory> getEntries(){ return entries; }
 	public String getPath(){ return path; }
 	
 	public void setDirty(boolean dirty){ this.dirty = dirty; }
@@ -68,7 +68,7 @@ public class History {
 		}
 	}
 	
-	public synchronized void addEntry(HistoryEntry entry) throws Exception {
+	public synchronized void addEntry(LaunchHistory entry) throws Exception {
 		
 		entry.init();
 		entries.add(0, entry);

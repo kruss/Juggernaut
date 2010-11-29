@@ -63,6 +63,10 @@ public class SchedulerTask extends Task {
 					);
 					trigger.wasTriggered(false);
 				}
+			}else{
+				application.getLogger().debug(
+						"Launch ["+launchConfig.getName()+"] idle: "+triggerStatus.message
+				);
 			}
 		}
 	}

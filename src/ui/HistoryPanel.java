@@ -16,7 +16,7 @@ import javax.swing.table.TableColumnModel;
 
 import core.Application;
 import core.History;
-import data.HistoryEntry;
+import data.LaunchHistory;
 
 import util.FileTools;
 import util.IChangedListener;
@@ -47,7 +47,7 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 			}
 		};
 		tableModel.addColumn("Launch");
-		tableModel.addColumn("Description");
+		tableModel.addColumn("Trigger");
 		tableModel.addColumn("Start");
 		tableModel.addColumn("End");
 		tableModel.addColumn("Time (min)");
@@ -116,10 +116,10 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 		int size = history.getEntries().size();
 		
 		for(int i=0; i<size; i++){
-			HistoryEntry entry = history.getEntries().get(i);
+			LaunchHistory entry = history.getEntries().get(i);
 			Object[] rowData = {
 				entry.name,
-				entry.description,
+				entry.trigger,
 				entry.start != null ? StringTools.getTextDate(entry.start) : "",
 				entry.end != null ? StringTools.getTextDate(entry.end) : "",
 				(entry.start != null && entry.end != null) ? 
@@ -130,7 +130,7 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 		}
 	}
 
-	private void refreshUI(HistoryEntry selected) {
+	private void refreshUI(LaunchHistory selected) {
 		
 		clearUI();
 		initUI();
@@ -138,7 +138,7 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 			History history = application.getHistory();
 			int size = history.getEntries().size();
 			for(int i=0; i<size; i++){
-				HistoryEntry entry = history.getEntries().get(i);
+				LaunchHistory entry = history.getEntries().get(i);
 				if(entry.id.equals(selected.id)){
 					historyTable.changeSelection(i, -1, false, false);
 					break;
@@ -150,12 +150,13 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 	
 	private void adjustSelection() {
 		
-		HistoryEntry entry = getSelectedHistory();
+		LaunchHistory entry = getSelectedHistory();
 		if(entry != null){
 			File logfile = new File(entry.artifacts.get(0).attachments.get(0).path); // TODO temp
 			if(logfile.isFile()){
 				try{
 					historyOutput.setText(FileTools.readFile(logfile.getAbsolutePath()));
+					historyOutput.setCaretPosition(0);
 				}catch(Exception e){
 					application.getLogger().error(e);
 				}
@@ -167,9 +168,9 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 		}
 	}
 	
-	private HistoryEntry getSelectedHistory() {
+	private LaunchHistory getSelectedHistory() {
 		
-		HistoryEntry selected = null;
+		LaunchHistory selected = null;
 		int index = historyTable.getSelectedRow();
 		if(index >=0){
 			History history = application.getHistory();

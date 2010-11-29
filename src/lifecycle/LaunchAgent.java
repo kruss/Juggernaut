@@ -8,7 +8,7 @@ import core.Application;
 import data.AbstractOperation;
 import data.AbstractOperationConfig;
 import data.Artifact;
-import data.HistoryEntry;
+import data.LaunchHistory;
 import data.LaunchConfig;
 import data.Artifact.Attachment;
 import util.FileTools;
@@ -171,7 +171,7 @@ public class LaunchAgent extends AbstractLifecycleObject {
 		artifacts.add(logfileArtifact);
 		
 		// perform output
-		HistoryEntry entry = new HistoryEntry(this);
+		LaunchHistory entry = new LaunchHistory(this);
 		try{ 
 			application.getHistory().addEntry(entry); 
 		}catch(Exception e){

@@ -39,6 +39,7 @@ public class SVNOperation extends AbstractOperation {
 			statusManager.setStatus(Status.ERROR);
 		}
 		
-		//TODO provide the svn command-output as artifact
+		// TODO get commits of revision intervall
+		// TODO provide the svn command-output as artifact
 	}
 }
