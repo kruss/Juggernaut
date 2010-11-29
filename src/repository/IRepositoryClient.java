@@ -12,12 +12,6 @@ public interface IRepositoryClient {
 	/** get the current revision-info of uri */
 	public RevisionInfo getInfo(String uri) throws Exception;
 	
-	/** checkout uri of given revision to destination-path,- returns the actual revision checked out */
-	public String checkout(String uri, String revision, String destination) throws Exception;
-	
-	/** get history of uri within specified interval, where revision1 > revision2 */
-	public ArrayList<RepositoryCommit> getHistory(String uri, String revision1, String revision2) throws Exception;
-	
 	public class RevisionInfo {
 		
 		public String revision;
@@ -27,7 +21,23 @@ public interface IRepositoryClient {
 			return revision+" ("+StringTools.getTextDate(date)+")";
 		}
 	}
+
+	/** checkout uri of given revision to destination-path and returns the checkout-info */
+	public CheckoutInfo checkout(String uri, String revision, String destination) throws Exception;
 	
+	public class CheckoutInfo {
+		
+		public String revision;
+		public String output;
+		
+		public String toString(){
+			return revision;
+		}
+	}
+	
+	/** get history of uri within specified interval, where revision1 > revision2 */
+	public ArrayList<RepositoryCommit> getHistory(String uri, String revision1, String revision2) throws Exception;
+
 	public class RepositoryCommit {
 		
 		public String revision;

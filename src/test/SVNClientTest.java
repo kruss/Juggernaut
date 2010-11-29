@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import repository.SVNClient;
+import repository.IRepositoryClient.CheckoutInfo;
 import repository.IRepositoryClient.RepositoryCommit;
 import repository.IRepositoryClient.Revision;
 import repository.IRepositoryClient.RevisionInfo;
@@ -73,7 +74,7 @@ public class SVNClientTest {
 		logger.info("SVN Checkout");
 		assertTrue(folder.listFiles().length == 0);
 		String revision = Revision.HEAD.toString();
-		String result = null;
+		CheckoutInfo result = null;
 		try{
 			result = client.checkout(SVN_REPOSITORY, revision, folder.getAbsolutePath());
 		}catch(Exception e){
@@ -81,7 +82,8 @@ public class SVNClientTest {
 			fail(e.getMessage());
 		}
 		assertTrue(folder.listFiles().length > 0);
-		assertTrue(result != null);
+		assertTrue(result.revision != null);
+		assertTrue(result.output != null);
 	}
 	
 	@Test public void testHistory() {

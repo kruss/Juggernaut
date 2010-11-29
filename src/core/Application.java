@@ -9,11 +9,7 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-import operation.CommandOperationConfig;
-import operation.SampleOperationConfig;
-
 import lifecycle.LaunchManager;
-import trigger.IntervallTriggerConfig;
 import ui.Window;
 import util.PersistenceManager;
 import util.Logger;
@@ -124,9 +120,7 @@ public class Application {
 	private void initSystems() {
 		
 		registry = new Registry();
-		registry.getOperationConfigs().add(new SampleOperationConfig());
-		registry.getOperationConfigs().add(new CommandOperationConfig());
-		registry.getTriggerConfigs().add(new IntervallTriggerConfig());
+		registry.init();
 		
 		launchManager = new LaunchManager();
 		launchManager.init();

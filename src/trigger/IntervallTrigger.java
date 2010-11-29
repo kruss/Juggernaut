@@ -7,8 +7,6 @@ import lifecycle.LaunchManager;
 import lifecycle.LaunchManager.TriggerStatus;
 
 
-import core.Application;
-
 import data.AbstractTrigger;
 
 public class IntervallTrigger extends AbstractTrigger {
@@ -16,29 +14,25 @@ public class IntervallTrigger extends AbstractTrigger {
 	private enum Property { DATE };
 	
 	private IntervallTriggerConfig config;
-	private Application application;
 	
-	private Date lastDate;
 	private Date newDate;
 	
 	public IntervallTrigger(IntervallTriggerConfig config) {
 		super(config);
 		this.config = config;
-		application = Application.getInstance();
 	}
 	
 	private void setLastDate(Date date){
 		
-		HashMap<String, String> cache = application.getLaunchManager().getCache();
+		HashMap<String, String> cache = launcher.getCache();
 		cache.put(
-				config.getId()+"::"+Property.DATE.toString(), 
-				""+date.getTime()
+				config.getId()+"::"+Property.DATE.toString(), ""+date.getTime()
 		);
 	}
 	
 	private Date getLastDate(){
 		
-		HashMap<String, String> cache = application.getLaunchManager().getCache();
+		HashMap<String, String> cache = launcher.getCache();
 		String value = cache.get(config.getId()+"::"+Property.DATE.toString());
 		if(value != null){
 			return new Date(new Long(value).longValue());
@@ -50,18 +44,18 @@ public class IntervallTrigger extends AbstractTrigger {
 	@Override
 	public TriggerStatus isTriggered() {
 		
+		Date lastDate = getLastDate();
 		newDate = new Date();
-		lastDate = getLastDate();
 		
 		if(lastDate == null){
 			return LaunchManager.INITIAL_TRIGGER;
 		}else{
 			if((lastDate.getTime() + config.getIntervall()) <= newDate.getTime()){
-				return application.getLaunchManager().new TriggerStatus(
+				return launcher.new TriggerStatus(
 						"Intervall exceeded", true
 				);
 			}else{
-				return application.getLaunchManager().new TriggerStatus(
+				return launcher.new TriggerStatus(
 						"Intervall not exceeded", false
 				);
 			}

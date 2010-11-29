@@ -52,7 +52,7 @@ public class SVNClient implements IRepositoryClient {
 	}
 
 	@Override
-	public String checkout(String uri, String revision, String destination) throws Exception {
+	public CheckoutInfo checkout(String uri, String revision, String destination) throws Exception {
 		
 		String path =  SystemTools.getWorkingDir();
 		String command = "svn"; 
@@ -65,15 +65,15 @@ public class SVNClient implements IRepositoryClient {
 			throw new Exception("SVN checkout failed: "+task.getResult());
 		}
 		
-		String result = null;
-		String output = task.getOutput();
+		CheckoutInfo result = new CheckoutInfo();
+		result.output = task.getOutput();
 		// find e.g: "Checked out revision 1234."
 		Pattern p = Pattern.compile("^Checked out revision (\\d+).", Pattern.MULTILINE | Pattern.UNIX_LINES);
-		Matcher m = p.matcher(output);
+		Matcher m = p.matcher(result.output);
 		if(m.find() && m.groupCount() >= 1){
-			result = m.group(1);
+			result.revision = m.group(1);
 		}
-		logger.debug("revision: "+result);
+		logger.debug("revision: "+result.toString());
 		
 		return result;
 	}

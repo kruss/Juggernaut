@@ -2,6 +2,12 @@ package core;
 
 import java.util.ArrayList;
 
+import operation.CommandOperationConfig;
+import operation.SVNOperationConfig;
+import operation.SampleOperationConfig;
+import trigger.IntervallTriggerConfig;
+import trigger.SVNTriggerConfig;
+
 import data.AbstractOperationConfig;
 import data.AbstractTriggerConfig;
 
@@ -17,6 +23,16 @@ public class Registry {
 	
 		operationConfigs = new ArrayList<AbstractOperationConfig>();
 		triggerConfigs = new ArrayList<AbstractTriggerConfig>();
+	}
+	
+	public void init() {
+		
+		operationConfigs.add(new SampleOperationConfig());
+		operationConfigs.add(new CommandOperationConfig());
+		operationConfigs.add(new SVNOperationConfig());
+		
+		triggerConfigs.add(new IntervallTriggerConfig());
+		triggerConfigs.add(new SVNTriggerConfig());
 	}
 	
 	public ArrayList<String> getOperationNames(){
