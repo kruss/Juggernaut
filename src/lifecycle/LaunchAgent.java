@@ -7,10 +7,9 @@ import java.util.HashMap;
 import core.Application;
 import data.AbstractOperation;
 import data.AbstractOperationConfig;
-import data.Artifact;
 import data.LaunchHistory;
 import data.LaunchConfig;
-import data.Artifact.Attachment;
+import data.OperationHistory;
 import util.FileTools;
 import util.Logger;
 import util.StringTools;
@@ -26,6 +25,7 @@ public class LaunchAgent extends AbstractLifecycleObject {
 	private TriggerStatus triggerStatus;
 	protected PropertyManager propertyManager;
 	private ArrayList<AbstractOperation> operations;
+	private LaunchHistory history;
 	private Logger logger;
 	
 	public LaunchAgent(LaunchConfig config, TriggerStatus trigger){
@@ -36,8 +36,6 @@ public class LaunchAgent extends AbstractLifecycleObject {
 		this.triggerStatus = trigger;
 		
 		setName("Launch("+config.getName()+")");
-		logger = new Logger(Mode.FILE_ONLY);
-		logger.setLogiFile(new File(getLogfile()));
 		
 		propertyManager = new PropertyManager();
 		propertyManager.addProperty(config.getId(), "Name", config.getName());
@@ -46,8 +44,24 @@ public class LaunchAgent extends AbstractLifecycleObject {
 		propertyManager.addProperty(config.getId(), "Clean", ""+config.isClean());
 		propertyManager.addProperty(config.getId(), "Timeout", StringTools.millis2min(config.getTimeout())+" min");
 		
-		statusManager.setProgressMax(config.getOperationConfigs().size());
+		logger = new Logger(Mode.FILE_ONLY);
+		
 		operations = new ArrayList<AbstractOperation>();
+		for(AbstractOperationConfig operationConfig : config.getOperationConfigs()){
+			AbstractOperation operation = operationConfig.createOperation(this);
+			operations.add(operation);
+			propertyManager.addProperties(
+					operationConfig.getId(), 
+					operationConfig.getOptionContainer().getProperties()
+			);
+		}
+		
+		history = new LaunchHistory(this);
+		for(AbstractOperation operation : operations){
+			history.operations.add(new OperationHistory(operation));
+		}
+		
+		statusManager.setProgressMax(operations.size());
 	}
 	
 	public LaunchConfig getConfig(){ return config; }
@@ -59,16 +73,16 @@ public class LaunchAgent extends AbstractLifecycleObject {
 	public String getFolder() {
 		return Application.getInstance().getBuildFolder()+File.separator+config.getId();
 	}
-	
-	public String getLogfile() {
-		return Application.getInstance().getBuildFolder()+File.separator+config.getId()+".log";
-	}
 
 	@Override
 	public Logger getLogger() { return logger; }
 	
 	@Override
 	protected void init() throws Exception {
+		
+		// setup the history-folder and logger
+		history.init();
+		logger.setLogiFile(new File(history.logfile));
 		
 		// setup launch-folder
 		File folder = new File(getFolder());
@@ -77,16 +91,6 @@ public class LaunchAgent extends AbstractLifecycleObject {
 		}
 		if(!folder.isDirectory()){
 			FileTools.createFolder(folder.getAbsolutePath());
-		}
-		
-		// create operations
-		for(AbstractOperationConfig operationConfig : config.getOperationConfigs()){
-			AbstractOperation operation = operationConfig.createOperation(this);
-			operations.add(operation);
-			propertyManager.addProperties(
-					operationConfig.getId(), 
-					operationConfig.getOptionContainer().getProperties()
-			);
 		}
 	}
 	
@@ -159,21 +163,11 @@ public class LaunchAgent extends AbstractLifecycleObject {
 		
 		// perform notification
 		// TODO
-
-		// create artifacts
-		Artifact logfileArtifact = new Artifact(
-				Artifact.Type.GENERATED.toString(), "Logifile"
-		);
-		Attachment logfileAttachment = logfileArtifact.new Attachment(
-				Artifact.Name.LOGFILE.toString(), logger.getLogfile().getAbsolutePath()
-		);
-		logfileArtifact.attachments.add(logfileAttachment);
-		artifacts.add(logfileArtifact);
 		
 		// perform output
-		LaunchHistory entry = new LaunchHistory(this);
 		try{ 
-			application.getHistory().addEntry(entry); 
+			history.finish();
+			application.getHistory().addEntry(history); 
 		}catch(Exception e){
 			logger.error(e);
 		}

@@ -7,7 +7,7 @@ import lifecycle.StatusManager.Status;
 public class Artifact implements Comparable<Artifact> {
 
 	public enum Type { GENERATED, RESULT }
-	public enum Name { LOGFILE }
+	public enum Action { LEAVE, COPY, MOVE }
 	
 	public String type;
 	public String name;
@@ -30,11 +30,14 @@ public class Artifact implements Comparable<Artifact> {
 		public String name;
 		public String description;
 		public String path;
+		public Action action;
 		
-		public Attachment(String name, String path){
+		public Attachment(String name, String path, Action action){
 			
 			this.name = name;
+			description = "";
 			this.path = path;
+			this.action = action;
 		}
 	}
 

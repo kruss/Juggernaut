@@ -152,7 +152,7 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 		
 		LaunchHistory entry = getSelectedHistory();
 		if(entry != null){
-			File logfile = new File(entry.artifacts.get(0).attachments.get(0).path); // TODO temp
+			File logfile = new File(entry.logfile);
 			if(logfile.isFile()){
 				try{
 					historyOutput.setText(FileTools.readFile(logfile.getAbsolutePath()));
