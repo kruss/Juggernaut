@@ -90,7 +90,6 @@ public class LoggingConsole extends JPanel implements ILoggingListener {
 	public void deregister(){
 		if(provider != null){
 			provider.removeListener(this);
-			clearConsole();
 		}
 	}
 	

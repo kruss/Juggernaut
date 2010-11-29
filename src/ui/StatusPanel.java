@@ -180,6 +180,7 @@ public class StatusPanel extends JPanel implements IChangedListener {
 			ILoggingProvider provider = application.getLaunchManager().getLoggingProvider(selected.id); 
 			if(provider != launchConsole.getProvider()){
 				launchConsole.deregister();
+				launchConsole.clearConsole();
 				launchConsole.initConsole(provider.getLogfile());
 				provider.addListener(launchConsole);
 				loggingPanel.setSelectedIndex(1);
@@ -187,6 +188,7 @@ public class StatusPanel extends JPanel implements IChangedListener {
 		}else{
 			stopLaunch.setEnabled(false);
 			launchConsole.deregister();
+			launchConsole.clearConsole();
 		}		
 	}
 

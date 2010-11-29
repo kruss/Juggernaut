@@ -17,6 +17,7 @@ public class History {
 
 	public static final String OUTPUT_FILE = "History.xml";
 	
+	private Application application;
 	private ArrayList<LaunchHistory> entries;
 	private transient ArrayList<IChangedListener> listeners;
 	private transient String path;
@@ -24,6 +25,7 @@ public class History {
 
 	public History(String path){
 		
+		application = Application.getInstance();
 		entries = new ArrayList<LaunchHistory>();
 		listeners = new ArrayList<IChangedListener>();
 		this.path = path;
@@ -80,5 +82,25 @@ public class History {
 	private void cleanup() {
 		
 		// TODO delete history entries if history-max was reached
+	}
+
+	public void clear() {
+		
+		// TODO should be within task
+		for(int i = entries.size()-1; i>=0; i--){
+			delete(entries.get(i));
+		}
+	}
+
+	public synchronized void delete(LaunchHistory entry) {
+		
+		try{
+			entries.remove(entry);
+			FileTools.deleteFolder(entry.folder);
+			dirty = true;
+			save();
+		}catch(Exception e){
+			application.getLogger().error(e);
+		}
 	}
 }

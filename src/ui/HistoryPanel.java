@@ -1,10 +1,14 @@
 package ui;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -21,8 +25,8 @@ import data.LaunchHistory;
 import util.FileTools;
 import util.IChangedListener;
 import util.StringTools;
+import util.UiTools;
 
-// TODO history selection must be guranteed by some id
 public class HistoryPanel extends JPanel implements IChangedListener {
 
 	private static final long serialVersionUID = 1L;
@@ -31,6 +35,8 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 	private JTable historyTable;
 	private DefaultTableModel tableModel;
 	private JTextArea historyOutput;
+	private JButton deleteHistory;
+	private JButton clearHistory;
 	
 	public HistoryPanel(){
 		
@@ -49,7 +55,6 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 		tableModel.addColumn("Launch");
 		tableModel.addColumn("Trigger");
 		tableModel.addColumn("Start");
-		tableModel.addColumn("End");
 		tableModel.addColumn("Time (min)");
 		tableModel.addColumn("Status");
 		
@@ -66,22 +71,39 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 		
 		TableColumnModel columnModel = historyTable.getColumnModel();
 		columnModel.getColumn(0).setMinWidth(150);
-		columnModel.getColumn(1).setMinWidth(150);
+		columnModel.getColumn(1).setMinWidth(200);
 		columnModel.getColumn(2).setMinWidth(150);
 			columnModel.getColumn(2).setMaxWidth(150);
-		columnModel.getColumn(3).setMinWidth(150);
-			columnModel.getColumn(3).setMaxWidth(150);
-		columnModel.getColumn(4).setMinWidth(75);
-			columnModel.getColumn(4).setMaxWidth(75);
-		columnModel.getColumn(5).setMinWidth(150);
-			columnModel.getColumn(5).setMaxWidth(150);
+		columnModel.getColumn(3).setMinWidth(100);
+			columnModel.getColumn(3).setMaxWidth(100);
+		columnModel.getColumn(4).setMinWidth(150);
+			columnModel.getColumn(4).setMaxWidth(150);
+		
+		deleteHistory = new JButton(" Delete ");
+		deleteHistory.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){ deleteHistory(); }
+		});
+			
+		clearHistory = new JButton(" Delete All ");
+		clearHistory.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){ clearHistory(); }
+		});
+		
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+		buttonPanel.add(deleteHistory);
+		buttonPanel.add(clearHistory);
+		
+		JPanel topPanel = new JPanel(new BorderLayout());
+		topPanel.add(new JScrollPane(historyTable), BorderLayout.CENTER);
+		topPanel.add(buttonPanel, BorderLayout.EAST);
 		
 		historyOutput = new JTextArea();
 		historyOutput.setEditable(false);
 		
 		JSplitPane centerPanel = new JSplitPane(
 				JSplitPane.VERTICAL_SPLIT,
-				new JScrollPane(historyTable), 
+				topPanel, 
 				new JScrollPane(historyOutput));
 		centerPanel.setDividerLocation(150);
 		
@@ -121,7 +143,6 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 				entry.name,
 				entry.trigger,
 				entry.start != null ? StringTools.getTextDate(entry.start) : "",
-				entry.end != null ? StringTools.getTextDate(entry.end) : "",
 				(entry.start != null && entry.end != null) ? 
 						StringTools.getTimeDiff(entry.start, entry.end) : "",
 				entry.status.toString()
@@ -163,8 +184,10 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 			}else{
 				historyOutput.setText("");
 			}
+			deleteHistory.setEnabled(true);
 		}else{
 			historyOutput.setText("");
+			deleteHistory.setEnabled(false);
 		}
 	}
 	
@@ -184,6 +207,26 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 		
 		if(object == application.getHistory()){
 			refreshUI(getSelectedHistory());
+		}
+	}
+	
+	public void deleteHistory(){
+		
+		LaunchHistory entry = getSelectedHistory();
+		if(
+				entry != null && 
+				UiTools.confirmDialog("Delete history ["+entry.name+" ("+StringTools.getTextDate(entry.start)+")"+"] ?")
+		){
+			application.getHistory().delete(entry);
+			refreshUI(null);
+		}
+	}
+	
+	public void clearHistory(){
+		
+		if(UiTools.confirmDialog("Clear all history ?")){
+			application.getHistory().clear();
+			refreshUI(null);
 		}
 	}
 }
