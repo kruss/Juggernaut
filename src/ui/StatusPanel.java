@@ -59,7 +59,7 @@ public class StatusPanel extends JPanel implements IChangedListener {
 			}
 		};
 		tableModel.addColumn("Launch");
-		tableModel.addColumn("Description");
+		tableModel.addColumn("Trigger");
 		tableModel.addColumn("Start");
 		tableModel.addColumn("Progress");
 		tableModel.addColumn("Status");
@@ -148,7 +148,7 @@ public class StatusPanel extends JPanel implements IChangedListener {
 		for(LaunchInfo launch : launches){
 			Object[] rowData = {
 				launch.name,
-				launch.description,
+				launch.trigger,
 				launch.start != null ? StringTools.getTextDate(launch.start) : "",
 				launch.progress+" %",
 				launch.status.toString()

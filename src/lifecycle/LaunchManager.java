@@ -174,7 +174,7 @@ public class LaunchManager implements ILifecycleListener {
 		
 		public String name;
 		public String id;
-		public String description;
+		public String trigger;
 		public Date start;
 		public int progress;
 		public Status status;
@@ -182,7 +182,7 @@ public class LaunchManager implements ILifecycleListener {
 		public LaunchInfo(LaunchAgent launch){
 			name = launch.getConfig().getName();
 			id = launch.getConfig().getId();
-			description = launch.getConfig().getDescription();
+			trigger = launch.getTriggerStatus().message;
 			start = launch.getStatusManager().getStart();
 			progress = launch.getStatusManager().getProgress();
 			status = launch.getStatusManager().getStatus();
