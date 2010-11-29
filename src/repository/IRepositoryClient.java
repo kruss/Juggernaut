@@ -9,8 +9,8 @@ public interface IRepositoryClient {
 
 	public enum Revision { HEAD };
 	
-	/** get the current revision-info of uri */
-	public RevisionInfo getInfo(String uri) throws Exception;
+	/** get the current revision-info of url */
+	public RevisionInfo getInfo(String url) throws Exception;
 	
 	public class RevisionInfo {
 		
@@ -22,8 +22,8 @@ public interface IRepositoryClient {
 		}
 	}
 
-	/** checkout uri of given revision to destination-path and returns the checkout-info */
-	public CheckoutInfo checkout(String uri, String revision, String destination) throws Exception;
+	/** checkout url of given revision to destination-path and returns the checkout-info */
+	public CheckoutInfo checkout(String url, String revision, String destination) throws Exception;
 	
 	public class CheckoutInfo {
 		
@@ -35,8 +35,8 @@ public interface IRepositoryClient {
 		}
 	}
 	
-	/** get history of uri within specified interval, where revision1 > revision2 */
-	public ArrayList<RepositoryCommit> getHistory(String uri, String revision1, String revision2) throws Exception;
+	/** get history of url within specified interval, where revision1 > revision2 */
+	public ArrayList<RepositoryCommit> getHistory(String url, String revision1, String revision2) throws Exception;
 
 	public class RepositoryCommit {
 		

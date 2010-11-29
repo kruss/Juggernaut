@@ -46,7 +46,7 @@ public class SVNTrigger extends AbstractTrigger {
 		
 		try{
 			String lastRevision = getLastRevision();
-			revisionInfo = client.getInfo(config.getUri());
+			revisionInfo = client.getInfo(config.getUrl());
 			Date currentDate = new Date();
 			
 			if(lastRevision == null){

@@ -29,8 +29,8 @@ public class SVNOperation extends AbstractOperation {
 	@Override
 	protected void execute() throws Exception {
 		
-		String uri = parent.getPropertyManager().expand(config.getUri());
-		CheckoutInfo result = client.checkout(uri, Revision.HEAD.toString(), parent.getFolder());
+		String url = parent.getPropertyManager().expand(config.getUrl());
+		CheckoutInfo result = client.checkout(url, Revision.HEAD.toString(), parent.getFolder());
 		
 		if(result.revision != null){
 			setCurrentRevision(result.revision);

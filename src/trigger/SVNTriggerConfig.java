@@ -11,13 +11,13 @@ public class SVNTriggerConfig extends AbstractTriggerConfig {
 	public static final String TRIGGER_NAME = "SVN";
 	
 	public enum OPTIONS {
-		URI, DELAY
+		URL, DELAY
 	}
 	
 	public SVNTriggerConfig(){
 		
 		optionContainer.getOptions().add(new Option(
-				OPTIONS.URI.toString(), "SVN Repository Uri", 
+				OPTIONS.URL.toString(), "SVN Repository Url", 
 				Type.TEXT, ""
 		));
 		optionContainer.getOptions().add(new Option(
@@ -34,8 +34,8 @@ public class SVNTriggerConfig extends AbstractTriggerConfig {
 		return "A trigger for SVN Repository changes";
 	}
 	
-	public String getUri(){
-		return optionContainer.getOption(OPTIONS.URI.toString()).getStringValue();
+	public String getUrl(){
+		return optionContainer.getOption(OPTIONS.URL.toString()).getStringValue();
 	}
 	
 	/** the delay in millis */
@@ -45,7 +45,7 @@ public class SVNTriggerConfig extends AbstractTriggerConfig {
 	
 	@Override
 	public boolean isValid(){ 
-		return !getUri().isEmpty(); 
+		return !getUrl().isEmpty(); 
 	}
 	
 	@Override

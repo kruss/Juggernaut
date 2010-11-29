@@ -18,11 +18,11 @@ public class SVNClient implements IRepositoryClient {
 	}
 	
 	@Override
-	public RevisionInfo getInfo(String uri) throws Exception {
+	public RevisionInfo getInfo(String url) throws Exception {
 
 		String path =  SystemTools.getWorkingDir();
 		String command = "svn"; 
-		String arguments = "info "+uri;
+		String arguments = "info "+url;
 
 		// perform task
 		CommandTask task = new CommandTask(command, arguments, path, logger);
@@ -52,11 +52,11 @@ public class SVNClient implements IRepositoryClient {
 	}
 
 	@Override
-	public CheckoutInfo checkout(String uri, String revision, String destination) throws Exception {
+	public CheckoutInfo checkout(String url, String revision, String destination) throws Exception {
 		
 		String path =  SystemTools.getWorkingDir();
 		String command = "svn"; 
-		String arguments = "checkout -r "+revision+" "+uri+" "+destination;
+		String arguments = "checkout -r "+revision+" "+url+" "+destination;
 
 		// perform task
 		CommandTask task = new CommandTask(command, arguments, path, logger);
@@ -79,11 +79,11 @@ public class SVNClient implements IRepositoryClient {
 	}
 
 	@Override
-	public ArrayList<RepositoryCommit> getHistory(String uri, String revision1, String revision2) throws Exception {
+	public ArrayList<RepositoryCommit> getHistory(String url, String revision1, String revision2) throws Exception {
 
 		String path =  SystemTools.getWorkingDir();
 		String command = "svn"; 
-		String arguments = "log -r "+revision1+":"+revision2+" "+uri;
+		String arguments = "log -r "+revision1+":"+revision2+" "+url;
 
 		// perform task
 		CommandTask task = new CommandTask(command, arguments, path, logger);
