@@ -181,7 +181,7 @@ public class StatusPanel extends JPanel implements IChangedListener {
 			if(provider != launchConsole.getProvider()){
 				launchConsole.deregister();
 				launchConsole.clearConsole();
-				launchConsole.initConsole(provider.getLogfile());
+				launchConsole.initConsole(provider.getBuffer());
 				provider.addListener(launchConsole);
 				loggingPanel.setSelectedIndex(1);
 			}

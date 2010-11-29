@@ -10,6 +10,7 @@ import core.Constants;
 public class Logger implements ILoggingProvider {
 
 	public static final String OUTPUT_FILE = Constants.APP_NAME+".log";
+	public static final int BUFFER_MAX = 100;
 	
 	public enum Level { DEBUG, NORMAL, EMPHASISED, ERROR, INFO }
 	public enum Mode { FILE_ONLY, CONSOLE_ONLY, FILE_AND_CONSOLE }
@@ -19,8 +20,8 @@ public class Logger implements ILoggingProvider {
 	private Mode mode;
 	private ArrayList<ILoggingListener> listeners;
 	private File logfile;
+	private ArrayList<String> buffer;
 	
-	@Override
 	public File getLogfile(){ return logfile; }
 	
 	public Logger(Mode mode){
@@ -28,6 +29,7 @@ public class Logger implements ILoggingProvider {
 		this.mode = mode;
 		listeners = new ArrayList<ILoggingListener>();
 		logfile = null;
+		buffer = new ArrayList<String>();
 	}
 	
 	@Override
@@ -98,9 +100,10 @@ public class Logger implements ILoggingProvider {
 			writeSystem(log);
 		}
 		notifyListeners(log);
+		buffer(log);
 	}
-    
-    private void writeFile(String log){
+
+	private void writeFile(String log){
     	
 		try{
 			FileTools.writeFile(logfile.getAbsolutePath(), log.replaceAll("\n", "\r\n"), true);
@@ -112,4 +115,22 @@ public class Logger implements ILoggingProvider {
     private void writeSystem(String log){
     	System.out.print(log);
     }
+    
+    @Override
+    public String getBuffer(){ 
+    	
+    	StringBuilder buffer = new StringBuilder();
+    	for(String string : this.buffer){
+    		buffer.append(string);
+    	}
+    	return buffer.toString();
+    }
+    
+    private void buffer(String log) {
+		
+    	if(buffer.size() > BUFFER_MAX){
+    		buffer.remove(0);
+    	}
+    	buffer.add(log);
+	}
 }

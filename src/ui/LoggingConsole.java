@@ -7,7 +7,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
 
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
@@ -17,9 +16,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.text.BadLocationException;
 
-import core.Application;
-
-import util.FileTools;
 import util.ILoggingListener;
 import util.ILoggingProvider;
 
@@ -30,7 +26,6 @@ public class LoggingConsole extends JPanel implements ILoggingListener {
 	
 	private static final long serialVersionUID = 1L;
 
-	private Application application;
 	private ILoggingProvider provider;
 	private JPopupMenu popup;
 	private JTextArea console;
@@ -43,7 +38,6 @@ public class LoggingConsole extends JPanel implements ILoggingListener {
 	
 	public LoggingConsole(){
 		
-		application = Application.getInstance();
 		provider = null;
 		maxLines = MAX_LINES;
 		autoScrolling = true;
@@ -117,14 +111,7 @@ public class LoggingConsole extends JPanel implements ILoggingListener {
 		console.setText("");
 	}
 
-	public void initConsole(File logfile) {
-		
-		if(logfile.isFile()){
-			try{
-				console.setText(FileTools.readFile(logfile.getAbsolutePath()));
-			}catch(Exception e){
-				application.getLogger().error(e);
-			}
-		}
+	public void initConsole(String buffer) {
+		console.setText(buffer);
 	}
 }
