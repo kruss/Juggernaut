@@ -80,7 +80,7 @@ public class Logger implements ILoggingProvider {
     	String log;
     	
 		if(level == Level.INFO){
-			log = "\n\t>>> "+text+" <<<\n\n";
+			log = "\n\t>>> "+text.toUpperCase()+" <<<\n\n";
 		}else if(level == Level.EMPHASISED){
 			log = time+text.toUpperCase()+"\n";
 		}else if(level == Level.ERROR){

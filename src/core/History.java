@@ -1,6 +1,9 @@
 package core;
 
 import java.util.ArrayList;
+import java.util.Date;
+
+import lifecycle.StatusManager.Status;
 
 import util.FileTools;
 import util.IChangedListener;
@@ -86,14 +89,24 @@ public class History {
 
 	public void clear() {
 		
-		// TODO should be within task
 		for(int i = entries.size()-1; i>=0; i--){
 			delete(entries.get(i));
 		}
 	}
 
-	public synchronized void delete(LaunchHistory entry) {
+	public void delete(String historyId) {
 		
+		for(int i=0; i<entries.size(); i++){
+			LaunchHistory entry = entries.get(i);
+			if(entry.historyId.equals(historyId)){
+				delete(entry);
+			}
+		}
+	}
+	
+	private synchronized void delete(LaunchHistory entry) {
+		
+		// TODO should be within task
 		try{
 			entries.remove(entry);
 			FileTools.deleteFolder(entry.folder);
@@ -102,5 +115,37 @@ public class History {
 		}catch(Exception e){
 			application.getLogger().error(e);
 		}
+	}
+	
+	public class HistoryInfo {
+		
+		public String historyId;
+		public String name;
+		public String id;
+		public String logfile;
+		public String trigger;
+		public Date start;
+		public Date end;
+		public Status status;
+		
+		public HistoryInfo(LaunchHistory entry){
+			historyId = entry.historyId;
+			name = entry.name;
+			id = entry.id;
+			logfile = entry.logfile;
+			trigger = entry.trigger;
+			start = entry.start;
+			end = entry.end;
+			status = entry.status;
+		}
+	}
+	
+	public ArrayList<HistoryInfo> getHistoryInfo(){
+		
+		ArrayList<HistoryInfo> infos = new ArrayList<HistoryInfo>();
+		for(LaunchHistory entry : entries){
+			infos.add(new HistoryInfo(entry));
+		}
+		return infos;
 	}
 }

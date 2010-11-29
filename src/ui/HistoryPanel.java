@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -19,8 +20,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
 import core.Application;
-import core.History;
-import data.LaunchHistory;
+import core.History.HistoryInfo;
 
 import util.FileTools;
 import util.IChangedListener;
@@ -35,12 +35,15 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 	private JTable historyTable;
 	private DefaultTableModel tableModel;
 	private JTextArea historyOutput;
+	private JButton deleteAllHistory;
 	private JButton deleteHistory;
-	private JButton clearHistory;
+	
+	private ArrayList<HistoryInfo> entries;
 	
 	public HistoryPanel(){
 		
 		application = Application.getInstance();
+		entries = new ArrayList<HistoryInfo>();
 		
 		tableModel = new DefaultTableModel(){
 			private static final long serialVersionUID = 1L;
@@ -79,20 +82,20 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 		columnModel.getColumn(4).setMinWidth(150);
 			columnModel.getColumn(4).setMaxWidth(150);
 		
+		deleteAllHistory = new JButton(" Delete All ");
+		deleteAllHistory.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){ deleteAllHistory(); }
+		});
+		
 		deleteHistory = new JButton(" Delete ");
 		deleteHistory.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){ deleteHistory(); }
-		});
-			
-		clearHistory = new JButton(" Delete All ");
-		clearHistory.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){ clearHistory(); }
 		});
 		
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
 		buttonPanel.add(deleteHistory);
-		buttonPanel.add(clearHistory);
+		buttonPanel.add(deleteAllHistory);
 		
 		JPanel topPanel = new JPanel(new BorderLayout());
 		topPanel.add(new JScrollPane(historyTable), BorderLayout.CENTER);
@@ -120,6 +123,8 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 	}
 	
 	public void init() {
+		
+		entries = application.getHistory().getHistoryInfo();
 		initUI();
 		adjustSelection();
 	}
@@ -134,11 +139,7 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 	
 	private void initUI() {
 		
-		History history = application.getHistory();
-		int size = history.getEntries().size();
-		
-		for(int i=0; i<size; i++){
-			LaunchHistory entry = history.getEntries().get(i);
+		for(HistoryInfo entry : entries){
 			Object[] rowData = {
 				entry.name,
 				entry.trigger,
@@ -151,16 +152,13 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 		}
 	}
 
-	private void refreshUI(LaunchHistory selected) {
+	private void refreshUI(HistoryInfo selected) {
 		
 		clearUI();
 		initUI();
 		if(selected != null){	
-			History history = application.getHistory();
-			int size = history.getEntries().size();
-			for(int i=0; i<size; i++){
-				LaunchHistory entry = history.getEntries().get(i);
-				if(entry.id.equals(selected.id)){
+			for(int i=0; i<entries.size(); i++){
+				if(entries.get(i).historyId.equals(selected.historyId)){
 					historyTable.changeSelection(i, -1, false, false);
 					break;
 				}
@@ -171,7 +169,7 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 	
 	private void adjustSelection() {
 		
-		LaunchHistory entry = getSelectedHistory();
+		HistoryInfo entry = getSelectedHistory();
 		if(entry != null){
 			File logfile = new File(entry.logfile);
 			if(logfile.isFile()){
@@ -191,41 +189,42 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 		}
 	}
 	
-	private LaunchHistory getSelectedHistory() {
-		
-		LaunchHistory selected = null;
-		int index = historyTable.getSelectedRow();
-		if(index >=0){
-			History history = application.getHistory();
-			selected = history.getEntries().get(index);
-		}
-		return selected;
-	}
-
 	@Override
 	public void changed(Object object) {
 		
 		if(object == application.getHistory()){
-			refreshUI(getSelectedHistory());
+			HistoryInfo selected = getSelectedHistory();
+			entries = application.getHistory().getHistoryInfo();
+			refreshUI(selected);
+		}
+	}
+	
+	private HistoryInfo getSelectedHistory() {
+		
+		HistoryInfo selected = null;
+		int index = historyTable.getSelectedRow();
+		if(index >=0){				
+			selected = entries.get(index);
+		}
+		return selected;
+	}
+	
+	public void deleteAllHistory(){
+		
+		if(UiTools.confirmDialog("Delete all history ?")){
+			application.getHistory().clear();
+			refreshUI(null);
 		}
 	}
 	
 	public void deleteHistory(){
 		
-		LaunchHistory entry = getSelectedHistory();
+		HistoryInfo entry = getSelectedHistory();
 		if(
 				entry != null && 
 				UiTools.confirmDialog("Delete history ["+entry.name+" ("+StringTools.getTextDate(entry.start)+")"+"] ?")
 		){
-			application.getHistory().delete(entry);
-			refreshUI(null);
-		}
-	}
-	
-	public void clearHistory(){
-		
-		if(UiTools.confirmDialog("Clear all history ?")){
-			application.getHistory().clear();
+			application.getHistory().delete(entry.historyId);
 			refreshUI(null);
 		}
 	}
