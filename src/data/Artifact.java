@@ -6,8 +6,9 @@ import lifecycle.StatusManager.Status;
 
 public class Artifact implements Comparable<Artifact> {
 
-	public enum Type { GENERATED, RESULT }
-	public enum Action { LEAVE, COPY, MOVE }
+	public static final String DEFAULT_TYPE = "DEFAULT";
+
+	public enum Action { KEEP, COPY, MOVE }
 	
 	public String type;
 	public String name;
@@ -16,10 +17,10 @@ public class Artifact implements Comparable<Artifact> {
 	
 	public ArrayList<Attachment> attachments;
 	
-	public Artifact(String type, String name){
+	public Artifact(String name){
 		
-		this.type = type;
 		this.name = name;
+		type = DEFAULT_TYPE;
 		description = "";
 		status = Status.UNDEFINED;
 		attachments = new ArrayList<Attachment>();
