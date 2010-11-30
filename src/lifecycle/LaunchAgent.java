@@ -44,8 +44,7 @@ public class LaunchAgent extends AbstractLifecycleObject {
 		propertyManager.addProperty(config.getId(), "Clean", ""+config.isClean());
 		propertyManager.addProperty(config.getId(), "Timeout", StringTools.millis2min(config.getTimeout())+" min");
 		
-		logger = new Logger(Mode.FILE_ONLY);
-		
+		logger = new Logger(Mode.FILE_ONLY); // required by operation-ctors
 		operations = new ArrayList<AbstractOperation>();
 		for(AbstractOperationConfig operationConfig : config.getOperationConfigs()){
 			AbstractOperation operation = operationConfig.createOperation(this);
@@ -80,13 +79,18 @@ public class LaunchAgent extends AbstractLifecycleObject {
 	@Override
 	protected void init() throws Exception {
 		
-		// setup the history-folder and logger
+		// setup the history-folder
 		history.init();
+		
+		// setup the logger
 		logger.setLogiFile(new File(history.logfile));
+		logger.info("Launch ["+config.getName()+"]");
+		debugProperties(propertyManager.getProperties(config.getId()));
 		
 		// setup launch-folder
 		File folder = new File(getFolder());
 		if(config.isClean() && folder.isDirectory()){
+			logger.log("cleaning: "+folder.getAbsolutePath());
 			FileTools.deleteFolder(folder.getAbsolutePath());
 		}
 		if(!folder.isDirectory()){
@@ -96,9 +100,6 @@ public class LaunchAgent extends AbstractLifecycleObject {
 	
 	@Override
 	protected void execute() throws Exception {
-		
-		logger.info("Launch ["+config.getName()+"]");
-		debugProperties(propertyManager.getProperties(config.getId()));
 		
 		boolean aboarding = false;
 		for(AbstractOperation operation : operations){

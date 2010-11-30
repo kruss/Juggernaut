@@ -2,7 +2,6 @@ package operation;
 
 import repository.SVNClient;
 import repository.IRepositoryClient.CheckoutInfo;
-import repository.IRepositoryClient.Revision;
 
 import lifecycle.LaunchAgent;
 import lifecycle.StatusManager.Status;
@@ -30,7 +29,9 @@ public class SVNOperation extends AbstractOperation {
 	protected void execute() throws Exception {
 		
 		String url = parent.getPropertyManager().expand(config.getUrl());
-		CheckoutInfo result = client.checkout(url, Revision.HEAD.toString(), parent.getFolder());
+		String revision = parent.getPropertyManager().expand(config.getRevision());
+		
+		CheckoutInfo result = client.checkout(url, revision, parent.getFolder());
 		
 		if(result.revision != null){
 			setCurrentRevision(result.revision);

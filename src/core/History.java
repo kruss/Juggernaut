@@ -20,7 +20,9 @@ public class History {
 
 	public static final String OUTPUT_FILE = "History.xml";
 	
-	private Application application;
+	@SuppressWarnings("unused")
+	private String version;
+	
 	private ArrayList<LaunchHistory> entries;
 	private transient ArrayList<IChangedListener> listeners;
 	private transient String path;
@@ -28,7 +30,7 @@ public class History {
 
 	public History(String path){
 		
-		application = Application.getInstance();
+		version = Constants.APP_VERSION;
 		entries = new ArrayList<LaunchHistory>();
 		listeners = new ArrayList<IChangedListener>();
 		this.path = path;
@@ -113,7 +115,7 @@ public class History {
 			dirty = true;
 			save();
 		}catch(Exception e){
-			application.getLogger().error(e);
+			Application.getInstance().getLogger().error(e);
 		}
 	}
 	

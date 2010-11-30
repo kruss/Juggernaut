@@ -31,6 +31,9 @@ public class Configuration {
 	public enum State { CLEAN, DIRTY }
 	public static final String OUTPUT_FILE = "Configuration.xml";
 	
+	@SuppressWarnings("unused")
+	private String version;
+	
 	private OptionContainer optionContainer;
 	private ArrayList<LaunchConfig> launchConfigs;
 	private transient ArrayList<IChangedListener> listeners;
@@ -39,6 +42,7 @@ public class Configuration {
 
 	public Configuration(String path){
 		
+		version = Constants.APP_VERSION;
 		optionContainer = new OptionContainer();
 		optionContainer.setDescription("The application preferences");
 		optionContainer.getOptions().add(new Option(

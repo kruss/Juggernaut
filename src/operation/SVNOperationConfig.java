@@ -1,5 +1,6 @@
 package operation;
 
+import repository.IRepositoryClient.Revision;
 import lifecycle.LaunchAgent;
 import data.AbstractOperation;
 import data.AbstractOperationConfig;
@@ -11,13 +12,17 @@ public class SVNOperationConfig extends AbstractOperationConfig {
 	public static final String OPERATION_NAME = "SVN";
 
 	public enum OPTIONS {
-		URL
+		URL, REVISION
 	}
 	
 	public SVNOperationConfig(){
 		
 		optionContainer.getOptions().add(new Option(
 				OPTIONS.URL.toString(), "SVN Repository Url", 
+				Type.TEXT, ""
+		));
+		optionContainer.getOptions().add(new Option(
+				OPTIONS.REVISION.toString(), "Revision to checkout (HEAD if empty)", 
 				Type.TEXT, ""
 		));
 	}
@@ -32,6 +37,15 @@ public class SVNOperationConfig extends AbstractOperationConfig {
 	
 	public String getUrl(){
 		return optionContainer.getOption(OPTIONS.URL.toString()).getStringValue();
+	}
+	
+	public String getRevision(){
+		String revision = optionContainer.getOption(OPTIONS.REVISION.toString()).getStringValue();
+		if(revision.isEmpty()){
+			return Revision.HEAD.toString();
+		}else{
+			return revision;
+		}
 	}
 	
 	@Override
