@@ -74,7 +74,7 @@ public class LaunchConfig implements Comparable<LaunchConfig> {
 		optionContainer.getOptions().add(new Option(
 				GROUPS.NOTIFICATION.toString(),
 				OPTIONS.MESSAGE.toString(), "Optional notification message", 
-				Type.TEXTAREA, ""
+				Type.TEXT_AREA, ""
 		));
 		
 		operations = new ArrayList<AbstractOperationConfig>();

@@ -31,7 +31,7 @@ public class CommandOperationConfig extends AbstractOperationConfig {
 		optionContainer.getOptions().add(new Option(
 				GROUPS.SETTINGS.toString(),
 				OPTIONS.ARGUMENTS.toString(), "The command's arguments (linewise, commented with '//')",
-				Type.TEXTAREA, ""
+				Type.TEXT_AREA, ""
 		));
 		optionContainer.getOptions().add(new Option(
 				GROUPS.SETTINGS.toString(),

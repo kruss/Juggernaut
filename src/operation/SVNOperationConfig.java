@@ -25,7 +25,7 @@ public class SVNOperationConfig extends AbstractOperationConfig {
 		optionContainer.getOptions().add(new Option(
 				GROUPS.SETTINGS.toString(),
 				OPTIONS.REVISION.toString(), "Revision to checkout (HEAD if empty)", 
-				Type.TEXT, ""
+				Type.TEXT_SMALL, ""
 		));
 	}
 	

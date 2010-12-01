@@ -8,7 +8,7 @@ import java.util.HashMap;
  */
 public class Option {
 
-	public enum Type { TEXT, TEXTAREA, DATE, INTEGER, BOOLEAN }
+	public enum Type { TEXT, TEXT_SMALL, TEXT_AREA, DATE, INTEGER, BOOLEAN }
 	
 	public enum Properties {
 		INTEGER_MIN, INTEGER_MAX

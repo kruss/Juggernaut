@@ -61,7 +61,7 @@ public class OptionContainer {
 		html.append("<ul>");
 		for(Option option : options){
 			String value = null;
-			if(option.getType() == Type.TEXTAREA){
+			if(option.getType() == Type.TEXT_AREA){
 				value = "<br>"+option.getStringValue().replaceAll("\\n", "<br>");
 			}else{
 				value = option.getStringValue();

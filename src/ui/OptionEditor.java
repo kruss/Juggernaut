@@ -88,7 +88,9 @@ public class OptionEditor extends JPanel {
 		switch(option.getType()){
 			case TEXT:
 				return createTextFieldPanel(option); 
-			case TEXTAREA:
+			case TEXT_SMALL:
+				return createSmallTextFieldPanel(option);
+			case TEXT_AREA:
 				return createTextAreaPanel(option); 
 			case DATE:
 				return createTextFieldPanel(option); 
@@ -103,7 +105,7 @@ public class OptionEditor extends JPanel {
 	private JPanel createTextFieldPanel(final Option option) {
 
 		final JTextField component = new JTextField();
-		component.setColumns(30);
+		component.setColumns(25);
 		component.setToolTipText(option.getDescription());
 		component.setText(option.getStringValue());
 		component.addKeyListener(new KeyListener(){
@@ -126,9 +128,35 @@ public class OptionEditor extends JPanel {
 		return panel;
 	}
 
+	private JPanel createSmallTextFieldPanel(final Option option) {
+
+		final JTextField component = new JTextField();
+		component.setColumns(25);
+		component.setToolTipText(option.getDescription());
+		component.setText(option.getStringValue());
+		component.addKeyListener(new KeyListener(){
+			@Override
+			public void keyPressed(KeyEvent arg0) {}
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+				if(KeyInput.isModifyingKeyEvent(arg0)){
+					String value = component.getText();
+					container.getOption(option.getName()).setStringValue(value);
+					notifyListeners();
+				}
+			}
+			@Override
+			public void keyTyped(KeyEvent arg0) {}
+		});
+		JPanel panel = new JPanel(new BorderLayout());
+		panel.add(new JLabel(option.getConvertedName()+":"), BorderLayout.NORTH);
+		panel.add(component, BorderLayout.WEST);
+		return panel;
+	}
+	
 	private JPanel createTextAreaPanel(final Option option) {
 
-		final JTextArea component = new JTextArea(7, 30);
+		final JTextArea component = new JTextArea(7, 25);
 		component.setToolTipText(option.getDescription());
 		component.setText(option.getStringValue());
 		component.addKeyListener(new KeyListener(){

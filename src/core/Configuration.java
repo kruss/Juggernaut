@@ -82,12 +82,12 @@ public class Configuration {
 		optionContainer.getOptions().add(new Option(
 				GROUPS.NOTIFICATION.toString(),
 				OPTIONS.SMTP_SERVER.toString(), "The SMTP-Server for notifications", 
-				Type.TEXT, ""
+				Type.TEXT_SMALL, ""
 		));
 		optionContainer.getOptions().add(new Option(
 				GROUPS.NOTIFICATION.toString(),
 				OPTIONS.SMTP_ADDRESS.toString(), "The SMTP-Address for notifications", 
-				Type.TEXT, "SMTP@"+Constants.APP_NAME
+				Type.TEXT_SMALL, "SMTP@"+Constants.APP_NAME
 		));
 		optionContainer.getOptions().add(new Option(
 				GROUPS.LOGGING.toString(),

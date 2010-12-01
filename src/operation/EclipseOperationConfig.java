@@ -26,7 +26,7 @@ public class EclipseOperationConfig extends AbstractOperationConfig {
 		optionContainer.getOptions().add(new Option(
 				GROUPS.SETTINGS.toString(),
 				OPTIONS.BUILD.toString(), "[project|configuration] pattern to include in build (linewise, commented with '//')", 
-				Type.TEXTAREA, ""
+				Type.TEXT_AREA, ""
 		));
 		optionContainer.getOptions().add(new Option(
 				GROUPS.SETTINGS.toString(),
