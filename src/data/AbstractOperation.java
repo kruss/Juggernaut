@@ -16,11 +16,11 @@ public abstract class AbstractOperation extends AbstractLifecycleObject {
 
 	public AbstractOperation(LaunchAgent parent, AbstractOperationConfig config){
 		
+		super("Opperation("+config.getId()+")");
 		this.parent = parent;
 		this.logger = parent.getLogger();
 		this.config = config.clone();
-		
-		setName(parent.getName()+"::Opperation("+getIndex()+")");
+
 		parent.getPropertyManager().addProperties(
 				config.getId(), config.getOptionContainer().getProperties()
 		);

@@ -1,10 +1,15 @@
 package operation;
 
+import core.Application;
+
+import repository.SVNClient;
 import repository.IRepositoryClient.Revision;
+import ui.OptionEditor;
 import lifecycle.LaunchAgent;
 import data.AbstractOperation;
 import data.AbstractOperationConfig;
 import data.Option;
+import data.OptionContainer;
 import data.Option.Type;
 
 public class SVNOperationConfig extends AbstractOperationConfig {
@@ -27,6 +32,15 @@ public class SVNOperationConfig extends AbstractOperationConfig {
 				OPTIONS.REVISION.toString(), "Revision to checkout (HEAD if empty)", 
 				Type.TEXT_SMALL, ""
 		));
+	}
+	
+	@Override
+	public void initOptions(OptionContainer container) {
+		
+		OptionEditor.addRepositoryTest(
+				container.getOption(OPTIONS.URL.toString()),
+				new SVNClient(Application.getInstance().getLogger())
+		);
 	}
 	
 	@Override

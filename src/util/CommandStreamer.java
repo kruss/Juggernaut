@@ -11,12 +11,10 @@ public class CommandStreamer extends Task {
 	private StringBuilder buffer;
 	
 	public CommandStreamer(String name, InputStream stream, Logger logger){
-		super(logger);
 		
+		super("Streamer("+name+")", logger);
 		this.name = name;
 		this.stream = stream;
-		
-		setName("Streamer("+name+")");
 		buffer = new StringBuilder();
 	}
 	

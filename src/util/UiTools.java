@@ -6,16 +6,18 @@ import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
+import core.Constants;
+
 public class UiTools {
 
 	public static void infoDialog(String text){ 
 
-		JOptionPane.showMessageDialog(null, text, "Info", JOptionPane.PLAIN_MESSAGE); 
+		JOptionPane.showMessageDialog(null, text, Constants.APP_NAME, JOptionPane.PLAIN_MESSAGE); 
 	}
 	
 	public static void errorDialog(String text){ 
 
-		JOptionPane.showMessageDialog(null, text, "Error", JOptionPane.ERROR_MESSAGE); 
+		JOptionPane.showMessageDialog(null, text, Constants.APP_NAME, JOptionPane.ERROR_MESSAGE); 
 	}
 
 	public static String inputDialog(String text, String value){ 

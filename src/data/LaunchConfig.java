@@ -17,7 +17,7 @@ import data.Option.Type;
 /**
  * the configuration of a launch,- will be serialized
  */
-public class LaunchConfig implements Comparable<LaunchConfig> {
+public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitializer {
 	
 	public enum GROUPS {
 		GENERAL, NOTIFICATION
@@ -81,6 +81,9 @@ public class LaunchConfig implements Comparable<LaunchConfig> {
 		triggers = new ArrayList<AbstractTriggerConfig>();
 		dirty = true;
 	}
+	
+	@Override
+	public void initOptions(OptionContainer container){}
 	
 	public String getId(){ return id; }
 	

@@ -53,9 +53,9 @@ public class LaunchConfigPanel extends JPanel implements IChangedListener {
 
 		LaunchConfig config = parentPanel.getCurrentConfig();
 		if(config != null){
-			optionEditor.setOptionContainer(config.getOptionContainer());
+			optionEditor.setOptionContainer(config.getOptionContainer(), config);
 		}else{
-			optionEditor.setOptionContainer(null);
+			optionEditor.setOptionContainer(null, null);
 		}
 	}
 }

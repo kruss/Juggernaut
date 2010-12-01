@@ -17,10 +17,9 @@ public class SchedulerTask extends Task {
 	private Application application;
 	
 	public SchedulerTask(){
-		super(Application.getInstance().getLogger());
 		
+		super("Scheduler", Application.getInstance().getLogger());
 		this.application = Application.getInstance();
-		setName("Scheduler");
 		cyclic = true;
 	}
 

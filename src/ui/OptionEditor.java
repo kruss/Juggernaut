@@ -1,6 +1,8 @@
 package ui;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
@@ -9,6 +11,7 @@ import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -20,6 +23,13 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import core.Application;
+
+import repository.ConnectionTest;
+import repository.IRepositoryClient;
+import repository.SVNClient;
+
+import data.IOptionInitializer;
 import data.Option;
 import data.OptionContainer;
 
@@ -42,7 +52,7 @@ public class OptionEditor extends JPanel {
 		setLayout(new BorderLayout());
 	}
 	
-	public void setOptionContainer(OptionContainer container) {
+	public void setOptionContainer(OptionContainer container, IOptionInitializer initializer) {
 		
 		removeAll();
 		this.container = container;
@@ -62,7 +72,9 @@ public class OptionEditor extends JPanel {
 					groupPanel.setLayout(new BoxLayout(groupPanel, BoxLayout.Y_AXIS));
 					groupPanel.setBorder(BorderFactory.createTitledBorder(groupName));
 				}
-				groupPanel.add(createPanel(option));
+				JPanel panel = createPanel(option);
+				option.parent = panel;
+				groupPanel.add(panel);
 			}
 			if(groupPanel != null){
 				centerPanel.add(groupPanel);
@@ -70,6 +82,9 @@ public class OptionEditor extends JPanel {
 			}
 			add(centerPanel, BorderLayout.NORTH);
 			setToolTipText(container.getDescription());
+			if(initializer != null){
+				initializer.initOptions(container);
+			}
 		}else{
 			setToolTipText("");
 		}
@@ -105,6 +120,7 @@ public class OptionEditor extends JPanel {
 	private JPanel createTextFieldPanel(final Option option) {
 
 		final JTextField component = new JTextField();
+		option.component = component;
 		component.setColumns(25);
 		component.setToolTipText(option.getDescription());
 		component.setText(option.getStringValue());
@@ -131,6 +147,7 @@ public class OptionEditor extends JPanel {
 	private JPanel createSmallTextFieldPanel(final Option option) {
 
 		final JTextField component = new JTextField();
+		option.component = component;
 		component.setColumns(25);
 		component.setToolTipText(option.getDescription());
 		component.setText(option.getStringValue());
@@ -157,6 +174,7 @@ public class OptionEditor extends JPanel {
 	private JPanel createTextAreaPanel(final Option option) {
 
 		final JTextArea component = new JTextArea(5, 25);
+		option.component = component;
 		component.setToolTipText(option.getDescription());
 		component.setText(option.getStringValue());
 		component.addKeyListener(new KeyListener(){
@@ -187,6 +205,7 @@ public class OptionEditor extends JPanel {
 				option.getIntegerMaximum(),
                 1);  
 		final JSpinner component = new JSpinner(model);
+		option.component = component;
 		((JSpinner.DefaultEditor)component.getEditor()).getTextField().setColumns(8);
 		component.setToolTipText(
 				option.getDescription()+" : "+option.getIntegerMinimum()+" - "+option.getIntegerMaximum()
@@ -208,6 +227,7 @@ public class OptionEditor extends JPanel {
 	private JPanel createCheckBoxPanel(final Option option) {
 
 		final JCheckBox component = new JCheckBox(option.getConvertedName());
+		option.component = component;
 		component.setToolTipText(option.getDescription());
 		component.setSelected(option.getBooleanValue());
 		component.addItemListener(new ItemListener(){
@@ -221,5 +241,22 @@ public class OptionEditor extends JPanel {
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(component, BorderLayout.WEST);
 		return panel;
+	}
+
+	public static void addRepositoryTest(final Option option, IRepositoryClient client) {
+
+		if(option.component instanceof JTextField){
+			JButton button = new JButton(" Test ");
+			button.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e){ 
+					ConnectionTest tester = new ConnectionTest(
+							new SVNClient(Application.getInstance().getLogger()), 
+							((JTextField)option.component).getText()
+					);
+					tester.asyncRun(0);
+				}
+			});
+			option.parent.add(button, BorderLayout.EAST);
+		}
 	}
 }

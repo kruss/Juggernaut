@@ -1,7 +1,14 @@
 package data;
 
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.Date;
 import java.util.HashMap;
+
+import javax.swing.JComponent;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 
 /**
  * option of an item
@@ -14,12 +21,31 @@ public class Option {
 		INTEGER_MIN, INTEGER_MAX
 	}
 
+	public transient JPanel parent;
+	public transient JComponent component;
+	public transient JPopupMenu popup;
+	
 	private String group;
 	private String name;
 	private String description;
 	private Type type;
 	private String value;
 	private HashMap<String, String> properties;
+	
+	public void addPopup(JMenuItem item) {
+		
+		if(popup == null){
+			popup = new JPopupMenu();
+			component.addMouseListener(new MouseAdapter(){
+				public void mouseClicked(MouseEvent e){
+					if(e.getButton() == MouseEvent.BUTTON3){
+						popup.show(e.getComponent(), e.getX(), e.getY());
+					}
+				}
+			});
+		}
+		popup.add(item);
+	}
 	
 	public Option(String group, String name, String description, Type type, String value){
 		

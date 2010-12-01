@@ -9,8 +9,9 @@ public abstract class Task extends Thread {
 	
 	public Logger getObserver(){ return observer; }
 	
-	public Task(Logger observer){
+	public Task(String name, Logger observer){
 		
+		setName(name);
 		this.observer = observer;
 		startupDelay = 0;
 		cyclic = false;

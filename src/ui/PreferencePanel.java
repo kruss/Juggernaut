@@ -1,7 +1,6 @@
 package ui;
 
 import java.awt.BorderLayout;
-
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
@@ -36,7 +35,8 @@ public class PreferencePanel extends JPanel implements IChangedListener {
 	}
 	
 	private void initUI() {
-		optionEditor.setOptionContainer(application.getConfiguration().getOptionContainer());
+		Configuration configuration = application.getConfiguration();
+		optionEditor.setOptionContainer(configuration.getOptionContainer(), configuration);
 	}
 
 	@Override

@@ -12,7 +12,7 @@ import data.Option.Type;
 /**
  * the configuration of an operation,- will be serialized
  */
-public abstract class AbstractOperationConfig {
+public abstract class AbstractOperationConfig implements IOptionInitializer {
 
 	public enum GROUPS {
 		GENERAL, SETTINGS
@@ -42,6 +42,9 @@ public abstract class AbstractOperationConfig {
 				Type.BOOLEAN, false
 		));
 	}
+	
+	@Override
+	public void initOptions(OptionContainer container){}
 	
 	public String getId(){ return id; }
 	

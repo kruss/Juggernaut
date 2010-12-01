@@ -18,14 +18,11 @@ public class CommandTask extends Task {
 			String command, String arguments, 
 			String path, Logger logger
 	){
-		super(logger);
-		
+		super("Command("+command+")", logger);
 		this.command = command;
 		this.arguments = arguments;
 		this.path = path;
 		this.logger = logger;
-
-		setName("Command("+command+")");
 		output = "";
 		result = Constants.PROCESS_NOK;
 	}

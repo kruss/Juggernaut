@@ -1,9 +1,14 @@
 package trigger;
 
+
+import repository.SVNClient;
+import core.Application;
+import ui.OptionEditor;
 import util.StringTools;
 import data.AbstractTrigger;
 import data.AbstractTriggerConfig;
 import data.Option;
+import data.OptionContainer;
 import data.Option.Type;
 
 public class SVNTriggerConfig extends AbstractTriggerConfig {
@@ -26,6 +31,15 @@ public class SVNTriggerConfig extends AbstractTriggerConfig {
 				OPTIONS.DELAY.toString(), "Trigger delay in minutes", 
 				Type.INTEGER, 5, 0, 15
 		));
+	}
+	
+	@Override
+	public void initOptions(OptionContainer container) {
+		
+		OptionEditor.addRepositoryTest(
+				container.getOption(OPTIONS.URL.toString()),
+				new SVNClient(Application.getInstance().getLogger())
+		);
 	}
 	
 	@Override

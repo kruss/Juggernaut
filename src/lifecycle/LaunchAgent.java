@@ -30,12 +30,11 @@ public class LaunchAgent extends AbstractLifecycleObject {
 	
 	public LaunchAgent(LaunchConfig config, TriggerStatus trigger){
 
+		super("Launch("+config.getId()+")");
 		this.application = Application.getInstance();
 		
 		this.config = config.clone();
 		this.triggerStatus = trigger;
-		
-		setName("Launch("+config.getName()+")");
 		
 		propertyManager = new PropertyManager();
 		propertyManager.addProperty(config.getId(), "Name", config.getName());

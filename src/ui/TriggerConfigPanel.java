@@ -138,10 +138,10 @@ public class TriggerConfigPanel extends JPanel implements IChangedListener {
 		int listIndex = triggerList.getSelectedIndex();
 		if(listIndex >= 0){
 			currentConfig = parentPanel.getCurrentConfig().getTriggerConfigs().get(listIndex);
-			optionEditor.setOptionContainer(currentConfig.getOptionContainer());
+			optionEditor.setOptionContainer(currentConfig.getOptionContainer(), currentConfig);
 		}else{
 			currentConfig = null;
-			optionEditor.setOptionContainer(null);
+			optionEditor.setOptionContainer(null, null);
 		}
 		adjustButtons();
 		parentPanel.repaint();

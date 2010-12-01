@@ -25,8 +25,8 @@ public abstract class AbstractLifecycleObject extends Task {
 		return artifacts; 
 	}
 	
-	public AbstractLifecycleObject(){
-		super(Application.getInstance().getLogger());
+	public AbstractLifecycleObject(String name){
+		super(name, Application.getInstance().getLogger());
 		
 		statusManager = new StatusManager(this);
 		artifacts = new ArrayList<Artifact>();

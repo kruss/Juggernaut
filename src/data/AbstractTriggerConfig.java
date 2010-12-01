@@ -12,7 +12,7 @@ import data.Option.Type;
 /**
  * the configuration of a trigger,- will be serialized
  */
-public abstract class AbstractTriggerConfig {
+public abstract class AbstractTriggerConfig implements IOptionInitializer {
 
 	public enum GROUPS {
 		GENERAL, SETTINGS
@@ -38,6 +38,9 @@ public abstract class AbstractTriggerConfig {
 				Type.BOOLEAN, true
 		));
 	}
+	
+	@Override
+	public void initOptions(OptionContainer container) {}
 	
 	public String getId(){ return id; }
 	

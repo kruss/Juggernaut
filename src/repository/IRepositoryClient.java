@@ -18,7 +18,11 @@ public interface IRepositoryClient {
 		public Date date;
 		
 		public String toString(){
-			return revision+" ("+StringTools.getTextDate(date)+")";
+			if(revision != null && date != null){
+				return revision+" ("+StringTools.getTextDate(date)+")";
+			}else{
+				return "<invalid>";
+			}
 		}
 	}
 
@@ -31,7 +35,11 @@ public interface IRepositoryClient {
 		public String output;
 		
 		public String toString(){
-			return revision;
+			if(revision != null){
+				return revision;
+			}else{
+				return "<invalid>";
+			}
 		}
 	}
 	
@@ -45,7 +53,11 @@ public interface IRepositoryClient {
 		public String author;
 		
 		public String toString(){
-			return author+" - "+revision+" ("+StringTools.getTextDate(date)+")";
+			if(revision != null && date != null && author != null){
+				return author+" - "+revision+" ("+StringTools.getTextDate(date)+")";
+			}else{
+				return "<invalid>";
+			}
 		}
 	}
 }

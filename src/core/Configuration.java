@@ -1,8 +1,18 @@
 package core;
 
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.swing.JButton;
+import javax.swing.JMenuItem;
+import javax.swing.JTextField;
+
+import repository.SVNClient;
+import trigger.SVNTriggerConfig.OPTIONS;
+import ui.OptionEditor;
 import util.FileTools;
 import util.IChangedListener;
 import util.StringTools;
@@ -13,6 +23,7 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 
 import data.AbstractOperationConfig;
 import data.AbstractTriggerConfig;
+import data.IOptionInitializer;
 import data.LaunchConfig;
 import data.Option;
 import data.OptionContainer;
@@ -21,7 +32,7 @@ import data.Option.Type;
 /**
  * the configuration of the application,- will be serialized
  */
-public class Configuration {
+public class Configuration implements IOptionInitializer {
 
 	public enum GROUPS {
 		GENERAL, NOTIFICATION, LOGGING
@@ -99,6 +110,25 @@ public class Configuration {
 		listeners = new ArrayList<IChangedListener>();
 		this.path = path;
 		dirty = true;
+	}
+	
+	@Override
+	public void initOptions(OptionContainer container) {
+		
+//		OptionEditor.addNotificationTest(
+//				container.getOption(OPTIONS.SMTP_SERVER.toString()),
+//				new SMTPClient(Application.getInstance().getLogger())
+//		);
+		
+		// TODO temp...
+		final Option smtpServer = container.getOption(OPTIONS.SMTP_SERVER.toString());
+		JMenuItem testConnection = new JMenuItem("Test");
+		testConnection.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){ 
+				System.out.println("test: "+((JTextField)smtpServer.component).getText());
+			}
+		});
+		smtpServer.addPopup(testConnection);
 	}
 	
 	/** answers if scheduler is active */
