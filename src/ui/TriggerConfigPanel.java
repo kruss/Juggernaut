@@ -84,7 +84,7 @@ public class TriggerConfigPanel extends JPanel implements IChangedListener {
 		JSplitPane centerPanel = new JSplitPane(
 				JSplitPane.HORIZONTAL_SPLIT,
 				new JScrollPane(triggerList), 
-				optionEditor);
+				new JScrollPane(optionEditor));
 		centerPanel.setDividerLocation(150);
 
 		setLayout(new BorderLayout());

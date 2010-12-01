@@ -23,6 +23,10 @@ import data.Option.Type;
  */
 public class Configuration {
 
+	public enum GROUPS {
+		GENERAL, NOTIFICATION, LOGGING
+	}
+	
 	public enum OPTIONS {
 		SCHEDULER, SCHEDULER_INTERVALL, MAXIMUM_AGENTS, MAXIMUM_HISTORY,
 		NOTIFY, ADMINISTRATORS, SMTP_SERVER, SMTP_USER, SMTP_ADDRESS, VERBOSE
@@ -46,42 +50,52 @@ public class Configuration {
 		optionContainer = new OptionContainer();
 		optionContainer.setDescription("The application preferences");
 		optionContainer.getOptions().add(new Option(
+				GROUPS.GENERAL.toString(),
 				OPTIONS.SCHEDULER.toString(), "Run the launch scheduler",
 				Type.BOOLEAN, false
 		));
 		optionContainer.getOptions().add(new Option(
+				GROUPS.GENERAL.toString(),
 				OPTIONS.SCHEDULER_INTERVALL.toString(), "The scheduler intervall in minutes", 
 				Type.INTEGER, 5, 1, 180
 		));
 		optionContainer.getOptions().add(new Option(
+				GROUPS.GENERAL.toString(),
 				OPTIONS.MAXIMUM_AGENTS.toString(), "Maximum number of parallel launches", 
 				Type.INTEGER, 3, 1, 10
 		));
 		optionContainer.getOptions().add(new Option(
+				GROUPS.GENERAL.toString(),
 				OPTIONS.MAXIMUM_HISTORY.toString(), "Maximum number of launches in history (0 = unlimited)", 
 				Type.INTEGER, 1000, 0, 1000
 		));
 		optionContainer.getOptions().add(new Option(
+				GROUPS.NOTIFICATION.toString(),
 				OPTIONS.NOTIFY.toString(), "Enable mail notification for application",
 				Type.BOOLEAN, false
 		));
 		optionContainer.getOptions().add(new Option(
+				GROUPS.NOTIFICATION.toString(),
 				OPTIONS.ADMINISTRATORS.toString(), "mail-list of application admins (comma seperated)", 
 				Type.TEXT, ""
 		));
 		optionContainer.getOptions().add(new Option(
+				GROUPS.NOTIFICATION.toString(),
 				OPTIONS.SMTP_SERVER.toString(), "The SMTP-Server for notifications", 
 				Type.TEXT, ""
 		));
 		optionContainer.getOptions().add(new Option(
+				GROUPS.NOTIFICATION.toString(),
 				OPTIONS.SMTP_USER.toString(), "The SMTP-User for notifications", 
 				Type.TEXT, ""
 		));
 		optionContainer.getOptions().add(new Option(
+				GROUPS.NOTIFICATION.toString(),
 				OPTIONS.SMTP_ADDRESS.toString(), "The SMTP-Address for notifications", 
 				Type.TEXT, "SMTP@"+Constants.APP_NAME
 		));
 		optionContainer.getOptions().add(new Option(
+				GROUPS.LOGGING.toString(),
 				OPTIONS.VERBOSE.toString(), "Verbose logging shows more details on console",
 				Type.BOOLEAN, false
 		));

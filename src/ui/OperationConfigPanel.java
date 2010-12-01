@@ -86,7 +86,7 @@ public class OperationConfigPanel extends JPanel implements IChangedListener {
 		JSplitPane centerPanel = new JSplitPane(
 				JSplitPane.HORIZONTAL_SPLIT,
 				new JScrollPane(operationList), 
-				optionEditor);
+				new JScrollPane(optionEditor));
 		centerPanel.setDividerLocation(150);
 
 		setLayout(new BorderLayout());

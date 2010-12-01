@@ -3,6 +3,7 @@ package ui;
 import java.awt.BorderLayout;
 
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import util.IChangedListener;
 
@@ -25,7 +26,7 @@ public class LaunchConfigPanel extends JPanel implements IChangedListener {
 		optionEditor = new OptionEditor();
 
 		setLayout(new BorderLayout());
-		add(optionEditor, BorderLayout.CENTER);
+		add(new JScrollPane(optionEditor), BorderLayout.CENTER);
 		
 		parentPanel.addListener(this);
 		optionEditor.addListener(this);

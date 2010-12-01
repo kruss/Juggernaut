@@ -9,12 +9,15 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 import data.Option.Type;
 
 
-
 /**
  * the configuration of a trigger,- will be serialized
  */
 public abstract class AbstractTriggerConfig {
 
+	public enum GROUPS {
+		GENERAL, SETTINGS
+	}
+	
 	public enum OPTIONS {
 		ACTIVE
 	}
@@ -30,6 +33,7 @@ public abstract class AbstractTriggerConfig {
 		optionContainer = new OptionContainer();
 		optionContainer.setDescription(getDescription());
 		optionContainer.getOptions().add(new Option(
+				GROUPS.GENERAL.toString(),
 				OPTIONS.ACTIVE.toString(), "The trigger's active state",
 				Type.BOOLEAN, true
 		));

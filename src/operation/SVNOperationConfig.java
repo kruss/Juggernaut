@@ -10,7 +10,7 @@ import data.Option.Type;
 public class SVNOperationConfig extends AbstractOperationConfig {
 	
 	public static final String OPERATION_NAME = "SVN";
-
+	
 	public enum OPTIONS {
 		URL, REVISION
 	}
@@ -18,10 +18,12 @@ public class SVNOperationConfig extends AbstractOperationConfig {
 	public SVNOperationConfig(){
 		
 		optionContainer.getOptions().add(new Option(
+				GROUPS.SETTINGS.toString(),
 				OPTIONS.URL.toString(), "SVN Repository Url", 
 				Type.TEXT, ""
 		));
 		optionContainer.getOptions().add(new Option(
+				GROUPS.SETTINGS.toString(),
 				OPTIONS.REVISION.toString(), "Revision to checkout (HEAD if empty)", 
 				Type.TEXT, ""
 		));

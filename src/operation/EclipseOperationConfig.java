@@ -19,18 +19,22 @@ public class EclipseOperationConfig extends AbstractOperationConfig {
 	public EclipseOperationConfig(){
 		
 		optionContainer.getOptions().add(new Option(
+				GROUPS.SETTINGS.toString(),
 				OPTIONS.ECLIPSE.toString(), "The path to Eclipse", 
 				Type.TEXT, ""
 		));
 		optionContainer.getOptions().add(new Option(
+				GROUPS.SETTINGS.toString(),
 				OPTIONS.BUILD.toString(), "[project|configuration] pattern to include in build (linewise, commented with '//')", 
 				Type.TEXTAREA, ""
 		));
 		optionContainer.getOptions().add(new Option(
+				GROUPS.SETTINGS.toString(),
 				OPTIONS.EXCLUDE.toString(), "[project|configuration] pattern to exclude from build (comma seperated)",
 				Type.TEXT, ""
 		));
 		optionContainer.getOptions().add(new Option(
+				GROUPS.SETTINGS.toString(),
 				OPTIONS.CLEAN.toString(), "Perform a clean build", 
 				Type.BOOLEAN, true
 		));

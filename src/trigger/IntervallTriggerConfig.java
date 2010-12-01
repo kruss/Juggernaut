@@ -17,14 +17,17 @@ public class IntervallTriggerConfig extends AbstractTriggerConfig {
 	public IntervallTriggerConfig(){
 		
 		optionContainer.getOptions().add(new Option(
+				GROUPS.SETTINGS.toString(),
 				OPTIONS.DAYS.toString(), "Intervall in days", 
 				Type.INTEGER, 0, 0, 356
 		));
 		optionContainer.getOptions().add(new Option(
+				GROUPS.SETTINGS.toString(),
 				OPTIONS.HOURS.toString(), "Intervall in hours", 
 				Type.INTEGER, 0, 0, 23
 		));
 		optionContainer.getOptions().add(new Option(
+				GROUPS.SETTINGS.toString(),
 				OPTIONS.MINUTES.toString(), "Intervall in minutes", 
 				Type.INTEGER, 0, 0, 59
 		));

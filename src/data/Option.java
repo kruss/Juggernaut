@@ -14,46 +14,49 @@ public class Option {
 		INTEGER_MIN, INTEGER_MAX
 	}
 
+	private String group;
 	private String name;
 	private String description;
 	private Type type;
 	private String value;
 	private HashMap<String, String> properties;
 	
-	public Option(String name, String description, Type type, String value){
+	public Option(String group, String name, String description, Type type, String value){
 		
-		init(name, description, type);
+		init(group, name, description, type);
 		setStringValue(value);
 	}
 	
-	public Option(String name, String description, Type type, Date value){
+	public Option(String group, String name, String description, Type type, Date value){
 		
-		init(name, description, type);
+		init(group, name, description, type);
 		setDateValue(value);
 	}
 	
-	public Option(String name, String description, Type type, int value, int min, int max){
+	public Option(String group, String name, String description, Type type, int value, int min, int max){
 		
-		init(name, description, type);
+		init(group, name, description, type);
 		setIntegerValue(value);
 		properties.put(Properties.INTEGER_MIN.toString(), ""+min);
 		properties.put(Properties.INTEGER_MAX.toString(), ""+max);
 	}
 	
-	public Option(String name, String description, Type type, boolean value){
+	public Option(String group, String name, String description, Type type, boolean value){
 		
-		init(name, description, type);
+		init(group, name, description, type);
 		setBooleanValue(value);
 	}
 
-	private void init(String name, String description, Type type) {
+	private void init(String group, String name, String description, Type type) {
 		
+		this.group = group;
 		this.name = name;
 		this.description = description;
 		this.type = type;
 		properties = new HashMap<String, String>();
 	}
 	
+	public String getGroup(){ return group; }
 	public String getName(){ return name; }
 	public String getDescription(){ return description; }
 	public Type getType(){ return type; }

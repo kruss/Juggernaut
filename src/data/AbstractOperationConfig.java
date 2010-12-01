@@ -9,13 +9,15 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 
 import data.Option.Type;
 
-
-
 /**
  * the configuration of an operation,- will be serialized
  */
 public abstract class AbstractOperationConfig {
 
+	public enum GROUPS {
+		GENERAL, SETTINGS
+	}
+	
 	public enum OPTIONS {
 		ACTIVE, CRITICAL
 	}
@@ -30,10 +32,12 @@ public abstract class AbstractOperationConfig {
 		optionContainer = new OptionContainer();
 		optionContainer.setDescription(getDescription());
 		optionContainer.getOptions().add(new Option(
+				GROUPS.GENERAL.toString(),
 				OPTIONS.ACTIVE.toString(), "The operation's active state",
 				Type.BOOLEAN, true
 		));
 		optionContainer.getOptions().add(new Option(
+				GROUPS.GENERAL.toString(),
 				OPTIONS.CRITICAL.toString(), "Errors will aboard the launch",
 				Type.BOOLEAN, false
 		));

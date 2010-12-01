@@ -8,11 +8,11 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -47,13 +47,29 @@ public class OptionEditor extends JPanel {
 		
 		removeAll();
 		this.container = container;
+		JPanel centerPanel = new JPanel();
+		centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
 		if(container != null){
-			JPanel panel = new JPanel();
-			panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+			String groupName = "";
+			JPanel groupPanel = null;
 			for(Option option : container.getOptions()){
-				panel.add(createPanel(option));
+				if(!groupName.equals(option.getGroup())){
+					groupName = option.getGroup();
+					if(groupPanel != null){
+						centerPanel.add(groupPanel);
+						groupPanel = null;
+					}
+					groupPanel = new JPanel();
+					groupPanel.setLayout(new BoxLayout(groupPanel, BoxLayout.Y_AXIS));
+					groupPanel.setBorder(BorderFactory.createTitledBorder(groupName));
+				}
+				groupPanel.add(createPanel(option));
 			}
-			add(panel, BorderLayout.NORTH);
+			if(groupPanel != null){
+				centerPanel.add(groupPanel);
+				groupPanel = null;
+			}
+			add(centerPanel, BorderLayout.NORTH);
 			setToolTipText(container.getDescription());
 		}else{
 			setToolTipText("");
@@ -84,20 +100,11 @@ public class OptionEditor extends JPanel {
 		}
 		return null;
 	}
-	
-	private Component createPanel(String name, Component component, String orinetation) {
-		
-		JPanel panel = new JPanel(new BorderLayout());
-		if(name != null){
-			panel.add(new JLabel(" "+name+": "), BorderLayout.NORTH);
-		}
-		panel.add(component, orinetation);
-		return panel;
-	}
 
 	private Component createTextFieldPanel(final Option option) {
 
 		final JTextField component = new JTextField();
+		component.setColumns(30);
 		component.setToolTipText(option.getDescription());
 		component.setText(option.getStringValue());
 		component.addKeyListener(new KeyListener(){
@@ -114,12 +121,15 @@ public class OptionEditor extends JPanel {
 			@Override
 			public void keyTyped(KeyEvent arg0) {}
 		});
-		return createPanel(option.getName(), component, BorderLayout.CENTER);
+		JPanel panel = new JPanel(new BorderLayout());
+		panel.add(new JLabel(" "+option.getName()+": "), BorderLayout.NORTH);
+		panel.add(component, BorderLayout.CENTER);
+		return panel;
 	}
 
 	private Component createTextAreaPanel(final Option option) {
 
-		final JTextArea component = new JTextArea(5, 20);
+		final JTextArea component = new JTextArea(7, 30);
 		component.setToolTipText(option.getDescription());
 		component.setText(option.getStringValue());
 		component.addKeyListener(new KeyListener(){
@@ -136,7 +146,10 @@ public class OptionEditor extends JPanel {
 			@Override
 			public void keyTyped(KeyEvent arg0) {}
 		});
-		return createPanel(option.getName(), new JScrollPane(component), BorderLayout.CENTER);
+		JPanel panel = new JPanel(new BorderLayout());
+		panel.add(new JLabel(" "+option.getName()+": "), BorderLayout.NORTH);
+		panel.add(component, BorderLayout.CENTER);
+		return panel;
 	}
 
 	private Component createIntegerSpinnerPanel(final Option option) {
@@ -159,7 +172,10 @@ public class OptionEditor extends JPanel {
 				notifyListeners();
 			}
 		});
-		return createPanel(option.getName(), component, BorderLayout.WEST);
+		JPanel panel = new JPanel(new BorderLayout());
+		panel.add(new JLabel(" "+option.getName()+": "), BorderLayout.NORTH);
+		panel.add(component, BorderLayout.WEST);
+		return panel;
 	}
 	
 	private Component createCheckBoxPanel(final Option option) {
@@ -175,6 +191,8 @@ public class OptionEditor extends JPanel {
 				notifyListeners();
 			}
 		});
-		return createPanel(null, component, BorderLayout.WEST);
+		JPanel panel = new JPanel(new BorderLayout());
+		panel.add(component, BorderLayout.WEST);
+		return panel;
 	}
 }
