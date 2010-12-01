@@ -28,8 +28,8 @@ public class Configuration {
 	}
 	
 	public enum OPTIONS {
-		SCHEDULER, SCHEDULER_INTERVALL, MAXIMUM_AGENTS, MAXIMUM_HISTORY,
-		NOTIFY, ADMINISTRATORS, SMTP_SERVER, SMTP_USER, SMTP_ADDRESS, VERBOSE
+		SCHEDULER, SCHEDULER_INTERVAL, MAXIMUM_AGENTS, MAXIMUM_HISTORY,
+		NOTIFY, ADMINISTRATORS, SMTP_SERVER, SMTP_ADDRESS, VERBOSE
 	}
 	
 	public enum State { CLEAN, DIRTY }
@@ -56,7 +56,7 @@ public class Configuration {
 		));
 		optionContainer.getOptions().add(new Option(
 				GROUPS.GENERAL.toString(),
-				OPTIONS.SCHEDULER_INTERVALL.toString(), "The scheduler intervall in minutes", 
+				OPTIONS.SCHEDULER_INTERVAL.toString(), "The scheduler intervall in minutes", 
 				Type.INTEGER, 5, 1, 180
 		));
 		optionContainer.getOptions().add(new Option(
@@ -86,11 +86,6 @@ public class Configuration {
 		));
 		optionContainer.getOptions().add(new Option(
 				GROUPS.NOTIFICATION.toString(),
-				OPTIONS.SMTP_USER.toString(), "The SMTP-User for notifications", 
-				Type.TEXT, ""
-		));
-		optionContainer.getOptions().add(new Option(
-				GROUPS.NOTIFICATION.toString(),
 				OPTIONS.SMTP_ADDRESS.toString(), "The SMTP-Address for notifications", 
 				Type.TEXT, "SMTP@"+Constants.APP_NAME
 		));
@@ -113,7 +108,7 @@ public class Configuration {
 	
 	/** the scheduler-interval in millis */
 	public int getSchedulerIntervall(){ 
-		int min = optionContainer.getOption(OPTIONS.SCHEDULER_INTERVALL.toString()).getIntegerValue(); 
+		int min = optionContainer.getOption(OPTIONS.SCHEDULER_INTERVAL.toString()).getIntegerValue(); 
 		if(min >= 0){
 			return (int)StringTools.min2millis(min);
 		}else{

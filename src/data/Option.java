@@ -56,6 +56,24 @@ public class Option {
 		properties = new HashMap<String, String>();
 	}
 	
+	public String getConvertedName(){
+		String converted = "";
+		char[] chars = name.toLowerCase().replaceAll("_", " ").toCharArray();
+		boolean word = true;
+		for(char c : chars){
+			if(word){
+				converted += Character.toUpperCase(c);
+				word = false;
+			}else{
+				converted += c;
+			}
+			if(c == ' '){
+				word = true;
+			}
+		}
+		return converted;
+	}
+	
 	public String getGroup(){ return group; }
 	public String getName(){ return name; }
 	public String getDescription(){ return description; }

@@ -1,7 +1,6 @@
 package ui;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
@@ -84,7 +83,7 @@ public class OptionEditor extends JPanel {
 		}
 	}
 	
-	private Component createPanel(Option option) {
+	private JPanel createPanel(Option option) {
 		
 		switch(option.getType()){
 			case TEXT:
@@ -100,8 +99,8 @@ public class OptionEditor extends JPanel {
 		}
 		return null;
 	}
-
-	private Component createTextFieldPanel(final Option option) {
+	
+	private JPanel createTextFieldPanel(final Option option) {
 
 		final JTextField component = new JTextField();
 		component.setColumns(30);
@@ -122,12 +121,12 @@ public class OptionEditor extends JPanel {
 			public void keyTyped(KeyEvent arg0) {}
 		});
 		JPanel panel = new JPanel(new BorderLayout());
-		panel.add(new JLabel(" "+option.getName()+": "), BorderLayout.NORTH);
+		panel.add(new JLabel(option.getConvertedName()+":"), BorderLayout.NORTH);
 		panel.add(component, BorderLayout.CENTER);
 		return panel;
 	}
 
-	private Component createTextAreaPanel(final Option option) {
+	private JPanel createTextAreaPanel(final Option option) {
 
 		final JTextArea component = new JTextArea(7, 30);
 		component.setToolTipText(option.getDescription());
@@ -147,12 +146,12 @@ public class OptionEditor extends JPanel {
 			public void keyTyped(KeyEvent arg0) {}
 		});
 		JPanel panel = new JPanel(new BorderLayout());
-		panel.add(new JLabel(" "+option.getName()+": "), BorderLayout.NORTH);
+		panel.add(new JLabel(option.getConvertedName()+":"), BorderLayout.NORTH);
 		panel.add(component, BorderLayout.CENTER);
 		return panel;
 	}
 
-	private Component createIntegerSpinnerPanel(final Option option) {
+	private JPanel createIntegerSpinnerPanel(final Option option) {
 		
 		SpinnerModel model = new SpinnerNumberModel(
 				option.getIntegerValue(),
@@ -173,14 +172,14 @@ public class OptionEditor extends JPanel {
 			}
 		});
 		JPanel panel = new JPanel(new BorderLayout());
-		panel.add(new JLabel(" "+option.getName()+": "), BorderLayout.NORTH);
+		panel.add(new JLabel(option.getConvertedName()+":"), BorderLayout.NORTH);
 		panel.add(component, BorderLayout.WEST);
 		return panel;
 	}
 	
-	private Component createCheckBoxPanel(final Option option) {
+	private JPanel createCheckBoxPanel(final Option option) {
 
-		final JCheckBox component = new JCheckBox(option.getName());
+		final JCheckBox component = new JCheckBox(option.getConvertedName());
 		component.setToolTipText(option.getDescription());
 		component.setSelected(option.getBooleanValue());
 		component.addItemListener(new ItemListener(){
