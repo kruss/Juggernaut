@@ -156,7 +156,7 @@ public class OptionEditor extends JPanel {
 	
 	private JPanel createTextAreaPanel(final Option option) {
 
-		final JTextArea component = new JTextArea(7, 25);
+		final JTextArea component = new JTextArea(5, 25);
 		component.setToolTipText(option.getDescription());
 		component.setText(option.getStringValue());
 		component.addKeyListener(new KeyListener(){
