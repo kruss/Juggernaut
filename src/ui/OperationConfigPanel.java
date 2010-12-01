@@ -3,6 +3,8 @@ package ui;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
@@ -32,6 +34,7 @@ public class OperationConfigPanel extends JPanel implements IChangedListener {
 	private ConfigPanel parentPanel;
 	private OptionEditor optionEditor;
 	private SelectionListener selectionListener;
+	private KeyListener keySelectionListener;
 	private JComboBox operationCombo;
 	private JList operationList;
 	private JButton addOperation;
@@ -48,6 +51,7 @@ public class OperationConfigPanel extends JPanel implements IChangedListener {
 		application = Application.getInstance();
 		optionEditor = new OptionEditor();		
 		selectionListener = new SelectionListener();
+		keySelectionListener = new KeySelectionListener();
 		
 		operationList = new JList();
 		operationList.setToolTipText("Operations of the Launch");
@@ -135,6 +139,19 @@ public class OperationConfigPanel extends JPanel implements IChangedListener {
 		}
 	}
 	
+	private class KeySelectionListener implements KeyListener {
+		@Override
+		public void keyPressed(KeyEvent e) {}
+		@Override
+		public void keyReleased(KeyEvent e) {
+			if(e.getSource() == operationList){
+				adjustSelection();
+			}
+		}
+		@Override
+		public void keyTyped(KeyEvent e) {}
+	}
+	
 	private void adjustSelection() {
 		
 		int listIndex = operationList.getSelectedIndex();
@@ -173,6 +190,7 @@ public class OperationConfigPanel extends JPanel implements IChangedListener {
 	private void clearUI(){
 		
 		operationList.removeListSelectionListener(selectionListener);
+		operationList.removeKeyListener(keySelectionListener);
 		operationList.removeAll();
 	}
 	
@@ -187,6 +205,7 @@ public class OperationConfigPanel extends JPanel implements IChangedListener {
 		}
 		operationList.setModel(listModel);
 		operationList.addListSelectionListener(selectionListener);
+		operationList.addKeyListener(keySelectionListener);
 	}
 	
 	private void refreshUI(AbstractOperationConfig selected){

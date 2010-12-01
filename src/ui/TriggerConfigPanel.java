@@ -3,6 +3,8 @@ package ui;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
@@ -30,6 +32,7 @@ public class TriggerConfigPanel extends JPanel implements IChangedListener {
 	private ConfigPanel parentPanel;
 	private OptionEditor optionEditor;
 	private SelectionListener selectionListener;
+	private KeyListener keySelectionListener;
 	private JComboBox triggerCombo;
 	private JList triggerList;
 	private JButton addTrigger;
@@ -46,6 +49,7 @@ public class TriggerConfigPanel extends JPanel implements IChangedListener {
 		application = Application.getInstance();
 		optionEditor = new OptionEditor();		
 		selectionListener = new SelectionListener();
+		keySelectionListener = new KeySelectionListener();
 		
 		triggerList = new JList();
 		triggerList.setToolTipText("Triggers of the Launch");
@@ -127,10 +131,23 @@ public class TriggerConfigPanel extends JPanel implements IChangedListener {
 
 		@Override
 		public void valueChanged(ListSelectionEvent e) {
+			if(e.getSource() == triggerList && e.getValueIsAdjusting()){
+				adjustSelection();
+			}
+		}
+	}
+	
+	private class KeySelectionListener implements KeyListener {
+		@Override
+		public void keyPressed(KeyEvent e) {}
+		@Override
+		public void keyReleased(KeyEvent e) {
 			if(e.getSource() == triggerList){
 				adjustSelection();
 			}
 		}
+		@Override
+		public void keyTyped(KeyEvent e) {}
 	}
 	
 	private void adjustSelection() {
@@ -171,6 +188,7 @@ public class TriggerConfigPanel extends JPanel implements IChangedListener {
 	private void clearUI(){
 		
 		triggerList.removeListSelectionListener(selectionListener);
+		triggerList.removeKeyListener(keySelectionListener);
 		triggerList.removeAll();
 	}
 	
@@ -185,6 +203,7 @@ public class TriggerConfigPanel extends JPanel implements IChangedListener {
 		}
 		triggerList.setModel(listModel);
 		triggerList.addListSelectionListener(selectionListener);
+		triggerList.addKeyListener(keySelectionListener);
 	}
 	
 	private void refreshUI(AbstractTriggerConfig selected){

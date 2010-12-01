@@ -1,18 +1,13 @@
 package core;
 
-import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Date;
 
-import javax.swing.JButton;
 import javax.swing.JMenuItem;
 import javax.swing.JTextField;
 
-import repository.SVNClient;
-import trigger.SVNTriggerConfig.OPTIONS;
-import ui.OptionEditor;
 import util.FileTools;
 import util.IChangedListener;
 import util.StringTools;
@@ -116,7 +111,7 @@ public class Configuration implements IOptionInitializer {
 	public void initOptions(OptionContainer container) {
 		
 //		OptionEditor.addNotificationTest(
-//				container.getOption(OPTIONS.SMTP_SERVER.toString()),
+//				container.getOption(OPTIONS.SMTP_SERVER.toString(), OPTIONS.SMTP_ADDRESS.toString()),
 //				new SMTPClient(Application.getInstance().getLogger())
 //		);
 		

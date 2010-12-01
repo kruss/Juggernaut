@@ -3,6 +3,8 @@ package ui;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -117,6 +119,16 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 			public void mouseClicked(MouseEvent e){
 				adjustSelection();
 			}
+		});
+		historyTable.addKeyListener(new KeyListener(){
+			@Override
+			public void keyPressed(KeyEvent e) {}
+			@Override
+			public void keyReleased(KeyEvent e) {
+				adjustSelection();
+			}
+			@Override
+			public void keyTyped(KeyEvent e) {}
 		});
 		
 		application.getHistory().addListener(this);
