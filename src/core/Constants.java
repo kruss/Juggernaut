@@ -9,6 +9,7 @@ public class Constants {
 	public static final String 		APP_FULL_NAME = APP_NAME+" ("+APP_VERSION+")";
 	public static final int 		APP_WIDTH = 800;
 	public static final int 		APP_HEIGHT = 600;
+	public static final int 		APP_STYLE = 1;
 	
 	public static final String 		DATA_FOLDER = "data";
 	public static final String 		BUILD_FOLDER = DATA_FOLDER+File.separator+"build";

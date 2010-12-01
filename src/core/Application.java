@@ -141,7 +141,7 @@ public class Application {
             public void windowClosing(WindowEvent e){ shutdown(); }
         });
 		UIManager.LookAndFeelInfo styles[] = UIManager.getInstalledLookAndFeels();
-		UIManager.setLookAndFeel(styles[1].getClassName()); 
+		UIManager.setLookAndFeel(styles[Constants.APP_STYLE].getClassName()); 
 		SwingUtilities.updateComponentTreeUI(window);
 		window.init();
 	}
