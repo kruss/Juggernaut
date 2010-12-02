@@ -1,5 +1,0 @@
-
-# minimum time between a launnch could be triggere again -> preferences
-# quite-period for repository-trigger -> trigger config
-
-# make the launch-manager chache accessor's like property-manager

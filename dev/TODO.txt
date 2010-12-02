@@ -1,0 +1,13 @@
+TASKS
+-----
+
+# make application->cache persistent
+# create treadpool for timeouts
+
+BUGS
+----
+
+NOTES
+-----
+
+# serialized objects contain absolute paths
