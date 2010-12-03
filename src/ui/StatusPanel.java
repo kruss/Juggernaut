@@ -8,6 +8,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -20,7 +21,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
-import lifecycle.SchedulerTask;
 import lifecycle.LaunchManager.LaunchInfo;
 
 import util.IChangedListener;
@@ -35,6 +35,7 @@ public class StatusPanel extends JPanel implements IChangedListener {
 	private static final long serialVersionUID = 1L;
 
 	private Application application;
+	private JScrollPane launchPanel;
 	private JTable launchTable;
 	private DefaultTableModel tableModel;
 	private JTabbedPane loggingPanel;
@@ -102,8 +103,9 @@ public class StatusPanel extends JPanel implements IChangedListener {
 		buttonPanel.add(triggerScheduler);
 		buttonPanel.add(stopLaunch);
 		
+		launchPanel = new JScrollPane(launchTable);
 		JPanel topPanel = new JPanel(new BorderLayout());
-		topPanel.add(new JScrollPane(launchTable), BorderLayout.CENTER);
+		topPanel.add(launchPanel, BorderLayout.CENTER);
 		topPanel.add(buttonPanel, BorderLayout.EAST);
 		
 		applicationConsole = new LoggingConsole();
@@ -167,6 +169,10 @@ public class StatusPanel extends JPanel implements IChangedListener {
 			};
 			tableModel.addRow(rowData);
 		}
+		Date update = application.getLaunchManager().getLastUpdate();
+		String info = update != null ? "Scheduler: "+StringTools.getTextDate(update) : "Scheduler: idle";
+		launchPanel.setToolTipText(info);
+		launchTable.setToolTipText(info);
 	}
 
 	private void refreshUI(LaunchInfo selected) {
@@ -226,9 +232,7 @@ public class StatusPanel extends JPanel implements IChangedListener {
 	
 	public void triggerScheduler(){
 		
-		// TODO this should be done within task
-		SchedulerTask scheduler = new SchedulerTask();
-		scheduler.checkSchedules();
+		application.getLaunchManager().triggerScheduler();
 	}
 	
 	public void stopLaunch(){

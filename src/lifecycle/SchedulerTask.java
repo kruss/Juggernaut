@@ -2,6 +2,7 @@ package lifecycle;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 
 import lifecycle.LaunchManager.LaunchStatus;
 import lifecycle.LaunchManager.TriggerStatus;
@@ -33,6 +34,7 @@ public class SchedulerTask extends Task {
 	public void checkSchedules() {
 		
 		application.getLogger().debug("Checking schedules");
+		application.getLaunchManager().setLastUpdate(new Date());
 		ArrayList<LaunchConfig> launchConfigs = getRandomizedLaunchConfigs();
 		for(LaunchConfig launchConfig : launchConfigs){
 			if(application.getLaunchManager().isReady()){

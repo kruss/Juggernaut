@@ -35,6 +35,7 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 	private static final long serialVersionUID = 1L;
 
 	private Application application;
+	private JScrollPane historyPanel;
 	private JTable historyTable;
 	private DefaultTableModel tableModel;
 	private JTextArea historyOutput;
@@ -109,8 +110,9 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 		buttonPanel.add(deleteHistory);
 		buttonPanel.add(filterHistory);
 		
+		historyPanel = new JScrollPane(historyTable);
 		JPanel topPanel = new JPanel(new BorderLayout());
-		topPanel.add(new JScrollPane(historyTable), BorderLayout.CENTER);
+		topPanel.add(historyPanel, BorderLayout.CENTER);
 		topPanel.add(buttonPanel, BorderLayout.EAST);
 		
 		historyOutput = new JTextArea();
@@ -174,7 +176,9 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 				tableModel.addRow(rowData);
 			}
 		}
-		historyTable.setToolTipText("History: "+tableModel.getRowCount()+"/"+entries.size()+" items");
+		String info = "History: "+tableModel.getRowCount()+"/"+entries.size()+" items";
+		historyPanel.setToolTipText(info);
+		historyTable.setToolTipText(info);
 		if(filter.isEmpty()){
 			filterHistory.setForeground(Color.BLACK);
 		}else{

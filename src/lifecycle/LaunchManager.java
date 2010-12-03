@@ -20,7 +20,7 @@ public class LaunchManager implements ILifecycleListener {
 	private SchedulerTask scheduler;
 	private ArrayList<LaunchAgent> agents;
 	private ArrayList<IChangedListener> listeners;
-	private boolean active;
+	private Date update;
 	
 	public SchedulerTask getScheduler(){ return scheduler; }
 	
@@ -32,8 +32,14 @@ public class LaunchManager implements ILifecycleListener {
 		scheduler = null;
 		agents = new ArrayList<LaunchAgent>();
 		listeners = new ArrayList<IChangedListener>();
-		active = false;
+		update = null;
 	}
+	
+	public synchronized void setLastUpdate(Date update){ 
+		this.update = update; 
+		notifyListeners();
+	}
+	public synchronized Date getLastUpdate(){ return update; }
 	
 	public void init() {
 		
@@ -41,12 +47,10 @@ public class LaunchManager implements ILifecycleListener {
 		if(configuration.isScheduler()){
 			startScheduler(configuration.getSchedulerIntervall());
 		}
-		active = true;
 	}
 	
 	public void shutdown() {
 		
-		active = false;
 		stopScheduler();
 		for(LaunchAgent agent : agents){
 			agent.syncKill();
@@ -67,6 +71,12 @@ public class LaunchManager implements ILifecycleListener {
 		}
 	}
 
+	public void triggerScheduler() {
+		// TODO this should be done as task
+		SchedulerTask scheduler = new SchedulerTask();
+		scheduler.checkSchedules();
+	}
+	
 	public synchronized LaunchStatus runLaunch(LaunchAgent launch) {
 		
 		if(isReady() || launch.getTriggerStatus() == USER_TRIGGER){
@@ -116,22 +126,20 @@ public class LaunchManager implements ILifecycleListener {
 	@Override
 	public void lifecycleChanged(AbstractLifecycleObject object, Lifecycle lifecycle) {
 		
-		if(active){
-			LaunchAgent agent = (LaunchAgent)object;
-			String date = StringTools.getTextDate(new Date());
-			if(lifecycle == Lifecycle.START){
-				application.getWindow().setStatus(
-						"Launch ["+agent.getConfig().getName()+"] started at "+date
-				);
-			}
-			if(lifecycle == Lifecycle.FINISH){
-				application.getWindow().setStatus(
-						"Launch ["+agent.getConfig().getName()+"] finished at "+date
-				);
-				agents.remove(agent);
-			}
-			notifyListeners();
+		LaunchAgent agent = (LaunchAgent)object;
+		String date = StringTools.getTextDate(new Date());
+		if(lifecycle == Lifecycle.START){
+			application.getWindow().setStatus(
+					"Launch ["+agent.getConfig().getName()+"] started at "+date
+			);
 		}
+		if(lifecycle == Lifecycle.FINISH){
+			application.getWindow().setStatus(
+					"Launch ["+agent.getConfig().getName()+"] finished at "+date
+			);
+			agents.remove(agent);
+		}
+		notifyListeners();
 	}
 	
 	public void addListener(IChangedListener listener){ listeners.add(listener); }
