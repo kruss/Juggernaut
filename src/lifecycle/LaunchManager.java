@@ -3,7 +3,6 @@ package lifecycle;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 
 import lifecycle.StatusManager.Status;
 
@@ -20,13 +19,11 @@ public class LaunchManager implements ILifecycleListener {
 	
 	private Application application;
 	private SchedulerTask scheduler;
-	private HashMap<String, String> cache;
 	private ArrayList<LaunchAgent> agents;
 	private ArrayList<IChangedListener> listeners;
 	private boolean active;
 	
 	public SchedulerTask getScheduler(){ return scheduler; }
-	public synchronized HashMap<String, String> getCache(){ return cache; }
 	
 	public LaunchManager(){
 		
@@ -35,7 +32,6 @@ public class LaunchManager implements ILifecycleListener {
 		
 		application = Application.getInstance();
 		scheduler = null;
-		cache = new HashMap<String, String>();
 		agents = new ArrayList<LaunchAgent>();
 		listeners = new ArrayList<IChangedListener>();
 		active = false;

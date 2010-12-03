@@ -4,6 +4,7 @@ import repository.SVNClient;
 import repository.IRepositoryClient.CheckoutInfo;
 
 import lifecycle.LaunchAgent;
+import lifecycle.PropertyContainer;
 import lifecycle.StatusManager.Status;
 import data.AbstractOperation;
 
@@ -22,15 +23,14 @@ public class SVNOperation extends AbstractOperation {
 	
 	private void setCurrentRevision(String revision){
 		
-		parent.getPropertyManager().addProperty(config.getId(), Property.REVISION.toString(), revision);
+		parent.getPropertyContainer().addProperty(config.getId(), Property.REVISION.toString(), revision);
 	}
 
 	@Override
 	protected void execute() throws Exception {
 		
-		String url = parent.getPropertyManager().expand(config.getUrl());
-		String revision = parent.getPropertyManager().expand(config.getRevision());
-		
+		String url = PropertyContainer.expand(parent.getPropertyContainer(), config.getUrl());
+		String revision = PropertyContainer.expand(parent.getPropertyContainer(), config.getRevision());
 		CheckoutInfo result = client.checkout(url, revision, parent.getFolder());
 		
 		if(result.revision != null){

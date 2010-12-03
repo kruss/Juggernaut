@@ -7,6 +7,7 @@ import util.CommandTask;
 import util.Logger;
 import util.StringTools;
 import lifecycle.LaunchAgent;
+import lifecycle.PropertyContainer;
 import lifecycle.StatusManager.Status;
 import data.AbstractOperation;
 
@@ -22,7 +23,9 @@ public class EclipseOperation extends AbstractOperation {
 	@Override
 	protected void execute() throws Exception {
 		
-		File eclipse = new File(parent.getPropertyManager().expand(config.getEclipsePath()));
+		File eclipse = new File(
+				PropertyContainer.expand(parent.getPropertyContainer(), config.getEclipsePath())
+		);
 		String command = null;
 		String directory = null;
 		if(eclipse.isFile()){

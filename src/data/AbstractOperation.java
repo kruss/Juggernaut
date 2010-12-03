@@ -21,7 +21,7 @@ public abstract class AbstractOperation extends AbstractLifecycleObject {
 		this.logger = parent.getLogger();
 		this.config = config.clone();
 
-		parent.getPropertyManager().addProperties(
+		parent.getPropertyContainer().addProperties(
 				config.getId(), config.getOptionContainer().getProperties()
 		);
 	}

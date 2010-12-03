@@ -1,7 +1,9 @@
 package trigger;
 
 import java.util.Date;
-import java.util.HashMap;
+
+import core.Application;
+import core.Cache;
 
 import repository.SVNClient;
 import repository.IRepositoryClient.RevisionInfo;
@@ -29,16 +31,18 @@ public class SVNTrigger extends AbstractTrigger {
 	
 	private void setLastRevision(String revision){
 		
-		HashMap<String, String> cache = launcher.getCache();
-		cache.put(
-				config.getId()+"::"+Property.REVISION.toString(), revision
+		Cache cache = Application.getInstance().getCache();
+		cache.addProperty(
+				config.getId(), Property.REVISION.toString(), revision
 		);
 	}
 	
 	private String getLastRevision(){
 		
-		HashMap<String, String> cache = launcher.getCache();
-		return cache.get(config.getId()+"::"+Property.REVISION.toString());
+		Cache cache = Application.getInstance().getCache();
+		return cache.getProperty(
+				config.getId(), Property.REVISION.toString()
+		);
 	}
 	
 	@Override

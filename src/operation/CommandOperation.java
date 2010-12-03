@@ -4,6 +4,7 @@ import java.io.File;
 
 import util.CommandTask;
 import lifecycle.LaunchAgent;
+import lifecycle.PropertyContainer;
 import lifecycle.StatusManager.Status;
 import data.AbstractOperation;
 
@@ -19,9 +20,9 @@ public class CommandOperation extends AbstractOperation {
 	@Override
 	protected void execute() throws Exception {
 		
-		String command = parent.getPropertyManager().expand(config.getCommand());
-		String arguments = parent.getPropertyManager().expand(config.getArguments());
-		String directory = parent.getPropertyManager().expand(config.getDirectory());
+		String command = PropertyContainer.expand(parent.getPropertyContainer(), config.getCommand());
+		String arguments = PropertyContainer.expand(parent.getPropertyContainer(), config.getArguments());
+		String directory = PropertyContainer.expand(parent.getPropertyContainer(), config.getDirectory());
 		
 		CommandTask commandTask = new CommandTask(
 				command, 

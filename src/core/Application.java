@@ -43,6 +43,7 @@ public class Application {
 	private Window window;
 	private Configuration configuration;
 	private History history;
+	private Cache cache;
 	private Registry registry;
 	private LaunchManager launchManager;
 	
@@ -50,6 +51,7 @@ public class Application {
 	public Window getWindow(){ return window; }
 	public Configuration getConfiguration(){ return configuration; }
 	public History getHistory(){ return history; }
+	public Cache getCache(){ return cache; }
 	public Registry getRegistry(){ return registry; }
 	public LaunchManager getLaunchManager(){ return launchManager; }
 	
@@ -109,6 +111,14 @@ public class Application {
 		}else{
 			history = new History(historyFile.getAbsolutePath());
 			history.save();
+		}
+		
+		File cacheFile = new File(getDataFolder()+File.separator+Cache.OUTPUT_FILE);
+		if(cacheFile.isFile()){
+			cache = Cache.load(cacheFile.getAbsolutePath());
+		}else{
+			cache = new Cache(cacheFile.getAbsolutePath());
+			cache.save();
 		}
 	}
 	

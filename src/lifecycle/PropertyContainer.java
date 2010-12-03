@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
-public class PropertyManager {
+public class PropertyContainer {
 
 	private static final String DELIM = "::";
 	
 	private HashMap<String, String> properties;
 	
-	public PropertyManager() {
+	public PropertyContainer() {
 		
 		properties = new HashMap<String, String>();
 	}
@@ -61,14 +61,14 @@ public class PropertyManager {
 		return list;
 	}
 	
-	public String expand(String value) {
+	public static String expand(PropertyContainer container, String value) {
 		
 		while(true){
 			int a = value.indexOf("{", 0);
 			int b = value.indexOf("}", a);
 			if(a!=-1 && b!=-1){
 				String key = value.substring(a+1, b);
-				String expand = properties.get(key);
+				String expand = container.properties.get(key);
 				if(expand == null){
 					expand = "?"+key+"?";
 				}

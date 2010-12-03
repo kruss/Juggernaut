@@ -23,7 +23,7 @@ public class LaunchAgent extends AbstractLifecycleObject {
 	
 	private LaunchConfig config;
 	private TriggerStatus triggerStatus;
-	protected PropertyManager propertyManager;
+	protected PropertyContainer propertyContainer;
 	private ArrayList<AbstractOperation> operations;
 	private LaunchHistory history;
 	private Logger logger;
@@ -37,12 +37,12 @@ public class LaunchAgent extends AbstractLifecycleObject {
 		this.config = config.clone();
 		this.triggerStatus = trigger;
 		
-		propertyManager = new PropertyManager();
-		propertyManager.addProperty(config.getId(), "Name", config.getName());
-		propertyManager.addProperty(config.getId(), "Folder", getFolder());
-		propertyManager.addProperty(config.getId(), "Trigger", trigger.message);
-		propertyManager.addProperty(config.getId(), "Clean", ""+config.isClean());
-		propertyManager.addProperty(config.getId(), "Timeout", StringTools.millis2min(config.getTimeout())+" min");
+		propertyContainer = new PropertyContainer();
+		propertyContainer.addProperty(config.getId(), "Name", config.getName());
+		propertyContainer.addProperty(config.getId(), "Folder", getFolder());
+		propertyContainer.addProperty(config.getId(), "Trigger", trigger.message);
+		propertyContainer.addProperty(config.getId(), "Clean", ""+config.isClean());
+		propertyContainer.addProperty(config.getId(), "Timeout", StringTools.millis2min(config.getTimeout())+" min");
 		
 		logger = new Logger(Mode.FILE_ONLY); // required by operation-ctors
 		operations = new ArrayList<AbstractOperation>();
@@ -50,7 +50,7 @@ public class LaunchAgent extends AbstractLifecycleObject {
 			if(operationConfig.isActive()){
 				AbstractOperation operation = operationConfig.createOperation(this);
 				operations.add(operation);
-				propertyManager.addProperties(
+				propertyContainer.addProperties(
 						operationConfig.getId(), 
 						operationConfig.getOptionContainer().getProperties()
 				);
@@ -68,7 +68,7 @@ public class LaunchAgent extends AbstractLifecycleObject {
 	
 	public LaunchConfig getConfig(){ return config; }
 	public TriggerStatus getTriggerStatus(){ return triggerStatus; }
-	public PropertyManager getPropertyManager(){ return propertyManager; }
+	public PropertyContainer getPropertyContainer(){ return propertyContainer; }
 	public ArrayList<AbstractOperation> getOperations(){ return operations; }
 	
 	@Override
@@ -88,7 +88,7 @@ public class LaunchAgent extends AbstractLifecycleObject {
 		// setup the logger
 		logger.setLogiFile(new File(history.logfile));
 		logger.info("Launch ["+config.getName()+"]");
-		debugProperties(propertyManager.getProperties(config.getId()));
+		debugProperties(propertyContainer.getProperties(config.getId()));
 		
 		// setup launch-folder
 		File folder = new File(getFolder());
@@ -140,10 +140,10 @@ public class LaunchAgent extends AbstractLifecycleObject {
 				operation.getIndex()+"/"+config.getOperationConfigs().size()+
 				" Operation ["+operation.getConfig().getName()+"]"
 		);
-		debugProperties(propertyManager.getProperties(operation.getConfig().getId()));
+		debugProperties(propertyContainer.getProperties(operation.getConfig().getId()));
 		if(!aboard){
 			operation.syncRun(0);
-			propertyManager.addProperties(
+			propertyContainer.addProperties(
 					operation.getConfig().getId(), 
 					operation.getStatusManager().getProperties()
 			);
@@ -156,7 +156,7 @@ public class LaunchAgent extends AbstractLifecycleObject {
 	@Override
 	protected void finish() {
 
-		propertyManager.addProperties(
+		propertyContainer.addProperties(
 				config.getId(), 
 				statusManager.getProperties()
 		);
@@ -177,7 +177,7 @@ public class LaunchAgent extends AbstractLifecycleObject {
 	private void debugProperties(HashMap<String, String> properties) {
 		
 		StringBuilder info = new StringBuilder();
-		ArrayList<String> keys = PropertyManager.getKeys(properties);
+		ArrayList<String> keys = PropertyContainer.getKeys(properties);
 		for(String key : keys){
 			info.append("\t"+key+": "+properties.get(key)+"\n");
 		}

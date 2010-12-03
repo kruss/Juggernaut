@@ -1,7 +1,9 @@
 package trigger;
 
 import java.util.Date;
-import java.util.HashMap;
+
+import core.Application;
+import core.Cache;
 
 import lifecycle.LaunchManager;
 import lifecycle.LaunchManager.TriggerStatus;
@@ -24,16 +26,18 @@ public class IntervallTrigger extends AbstractTrigger {
 	
 	private void setLastDate(Date date){
 		
-		HashMap<String, String> cache = launcher.getCache();
-		cache.put(
-				config.getId()+"::"+Property.DATE.toString(), ""+date.getTime()
+		Cache cache = Application.getInstance().getCache();
+		cache.addProperty(
+				config.getId(), Property.DATE.toString(), ""+date.getTime()
 		);
 	}
 	
 	private Date getLastDate(){
 		
-		HashMap<String, String> cache = launcher.getCache();
-		String value = cache.get(config.getId()+"::"+Property.DATE.toString());
+		Cache cache = Application.getInstance().getCache();
+		String value = cache.getProperty(
+				config.getId(), Property.DATE.toString()
+		);
 		if(value != null){
 			return new Date(new Long(value).longValue());
 		}else{
