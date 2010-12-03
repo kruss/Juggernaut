@@ -51,15 +51,15 @@ public class IntervallTrigger extends AbstractTrigger {
 		newDate = new Date();
 		
 		if(lastDate == null){
-			return launcher.new TriggerStatus(config.getName()+" - Initial run", true);
+			return launcher.new TriggerStatus(config.getName()+" initial run", true);
 		}else{
 			if((lastDate.getTime() + config.getIntervall()) <= newDate.getTime()){
 				return launcher.new TriggerStatus(
-						config.getName()+" - Time elapsed", true
+						config.getName()+" time elapsed", true
 				);
 			}else{
 				return launcher.new TriggerStatus(
-						config.getName()+" - Time not elapsed", false
+						config.getName()+" time not elapsed", false
 				);
 			}
 		}
