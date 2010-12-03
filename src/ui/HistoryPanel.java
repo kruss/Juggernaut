@@ -1,6 +1,7 @@
 package ui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -39,13 +40,16 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 	private JTextArea historyOutput;
 	private JButton deleteAllHistory;
 	private JButton deleteHistory;
+	private JButton filterHistory;
 	
 	private ArrayList<HistoryInfo> entries;
+	private String filter;
 	
 	public HistoryPanel(){
 		
 		application = Application.getInstance();
 		entries = new ArrayList<HistoryInfo>();
+		filter = "";
 		
 		tableModel = new DefaultTableModel(){
 			private static final long serialVersionUID = 1L;
@@ -60,7 +64,7 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 		tableModel.addColumn("Launch");
 		tableModel.addColumn("Trigger");
 		tableModel.addColumn("Start");
-		tableModel.addColumn("Time (min)");
+		tableModel.addColumn("Time");
 		tableModel.addColumn("Status");
 		
 		historyTable = new JTable(tableModel){
@@ -84,7 +88,7 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 		columnModel.getColumn(4).setMinWidth(150);
 			columnModel.getColumn(4).setMaxWidth(150);
 		
-		deleteAllHistory = new JButton(" Delete All ");
+		deleteAllHistory = new JButton(" Clear ");
 		deleteAllHistory.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){ deleteAllHistory(); }
 		});
@@ -94,10 +98,16 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 			public void actionPerformed(ActionEvent e){ deleteHistory(); }
 		});
 		
+		filterHistory = new JButton(" Filter ");
+		filterHistory.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){ filterHistory(); }
+		});
+		
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
-		buttonPanel.add(deleteHistory);
 		buttonPanel.add(deleteAllHistory);
+		buttonPanel.add(deleteHistory);
+		buttonPanel.add(filterHistory);
 		
 		JPanel topPanel = new JPanel(new BorderLayout());
 		topPanel.add(new JScrollPane(historyTable), BorderLayout.CENTER);
@@ -152,16 +162,34 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 	private void initUI() {
 		
 		for(HistoryInfo entry : entries){
-			Object[] rowData = {
-				entry.name,
-				entry.trigger,
-				entry.start != null ? StringTools.getTextDate(entry.start) : "",
-				(entry.start != null && entry.end != null) ? 
-						StringTools.getTimeDiff(entry.start, entry.end) : "",
-				entry.status.toString()
-			};
-			tableModel.addRow(rowData);
+			if(matchesFilter(entry)){
+				Object[] rowData = {
+					entry.name,
+					entry.trigger,
+					entry.start != null ? StringTools.getTextDate(entry.start) : "",
+					(entry.start != null && entry.end != null) ? 
+							StringTools.getTimeDiff(entry.start, entry.end)+ " '" : "",
+					entry.status.toString()
+				};
+				tableModel.addRow(rowData);
+			}
 		}
+		historyTable.setToolTipText("History: "+tableModel.getRowCount()+"/"+entries.size()+" items");
+		if(filter.isEmpty()){
+			filterHistory.setForeground(Color.BLACK);
+		}else{
+			filterHistory.setForeground(Color.RED);
+		}
+	}
+
+	private boolean matchesFilter(HistoryInfo entry) {
+		
+		if(!filter.isEmpty()){
+			if(!entry.name.toLowerCase().startsWith(filter.toLowerCase())){
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private void refreshUI(HistoryInfo selected) {
@@ -170,7 +198,11 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 		initUI();
 		if(selected != null){	
 			for(int i=0; i<entries.size(); i++){
-				if(entries.get(i).historyId.equals(selected.historyId)){
+				HistoryInfo entry = entries.get(i);
+				if(
+					entry.historyId.equals(selected.historyId) &&
+					matchesFilter(entry)
+				){
 					historyTable.changeSelection(i, -1, false, false);
 					break;
 				}
@@ -239,5 +271,15 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 			application.getHistory().delete(entry.historyId);
 			refreshUI(null);
 		}
+	}
+	
+	public void filterHistory(){
+		
+		String filter = UiTools.inputDialog("Filter for Launch", this.filter);
+		if(filter != null){
+			this.filter = filter;
+		}
+		HistoryInfo selected = getSelectedHistory();
+		refreshUI(selected);
 	}
 }
