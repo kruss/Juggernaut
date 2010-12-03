@@ -5,7 +5,6 @@ import java.util.Date;
 import core.Application;
 import core.Cache;
 
-import lifecycle.LaunchManager;
 import lifecycle.LaunchManager.TriggerStatus;
 
 
@@ -52,15 +51,15 @@ public class IntervallTrigger extends AbstractTrigger {
 		newDate = new Date();
 		
 		if(lastDate == null){
-			return LaunchManager.INITIAL_TRIGGER;
+			return launcher.new TriggerStatus(config.getName()+" (Initial run)", true);
 		}else{
 			if((lastDate.getTime() + config.getIntervall()) <= newDate.getTime()){
 				return launcher.new TriggerStatus(
-						"Intervall exceeded", true
+						config.getName()+" (Time elapsed)", true
 				);
 			}else{
 				return launcher.new TriggerStatus(
-						"Intervall not exceeded", false
+						config.getName()+" (Time not elapsed)", false
 				);
 			}
 		}

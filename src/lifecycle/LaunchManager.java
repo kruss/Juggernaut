@@ -15,7 +15,6 @@ import core.Configuration;
 public class LaunchManager implements ILifecycleListener {
 
 	public static TriggerStatus USER_TRIGGER;
-	public static TriggerStatus INITIAL_TRIGGER;
 	
 	private Application application;
 	private SchedulerTask scheduler;
@@ -28,7 +27,6 @@ public class LaunchManager implements ILifecycleListener {
 	public LaunchManager(){
 		
 		USER_TRIGGER = new TriggerStatus("Run by user", true);
-		INITIAL_TRIGGER = new TriggerStatus("Initial run", true);
 		
 		application = Application.getInstance();
 		scheduler = null;

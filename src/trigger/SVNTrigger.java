@@ -8,7 +8,6 @@ import core.Cache;
 import repository.SVNClient;
 import repository.IRepositoryClient.RevisionInfo;
 
-import lifecycle.LaunchManager;
 import lifecycle.LaunchManager.TriggerStatus;
 
 
@@ -54,7 +53,9 @@ public class SVNTrigger extends AbstractTrigger {
 			Date currentDate = new Date();
 			
 			if(lastRevision == null){
-				return LaunchManager.INITIAL_TRIGGER;
+				return launcher.new TriggerStatus(
+						config.getName()+" (Initial run)", true
+				);
 			}else{
 				if(!lastRevision.equals(revisionInfo.revision)){
 					if(
@@ -62,16 +63,16 @@ public class SVNTrigger extends AbstractTrigger {
 							(revisionInfo.date.getTime() + config.getDelay() <= currentDate.getTime())
 					){
 						return launcher.new TriggerStatus(
-								"Repository changed: "+revisionInfo.revision, true
+								config.getName()+" (Revision "+revisionInfo.revision+")", true
 						);
 					}else{
 						return launcher.new TriggerStatus(
-								"Repository changes within delay", false
+								config.getName()+" (Changes within delay)", false
 						);
 					}
 				}else{
 					return launcher.new TriggerStatus(
-							"Repository not changed", false
+							config.getName()+" (Repository idle)", false
 					);
 				}
 			}

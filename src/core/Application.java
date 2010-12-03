@@ -127,6 +127,8 @@ public class Application {
 		configuration.chekForSave();
 		PersistenceManager.cleanup(configuration, new File(getBuildFolder()), logger);
 		PersistenceManager.delete(new File(getTempFolder()), logger);
+		
+		// TODO clean cache
 	}
 	
 	private void initSystems() {
