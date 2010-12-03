@@ -54,7 +54,7 @@ public class SVNTrigger extends AbstractTrigger {
 			
 			if(lastRevision == null){
 				return launcher.new TriggerStatus(
-						config.getName()+" (Initial run)", true
+						config.getName()+" - Initial run", true
 				);
 			}else{
 				if(!lastRevision.equals(revisionInfo.revision)){
@@ -63,16 +63,16 @@ public class SVNTrigger extends AbstractTrigger {
 							(revisionInfo.date.getTime() + config.getDelay() <= currentDate.getTime())
 					){
 						return launcher.new TriggerStatus(
-								config.getName()+" (Revision "+revisionInfo.revision+")", true
+								config.getName()+" - Revision changed ("+revisionInfo.revision+")", true
 						);
 					}else{
 						return launcher.new TriggerStatus(
-								config.getName()+" (Changes within delay)", false
+								config.getName()+" - Revision changed within delay", false
 						);
 					}
 				}else{
 					return launcher.new TriggerStatus(
-							config.getName()+" (Repository idle)", false
+							config.getName()+" - Repository idle", false
 					);
 				}
 			}
@@ -87,7 +87,7 @@ public class SVNTrigger extends AbstractTrigger {
 	@Override
 	public void wasTriggered(boolean triggered) {
 		
-		if(revisionInfo != null){
+		if(triggered && revisionInfo != null){
 			setLastRevision(revisionInfo.revision);
 		}
 	}

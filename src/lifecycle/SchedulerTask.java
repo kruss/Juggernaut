@@ -45,26 +45,34 @@ public class SchedulerTask extends Task {
 
 	private void checkSchedules(LaunchConfig launchConfig) {
 		
+		boolean launched = false;
 		for(AbstractTriggerConfig triggerConfig : launchConfig.getTriggerConfigs()){
 			AbstractTrigger trigger = triggerConfig.createTrigger();
 			TriggerStatus triggerStatus = trigger.isTriggered();
 			if(triggerStatus.triggered){
-				application.getLogger().log(
-						"Launch ["+launchConfig.getName()+"] triggered: "+triggerStatus.message
-				);
-				LaunchAgent launch = launchConfig.createLaunch(triggerStatus);
-				LaunchStatus launchStatus = application.getLaunchManager().runLaunch(launch);
-				if(launchStatus.launched){
-					trigger.wasTriggered(true);
+				if(!launched)
+				{
+					LaunchAgent launch = launchConfig.createLaunch(triggerStatus);
+					LaunchStatus launchStatus = application.getLaunchManager().runLaunch(launch);
+					if(launchStatus.launched){
+						application.getLogger().log(
+								"Launch ["+launchConfig.getName()+"] triggered: "+triggerStatus.message
+						);
+						trigger.wasTriggered(true);
+						launched = true;
+					}else{
+						application.getLogger().log(
+								"Launch ["+launchConfig.getName()+"] aborded: "+launchStatus.message
+						);
+						trigger.wasTriggered(false);
+						break;
+					}
 				}else{
-					application.getLogger().log(
-							"Launch ["+launchConfig.getName()+"] aborded: "+launchStatus.message
-					);
-					trigger.wasTriggered(false);
+					trigger.wasTriggered(true);
 				}
 			}else{
 				application.getLogger().debug(
-						"Launch ["+launchConfig.getName()+"] idle: "+triggerStatus.message
+						"Trigger ["+triggerConfig.getId()+"] idle: "+triggerStatus.message
 				);
 			}
 		}

@@ -51,15 +51,15 @@ public class IntervallTrigger extends AbstractTrigger {
 		newDate = new Date();
 		
 		if(lastDate == null){
-			return launcher.new TriggerStatus(config.getName()+" (Initial run)", true);
+			return launcher.new TriggerStatus(config.getName()+" - Initial run", true);
 		}else{
 			if((lastDate.getTime() + config.getIntervall()) <= newDate.getTime()){
 				return launcher.new TriggerStatus(
-						config.getName()+" (Time elapsed)", true
+						config.getName()+" - Time elapsed", true
 				);
 			}else{
 				return launcher.new TriggerStatus(
-						config.getName()+" (Time not elapsed)", false
+						config.getName()+" - Time not elapsed", false
 				);
 			}
 		}
@@ -68,7 +68,7 @@ public class IntervallTrigger extends AbstractTrigger {
 	@Override
 	public void wasTriggered(boolean triggered) {
 		
-		if(newDate != null){
+		if(triggered && newDate != null){
 			setLastDate(newDate);
 		}
 	}
