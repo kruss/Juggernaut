@@ -27,6 +27,7 @@ public class LaunchAgent extends AbstractLifecycleObject {
 	private ArrayList<AbstractOperation> operations;
 	private LaunchHistory history;
 	private Logger logger;
+	private boolean aboard;
 	
 	public LaunchAgent(LaunchConfig config, TriggerStatus trigger){
 
@@ -46,12 +47,14 @@ public class LaunchAgent extends AbstractLifecycleObject {
 		logger = new Logger(Mode.FILE_ONLY); // required by operation-ctors
 		operations = new ArrayList<AbstractOperation>();
 		for(AbstractOperationConfig operationConfig : config.getOperationConfigs()){
-			AbstractOperation operation = operationConfig.createOperation(this);
-			operations.add(operation);
-			propertyManager.addProperties(
-					operationConfig.getId(), 
-					operationConfig.getOptionContainer().getProperties()
-			);
+			if(operationConfig.isActive()){
+				AbstractOperation operation = operationConfig.createOperation(this);
+				operations.add(operation);
+				propertyManager.addProperties(
+						operationConfig.getId(), 
+						operationConfig.getOptionContainer().getProperties()
+				);
+			}
 		}
 		
 		history = new LaunchHistory(this);
@@ -60,6 +63,7 @@ public class LaunchAgent extends AbstractLifecycleObject {
 		}
 		
 		statusManager.setProgressMax(operations.size());
+		aboard = false;
 	}
 	
 	public LaunchConfig getConfig(){ return config; }
@@ -100,71 +104,65 @@ public class LaunchAgent extends AbstractLifecycleObject {
 	@Override
 	protected void execute() throws Exception {
 		
-		boolean aboarding = false;
 		for(AbstractOperation operation : operations){
 			try{
-				logger.info(
-						operation.getIndex()+"/"+config.getOperationConfigs().size()+
-						" Operation ["+operation.getConfig().getName()+"]"
-				);
-				debugProperties(propertyManager.getProperties(operation.getConfig().getId()));
-				if(operation.getConfig().isActive() && !aboarding){
-					
-					// start operation
-					operation.syncRun(0);
-					
-					// process status
-					propertyManager.addProperties(
-							operation.getConfig().getId(), 
-							operation.getStatusManager().getProperties()
-					);
-					Status operationStatus = operation.getStatusManager().getStatus();
-					if(operationStatus == Status.ERROR && operation.getConfig().isCritical()){
+				Status operationStatus = executeOperation(operation);
+				logger.log("Operation: "+operationStatus.toString());	
+				if(operationStatus == Status.ERROR){
+					if(!operation.getConfig().isCritical()){
+						statusManager.setStatus(Status.ERROR);
+					}else{
 						logger.emph("Critical operation failed");
 						statusManager.setStatus(Status.FAILURE);
-					}else if(operationStatus == Status.FAILURE){
-						logger.emph("Operation failed");
-						statusManager.setStatus(Status.FAILURE);
+						aboard = true;
 					}
-					
-				}else{
-					operation.getStatusManager().setStatus(Status.CANCEL);
+				}else if(operationStatus == Status.FAILURE){
+					statusManager.setStatus(Status.FAILURE);
+					aboard = true;
 				}
-				logger.log("Operation: "+operation.getStatusManager().getStatus().toString());
-				
-
 			}catch(InterruptedException e){
 				logger.emph("Interrupted");
-				operation.getStatusManager().setStatus(Status.CANCEL);
-				operation.syncKill();
 				statusManager.setStatus(Status.CANCEL);
-			}finally{
-				
-				// process progress
-				statusManager.addProgress(1);
-				if(!aboarding && statusManager.getStatus() != Status.PROCESSING){
-					logger.emph("Aboarding launch");
-					aboarding = true;
+				aboard = true;
+				if(operation.isAlive()){
+					operation.syncKill();
+					operation.getStatusManager().setStatus(Status.CANCEL);
 				}
+			}finally{
+				statusManager.addProgress(1);
 			}
 		}
+	}
+
+	private Status executeOperation(AbstractOperation operation)throws Exception {
+		
+		logger.info(
+				operation.getIndex()+"/"+config.getOperationConfigs().size()+
+				" Operation ["+operation.getConfig().getName()+"]"
+		);
+		debugProperties(propertyManager.getProperties(operation.getConfig().getId()));
+		if(!aboard){
+			operation.syncRun(0);
+			propertyManager.addProperties(
+					operation.getConfig().getId(), 
+					operation.getStatusManager().getProperties()
+			);
+		}else{
+			operation.getStatusManager().setStatus(Status.CANCEL);
+		}
+		return operation.getStatusManager().getStatus();
 	}
 
 	@Override
 	protected void finish() {
 
-		// process status
 		propertyManager.addProperties(
 				config.getId(), 
 				statusManager.getProperties()
 		);
-		logger.info("Launch: "+statusManager.getStatus().toString());
 		
+		//TODO perform notification
 		
-		// perform notification
-		// TODO
-		
-		// perform output
 		try{ 
 			history.finish();
 			application.getHistory().addEntry(history); 
@@ -172,6 +170,7 @@ public class LaunchAgent extends AbstractLifecycleObject {
 			logger.error(e);
 		}
 		
+		logger.info("Launch: "+statusManager.getStatus().toString());
 		logger.clearListeners();
 	}
 	
