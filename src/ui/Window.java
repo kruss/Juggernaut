@@ -23,7 +23,7 @@ public class Window extends JFrame implements IChangedListener {
 	private Application application;
 	private JMenuBar menuBar;
 	private ConfigPanel configPanel;
-	private StatusPanel statusPanel;
+	private SchedulerPanel schedulerPanel;
 	private HistoryPanel historyPanel;
 	private PreferencePanel preferencePanel;
 	private JLabel statusBar;
@@ -41,14 +41,14 @@ public class Window extends JFrame implements IChangedListener {
 		statusBar.setEnabled(false);
 		
 		configPanel = new ConfigPanel();
-		statusPanel = new StatusPanel();
+		schedulerPanel = new SchedulerPanel();
 		historyPanel = new HistoryPanel();
 		preferencePanel = new PreferencePanel();
 		
 		JTabbedPane centerPanel = new JTabbedPane();
 		centerPanel.setTabPlacement(JTabbedPane.TOP);
 		centerPanel.add(configPanel, "Configuration");
-		centerPanel.add(statusPanel, "Status");
+		centerPanel.add(schedulerPanel, "Scheduler");
 		centerPanel.add(historyPanel, "History");
 		centerPanel.add(preferencePanel, "Preferences");
 		
@@ -67,7 +67,7 @@ public class Window extends JFrame implements IChangedListener {
 	public void init() {
 		
 		configPanel.init();
-		statusPanel.init();
+		schedulerPanel.init();
 		historyPanel.init();
 		preferencePanel.init();
 		setStatus(Constants.APP_NAME+" started at "+StringTools.getTextDate(new Date()));

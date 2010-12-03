@@ -30,7 +30,7 @@ import util.UiTools;
 
 import core.Application;
 
-public class StatusPanel extends JPanel implements IChangedListener {
+public class SchedulerPanel extends JPanel implements IChangedListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -46,7 +46,7 @@ public class StatusPanel extends JPanel implements IChangedListener {
 	
 	private ArrayList<LaunchInfo> launches;
 	
-	public StatusPanel()
+	public SchedulerPanel()
 	{
 		application = Application.getInstance();
 		launches = new ArrayList<LaunchInfo>();
