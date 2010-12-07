@@ -64,7 +64,7 @@ public class EclipseOperation extends AbstractOperation {
 				directory, 
 				logger
 		);
-		commandTask.syncRun(0);
+		commandTask.syncRun(0, 0);
 		
 		if(commandTask.hasSucceded()){
 			statusManager.setStatus(Status.SUCCEED);

@@ -26,7 +26,7 @@ public class SVNClient implements IRepositoryClient {
 
 		// perform task
 		CommandTask task = new CommandTask(command, arguments, path, logger);
-		task.syncRun(0);
+		task.syncRun(0, 0);
 		if(!task.hasSucceded()){
 			throw new Exception("SVN info failed: "+task.getResult());
 		}
@@ -60,7 +60,7 @@ public class SVNClient implements IRepositoryClient {
 
 		// perform task
 		CommandTask task = new CommandTask(command, arguments, path, logger);
-		task.syncRun(0);
+		task.syncRun(0, 0);
 		if(!task.hasSucceded()){
 			throw new Exception("SVN checkout failed: "+task.getResult());
 		}
@@ -87,7 +87,7 @@ public class SVNClient implements IRepositoryClient {
 
 		// perform task
 		CommandTask task = new CommandTask(command, arguments, path, logger);
-		task.syncRun(0);
+		task.syncRun(0, 0);
 		if(!task.hasSucceded()){
 			throw new Exception("SVN history failed: "+task.getResult());
 		}

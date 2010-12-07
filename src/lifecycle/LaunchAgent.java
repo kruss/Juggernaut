@@ -142,7 +142,7 @@ public class LaunchAgent extends AbstractLifecycleObject {
 		);
 		debugProperties(propertyContainer.getProperties(operation.getConfig().getId()));
 		if(!aboard){
-			operation.syncRun(0);
+			operation.syncRun(0, 0);
 			propertyContainer.addProperties(
 					operation.getConfig().getId(), 
 					operation.getStatusManager().getProperties()

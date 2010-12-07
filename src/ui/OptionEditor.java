@@ -253,7 +253,7 @@ public class OptionEditor extends JPanel {
 							new SVNClient(Application.getInstance().getLogger()), 
 							((JTextField)option.component).getText()
 					);
-					tester.asyncRun(0);
+					tester.asyncRun(0, ConnectionTest.TIMEOUT);
 				}
 			});
 			option.parent.add(button, BorderLayout.EAST);

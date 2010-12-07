@@ -14,6 +14,7 @@ import ui.Window;
 import util.PersistenceManager;
 import util.Logger;
 import util.SystemTools;
+import util.TimeoutManager;
 import util.UiTools;
 import util.Logger.Mode;
 
@@ -41,18 +42,20 @@ public class Application {
 	
 	private Logger logger;
 	private Window window;
-	private Configuration configuration;
+	private Configuration config;
 	private History history;
 	private Cache cache;
 	private Registry registry;
+	private TimeoutManager timoutManager;
 	private LaunchManager launchManager;
 	
 	public Logger getLogger(){ return logger; }
 	public Window getWindow(){ return window; }
-	public Configuration getConfiguration(){ return configuration; }
+	public Configuration getConfiguration(){ return config; }
 	public History getHistory(){ return history; }
 	public Cache getCache(){ return cache; }
 	public Registry getRegistry(){ return registry; }
+	public TimeoutManager getTimeoutManager(){ return timoutManager; }
 	public LaunchManager getLaunchManager(){ return launchManager; }
 	
 	private Application(){}
@@ -98,12 +101,12 @@ public class Application {
 		
 		File configurationFile = new File(getDataFolder()+File.separator+Configuration.OUTPUT_FILE);
 		if(configurationFile.isFile()){
-			configuration = Configuration.load(configurationFile.getAbsolutePath());
+			config = Configuration.load(configurationFile.getAbsolutePath());
 		}else{
-			configuration = new Configuration(configurationFile.getAbsolutePath());
-			configuration.save();
+			config = new Configuration(configurationFile.getAbsolutePath());
+			config.save();
 		}		
-		Logger.VERBOSE = configuration.isVerbose();
+		Logger.VERBOSE = config.isVerbose();
 		
 		File historyFile = new File(getDataFolder()+File.separator+History.OUTPUT_FILE);
 		if(historyFile.isFile()){
@@ -124,8 +127,8 @@ public class Application {
 	
 	private void shutdownPersistence() throws Exception {
 		
-		configuration.chekForSave();
-		PersistenceManager.cleanup(configuration, new File(getBuildFolder()), logger);
+		config.chekForSave();
+		PersistenceManager.cleanup(config, new File(getBuildFolder()), logger);
 		PersistenceManager.delete(new File(getTempFolder()), logger);
 		
 		// TODO clean cache
@@ -136,6 +139,9 @@ public class Application {
 		registry = new Registry();
 		registry.init();
 		
+		timoutManager = new TimeoutManager();
+		timoutManager.init();
+		
 		launchManager = new LaunchManager();
 		launchManager.init();
 	}
@@ -143,6 +149,7 @@ public class Application {
 	private void shutdownSystems() {
 		
 		launchManager.shutdown();
+		timoutManager.shutdown();
 	}
 	
 	private void initUI() throws Exception {
@@ -188,7 +195,7 @@ public class Application {
 	/** drop any unsaved changes */
 	public void revert() throws Exception {
 		
-		if(configuration.isDirty()){
+		if(config.isDirty()){
 			shutdownUI();
 			initPersistence();
 			initUI();

@@ -15,20 +15,21 @@ import util.Task;
 
 public class SchedulerTask extends Task {
 
+	public static final long TIMEOUT = 60 * 60 * 1000; // 1h
+	
 	private Application application;
 	
 	public SchedulerTask(){
 		
 		super("Scheduler", Application.getInstance().getLogger());
 		this.application = Application.getInstance();
-		cyclic = true;
 	}
 
 	@Override
 	protected void runTask() {
 		
+		setCycle(application.getConfiguration().getSchedulerIntervall());
 		checkSchedules();
-		cyclicDelay = application.getConfiguration().getSchedulerIntervall();
 	}
 
 	public void checkSchedules() {

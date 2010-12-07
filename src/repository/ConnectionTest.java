@@ -8,6 +8,8 @@ import util.UiTools;
 
 public class ConnectionTest extends Task {
 
+	public static final long TIMEOUT = 1 * 60 * 1000; // 1min
+	
 	private IRepositoryClient client;
 	private String url;
 	

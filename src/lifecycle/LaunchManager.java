@@ -60,7 +60,7 @@ public class LaunchManager implements ILifecycleListener {
 	public synchronized void startScheduler(long delay){ 
 		if(scheduler == null){
 			scheduler = new SchedulerTask();
-			scheduler.asyncRun(delay); 
+			scheduler.asyncRun(delay, SchedulerTask.TIMEOUT); 
 		}
 	}
 	
@@ -83,7 +83,7 @@ public class LaunchManager implements ILifecycleListener {
 			if(!isRunning(launch.getConfig().getId())){
 				agents.add(launch);
 				launch.addListener(this);
-				launch.asyncRun(0);
+				launch.asyncRun(0, launch.getConfig().getTimeout());
 				return new LaunchStatus("Launch started", true);
 			}else{
 				return new LaunchStatus("Already running", false);

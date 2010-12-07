@@ -30,7 +30,7 @@ public class CommandOperation extends AbstractOperation {
 				directory.isEmpty() ? parent.getFolder() : parent.getFolder()+File.separator+directory, 
 				logger
 		);
-		commandTask.syncRun(0);
+		commandTask.syncRun(0, 0);
 		
 		if(commandTask.hasSucceded()){
 			statusManager.setStatus(Status.SUCCEED);
