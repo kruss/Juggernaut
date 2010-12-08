@@ -1,10 +1,10 @@
-package lifecycle;
+package launch;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 
-import lifecycle.StatusManager.Status;
+import launch.StatusManager.Status;
 
 import util.IChangedListener;
 import util.ILoggingProvider;

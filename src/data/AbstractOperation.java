@@ -2,8 +2,8 @@ package data;
 
 import util.Logger;
 
-import lifecycle.AbstractLifecycleObject;
-import lifecycle.LaunchAgent;
+import launch.AbstractLifecycleObject;
+import launch.LaunchAgent;
 
 public abstract class AbstractOperation extends AbstractLifecycleObject {
 

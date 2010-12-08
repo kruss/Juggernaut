@@ -1,11 +1,11 @@
-package lifecycle;
+package launch;
 
 import java.util.Date;
 import java.util.HashMap;
 
 import util.StringTools;
 
-import lifecycle.ILifecycleListener.Lifecycle;
+import launch.ILifecycleListener.Lifecycle;
 
 public class StatusManager {
 

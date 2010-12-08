@@ -4,7 +4,7 @@ import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import lifecycle.LaunchManager;
+import launch.LaunchManager;
 
 import util.IChangedListener;
 import util.Logger;

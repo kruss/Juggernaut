@@ -5,8 +5,8 @@ import java.util.UUID;
 
 import util.StringTools;
 
-import lifecycle.LaunchAgent;
-import lifecycle.LaunchManager.TriggerStatus;
+import launch.LaunchAgent;
+import launch.LaunchManager.TriggerStatus;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;

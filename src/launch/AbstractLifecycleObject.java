@@ -1,4 +1,4 @@
-package lifecycle;
+package launch;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,8 +8,8 @@ import core.Application;
 
 import data.Artifact;
 
-import lifecycle.ILifecycleListener.Lifecycle;
-import lifecycle.StatusManager.Status;
+import launch.ILifecycleListener.Lifecycle;
+import launch.StatusManager.Status;
 import util.Logger;
 import util.Task;
 

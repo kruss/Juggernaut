@@ -3,9 +3,9 @@ package operation;
 import repository.SVNClient;
 import repository.IRepositoryClient.CheckoutInfo;
 
-import lifecycle.LaunchAgent;
-import lifecycle.PropertyContainer;
-import lifecycle.StatusManager.Status;
+import launch.LaunchAgent;
+import launch.PropertyContainer;
+import launch.StatusManager.Status;
 import data.AbstractOperation;
 
 public class SVNOperation extends AbstractOperation {

@@ -9,12 +9,10 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-import lifecycle.LaunchManager;
+import launch.LaunchManager;
 import ui.Window;
-import util.PersistenceManager;
 import util.Logger;
 import util.SystemTools;
-import util.TimeoutManager;
 import util.UiTools;
 import util.Logger.Mode;
 

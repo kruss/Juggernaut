@@ -15,9 +15,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
-import lifecycle.LaunchAgent;
-import lifecycle.LaunchManager;
-import lifecycle.LaunchManager.LaunchStatus;
+import launch.LaunchAgent;
+import launch.LaunchManager;
+import launch.LaunchManager.LaunchStatus;
 
 import util.IChangedListener;
 import util.UiTools;

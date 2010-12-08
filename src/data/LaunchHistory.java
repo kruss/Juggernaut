@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import core.Application;
 import core.Constants;
 
-import lifecycle.LaunchAgent;
+import launch.LaunchAgent;
 
 public class LaunchHistory extends AbstractHistory {
 	

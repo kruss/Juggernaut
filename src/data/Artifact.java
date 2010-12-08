@@ -2,7 +2,7 @@ package data;
 
 import java.util.ArrayList;
 
-import lifecycle.StatusManager.Status;
+import launch.StatusManager.Status;
 
 public class Artifact implements Comparable<Artifact> {
 

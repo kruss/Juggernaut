@@ -2,7 +2,7 @@ package data;
 
 import java.util.UUID;
 
-import lifecycle.LaunchAgent;
+import launch.LaunchAgent;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;

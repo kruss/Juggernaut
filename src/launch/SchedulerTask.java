@@ -1,11 +1,11 @@
-package lifecycle;
+package launch;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 
-import lifecycle.LaunchManager.LaunchStatus;
-import lifecycle.LaunchManager.TriggerStatus;
+import launch.LaunchManager.LaunchStatus;
+import launch.LaunchManager.TriggerStatus;
 
 import core.Application;
 import data.AbstractTrigger;

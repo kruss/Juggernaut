@@ -1,4 +1,4 @@
-package lifecycle;
+package launch;
 
 public interface ILifecycleListener {
 

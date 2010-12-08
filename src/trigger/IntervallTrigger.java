@@ -5,7 +5,7 @@ import java.util.Date;
 import core.Application;
 import core.Cache;
 
-import lifecycle.LaunchManager.TriggerStatus;
+import launch.LaunchManager.TriggerStatus;
 
 
 import data.AbstractTrigger;

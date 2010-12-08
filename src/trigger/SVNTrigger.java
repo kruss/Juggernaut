@@ -8,7 +8,7 @@ import core.Cache;
 import repository.SVNClient;
 import repository.IRepositoryClient.RevisionInfo;
 
-import lifecycle.LaunchManager.TriggerStatus;
+import launch.LaunchManager.TriggerStatus;
 
 
 import data.AbstractTrigger;

@@ -9,7 +9,7 @@ import util.FileTools;
 import data.Artifact.Action;
 import data.Artifact.Attachment;
 
-import lifecycle.StatusManager.Status;
+import launch.StatusManager.Status;
 
 public abstract class AbstractHistory {
 

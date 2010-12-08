@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import util.CommandTask;
 import util.Logger;
 import util.StringTools;
-import lifecycle.LaunchAgent;
-import lifecycle.PropertyContainer;
-import lifecycle.StatusManager.Status;
+import launch.LaunchAgent;
+import launch.PropertyContainer;
+import launch.StatusManager.Status;
 import data.AbstractOperation;
 
 public class EclipseOperation extends AbstractOperation {

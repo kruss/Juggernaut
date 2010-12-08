@@ -21,7 +21,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
-import lifecycle.LaunchManager.LaunchInfo;
+import launch.LaunchManager.LaunchInfo;
 
 import util.IChangedListener;
 import util.ILoggingProvider;

@@ -1,9 +1,11 @@
-package util;
+package core;
 
 import java.io.File;
 import java.util.ArrayList;
 
-import core.Configuration;
+import util.FileTools;
+import util.Logger;
+
 import data.LaunchConfig;
 
 // TODO temp draft
@@ -40,6 +42,7 @@ public class PersistenceManager {
 	
 	public static void delete(File file, Logger logger) throws Exception {
 		
+		// TODO retry with unlocker for windows
 		logger.debug("delete: "+file.getAbsolutePath());
 		if(file.isFile()){
 			FileTools.deleteFile(file.getAbsolutePath());

@@ -2,7 +2,7 @@ package operation;
 
 import java.util.ArrayList;
 
-import lifecycle.LaunchAgent;
+import launch.LaunchAgent;
 import data.AbstractOperation;
 import data.AbstractOperationConfig;
 import data.Option;

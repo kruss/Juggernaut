@@ -1,6 +1,6 @@
 package core;
 
-import lifecycle.PropertyContainer;
+import launch.PropertyContainer;
 import util.FileTools;
 
 import com.thoughtworks.xstream.XStream;

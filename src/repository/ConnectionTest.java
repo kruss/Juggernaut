@@ -1,6 +1,6 @@
 package repository;
 
-import lifecycle.StatusManager.Status;
+import launch.StatusManager.Status;
 import repository.IRepositoryClient.RevisionInfo;
 import core.Application;
 import util.Task;

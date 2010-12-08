@@ -5,7 +5,7 @@ import core.Application;
 import repository.SVNClient;
 import repository.IRepositoryClient.Revision;
 import ui.OptionEditor;
-import lifecycle.LaunchAgent;
+import launch.LaunchAgent;
 import data.AbstractOperation;
 import data.AbstractOperationConfig;
 import data.Option;

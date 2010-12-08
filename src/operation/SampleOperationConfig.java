@@ -1,6 +1,6 @@
 package operation;
 
-import lifecycle.LaunchAgent;
+import launch.LaunchAgent;
 import data.AbstractOperation;
 import data.AbstractOperationConfig;
 import data.Option;

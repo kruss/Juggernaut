@@ -1,8 +1,8 @@
 package data;
 
 import core.Application;
-import lifecycle.LaunchManager;
-import lifecycle.LaunchManager.TriggerStatus;
+import launch.LaunchManager;
+import launch.LaunchManager.TriggerStatus;
 import util.Logger;
 
 public abstract class AbstractTrigger {

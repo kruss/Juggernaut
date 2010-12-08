@@ -1,4 +1,4 @@
-package lifecycle;
+package launch;
 
 import java.util.ArrayList;
 import java.util.Collections;

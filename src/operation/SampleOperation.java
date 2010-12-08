@@ -2,8 +2,8 @@ package operation;
 
 import util.StringTools;
 import util.SystemTools;
-import lifecycle.LaunchAgent;
-import lifecycle.StatusManager.Status;
+import launch.LaunchAgent;
+import launch.StatusManager.Status;
 import data.AbstractOperation;
 
 public class SampleOperation extends AbstractOperation {

@@ -3,7 +3,7 @@ package core;
 import java.util.ArrayList;
 import java.util.Date;
 
-import lifecycle.StatusManager.Status;
+import launch.StatusManager.Status;
 
 import util.FileTools;
 import util.IChangedListener;

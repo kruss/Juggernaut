@@ -1,5 +1,7 @@
 package util;
 
+import java.util.Date;
+
 import core.Application;
 
 public abstract class Task extends Thread {
@@ -8,6 +10,7 @@ public abstract class Task extends Thread {
 	private long delay;
 	private long cycle;
 	private long timeout;
+	private Date start;
 
 	public Task(String name, Logger logger){
 		
@@ -16,11 +19,23 @@ public abstract class Task extends Thread {
 		delay = 0;
 		cycle = 0;
 		timeout = 0;
+		start = null;
 	}
 	
 	public Logger getObserver(){ return observer; }
 	public void setCycle(long cycle){ this.cycle = cycle; }
-	public long getTimeout(){ return timeout; }
+	public boolean isExpired(){
+		
+		if(start != null && timeout > 0){
+			if((new Date()).getTime() >= start.getTime()+timeout){
+				return true;
+			}else{
+				return false;
+			}
+		}else{
+			return false;
+		}
+	}
 	
 	public void run(){
 		
@@ -51,12 +66,13 @@ public abstract class Task extends Thread {
 	
 	private void runSingleTask(){
 		
-		TimeoutManager timeoutManager = Application.getInstance().getTimeoutManager();
+		start = new Date();
+		Application.getInstance().getTimeoutManager().register(this);
 		try{
-			timeoutManager.register(this);
 			runTask();
 		}finally{
-			timeoutManager.deregister(this);
+			Application.getInstance().getTimeoutManager().deregister(this);
+			start = null;
 		}
 	}
 	

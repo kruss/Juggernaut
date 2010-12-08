@@ -1,4 +1,4 @@
-package lifecycle;
+package launch;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -14,8 +14,8 @@ import util.FileTools;
 import util.Logger;
 import util.StringTools;
 import util.Logger.Mode;
-import lifecycle.LaunchManager.TriggerStatus;
-import lifecycle.StatusManager.Status;
+import launch.LaunchManager.TriggerStatus;
+import launch.StatusManager.Status;
 
 public class LaunchAgent extends AbstractLifecycleObject {
 
@@ -44,7 +44,7 @@ public class LaunchAgent extends AbstractLifecycleObject {
 		propertyContainer.addProperty(config.getId(), "Clean", ""+config.isClean());
 		propertyContainer.addProperty(config.getId(), "Timeout", StringTools.millis2min(config.getTimeout())+" min");
 		
-		logger = new Logger(Mode.FILE_ONLY); // required by operation-ctors
+		logger = new Logger(Mode.FILE_ONLY); // logger required by operation-ctors
 		operations = new ArrayList<AbstractOperation>();
 		for(AbstractOperationConfig operationConfig : config.getOperationConfigs()){
 			if(operationConfig.isActive()){
