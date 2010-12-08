@@ -103,4 +103,19 @@ public class StatusManager {
 		}
 		return map;
 	}
+
+	public static String getHtml(Status status) {
+
+		String color = "black";
+		if(status == Status.UNDEFINED){
+			color = "yellow";
+		}else if(status == Status.SUCCEED){
+			color = "green";
+		}else if(status == Status.ERROR){
+			color = "red";
+		}else if(status == Status.FAILURE){
+			color = "purple";
+		}
+		return "<font color='"+color+"'>"+status.toString()+"</font>";
+	}
 }

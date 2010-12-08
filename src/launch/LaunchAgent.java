@@ -1,6 +1,7 @@
 package launch;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -13,6 +14,7 @@ import data.OperationHistory;
 import util.FileTools;
 import util.Logger;
 import util.StringTools;
+import util.SystemTools;
 import util.Logger.Mode;
 import launch.LaunchManager.TriggerStatus;
 import launch.StatusManager.Status;
@@ -168,6 +170,16 @@ public class LaunchAgent extends AbstractLifecycleObject {
 			application.getHistory().addEntry(history); 
 		}catch(Exception e){
 			logger.error(e);
+		}
+		
+		if(triggerStatus == LaunchManager.USER_TRIGGER){
+			try{
+				String path = history.getIndexPath();
+				logger.debug("browser: "+path);
+				SystemTools.openBrowser(path);
+			}catch(IOException e) {
+				logger.error(e);
+			}
 		}
 		
 		logger.info("Launch: "+statusManager.getStatus().toString());

@@ -1,5 +1,7 @@
 package data;
 
+import html.AbstractHtmlPage;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,7 +40,20 @@ public abstract class AbstractHistory {
 	
 	public void finish() throws Exception {
 		
-		// handle artifacts
+		createArtifacts();
+		createHtml();
+	}
+
+	private void createHtml() throws Exception {
+
+		AbstractHtmlPage page = getHtmlPage();
+		page.create();
+	}
+
+	protected abstract AbstractHtmlPage getHtmlPage();
+
+	private void createArtifacts() throws Exception {
+		
 		for(Artifact artifact : artifacts){
 			for(Attachment attachment : artifact.attachments){
 				if(attachment.action == Action.COPY){

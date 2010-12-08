@@ -1,5 +1,8 @@
 package core;
 
+import html.HistoryPage;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -79,14 +82,35 @@ public class History {
 		
 		entry.init();
 		entries.add(0, entry);
-		cleanup();
 		dirty = true;
 		save();
+		update();
+	}
+
+	/** recreate the main index-page */
+	public void update(){
+		
+		cleanup();
+		HistoryPage page = new HistoryPage(this, getIndexPath());
+		try{
+			page.create();
+		}catch(Exception e){
+			Application.getInstance().getLogger().error(e);
+		}
+	}
+	
+	public String getIndexPath() {
+		return Application.getInstance().getHistoryFolder()+File.separator+HistoryPage.OUTPUT_FILE;
 	}
 
 	private void cleanup() {
 		
-		// TODO delete history entries if history-max was reached
+		int max = Application.getInstance().getConfiguration().getMaximumHistory();
+		if(max > 0){
+			while(max < entries.size()){
+				delete(entries.get(entries.size()-1));
+			}
+		}
 	}
 
 	public void clear() {
@@ -108,7 +132,7 @@ public class History {
 	
 	private synchronized void delete(LaunchHistory entry) {
 		
-		// TODO should be within task
+		Application.getInstance().getLogger().debug("deleting history: "+entry.id);
 		try{
 			entries.remove(entry);
 			FileTools.deleteFolder(entry.folder);
@@ -129,6 +153,7 @@ public class History {
 		public Date start;
 		public Date end;
 		public Status status;
+		public String folder;
 		
 		public HistoryInfo(LaunchHistory entry){
 			historyId = entry.historyId;
@@ -139,6 +164,7 @@ public class History {
 			start = entry.start;
 			end = entry.end;
 			status = entry.status;
+			folder = entry.folder;
 		}
 	}
 	

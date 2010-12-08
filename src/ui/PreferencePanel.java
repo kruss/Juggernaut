@@ -52,6 +52,10 @@ public class PreferencePanel extends JPanel implements IChangedListener {
 	
 	private void applyChanges(Configuration configuration) {
 		
+		// handle logger settings
+		Logger.VERBOSE = configuration.isVerbose();
+		
+		// handle scheduler settings
 		LaunchManager launchManager = application.getLaunchManager();
 		if(configuration.isScheduler()){
 			launchManager.startScheduler(0);
@@ -59,6 +63,7 @@ public class PreferencePanel extends JPanel implements IChangedListener {
 			launchManager.stopScheduler();
 		}
 		
-		Logger.VERBOSE = configuration.isVerbose();
+		// handle history settings
+		application.getHistory().update();
 	}
 }

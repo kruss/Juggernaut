@@ -1,5 +1,10 @@
 package data;
 
+import html.AbstractHtmlPage;
+import html.HistoryPage;
+import html.HtmlLink;
+import html.LaunchHistoryPage;
+
 import java.io.File;
 import java.util.ArrayList;
 
@@ -45,13 +50,28 @@ public class LaunchHistory extends AbstractHistory {
 	
 	public void finish() throws Exception {
 		
-		end = launch.getStatusManager().getEnd();
-		status = launch.getStatusManager().getStatus();
-		artifacts = launch.getArtifacts();
-		
-		super.finish();
+		// operations must be finished first
 		for(OperationHistory entry : operations){
 			entry.finish();
 		}
+
+		end = launch.getStatusManager().getEnd();
+		status = launch.getStatusManager().getStatus();
+		artifacts = launch.getArtifacts();
+		super.finish();
+	}
+
+	@Override
+	protected AbstractHtmlPage getHtmlPage() {
+		return new LaunchHistoryPage(
+				"Launch [ "+name+" ]", 
+				getIndexPath(),
+				new HtmlLink("&lt;&lt;", "../"+HistoryPage.OUTPUT_FILE),
+				this
+		);
+	}
+	
+	public String getIndexPath() {
+		return folder+File.separator+LaunchHistoryPage.OUTPUT_FILE;
 	}
 }

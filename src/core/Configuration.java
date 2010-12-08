@@ -146,6 +146,11 @@ public class Configuration implements IOptionInitializer {
 		return optionContainer.getOption(OPTIONS.MAXIMUM_AGENTS.toString()).getIntegerValue(); 
 	}
 	
+	/** maximum number of history entries, or 0 if unlimited */
+	public int getMaximumHistory() {
+		return optionContainer.getOption(OPTIONS.MAXIMUM_HISTORY.toString()).getIntegerValue();
+	}
+	
 	/** answers if logging is verbose */
 	public boolean isVerbose(){
 		return optionContainer.getOption(OPTIONS.VERBOSE.toString()).getBooleanValue();
