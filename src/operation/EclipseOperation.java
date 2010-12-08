@@ -19,6 +19,11 @@ public class EclipseOperation extends AbstractOperation {
 		super(parent, config);
 		this.config = config;
 	}
+	
+	@Override
+	public String getDescription() {
+		return PropertyContainer.expand(parent.getPropertyContainer(), config.getEclipsePath());
+	}
 
 	@Override
 	protected void execute() throws Exception {

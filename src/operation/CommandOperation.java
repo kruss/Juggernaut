@@ -18,6 +18,11 @@ public class CommandOperation extends AbstractOperation {
 	}
 
 	@Override
+	public String getDescription() {
+		return PropertyContainer.expand(parent.getPropertyContainer(), config.getCommand());
+	}
+	
+	@Override
 	protected void execute() throws Exception {
 		
 		String command = PropertyContainer.expand(parent.getPropertyContainer(), config.getCommand());

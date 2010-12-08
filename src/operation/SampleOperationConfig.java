@@ -1,5 +1,6 @@
 package operation;
 
+import util.StringTools;
 import launch.LaunchAgent;
 import data.AbstractOperation;
 import data.AbstractOperationConfig;
@@ -49,8 +50,9 @@ public class SampleOperationConfig extends AbstractOperationConfig {
 		return optionContainer.getOption(OPTIONS.EXCEPTION.toString()).getBooleanValue();
 	}
 	
-	public int getIdleTime(){
-		return optionContainer.getOption(OPTIONS.IDLE.toString()).getIntegerValue();
+	/** the idel-time in millis */
+	public long getIdleTime(){
+		return StringTools.sec2millis(optionContainer.getOption(OPTIONS.IDLE.toString()).getIntegerValue());
 	}
 	
 	@Override

@@ -21,6 +21,12 @@ public class SVNOperation extends AbstractOperation {
 		client = new SVNClient(parent.getLogger());
 	}
 	
+	@Override
+	public String getDescription() {
+		return PropertyContainer.expand(parent.getPropertyContainer(), config.getUrl());
+		//TODO add revision info
+	}
+	
 	private void setCurrentRevision(String revision){
 		
 		parent.getPropertyContainer().addProperty(config.getId(), Property.REVISION.toString(), revision);

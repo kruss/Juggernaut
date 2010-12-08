@@ -16,13 +16,22 @@ public class SampleOperation extends AbstractOperation {
 	}
 
 	@Override
+	public String getDescription() {
+		return 
+			"Idel: "+StringTools.millis2sec(config.getIdleTime())+" sec" +
+			(config.isThrowError() ? " / Throwing: error" : "") +
+			(config.isThrowException() ? " / Throwing: exception" : "") + 
+			(config.isThrowError() && config.isThrowException() ? " / Throwing: error & exception" : "");
+	}
+	
+	@Override
 	protected void execute() throws Exception {
 		
-		int idle = config.getIdleTime();
-		if(idle > 0){
+		long sec = StringTools.millis2sec(config.getIdleTime());
+		if(sec > 0){
 			logger.log("doing some work...");
-			for(int i=1; i<=idle; i++){
-				logger.debug("some work ("+i+"/"+idle+")");
+			for(long i=1; i<=sec; i++){
+				logger.debug("some work ("+i+"/"+sec+")");
 				SystemTools.sleep(StringTools.sec2millis(1));
 			}
 		}else{

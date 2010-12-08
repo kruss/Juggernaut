@@ -132,13 +132,8 @@ public class Configuration implements IOptionInitializer {
 	}
 	
 	/** the scheduler-interval in millis */
-	public int getSchedulerIntervall(){ 
-		int min = optionContainer.getOption(OPTIONS.SCHEDULER_INTERVAL.toString()).getIntegerValue(); 
-		if(min >= 0){
-			return (int)StringTools.min2millis(min);
-		}else{
-			return 0;
-		}
+	public long getSchedulerIntervall(){ 
+		return StringTools.min2millis(optionContainer.getOption(OPTIONS.SCHEDULER_INTERVAL.toString()).getIntegerValue());
 	}
 	
 	/** maximum number of parallel agents started by scheduled */
