@@ -18,7 +18,7 @@ public class SampleOperation extends AbstractOperation {
 	@Override
 	public String getDescription() {
 		return 
-			"Idel: "+StringTools.millis2sec(config.getIdleTime())+" sec" +
+			"Idle: "+StringTools.millis2sec(config.getIdleTime())+" sec" +
 			(config.isThrowError() ? " / Throwing: error" : "") +
 			(config.isThrowException() ? " / Throwing: exception" : "") + 
 			(config.isThrowError() && config.isThrowException() ? " / Throwing: error & exception" : "");
