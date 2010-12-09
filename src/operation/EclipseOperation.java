@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import util.CommandTask;
 import util.Logger;
 import util.StringTools;
+import util.SystemTools;
 import launch.LaunchAgent;
 import launch.PropertyContainer;
 import launch.StatusManager.Status;
@@ -35,7 +36,11 @@ public class EclipseOperation extends AbstractOperation {
 		String directory = null;
 		if(eclipse.isFile()){
 			command = eclipse.getName();
-			directory = eclipse.getParentFile().getAbsolutePath();
+			if(SystemTools.isWindowsOS()){
+				directory = eclipse.getParentFile().getAbsolutePath();
+			}else{
+				directory = parent.getFolder(); // TODO temp
+			}
 		}else{
 			throw new Exception("invalid path: "+eclipse.getAbsolutePath());
 		}
