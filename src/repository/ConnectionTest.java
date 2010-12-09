@@ -8,7 +8,7 @@ import util.UiTools;
 
 public class ConnectionTest extends Task {
 
-	public static final long TIMEOUT = 1 * 60 * 1000; // 1min
+	public static final long TIMEOUT = 15 * 1000; // 15 sec
 	
 	private IRepositoryClient client;
 	private String url;
@@ -24,6 +24,7 @@ public class ConnectionTest extends Task {
 	@Override
 	protected void runTask() {
 		
+		observer.log("Connection-Test: "+url);
 		Status status = Status.UNDEFINED;
 		String message = "";
 		try{
@@ -37,8 +38,10 @@ public class ConnectionTest extends Task {
 			}
 		}catch(Exception e){
 			status = Status.FAILURE;
-			observer.error(e);
-			message = e.getMessage();
+			message = e.getClass().getSimpleName();
+			if(!(e instanceof InterruptedException)){
+				observer.error(e);
+			}			
 		}finally{
 			if(status == Status.SUCCEED){
 				UiTools.infoDialog(
@@ -49,6 +52,7 @@ public class ConnectionTest extends Task {
 						"Connection-Test ("+status.toString()+")\n\n"+message
 				);
 			}
+			observer.log("Connection-Test: "+status.toString());
 		}
 	}
 
