@@ -67,11 +67,11 @@ public abstract class Task extends Thread {
 	private void runSingleTask(){
 		
 		start = new Date();
-		Application.getInstance().getTimeoutManager().register(this);
+		Application.getInstance().getTaskManager().register(this);
 		try{
 			runTask();
 		}finally{
-			Application.getInstance().getTimeoutManager().deregister(this);
+			Application.getInstance().getTaskManager().deregister(this);
 			start = null;
 		}
 	}

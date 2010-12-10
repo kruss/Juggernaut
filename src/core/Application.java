@@ -44,7 +44,7 @@ public class Application {
 	private History history;
 	private Cache cache;
 	private Registry registry;
-	private TimeoutManager timoutManager;
+	private TaskManager taskManager;
 	private LaunchManager launchManager;
 	
 	public Logger getLogger(){ return logger; }
@@ -53,7 +53,7 @@ public class Application {
 	public History getHistory(){ return history; }
 	public Cache getCache(){ return cache; }
 	public Registry getRegistry(){ return registry; }
-	public TimeoutManager getTimeoutManager(){ return timoutManager; }
+	public TaskManager getTaskManager(){ return taskManager; }
 	public LaunchManager getLaunchManager(){ return launchManager; }
 	
 	private Application(){}
@@ -137,8 +137,8 @@ public class Application {
 		registry = new Registry();
 		registry.init();
 		
-		timoutManager = new TimeoutManager();
-		timoutManager.init();
+		taskManager = new TaskManager();
+		taskManager.init();
 		
 		launchManager = new LaunchManager();
 		launchManager.init();
@@ -147,7 +147,7 @@ public class Application {
 	private void shutdownSystems() {
 		
 		launchManager.shutdown();
-		timoutManager.shutdown();
+		taskManager.shutdown();
 	}
 	
 	private void initUI() throws Exception {
