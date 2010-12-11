@@ -3,6 +3,7 @@ package data;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.swing.JComponent;
@@ -15,10 +16,10 @@ import javax.swing.JPopupMenu;
  */
 public class Option {
 
-	public enum Type { TEXT, TEXT_SMALL, TEXT_AREA, DATE, INTEGER, BOOLEAN }
+	public enum Type { TEXT, TEXT_SMALL, TEXT_AREA, TEXT_LIST, DATE, INTEGER, BOOLEAN }
 	
 	public enum Properties {
-		INTEGER_MIN, INTEGER_MAX
+		INTEGER_MIN, INTEGER_MAX, LIST_SIZE, LIST_ITEM
 	}
 
 	public transient JPanel parent;
@@ -71,6 +72,16 @@ public class Option {
 		
 		init(group, name, description, type);
 		setBooleanValue(value);
+	}
+	
+	public Option(String group, String name, String description, Type type, ArrayList<String> values, String value){
+		
+		init(group, name, description, type);
+		properties.put(Properties.LIST_SIZE.toString(), ""+values.size());
+		for(int i=0; i<values.size(); i++){
+			properties.put(Properties.LIST_ITEM.toString()+"_"+i, values.get(i));
+		}
+		setStringValue(value);
 	}
 
 	private void init(String group, String name, String description, Type type) {
@@ -126,6 +137,15 @@ public class Option {
 	public void setBooleanValue(boolean value){ this.value = ""+value; }
 	public boolean getBooleanValue(){ return new Boolean(value).booleanValue(); }
 	
+	public int getListSize() {
+		String property = properties.get(Properties.LIST_SIZE.toString());
+		return property != null ? new Integer(property).intValue() : 0;
+	}
+	public String getListItem(int index) {
+		String property = properties.get(Properties.LIST_ITEM.toString()+"_"+index);
+		return property;
+	}
+
 	public String toString(){
 		return name+" ("+type+") = "+value;
 	}

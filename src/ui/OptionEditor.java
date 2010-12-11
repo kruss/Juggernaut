@@ -13,6 +13,7 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -107,6 +108,8 @@ public class OptionEditor extends JPanel {
 				return createSmallTextFieldPanel(option);
 			case TEXT_AREA:
 				return createTextAreaPanel(option); 
+			case TEXT_LIST:
+				return createTextListPanel(option);
 			case DATE:
 				return createTextFieldPanel(option); 
 			case INTEGER:
@@ -197,6 +200,32 @@ public class OptionEditor extends JPanel {
 		return panel;
 	}
 
+	private JPanel createTextListPanel(final Option option) {
+
+		final JComboBox component = new JComboBox();
+		option.component = component;
+		component.setToolTipText(option.getDescription());
+		for(int i=0; i<option.getListSize(); i++){
+			component.addItem(option.getListItem(i));
+		}
+		component.setSelectedItem(option.getStringValue());
+		component.addItemListener(new ItemListener(){
+			@Override
+			public void itemStateChanged(ItemEvent arg0) {
+				if(arg0.getStateChange() == ItemEvent.SELECTED){
+					int index = component.getSelectedIndex();
+					String value = (String)component.getItemAt(index);
+					container.getOption(option.getName()).setStringValue(value);
+					notifyListeners();
+				}
+			}
+		});
+		JPanel panel = new JPanel(new BorderLayout());
+		panel.add(new JLabel(option.getConvertedName()+":"), BorderLayout.NORTH);
+		panel.add(component, BorderLayout.WEST);
+		return panel;
+	}
+	
 	private JPanel createIntegerSpinnerPanel(final Option option) {
 		
 		SpinnerModel model = new SpinnerNumberModel(
