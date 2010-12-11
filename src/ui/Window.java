@@ -11,6 +11,7 @@ import javax.swing.JTabbedPane;
 
 import util.IChangedListener;
 import util.StringTools;
+import util.UiTools;
 
 import core.Application;
 import core.Configuration;
@@ -61,7 +62,7 @@ public class Window extends JFrame implements IChangedListener {
 		setLocation(100, 100);
 		setTitle(Constants.APP_FULL_NAME);
 		
-		application.getConfiguration().addListener(this);
+		application.getConfig().addListener(this);
 	}
 	
 	public void init() {
@@ -83,13 +84,19 @@ public class Window extends JFrame implements IChangedListener {
 	@Override
 	public void changed(Object object) {
 		
-		if(object == Application.getInstance().getConfiguration()){
-			Configuration.State state = Application.getInstance().getConfiguration().getState();
+		if(object == Application.getInstance().getConfig()){
+			Configuration.State state = Application.getInstance().getConfig().getState();
 			if(state == Configuration.State.CLEAN){
 				setTitle(Constants.APP_FULL_NAME);
 			}else if(state == Configuration.State.DIRTY){
 				setTitle(Constants.APP_FULL_NAME+" *");
 			}
 		}
+	}
+	
+	public void popupError(Exception e){
+		
+		application.getLogger().error(e);
+		UiTools.errorDialog(e.getClass().getSimpleName()+"\n\n"+e.getMessage());
 	}
 }

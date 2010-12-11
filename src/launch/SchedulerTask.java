@@ -28,7 +28,7 @@ public class SchedulerTask extends Task {
 	@Override
 	protected void runTask() {
 		
-		setCycle(application.getConfiguration().getSchedulerIntervall());
+		setCycle(application.getConfig().getSchedulerIntervall());
 		checkSchedules();
 	}
 
@@ -84,7 +84,7 @@ public class SchedulerTask extends Task {
 	private ArrayList<LaunchConfig> getRandomizedLaunchConfigs(){
 		
 		ArrayList<LaunchConfig> configs = new ArrayList<LaunchConfig>();
-		for(LaunchConfig config : application.getConfiguration().getLaunchConfigs()){
+		for(LaunchConfig config : application.getConfig().getLaunchConfigs()){
 			if(config.isReady()){
 				configs.add(config);
 			}

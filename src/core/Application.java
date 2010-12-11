@@ -3,7 +3,6 @@ package core;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -12,7 +11,6 @@ import javax.swing.UIManager;
 import launch.LaunchManager;
 import ui.Window;
 import util.Logger;
-import util.SystemTools;
 import util.UiTools;
 import util.Logger.Mode;
 
@@ -44,15 +42,17 @@ public class Application {
 	private History history;
 	private Cache cache;
 	private Registry registry;
+	private PersistenceManager persistence;
 	private TaskManager taskManager;
 	private LaunchManager launchManager;
 	
 	public Logger getLogger(){ return logger; }
 	public Window getWindow(){ return window; }
-	public Configuration getConfiguration(){ return config; }
+	public Configuration getConfig(){ return config; }
 	public History getHistory(){ return history; }
 	public Cache getCache(){ return cache; }
 	public Registry getRegistry(){ return registry; }
+	public PersistenceManager getPersistence(){ return persistence; }
 	public TaskManager getTaskManager(){ return taskManager; }
 	public LaunchManager getLaunchManager(){ return launchManager; }
 	
@@ -77,7 +77,7 @@ public class Application {
 				shutdownSystems();
 				shutdownPersistence();
 			}catch(Exception e){
-				error(e);
+				window.popupError(e);
 				System.exit(Constants.PROCESS_NOK);
 			}
 			System.exit(Constants.PROCESS_OK);
@@ -86,27 +86,24 @@ public class Application {
 	
 	private void initPersistence() throws Exception {
 		
-		ArrayList<File> folders = new ArrayList<File>();
-		folders.add(new File(getDataFolder()));
-		folders.add(new File(getBuildFolder()));
-		folders.add(new File(getHistoryFolder()));
-		folders.add(new File(getTempFolder()));
-		PersistenceManager.initialize(folders);
+		persistence = new PersistenceManager();
+		persistence.init();
 		
+		File logFile = new File(persistence.getDataFolderPath()+File.separator+Logger.OUTPUT_FILE);
 		logger = new Logger(Mode.FILE_AND_CONSOLE);
-		logger.setLogiFile(new File(getDataFolder()+File.separator+Logger.OUTPUT_FILE));
+		logger.setLogiFile(logFile);
 		logger.info(Constants.APP_FULL_NAME);
 		
-		File configurationFile = new File(getDataFolder()+File.separator+Configuration.OUTPUT_FILE);
-		if(configurationFile.isFile()){
-			config = Configuration.load(configurationFile.getAbsolutePath());
+		File configFile = new File(persistence.getDataFolderPath()+File.separator+Configuration.OUTPUT_FILE);
+		if(configFile.isFile()){
+			config = Configuration.load(configFile.getAbsolutePath());
 		}else{
-			config = new Configuration(configurationFile.getAbsolutePath());
+			config = new Configuration(configFile.getAbsolutePath());
 			config.save();
 		}		
 		Logger.VERBOSE = config.isVerbose();
 		
-		File historyFile = new File(getDataFolder()+File.separator+History.OUTPUT_FILE);
+		File historyFile = new File(persistence.getDataFolderPath()+File.separator+History.OUTPUT_FILE);
 		if(historyFile.isFile()){
 			history = History.load(historyFile.getAbsolutePath());
 		}else{
@@ -114,7 +111,7 @@ public class Application {
 			history.save();
 		}
 		
-		File cacheFile = new File(getDataFolder()+File.separator+Cache.OUTPUT_FILE);
+		File cacheFile = new File(persistence.getDataFolderPath()+File.separator+Cache.OUTPUT_FILE);
 		if(cacheFile.isFile()){
 			cache = Cache.load(cacheFile.getAbsolutePath());
 		}else{
@@ -126,9 +123,7 @@ public class Application {
 	private void shutdownPersistence() throws Exception {
 		
 		config.chekForSave();
-		PersistenceManager.cleanup(config, new File(getBuildFolder()), logger);
-		PersistenceManager.delete(new File(getTempFolder()), logger);
-		
+		persistence.shutdown();		
 		// TODO clean cache
 	}
 	
@@ -166,28 +161,6 @@ public class Application {
 	private void shutdownUI(){
 		
 		window.dispose();
-	}
-	
-	public void error(Exception e){
-		
-		logger.error(e);
-		UiTools.errorDialog(e.getClass().getSimpleName()+"\n\n"+e.getMessage());
-	}
-	
-	public String getDataFolder(){
-		return SystemTools.getWorkingDir()+File.separator+Constants.DATA_FOLDER;
-	}
-	
-	public String getBuildFolder(){
-		return SystemTools.getWorkingDir()+File.separator+Constants.BUILD_FOLDER;
-	}
-	
-	public String getHistoryFolder(){
-		return SystemTools.getWorkingDir()+File.separator+Constants.HISTORY_FOLDER;
-	}
-	
-	public String getTempFolder(){
-		return SystemTools.getWorkingDir()+File.separator+Constants.TEMP_FOLDER;
 	}
 
 	/** drop any unsaved changes */

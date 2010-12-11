@@ -4,46 +4,101 @@ import java.io.File;
 import java.util.ArrayList;
 
 import util.FileTools;
-import util.Logger;
+import util.SystemTools;
 
 import data.LaunchConfig;
 
-// TODO temp draft
+/** 
+ * The persistence-manager controls file-system resources
+ */
 public class PersistenceManager {
 	
-	public static void initialize(ArrayList<File> folders) {
+	private Application application;
+	
+	public PersistenceManager(){
+		application = Application.getInstance();
+	}
+	
+	public String getDataFolderPath(){
+		return SystemTools.getWorkingDir()+File.separator+Constants.DATA_FOLDER;
+	}
+	public File getDataFolder(){
+		return new File(getDataFolderPath());
+	}
+	
+	public String getBuildFolderPath(){
+		return SystemTools.getWorkingDir()+File.separator+Constants.BUILD_FOLDER;
+	}
+	public File getBuildFolder(){
+		return new File(getBuildFolderPath());
+	}
+	
+	public String getHistoryFolderPath(){
+		return SystemTools.getWorkingDir()+File.separator+Constants.HISTORY_FOLDER;
+	}
+	public File getHistoryFolder(){
+		return new File(getHistoryFolderPath());
+	}
+	
+	public String getTempFolderPath(){
+		return SystemTools.getWorkingDir()+File.separator+Constants.TEMP_FOLDER;
+	}
+	public File getTempFolder(){
+		return new File(getTempFolderPath());
+	}
+	
+	public void init() throws Exception {
+		initFolders();
+	}
+	
+	public void shutdown() throws Exception {
+		cleanBuildFolder();
+		deleteTempFolder();
+	}
+
+	private void initFolders() throws Exception {
 		
+		ArrayList<File> folders = new ArrayList<File>();
+		folders.add(getDataFolder());
+		folders.add(getBuildFolder());
+		folders.add(getHistoryFolder());
+		folders.add(getTempFolder());
 		for(File folder : folders){			
 			if(!folder.isDirectory()){
-				folder.mkdirs();
+				if(!folder.mkdirs()){
+					throw new Exception("unable to create: "+folder.getAbsolutePath());
+				}
 			}
 		}
 	}
 
-	/** cleanup folder for legacy items not containing a launch id within name */
-	public static void cleanup(Configuration configuration, File folder, Logger logger) throws Exception {
+	private void cleanBuildFolder() throws Exception {
 		
-		for(File file : folder.listFiles()){
-			if(isLegacy(configuration, file)){
-				delete(file, logger);
+		for(File file : getBuildFolder().listFiles()){
+			if(isLegacyBuildFile(file)){
+				delete(file);
 			}
 		}
 	}
 
-	private static boolean isLegacy(Configuration configuration, File file) {
+	private boolean isLegacyBuildFile(File folder) {
 		
-		for(LaunchConfig config : configuration.getLaunchConfigs()){
-			if(file.getName().contains(config.getId())){
+		for(LaunchConfig config : application.getConfig().getLaunchConfigs()){
+			if(folder.getName().contains(config.getId())){
 				return false;
 			}
 		}
 		return true;
 	}
 	
-	public static void delete(File file, Logger logger) throws Exception {
+	private void deleteTempFolder() throws Exception {
+		delete(getTempFolder());
+	}
+	
+	public void delete(File file) throws Exception {
 		
 		// TODO retry with unlocker for windows
-		logger.debug("delete: "+file.getAbsolutePath());
+		application.getLogger().debug("delete: "+file.getAbsolutePath());
 		if(file.isFile()){
 			FileTools.deleteFile(file.getAbsolutePath());
 		}else if(file.isDirectory()){

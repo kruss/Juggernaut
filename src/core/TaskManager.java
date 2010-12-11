@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import util.Task;
 
 /**
- * The TaskManager provides timeout control for registered tasks.
+ * The task-manager provides timeout control for tasks.
  */
 public class TaskManager extends Task {
 

@@ -100,12 +100,14 @@ public class History {
 	}
 	
 	public String getIndexPath() {
-		return Application.getInstance().getHistoryFolder()+File.separator+HistoryPage.OUTPUT_FILE;
+		return 
+			Application.getInstance().getPersistence().getHistoryFolderPath()+
+			File.separator+HistoryPage.OUTPUT_FILE;
 	}
 
 	private void cleanup() {
 		
-		int max = Application.getInstance().getConfiguration().getMaximumHistory();
+		int max = Application.getInstance().getConfig().getMaximumHistory();
 		if(max > 0){
 			while(max < entries.size()){
 				delete(entries.get(entries.size()-1));

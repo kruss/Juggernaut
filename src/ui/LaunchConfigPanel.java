@@ -45,7 +45,7 @@ public class LaunchConfigPanel extends JPanel implements IChangedListener {
 		
 		if(object == optionEditor){
 			parentPanel.getCurrentConfig().setDirty(true);
-			application.getConfiguration().notifyListeners();
+			application.getConfig().notifyListeners();
 		}
 	}
 

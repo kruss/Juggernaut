@@ -43,7 +43,7 @@ public class LaunchManager implements ILifecycleListener {
 	
 	public void init() {
 		
-		Configuration configuration = application.getConfiguration();
+		Configuration configuration = application.getConfig();
 		if(configuration.isScheduler()){
 			startScheduler(configuration.getSchedulerIntervall());
 		}
@@ -104,7 +104,7 @@ public class LaunchManager implements ILifecycleListener {
 	}
 	
 	public synchronized boolean isReady() {
-		return agents.size() < application.getConfiguration().getMaximumAgents();
+		return agents.size() < application.getConfig().getMaximumAgents();
 	}
 	
 	private synchronized boolean isRunning(String id) {

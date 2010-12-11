@@ -36,18 +36,20 @@ public class ToolsMenu extends JMenu implements IChangedListener {
 		});
 		configuration.add(printConfiguration);
 		
-		application.getConfiguration().addListener(this);
+		application.getConfig().addListener(this);
 	}
 	
 	private void printConfiguration(){
 		
-		String configuration = application.getConfiguration().toHtml();
-		String path = application.getTempFolder()+File.separator+"print.htm";
+		String configuration = application.getConfig().toHtml();
+		String path = 
+			application.getPersistence().getTempFolderPath()+
+			File.separator+"print.htm";
 		try{
 			FileTools.writeFile(path, configuration, false);
 			SystemTools.openBrowser(path);
 		}catch(Exception e){
-			application.error(e);
+			application.getWindow().popupError(e);
 		}
 	}
 
