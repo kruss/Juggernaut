@@ -1,11 +1,11 @@
 TASKS
 -----
 
-# make application->cache persistent
-# create treadpool for timeouts
+# remove key-imput from relevant combos
 
 BUGS
 ----
+
 
 NOTES
 -----
