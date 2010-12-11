@@ -26,7 +26,7 @@ public class OperationHistoryPage extends AbstractHtmlPage {
 	private String getStatusHtml() {
 		
 		HtmlList list = new HtmlList("Status");
-		list.add("Status", StatusManager.getHtml(history.status));
+		list.add("Status", StatusManager.getStatusHtml(history.status));
 		if(!history.description.isEmpty()){
 			list.add("Description", history.description);
 		}

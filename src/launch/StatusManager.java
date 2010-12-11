@@ -30,29 +30,10 @@ public class StatusManager {
 		end = null;
 	}
 	
-	private int getLevel(Status status){
-		
-		if(status == Status.UNDEFINED){
-			return 0;
-		}else if(status == Status.PROCESSING){
-			return 1;
-		}else if(status == Status.SUCCEED){
-			return 2;
-		}else if(status == Status.ERROR){
-			return 3;
-		}else if(status == Status.FAILURE){
-			return 4;
-		}else if(status == Status.CANCEL){
-			return 4;
-		}else{
-			return -1;
-		}
-	}
-	
 	public Status getStatus(){ return status; }
 	public void setStatus(Status status){
 		
-		if(getLevel(this.status) < getLevel(status)){
+		if(getStatusValue(this.status) < getStatusValue(status)){
 			this.status = status;
 			lifecycleObject.notifyListeners(Lifecycle.PROCESSING);
 		}
@@ -104,7 +85,26 @@ public class StatusManager {
 		return map;
 	}
 
-	public static String getHtml(Status status) {
+	public static int getStatusValue(Status status){
+		
+		if(status == Status.UNDEFINED){
+			return 0;
+		}else if(status == Status.PROCESSING){
+			return 1;
+		}else if(status == Status.SUCCEED){
+			return 2;
+		}else if(status == Status.ERROR){
+			return 3;
+		}else if(status == Status.FAILURE){
+			return 4;
+		}else if(status == Status.CANCEL){
+			return 4;
+		}else{
+			return -1;
+		}
+	}
+	
+	public static String getStatusHtml(Status status) {
 
 		String color = "black";
 		if(status == Status.UNDEFINED){

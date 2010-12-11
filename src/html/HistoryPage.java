@@ -50,7 +50,7 @@ public class HistoryPage extends AbstractHtmlPage {
 						(entry.start != null && entry.end != null) ? 
 						StringTools.getTimeDiff(entry.start, entry.end)+ " '" : ""
 				);
-				table.addContentCell(StatusManager.getHtml(entry.status));
+				table.addContentCell(StatusManager.getStatusHtml(entry.status));
 			}
 			return table.getHtml();
 		}else{

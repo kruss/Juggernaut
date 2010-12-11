@@ -32,7 +32,7 @@ public class LaunchHistoryPage extends AbstractHtmlPage {
 	private String getStatusHtml() {
 		
 		HtmlList list = new HtmlList("Status");
-		list.add("Status", StatusManager.getHtml(history.status));
+		list.add("Status", StatusManager.getStatusHtml(history.status));
 		if(!history.description.isEmpty()){
 			list.add("Description", history.description);
 		}
@@ -67,7 +67,7 @@ public class LaunchHistoryPage extends AbstractHtmlPage {
 						(operation.start != null && operation.end != null) ? 
 								StringTools.getTimeDiff(operation.start, operation.end)+ " '" : ""
 				);
-				table.addContentCell(StatusManager.getHtml(operation.status));
+				table.addContentCell(StatusManager.getStatusHtml(operation.status));
 			}
 			return table.getHtml();
 		}else{
