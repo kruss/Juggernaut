@@ -36,7 +36,7 @@ import data.OptionContainer;
 
 
 import util.IChangedListener;
-import util.KeyInput;
+import util.StringTools;
 
 public class OptionEditor extends JPanel {
 
@@ -129,17 +129,17 @@ public class OptionEditor extends JPanel {
 		component.setText(option.getStringValue());
 		component.addKeyListener(new KeyListener(){
 			@Override
-			public void keyPressed(KeyEvent arg0) {}
+			public void keyPressed(KeyEvent e) {}
 			@Override
-			public void keyReleased(KeyEvent arg0) {
-				if(KeyInput.isModifyingKeyEvent(arg0)){
+			public void keyReleased(KeyEvent e) {
+				if(StringTools.isModifyingKey(e)){
 					String value = component.getText();
 					container.getOption(option.getName()).setStringValue(value);
 					notifyListeners();
 				}
 			}
 			@Override
-			public void keyTyped(KeyEvent arg0) {}
+			public void keyTyped(KeyEvent e) {}
 		});
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(new JLabel(option.getConvertedName()+":"), BorderLayout.NORTH);
@@ -156,17 +156,17 @@ public class OptionEditor extends JPanel {
 		component.setText(option.getStringValue());
 		component.addKeyListener(new KeyListener(){
 			@Override
-			public void keyPressed(KeyEvent arg0) {}
+			public void keyPressed(KeyEvent e) {}
 			@Override
-			public void keyReleased(KeyEvent arg0) {
-				if(KeyInput.isModifyingKeyEvent(arg0)){
+			public void keyReleased(KeyEvent e) {
+				if(StringTools.isModifyingKey(e)){
 					String value = component.getText();
 					container.getOption(option.getName()).setStringValue(value);
 					notifyListeners();
 				}
 			}
 			@Override
-			public void keyTyped(KeyEvent arg0) {}
+			public void keyTyped(KeyEvent e) {}
 		});
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(new JLabel(option.getConvertedName()+":"), BorderLayout.NORTH);
@@ -182,17 +182,17 @@ public class OptionEditor extends JPanel {
 		component.setText(option.getStringValue());
 		component.addKeyListener(new KeyListener(){
 			@Override
-			public void keyPressed(KeyEvent arg0) {}
+			public void keyPressed(KeyEvent e) {}
 			@Override
-			public void keyReleased(KeyEvent arg0) {
-				if(KeyInput.isModifyingKeyEvent(arg0)){
+			public void keyReleased(KeyEvent e) {
+				if(StringTools.isModifyingKey(e)){
 					String value = component.getText();
 					container.getOption(option.getName()).setStringValue(value);
 					notifyListeners();
 				}
 			}
 			@Override
-			public void keyTyped(KeyEvent arg0) {}
+			public void keyTyped(KeyEvent e) {}
 		});
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(new JLabel(option.getConvertedName()+":"), BorderLayout.NORTH);
@@ -211,8 +211,8 @@ public class OptionEditor extends JPanel {
 		component.setSelectedItem(option.getStringValue());
 		component.addItemListener(new ItemListener(){
 			@Override
-			public void itemStateChanged(ItemEvent arg0) {
-				if(arg0.getStateChange() == ItemEvent.SELECTED){
+			public void itemStateChanged(ItemEvent e) {
+				if(e.getStateChange() == ItemEvent.SELECTED){
 					int index = component.getSelectedIndex();
 					String value = (String)component.getItemAt(index);
 					container.getOption(option.getName()).setStringValue(value);
@@ -261,7 +261,7 @@ public class OptionEditor extends JPanel {
 		component.setSelected(option.getBooleanValue());
 		component.addItemListener(new ItemListener(){
 			@Override
-			public void itemStateChanged(ItemEvent arg0) {
+			public void itemStateChanged(ItemEvent e) {
 				boolean value = component.isSelected();
 				container.getOption(option.getName()).setBooleanValue(value);
 				notifyListeners();

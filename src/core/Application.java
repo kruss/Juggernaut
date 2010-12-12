@@ -38,7 +38,7 @@ public class Application {
 	}
 	
 	private ArrayList<Component> components;
-	private Persistence persystence;
+	private Persistence persistence;
 	private Runtime runtime;
 	private UI ui;
 	
@@ -64,12 +64,12 @@ public class Application {
 	
 	private Application(){
 		
-		persystence = new Persistence();
+		persistence = new Persistence();
 		runtime = new Runtime();
 		ui = new UI();
 
 		components = new ArrayList<Component>();
-		components.add(persystence);
+		components.add(persistence);
 		components.add(runtime);
 		components.add(ui);
 	}
@@ -105,7 +105,7 @@ public class Application {
 		
 		if(config.isDirty()){
 			ui.shutdown();
-			persystence.init();
+			persistence.init();
 			ui.init();
 		}
 	}

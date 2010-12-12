@@ -1,5 +1,6 @@
 package util;
 
+import java.awt.event.KeyEvent;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -125,6 +126,14 @@ public class StringTools {
 		if(len < stack.length){ trace.append("...\n"); }
 		
 		return trace.toString();
+	}
+	
+	public static boolean isModifyingKey(KeyEvent e) {
+
+		return 
+		( KeyEvent.CHAR_UNDEFINED != e.getKeyChar() && !e.isControlDown() && !e.isMetaDown() ) || 
+		( e.isControlDown() && KeyEvent.VK_V == e.getKeyCode() ) ||
+		( e.isControlDown() && KeyEvent.VK_X == e.getKeyCode() ); 
 	}
 	
 	public static String join(ArrayList<String> list, String delim){
