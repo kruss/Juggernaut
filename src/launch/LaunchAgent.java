@@ -76,7 +76,7 @@ public class LaunchAgent extends AbstractLifecycleObject {
 	@Override
 	public String getFolder() {
 		return 
-			Application.getInstance().getPersistence().getBuildFolderPath()+
+			Application.getInstance().getFileManager().getBuildFolderPath()+
 			File.separator+config.getId();
 	}
 

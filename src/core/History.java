@@ -101,7 +101,7 @@ public class History {
 	
 	public String getIndexPath() {
 		return 
-			Application.getInstance().getPersistence().getHistoryFolderPath()+
+			Application.getInstance().getFileManager().getHistoryFolderPath()+
 			File.separator+HistoryPage.OUTPUT_FILE;
 	}
 

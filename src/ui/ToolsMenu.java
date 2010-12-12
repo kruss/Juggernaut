@@ -43,13 +43,13 @@ public class ToolsMenu extends JMenu implements IChangedListener {
 		
 		String configuration = application.getConfig().toHtml();
 		String path = 
-			application.getPersistence().getTempFolderPath()+
+			application.getFileManager().getTempFolderPath()+
 			File.separator+"print.htm";
 		try{
 			FileTools.writeFile(path, configuration, false);
 			SystemTools.openBrowser(path);
 		}catch(Exception e){
-			application.getWindow().popupError(e);
+			application.popupError(e);
 		}
 	}
 

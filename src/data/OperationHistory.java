@@ -29,7 +29,7 @@ public class OperationHistory extends AbstractHistory {
 	public void init() throws Exception {	
 		
 		folder = 
-			Application.getInstance().getPersistence().getHistoryFolderPath()+
+			Application.getInstance().getFileManager().getHistoryFolderPath()+
 			File.separator+operation.getParent().getStatusManager().getStart().getTime()+
 			File.separator+id;
 

@@ -68,4 +68,8 @@ public class Cache {
 			dirty = false;
 		}
 	}
+
+	public void clean() {
+		// TODO clean cache
+	}
 }

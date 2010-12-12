@@ -38,7 +38,7 @@ public class LaunchHistory extends AbstractHistory {
 		
 		start = launch.getStatusManager().getStart();
 		folder = 
-			Application.getInstance().getPersistence().getHistoryFolderPath()+
+			Application.getInstance().getFileManager().getHistoryFolderPath()+
 			File.separator+start.getTime();
 		logfile = folder+File.separator+Constants.APP_NAME+".log";
 		

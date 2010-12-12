@@ -56,7 +56,7 @@ public class ProjectMenu extends JMenu implements IChangedListener {
 		try{
 			Application.getInstance().revert();
 		}catch(Exception e){
-			Application.getInstance().getWindow().popupError(e);
+			Application.getInstance().popupError(e);
 		}
 	}
 	
@@ -65,7 +65,7 @@ public class ProjectMenu extends JMenu implements IChangedListener {
 		try{
 			Application.getInstance().getConfig().save();
 		}catch(Exception e){
-			Application.getInstance().getWindow().popupError(e);
+			Application.getInstance().popupError(e);
 		}
 	}
 	

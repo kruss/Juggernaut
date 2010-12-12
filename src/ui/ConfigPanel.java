@@ -260,7 +260,7 @@ public class ConfigPanel extends JPanel implements IChangedListener {
 						UiTools.infoDialog(status.message);
 					}
 				}catch(Exception e){
-					application.getWindow().popupError(e);
+					application.popupError(e);
 				}
 			}
 		}

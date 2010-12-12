@@ -11,7 +11,6 @@ import javax.swing.JTabbedPane;
 
 import util.IChangedListener;
 import util.StringTools;
-import util.UiTools;
 
 import core.Application;
 import core.Configuration;
@@ -92,11 +91,5 @@ public class Window extends JFrame implements IChangedListener {
 				setTitle(Constants.APP_FULL_NAME+" *");
 			}
 		}
-	}
-	
-	public void popupError(Exception e){
-		
-		application.getLogger().error(e);
-		UiTools.errorDialog(e.getClass().getSimpleName()+"\n\n"+e.getMessage());
 	}
 }
