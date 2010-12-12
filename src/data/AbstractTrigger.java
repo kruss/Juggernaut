@@ -3,7 +3,7 @@ package data;
 import core.Application;
 import launch.LaunchManager;
 import launch.LaunchManager.TriggerStatus;
-import util.Logger;
+import logger.Logger;
 
 public abstract class AbstractTrigger {
 	

@@ -5,9 +5,9 @@ import java.util.Collections;
 import java.util.Date;
 
 import launch.StatusManager.Status;
+import logger.ILogProvider;
 
 import util.IChangedListener;
-import util.ILoggingProvider;
 import util.StringTools;
 import core.Application;
 import core.Configuration;
@@ -206,7 +206,7 @@ public class LaunchManager implements ILifecycleListener {
 		return infos;
 	}
 	
-	public ILoggingProvider getLoggingProvider(String id){
+	public ILogProvider getLoggingProvider(String id){
 		
 		LaunchAgent agent = getAgent(id);
 		if(agent != null){

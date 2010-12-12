@@ -4,16 +4,18 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import logger.Logger;
+import logger.Logger.Module;
+
+
 public class CommandStreamer extends Task {
 	
-	private String name;
 	private InputStream stream;
 	private StringBuilder buffer;
 	
 	public CommandStreamer(String name, InputStream stream, Logger logger){
 		
 		super("Streamer("+name+")", logger);
-		this.name = name;
 		this.stream = stream;
 		buffer = new StringBuilder();
 	}
@@ -30,13 +32,13 @@ public class CommandStreamer extends Task {
 	        String line=null;
 	        while( (line = bufferedReader.readLine()) != null){
 	        	buffer.append(line+"\n"); // unix-style for regex-processing
-	        	observer.log(name+": "+line);
+	        	observer.log(Module.CMD, line);
 	        }
 	        
 			bufferedReader.close();
 			streamReader.close();
 		}catch(Exception e){ 
-			observer.error(e); 
+			observer.error(Module.CMD, e); 
 		}
 	}
 }

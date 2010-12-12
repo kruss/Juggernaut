@@ -16,17 +16,18 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.text.BadLocationException;
 
-import util.ILoggingListener;
-import util.ILoggingProvider;
+import logger.ILogListener;
+import logger.ILogProvider;
 
-public class LoggingConsole extends JPanel implements ILoggingListener {
+
+public class LoggingConsole extends JPanel implements ILogListener {
 
 	public static final int UNLIMITED = 0;
 	public static final int MAX_LINES = 500;
 	
 	private static final long serialVersionUID = 1L;
 
-	private ILoggingProvider provider;
+	private ILogProvider provider;
 	private JPopupMenu popup;
 	private JTextArea console;
 	
@@ -76,9 +77,9 @@ public class LoggingConsole extends JPanel implements ILoggingListener {
 	}
 	
 	@Override
-	public void setProvider(ILoggingProvider provider){ this.provider = provider; }
+	public void setProvider(ILogProvider provider){ this.provider = provider; }
 	@Override
-	public ILoggingProvider getProvider(){ return provider; }
+	public ILogProvider getProvider(){ return provider; }
 	
 	@Override
 	public void deregister(){

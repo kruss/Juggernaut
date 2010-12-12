@@ -3,10 +3,13 @@ package core;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Date;
 
 import javax.swing.JMenuItem;
 import javax.swing.JTextField;
+
+import logger.Logger;
+import logger.Logger.Level;
+import logger.Logger.Module;
 
 import util.FileTools;
 import util.IChangedListener;
@@ -35,7 +38,7 @@ public class Configuration implements IOptionInitializer {
 	
 	public enum OPTIONS {
 		SCHEDULER, SCHEDULER_INTERVAL, MAXIMUM_AGENTS, MAXIMUM_HISTORY,
-		NOTIFY, ADMINISTRATORS, SMTP_SERVER, SMTP_ADDRESS, VERBOSE
+		NOTIFY, ADMINISTRATORS, SMTP_SERVER, SMTP_ADDRESS, LOGGING
 	}
 	
 	public enum State { CLEAN, DIRTY }
@@ -95,11 +98,13 @@ public class Configuration implements IOptionInitializer {
 				OPTIONS.SMTP_ADDRESS.toString(), "The SMTP-Address for notifications", 
 				Type.TEXT_SMALL, "SMTP@"+Constants.APP_NAME
 		));
-		optionContainer.getOptions().add(new Option(
-				GROUPS.LOGGING.toString(),
-				OPTIONS.VERBOSE.toString(), "Verbose logging shows more details on console",
-				Type.BOOLEAN, false
-		));
+		for(Module module : Module.values()){
+			optionContainer.getOptions().add(new Option(
+					GROUPS.LOGGING.toString(),
+					module.toString()+"_"+OPTIONS.LOGGING, "Log-Level for "+module.toString()+" module",
+					Type.TEXT_LIST, Logger.getLevelNames(), Level.NORMAL.toString()
+			));
+		}
 		
 		launchConfigs = new ArrayList<LaunchConfig>();
 		listeners = new ArrayList<IChangedListener>();
@@ -146,9 +151,9 @@ public class Configuration implements IOptionInitializer {
 		return optionContainer.getOption(OPTIONS.MAXIMUM_HISTORY.toString()).getIntegerValue();
 	}
 	
-	/** answers if logging is verbose */
-	public boolean isVerbose(){
-		return optionContainer.getOption(OPTIONS.VERBOSE.toString()).getBooleanValue();
+	/** get log-level for module */
+	public Level getLogLevel(Module module){
+		return Level.valueOf(optionContainer.getOption(module.toString()+"_"+OPTIONS.LOGGING).getStringValue());
 	}
 	
 	public void addListener(IChangedListener listener){ listeners.add(listener); }
@@ -177,7 +182,7 @@ public class Configuration implements IOptionInitializer {
 	
 	public static Configuration load(String path) throws Exception {
 	
-		Application.getInstance().getLogger().debug("load: "+path);
+		Application.getInstance().getLogger().debug(Module.APP, "load: "+path);
 		XStream xstream = new XStream(new DomDriver());
 		String xml = FileTools.readFile(path);
 		Configuration configuration = (Configuration)xstream.fromXML(xml);
@@ -193,7 +198,7 @@ public class Configuration implements IOptionInitializer {
 	public void save() throws Exception {
 		
 		if(isDirty()){
-			Application.getInstance().getLogger().debug("save: "+path);
+			Application.getInstance().getLogger().debug(Module.APP, "save: "+path);
 			XStream xstream = new XStream(new DomDriver());
 			String xml = xstream.toXML(this);
 			FileTools.writeFile(path, xml, false);
@@ -215,32 +220,33 @@ public class Configuration implements IOptionInitializer {
 	public String toHtml() {
 		
 		StringBuilder html = new StringBuilder();
-		html.append("<html>");
-		html.append("<hr><h1>"+Constants.APP_NAME+" -  Configuration</h1>");
-		html.append("<hr><h2>Preferences</h2>");
+		html.append("<h2>Preferences</h2>");
 		html.append(optionContainer.toHtml());
 		for(LaunchConfig launchConfig : launchConfigs){
-			html.append("<hr><h2>Launch ["+launchConfig.getName()+"]</h2>");
+			html.append("<hr>");
+			html.append("<h2>Launch [ "+launchConfig.getName()+" ]</h2>");
 			html.append(launchConfig.getOptionContainer().toHtml());
-			html.append("<h3>Operation(s):</h3>");
-			html.append("<ol>");
-			for(AbstractOperationConfig operationConfig : launchConfig.getOperationConfigs()){
-				html.append("<li><b>["+operationConfig.getName()+"] Operation</b>");
-				html.append(operationConfig.getOptionContainer().toHtml());
-				html.append("</li>");
+			if(launchConfig.getOperationConfigs().size() > 0){
+				html.append("<h3>Operation(s):</h3>");
+				html.append("<ol>");
+				for(AbstractOperationConfig operationConfig : launchConfig.getOperationConfigs()){
+					html.append("<li><b>[ "+operationConfig.getName()+" ]</b>");
+					html.append(operationConfig.getOptionContainer().toHtml());
+					html.append("</li>");
+				}
+				html.append("</ol>");
 			}
-			html.append("</ol>");
-			html.append("<h3>Trigger(s):</h3>");
-			html.append("<ol>");
-			for(AbstractTriggerConfig triggerConfig : launchConfig.getTriggerConfigs()){
-				html.append("<li><b>["+triggerConfig.getName()+"] Trigger</b>");
-				html.append(triggerConfig.getOptionContainer().toHtml());
-				html.append("</li>");
+			if(launchConfig.getTriggerConfigs().size() > 0){
+				html.append("<h3>Trigger(s):</h3>");
+				html.append("<ol>");
+				for(AbstractTriggerConfig triggerConfig : launchConfig.getTriggerConfigs()){
+					html.append("<li><b>[ "+triggerConfig.getName()+" ]</b>");
+					html.append(triggerConfig.getOptionContainer().toHtml());
+					html.append("</li>");
+				}
+				html.append("</ol>");
 			}
-			html.append("</ol>");
 		}
-		html.append("<hr><p>"+Constants.APP_FULL_NAME+" - "+StringTools.getTextDate(new Date())+"</p><hr>");
-		html.append("</html>");
 		return html.toString();
 	}
 }

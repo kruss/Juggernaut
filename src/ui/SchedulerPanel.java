@@ -22,9 +22,9 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
 import launch.LaunchManager.LaunchInfo;
+import logger.ILogProvider;
 
 import util.IChangedListener;
-import util.ILoggingProvider;
 import util.StringTools;
 import util.UiTools;
 
@@ -195,7 +195,7 @@ public class SchedulerPanel extends JPanel implements IChangedListener {
 		LaunchInfo selected = getSelectedLaunch();
 		if(selected != null){
 			stopLaunch.setEnabled(true);
-			ILoggingProvider provider = application.getLaunchManager().getLoggingProvider(selected.id); 
+			ILogProvider provider = application.getLaunchManager().getLoggingProvider(selected.id); 
 			if(provider != launchConsole.getProvider()){
 				launchConsole.deregister();
 				launchConsole.clearConsole();

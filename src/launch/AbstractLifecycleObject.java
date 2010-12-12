@@ -7,7 +7,8 @@ import core.Application;
 
 import launch.ILifecycleListener.Lifecycle;
 import launch.StatusManager.Status;
-import util.Logger;
+import logger.Logger;
+import logger.Logger.Module;
 import util.Task;
 
 public abstract class AbstractLifecycleObject extends Task {
@@ -48,10 +49,10 @@ public abstract class AbstractLifecycleObject extends Task {
 			execute();
 		}catch(Exception e){
 			if(e instanceof InterruptedException){
-				getLogger().emph("Interrupted");
+				getLogger().emph(Module.APP, "Interrupted");
 				statusManager.setStatus(Status.CANCEL);
 			}else{
-				getLogger().error(e);
+				getLogger().error(Module.APP, e);
 				statusManager.setStatus(Status.FAILURE);
 			}
 		}finally{

@@ -12,12 +12,13 @@ import data.LaunchHistory;
 import data.LaunchConfig;
 import data.OperationHistory;
 import util.FileTools;
-import util.Logger;
 import util.StringTools;
 import util.SystemTools;
-import util.Logger.Mode;
 import launch.LaunchManager.TriggerStatus;
 import launch.StatusManager.Status;
+import logger.Logger;
+import logger.Logger.Mode;
+import logger.Logger.Module;
 
 public class LaunchAgent extends AbstractLifecycleObject {
 
@@ -37,7 +38,8 @@ public class LaunchAgent extends AbstractLifecycleObject {
 		this.application = Application.getInstance();
 		
 		this.config = config.clone();
-		this.triggerStatus = trigger;
+		triggerStatus = trigger;
+		logger = new Logger(Mode.FILE);
 		
 		propertyContainer = new PropertyContainer();
 		propertyContainer.addProperty(config.getId(), "Name", config.getName());
@@ -46,7 +48,6 @@ public class LaunchAgent extends AbstractLifecycleObject {
 		propertyContainer.addProperty(config.getId(), "Clean", ""+config.isClean());
 		propertyContainer.addProperty(config.getId(), "Timeout", StringTools.millis2min(config.getTimeout())+" min");
 		
-		logger = new Logger(Mode.FILE_ONLY); // logger required by operation-ctors
 		operations = new ArrayList<AbstractOperation>();
 		for(AbstractOperationConfig operationConfig : config.getOperationConfigs()){
 			if(operationConfig.isActive()){
@@ -90,14 +91,14 @@ public class LaunchAgent extends AbstractLifecycleObject {
 		history.init();
 		
 		// setup the logger
-		logger.setLogiFile(new File(history.logfile));
-		logger.info("Launch ["+config.getName()+"]");
+		logger.setLogfile(new File(history.logfile));
+		logger.info(Module.APP, "Launch ["+config.getName()+"]");
 		debugProperties(propertyContainer.getProperties(config.getId()));
 		
 		// setup launch-folder
 		File folder = new File(getFolder());
 		if(config.isClean() && folder.isDirectory()){
-			logger.log("cleaning: "+folder.getAbsolutePath());
+			logger.log(Module.APP, "cleaning: "+folder.getAbsolutePath());
 			FileTools.deleteFolder(folder.getAbsolutePath());
 		}
 		if(!folder.isDirectory()){
@@ -111,12 +112,12 @@ public class LaunchAgent extends AbstractLifecycleObject {
 		for(AbstractOperation operation : operations){
 			try{
 				Status operationStatus = executeOperation(operation);
-				logger.log("Operation: "+operationStatus.toString());	
+				logger.log(Module.APP, "Operation: "+operationStatus.toString());	
 				if(operationStatus == Status.ERROR){
 					if(!operation.getConfig().isCritical()){
 						statusManager.setStatus(Status.ERROR);
 					}else{
-						logger.emph("Critical operation failed");
+						logger.emph(Module.APP, "Critical operation failed");
 						statusManager.setStatus(Status.FAILURE);
 						aboard = true;
 					}
@@ -125,7 +126,7 @@ public class LaunchAgent extends AbstractLifecycleObject {
 					aboard = true;
 				}
 			}catch(InterruptedException e){
-				logger.emph("Interrupted");
+				logger.emph(Module.APP, "Interrupted");
 				statusManager.setStatus(Status.CANCEL);
 				aboard = true;
 				if(operation.isAlive()){
@@ -141,6 +142,7 @@ public class LaunchAgent extends AbstractLifecycleObject {
 	private Status executeOperation(AbstractOperation operation)throws Exception {
 		
 		logger.info(
+				Module.APP, 
 				operation.getIndex()+"/"+config.getOperationConfigs().size()+
 				" Operation ["+operation.getConfig().getName()+"]"
 		);
@@ -171,20 +173,20 @@ public class LaunchAgent extends AbstractLifecycleObject {
 			history.finish();
 			application.getHistory().addEntry(history); 
 		}catch(Exception e){
-			logger.error(e);
+			logger.error(Module.APP, e);
 		}
 		
 		if(triggerStatus == LaunchManager.USER_TRIGGER){
 			try{
 				String path = history.getIndexPath();
-				logger.debug("browser: "+path);
+				logger.debug(Module.APP, "browser: "+path);
 				SystemTools.openBrowser(path);
 			}catch(IOException e) {
-				logger.error(e);
+				logger.error(Module.APP, e);
 			}
 		}
 		
-		logger.info("Launch: "+statusManager.getStatus().toString());
+		logger.info(Module.APP, "Launch: "+statusManager.getStatus().toString());
 		logger.clearListeners();
 	}
 	
@@ -195,6 +197,6 @@ public class LaunchAgent extends AbstractLifecycleObject {
 		for(String key : keys){
 			info.append("\t"+key+": "+properties.get(key)+"\n");
 		}
-		logger.debug("Properties [\n"+info.toString()+"]");
+		logger.debug(Module.APP, "Properties [\n"+info.toString()+"]");
 	}
 }

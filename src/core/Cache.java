@@ -1,6 +1,7 @@
 package core;
 
 import launch.PropertyContainer;
+import logger.Logger.Module;
 import util.FileTools;
 
 import com.thoughtworks.xstream.XStream;
@@ -39,7 +40,7 @@ public class Cache {
 		try{ 
 			save(); 
 		}catch(Exception e){
-			Application.getInstance().getLogger().error(e);
+			Application.getInstance().getLogger().error(Module.APP, e);
 		}
 	}
 	
@@ -49,7 +50,7 @@ public class Cache {
 	
 	public static Cache load(String path) throws Exception {
 		
-		Application.getInstance().getLogger().debug("load: "+path);
+		Application.getInstance().getLogger().debug(Module.APP, "load: "+path);
 		XStream xstream = new XStream(new DomDriver());
 		String xml = FileTools.readFile(path);
 		Cache cache = (Cache)xstream.fromXML(xml);
@@ -61,7 +62,7 @@ public class Cache {
 	public void save() throws Exception {
 		
 		if(isDirty()){
-			Application.getInstance().getLogger().debug("save: "+path);
+			Application.getInstance().getLogger().debug(Module.APP, "save: "+path);
 			XStream xstream = new XStream(new DomDriver());
 			String xml = xstream.toXML(this);
 			FileTools.writeFile(path, xml, false);

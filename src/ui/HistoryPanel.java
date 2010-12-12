@@ -22,6 +22,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
+import logger.Logger.Module;
+
 import core.Application;
 import core.History.HistoryInfo;
 
@@ -225,7 +227,7 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 					historyOutput.setText(FileTools.readFile(logfile.getAbsolutePath()));
 					historyOutput.setCaretPosition(0);
 				}catch(Exception e){
-					application.getLogger().error(e);
+					application.getLogger().error(Module.APP, e);
 				}
 			}else{
 				historyOutput.setText("");

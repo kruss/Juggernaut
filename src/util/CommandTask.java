@@ -2,6 +2,10 @@ package util;
 
 import java.io.File;
 
+import logger.Logger;
+import logger.Logger.Module;
+
+
 import core.Constants;
 
 public class CommandTask extends Task {
@@ -41,8 +45,8 @@ public class CommandTask extends Task {
 			String commandline = arguments.isEmpty() ? command : command+" "+arguments;
 			ProcessBuilder processBuilder = getProcessBuilder(commandline, path);
 			
-			logger.log("command: "+commandline);
-			logger.log("path: "+path);
+			logger.log(Module.CMD, "command: "+commandline);
+			logger.log(Module.CMD, "path: "+path);
 			
 			Process process = processBuilder.start();
 			CommandStreamer outputStream = new CommandStreamer("OUT", process.getInputStream(), logger);
@@ -63,9 +67,9 @@ public class CommandTask extends Task {
 			output = outputStream.getBuffer();
 			
 		}catch(Exception e){
-			logger.error(e);
+			logger.error(Module.CMD, e);
 		}finally{
-			logger.log("return: "+result);
+			logger.log(Module.CMD, "return: "+result);
 		}
 	}
 

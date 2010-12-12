@@ -1,5 +1,7 @@
 package ui;
 
+import html.AbstractHtmlPage;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -7,12 +9,12 @@ import java.io.File;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-import util.FileTools;
 import util.IChangedListener;
 import util.SystemTools;
 
 
 import core.Application;
+import core.Constants;
 
 public class ToolsMenu extends JMenu implements IChangedListener {
 
@@ -20,7 +22,7 @@ public class ToolsMenu extends JMenu implements IChangedListener {
 
 	private Application application;
 
-	private JMenuItem printConfiguration;
+	private JMenuItem printConfig;
 	
 	public ToolsMenu(){
 		super("Tools");
@@ -30,23 +32,33 @@ public class ToolsMenu extends JMenu implements IChangedListener {
 		JMenu configuration = new JMenu("Configuration");
 		add(configuration);
 		
-		printConfiguration = new JMenuItem("Print");
-		printConfiguration.addActionListener(new ActionListener(){
+		printConfig = new JMenuItem("Print");
+		printConfig.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){ printConfiguration(); }
 		});
-		configuration.add(printConfiguration);
+		configuration.add(printConfig);
 		
 		application.getConfig().addListener(this);
 	}
 	
+	class ConfigPage extends AbstractHtmlPage {
+		public ConfigPage(String path) {
+			super(Constants.APP_NAME+" [ Configuration ]", path, null);
+		}
+		@Override
+		public String getBody() {
+			return application.getConfig().toHtml();
+		}
+	}
+	
 	private void printConfiguration(){
 		
-		String configuration = application.getConfig().toHtml();
 		String path = 
 			application.getFileManager().getTempFolderPath()+
-			File.separator+"print.htm";
+			File.separator+"Configuration.htm";
+		ConfigPage page = new ConfigPage(path);
 		try{
-			FileTools.writeFile(path, configuration, false);
+			page.create();
 			SystemTools.openBrowser(path);
 		}catch(Exception e){
 			application.popupError(e);

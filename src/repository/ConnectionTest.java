@@ -1,6 +1,7 @@
 package repository;
 
 import launch.StatusManager.Status;
+import logger.Logger.Module;
 import repository.IRepositoryClient.RevisionInfo;
 import core.Application;
 import util.Task;
@@ -24,7 +25,7 @@ public class ConnectionTest extends Task {
 	@Override
 	protected void runTask() {
 		
-		observer.log("Connection-Test: "+url);
+		observer.log(Module.APP, "Connection-Test: "+url);
 		Status status = Status.UNDEFINED;
 		String message = "";
 		try{
@@ -40,7 +41,7 @@ public class ConnectionTest extends Task {
 			status = Status.FAILURE;
 			message = e.getClass().getSimpleName();
 			if(!(e instanceof InterruptedException)){
-				observer.error(e);
+				observer.error(Module.APP, e);
 			}			
 		}finally{
 			if(status == Status.SUCCEED){
@@ -52,7 +53,7 @@ public class ConnectionTest extends Task {
 						"Connection-Test ("+status.toString()+")\n\n"+message
 				);
 			}
-			observer.log("Connection-Test: "+status.toString());
+			observer.log(Module.APP, "Connection-Test: "+status.toString());
 		}
 	}
 

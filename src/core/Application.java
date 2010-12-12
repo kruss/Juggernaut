@@ -10,10 +10,11 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import launch.LaunchManager;
+import logger.Logger;
+import logger.Logger.Mode;
+import logger.Logger.Module;
 import ui.Window;
-import util.Logger;
 import util.UiTools;
-import util.Logger.Mode;
 
 public class Application {
 
@@ -87,7 +88,7 @@ public class Application {
 			!launchManager.isBusy() ||
 			UiTools.confirmDialog("Aboard running launches ?")
 		){
-			logger.info("Shutdown");
+			logger.info(Module.APP, "Shutdown");
 			try{
 				for(int i=components.size()-1; i>=0; i--){
 					components.get(i).shutdown();
@@ -102,7 +103,6 @@ public class Application {
 
 	/** drop any unsaved changes and restart ui */
 	public void revert() throws Exception {
-		
 		if(config.isDirty()){
 			ui.shutdown();
 			persistence.init();
@@ -111,8 +111,7 @@ public class Application {
 	}
 	
 	public void popupError(Exception e){
-		
-		logger.error(e);
+		logger.error(Module.APP, e);
 		UiTools.errorDialog(e.getClass().getSimpleName()+"\n\n"+e.getMessage());
 	}
 	
@@ -129,8 +128,8 @@ public class Application {
 
 			File logFile = new File(fileManager.getDataFolderPath()+File.separator+Logger.OUTPUT_FILE);
 			logger = new Logger(Mode.FILE_AND_CONSOLE);
-			logger.setLogiFile(logFile);
-			logger.info(Constants.APP_FULL_NAME);
+			logger.setLogfile(logFile);
+			logger.info(Module.APP, Constants.APP_FULL_NAME);
 
 			File configFile = new File(fileManager.getDataFolderPath()+File.separator+Configuration.OUTPUT_FILE);
 			if(configFile.isFile()){
@@ -139,7 +138,6 @@ public class Application {
 				config = new Configuration(configFile.getAbsolutePath());
 				config.save();
 			}		
-			Logger.VERBOSE = config.isVerbose();
 
 			File historyFile = new File(fileManager.getDataFolderPath()+File.separator+History.OUTPUT_FILE);
 			if(historyFile.isFile()){

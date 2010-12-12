@@ -4,6 +4,7 @@ import util.StringTools;
 import util.SystemTools;
 import launch.LaunchAgent;
 import launch.StatusManager.Status;
+import logger.Logger.Module;
 import data.AbstractOperation;
 
 public class SampleOperation extends AbstractOperation {
@@ -27,24 +28,23 @@ public class SampleOperation extends AbstractOperation {
 	@Override
 	protected void execute() throws Exception {
 		
-		long sec = StringTools.millis2sec(config.getIdleTime());
-		if(sec > 0){
-			logger.log("doing some work...");
-			for(long i=1; i<=sec; i++){
-				logger.debug("some work ("+i+"/"+sec+")");
-				SystemTools.sleep(StringTools.sec2millis(1));
-			}
-		}else{
-			logger.log("nothing todo...");
-		}
-
 		if(config.isThrowError()){
-			logger.log("throwing an error...");
+			logger.log(Module.APP, "throwing error...");
 			statusManager.setStatus(Status.ERROR);
 		}
 		if(config.isThrowException()){
-			logger.log("throwing an exception...");
+			logger.log(Module.APP, "throwing exception...");
 			throw new Exception("Sample Exception");
 		}
+		
+		long work = StringTools.millis2sec(config.getIdleTime());
+		if(work > 0){
+			logger.log(Module.APP, "doing some work...");
+			for(long i=1; i<=work; i++){
+				logger.debug(Module.APP, "work ("+i+"/"+work+")");
+				SystemTools.sleep(StringTools.sec2millis(1));
+			}
+		}
+		logger.log(Module.APP, "done.");
 	}
 }

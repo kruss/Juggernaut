@@ -2,6 +2,10 @@ package util;
 
 import java.util.Date;
 
+import logger.Logger;
+import logger.Logger.Module;
+
+
 import core.Application;
 
 public abstract class Task extends Thread {
@@ -39,7 +43,7 @@ public abstract class Task extends Thread {
 	
 	public void run(){
 		
-		observer.debug("Starting Task ["+getName()+"]");
+		observer.debug(Module.TASK, "Starting Task ["+getName()+"]");
 		try{
 			Thread.sleep(delay);
 			if(isCyclic()){
@@ -48,9 +52,9 @@ public abstract class Task extends Thread {
 				runSingleTask();
 			}
 		}catch(InterruptedException e){ 
-			observer.debug("Interrupting Task ["+getName()+"]");
+			observer.debug(Module.TASK, "Interrupting Task ["+getName()+"]");
 		}finally{
-			observer.debug("Stopping Task ["+getName()+"]");
+			observer.debug(Module.TASK, "Stopping Task ["+getName()+"]");
 		}
 	}
 	

@@ -9,6 +9,7 @@ import repository.SVNClient;
 import repository.IRepositoryClient.RevisionInfo;
 
 import launch.LaunchManager.TriggerStatus;
+import logger.Logger.Module;
 
 
 import data.AbstractTrigger;
@@ -77,7 +78,7 @@ public class SVNTrigger extends AbstractTrigger {
 				}
 			}
 		}catch(Exception e){
-			observer.error(e);
+			observer.error(Module.APP, e);
 			return launcher.new TriggerStatus(
 					e.getMessage(), false
 			);

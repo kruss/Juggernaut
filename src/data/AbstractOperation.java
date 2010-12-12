@@ -2,10 +2,10 @@ package data;
 
 import java.util.ArrayList;
 
-import util.Logger;
 
 import launch.AbstractLifecycleObject;
 import launch.LaunchAgent;
+import logger.Logger;
 
 public abstract class AbstractOperation extends AbstractLifecycleObject {
 

@@ -3,13 +3,16 @@ package operation;
 import java.io.File;
 import java.util.ArrayList;
 
+import core.Application;
+
 import util.CommandTask;
-import util.Logger;
 import util.StringTools;
 import util.SystemTools;
 import launch.LaunchAgent;
 import launch.PropertyContainer;
 import launch.StatusManager.Status;
+import logger.Logger.Level;
+import logger.Logger.Module;
 import data.AbstractOperation;
 
 public class EclipseOperation extends AbstractOperation {
@@ -48,7 +51,7 @@ public class EclipseOperation extends AbstractOperation {
 		ArrayList<String> arguments = new ArrayList<String>();
 		arguments.add("-data \""+parent.getFolder()+"\"");
 		arguments.add("-cdt.builder");
-		if(Logger.VERBOSE){
+		if(Application.getInstance().getConfig().getLogLevel(Module.CMD) == Level.DEBUG){
 			arguments.add("-cdt.verbose");
 		}
 		arguments.add("-cdt.import");

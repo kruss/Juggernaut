@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import logger.Logger;
+import logger.Logger.Module;
+
 import util.CommandTask;
-import util.Logger;
 import util.SystemTools;
 
 public class SVNClient implements IRepositoryClient {
@@ -46,7 +48,7 @@ public class SVNClient implements IRepositoryClient {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			result.date = sdf.parse(m2.group(1));
 		}
-		logger.debug("revision: "+result.toString());
+		logger.debug(Module.CMD, "revision: "+result.toString());
 		
 		return result;
 	}
@@ -73,7 +75,7 @@ public class SVNClient implements IRepositoryClient {
 		if(m.find() && m.groupCount() >= 1){
 			result.revision = m.group(1);
 		}
-		logger.debug("revision: "+result.toString());
+		logger.debug(Module.CMD, "revision: "+result.toString());
 		
 		return result;
 	}
@@ -105,9 +107,9 @@ public class SVNClient implements IRepositoryClient {
 			commit.date = sdf.parse(m.group(3));
 			result.add(commit);
 		}
-		logger.debug("commits: "+result.size());
+		logger.debug(Module.CMD, "commits: "+result.size());
 		for(RepositoryCommit commit : result){
-			logger.debug("commit: "+commit.toString());
+			logger.debug(Module.CMD, "commit: "+commit.toString());
 		}
 		
 		return result;

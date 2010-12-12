@@ -3,6 +3,8 @@ package core;
 import java.io.File;
 import java.util.ArrayList;
 
+import logger.Logger.Module;
+
 import util.FileTools;
 import util.SystemTools;
 
@@ -98,7 +100,7 @@ public class FileManager {
 	public void delete(File file) throws Exception {
 		
 		// TODO retry with unlocker for windows
-		application.getLogger().debug("delete: "+file.getAbsolutePath());
+		application.getLogger().debug(Module.APP, "delete: "+file.getAbsolutePath());
 		if(file.isFile()){
 			FileTools.deleteFile(file.getAbsolutePath());
 		}else if(file.isDirectory()){

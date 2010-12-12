@@ -5,10 +5,10 @@ import java.util.HashMap;
 
 import data.Option.Type;
 
-
+// TODO verify unique names within container
 
 /**
- * container for all options of an item
+ * container for options of an item
  */
 public class OptionContainer {
 	
@@ -60,13 +60,14 @@ public class OptionContainer {
 		StringBuilder html = new StringBuilder();
 		html.append("<ul>");
 		for(Option option : options){
-			String value = null;
-			if(option.getType() == Type.TEXT_AREA){
-				value = "<br>"+option.getStringValue().replaceAll("\\n", "<br>");
-			}else{
-				value = option.getStringValue();
+			if(!option.getStringValue().isEmpty()){	
+				String name = option.getGroup()+"::"+option.getName();
+				String value = 
+						(option.getType() == Type.TEXT_AREA) ?
+						"<br>"+option.getStringValue().replaceAll("\\n", "<br>") : 
+						option.getStringValue();
+				html.append("<li>"+name+": <b>"+value+"</b></li>");
 			}
-			html.append("<li><b>"+option.getName()+"</b>: "+value+"</li>");
 		}
 		html.append("</ul>");
 		return html.toString();

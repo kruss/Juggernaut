@@ -9,6 +9,8 @@ import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JTabbedPane;
 
+import logger.Logger.Module;
+
 import util.IChangedListener;
 import util.StringTools;
 
@@ -77,7 +79,7 @@ public class Window extends JFrame implements IChangedListener {
 	public void setStatus(String text){
 		
 		statusBar.setText(text);
-		Application.getInstance().getLogger().log(text);
+		Application.getInstance().getLogger().log(Module.APP, text);
 	}
 
 	@Override

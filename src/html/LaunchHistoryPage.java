@@ -3,7 +3,7 @@ package html;
 import java.io.File;
 
 import launch.StatusManager;
-import util.Logger;
+import logger.Logger;
 import util.StringTools;
 import data.LaunchHistory;
 import data.OperationHistory;

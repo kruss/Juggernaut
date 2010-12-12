@@ -6,6 +6,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 
+import logger.Logger;
+import logger.Logger.Mode;
+import logger.Logger.Module;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,9 +20,7 @@ import repository.IRepositoryClient.RepositoryCommit;
 import repository.IRepositoryClient.Revision;
 import repository.IRepositoryClient.RevisionInfo;
 import util.FileTools;
-import util.Logger;
 import util.SystemTools;
-import util.Logger.Mode;
 
 public class SVNClientTest {
 
@@ -29,8 +31,7 @@ public class SVNClientTest {
 	private File folder;
 	
 	public SVNClientTest(){
-		Logger.VERBOSE = true;
-		logger = new Logger(Mode.CONSOLE_ONLY);
+		logger = new Logger(Mode.CONSOLE);
 		client = new SVNClient(logger);
 		folder = new File(SystemTools.getWorkingDir()+File.separator+(new Date()).getTime()); 
 	}
@@ -55,13 +56,13 @@ public class SVNClientTest {
 	
 	@Test public void testInfo() {
 		
-		logger.info("SVN Info");
+		logger.info(Module.APP, "SVN Info");
 		
 		RevisionInfo result = null;
 		try{
 			result = client.getInfo(SVN_REPOSITORY);
 		}catch(Exception e){
-			logger.error(e);
+			logger.error(Module.APP, e);
 			fail(e.getMessage());
 		}
 		
@@ -71,14 +72,14 @@ public class SVNClientTest {
 
 	@Test public void testCheckout() {
 		
-		logger.info("SVN Checkout");
+		logger.info(Module.APP, "SVN Checkout");
 		assertTrue(folder.listFiles().length == 0);
 		String revision = Revision.HEAD.toString();
 		CheckoutInfo result = null;
 		try{
 			result = client.checkout(SVN_REPOSITORY, revision, folder.getAbsolutePath());
 		}catch(Exception e){
-			logger.error(e);
+			logger.error(Module.APP, e);
 			fail(e.getMessage());
 		}
 		assertTrue(folder.listFiles().length > 0);
@@ -88,13 +89,13 @@ public class SVNClientTest {
 	
 	@Test public void testHistory() {
 		
-		logger.info("SVN History");
+		logger.info(Module.APP, "SVN History");
 		
 		ArrayList<RepositoryCommit> result = null;
 		try{
 			result = client.getHistory(SVN_REPOSITORY, Revision.HEAD.toString(), "0");
 		}catch(Exception e){
-			logger.error(e);
+			logger.error(Module.APP, e);
 			fail(e.getMessage());
 		}
 		
