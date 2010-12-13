@@ -1,0 +1,21 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1"><title>Juggernaut [ Configuration ]</title>
+<style type="text/css"> 
+  h1				{ font-family:'Arial,sans-serif'; font-size:14pt; font-weight:bold; } 
+  h2				{ font-family:'Arial,sans-serif'; font-size:12pt; font-weight:bold; } 
+  h3				{ font-family:'Arial,sans-serif'; font-size:11pt; font-weight:bold; } 
+  h4				{ font-family:'Arial,sans-serif'; font-size:10pt; font-weight:bold; } 
+  body				{ font-family:'Arial,sans-serif'; font-size:8pt; } 
+  p,b,u,i,td,li		{ font-family:'Arial,sans-serif'; font-size:8pt; } 
+  a:link 			{ color:blue; text-decoration:none; } 
+  a:visited 		{ color:blue; text-decoration:none; } 
+  a:focus 			{ color:orange; text-decoration:none; } 
+  a:hover 			{ color:orange; text-decoration:none; } 
+  a:active 			{ color:orange; text-decoration:none; } 
+  .small			{ font-family:'Arial,sans-serif'; font-size:7pt; } 
+  .tiny				{ font-family:'Arial,sans-serif'; font-size:6pt; } 
+</style> 
+</head><body>
+<hr><h1>Juggernaut [ Configuration ]</h1><hr>
+<p></p><h2>Preferences</h2><ul><li>GENERAL::SCHEDULER: <b>false</b></li><li>GENERAL::SCHEDULER_INTERVAL: <b>5</b></li><li>GENERAL::MAXIMUM_AGENTS: <b>3</b></li><li>GENERAL::MAXIMUM_HISTORY: <b>1000</b></li><li>NOTIFICATION::NOTIFY: <b>false</b></li><li>NOTIFICATION::SMTP_ADDRESS: <b>SMTP@Juggernaut</b></li><li>LOGGING::APP_LOGGING: <b>NORMAL</b></li><li>LOGGING::CMD_LOGGING: <b>NORMAL</b></li><li>LOGGING::TASK_LOGGING: <b>NORMAL</b></li></ul><hr><h2>Launch [ cppdemo ]</h2><ul><li>GENERAL::ACTIVE: <b>true</b></li><li>GENERAL::DESCRIPTION: <b>Building the demo project</b></li><li>GENERAL::CLEAN: <b>true</b></li><li>GENERAL::TIMEOUT: <b>0</b></li><li>NOTIFICATION::NOTIFY: <b>false</b></li></ul><h3>Operation(s):</h3><ol><li><b>[ SVN ]</b><ul><li>GENERAL::ACTIVE: <b>true</b></li><li>GENERAL::CRITICAL: <b>false</b></li><li>SETTINGS::URL: <b>svn://10.40.38.84:3690/cppdemo/trunk</b></li></ul></li><li><b>[ Command ]</b><ul><li>GENERAL::ACTIVE: <b>true</b></li><li>GENERAL::CRITICAL: <b>false</b></li><li>SETTINGS::COMMAND: <b>doxygen</b></li><li>SETTINGS::DIRECTORY: <b>Dummy</b></li><li>SETTINGS::ARGUMENTS: <b><br>doxygen.cfg</b></li></ul></li><li><b>[ Eclipse ]</b><ul><li>GENERAL::ACTIVE: <b>true</b></li><li>GENERAL::CRITICAL: <b>false</b></li><li>SETTINGS::ECLIPSE: <b>C:\Tool\Eclipse\eclipse-3.4.2-cpp\eclipse.exe</b></li><li>SETTINGS::BUILD: <b><br>Dummy|Debug<br>*|UnitTest</b></li><li>SETTINGS::CLEAN: <b>true</b></li></ul></li><li><b>[ Command ]</b><ul><li>GENERAL::ACTIVE: <b>true</b></li><li>GENERAL::CRITICAL: <b>false</b></li><li>SETTINGS::COMMAND: <b>testrunner</b></li><li>SETTINGS::ARGUMENTS: <b><br>.</b></li></ul></li><li><b>[ Command ]</b><ul><li>GENERAL::ACTIVE: <b>true</b></li><li>GENERAL::CRITICAL: <b>false</b></li><li>SETTINGS::COMMAND: <b>gcover</b></li><li>SETTINGS::ARGUMENTS: <b><br>.</b></li></ul></li></ol><h3>Trigger(s):</h3><ol><li><b>[ SVN ]</b><ul><li>GENERAL::ACTIVE: <b>true</b></li><li>SETTINGS::URL: <b>svn://10.40.38.84:3690/cppdemo/trunk</b></li><li>SETTINGS::DELAY: <b>5</b></li></ul></li></ol><p></p><hr><i class="small">
+Juggernaut (0.1) - 13.12.2010 11:07:38</i><hr></body></html>

@@ -7,9 +7,11 @@ import logger.Logger.Module;
 
 
 import core.Application;
+import core.TaskManager;
 
 public abstract class Task extends Thread {
 
+	private TaskManager manager;
 	protected Logger observer;
 	private long delay;
 	private long cycle;
@@ -18,7 +20,8 @@ public abstract class Task extends Thread {
 
 	public Task(String name, Logger logger){
 		
-		setName(name);
+		super(name);
+		manager = Application.getInstance().getTaskManager();
 		observer = logger;
 		delay = 0;
 		cycle = 0;
@@ -71,11 +74,15 @@ public abstract class Task extends Thread {
 	private void runSingleTask(){
 		
 		start = new Date();
-		Application.getInstance().getTaskManager().register(this);
+		if(manager != null){
+			manager.register(this);
+		}
 		try{
 			runTask();
 		}finally{
-			Application.getInstance().getTaskManager().deregister(this);
+			if(manager != null){
+				manager.deregister(this);
+			}
 			start = null;
 		}
 	}
