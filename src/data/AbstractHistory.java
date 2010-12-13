@@ -2,6 +2,7 @@ package data;
 
 import html.AbstractHtmlPage;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
@@ -20,10 +21,12 @@ public abstract class AbstractHistory {
 	public Date end;
 	public Status status;
 	public String folder;
+	public ArrayList<Artifact> artifacts;
 	
 	public AbstractHistory(){
 		
 		historyId = UUID.randomUUID().toString();
+		artifacts = new ArrayList<Artifact>();
 	}
 	
 	public void init() throws Exception {

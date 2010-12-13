@@ -13,6 +13,7 @@ import util.Task;
 
 public abstract class AbstractLifecycleObject extends Task {
 	
+	
 	protected StatusManager statusManager;
 	private ArrayList<ILifecycleListener> listeners;
 	
@@ -20,7 +21,6 @@ public abstract class AbstractLifecycleObject extends Task {
 	
 	public AbstractLifecycleObject(String name){
 		super(name, Application.getInstance().getLogger());
-		
 		statusManager = new StatusManager(this);
 		listeners = new ArrayList<ILifecycleListener>();
 	}

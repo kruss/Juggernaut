@@ -14,6 +14,7 @@ import launch.StatusManager.Status;
 import logger.Logger.Level;
 import logger.Logger.Module;
 import data.AbstractOperation;
+import data.Artifact;
 
 public class EclipseOperation extends AbstractOperation {
 
@@ -71,21 +72,24 @@ public class EclipseOperation extends AbstractOperation {
 			}
 		}
 		
-		CommandTask commandTask = new CommandTask(
+		CommandTask task = new CommandTask(
 				command, 
 				StringTools.join(arguments, " "),
 				directory, 
 				logger
 		);
-		commandTask.syncRun(0, 0);
+		task.syncRun(0, 0);
 		
-		if(commandTask.hasSucceded()){
+		if(task.hasSucceded()){
 			statusManager.setStatus(Status.SUCCEED);
 		}else{
 			statusManager.setStatus(Status.ERROR);
 		}
 		
-		//TODO provide the command-output as artifact
+		if(!task.getOutput().isEmpty()){
+			artifacts.add(new Artifact("Output", task.getOutput()));
+		}
+		
 		//TODO collect results from cdt-builder
 	}
 }

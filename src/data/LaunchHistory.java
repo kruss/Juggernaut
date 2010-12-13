@@ -57,6 +57,7 @@ public class LaunchHistory extends AbstractHistory {
 
 		end = launch.getStatusManager().getEnd();
 		status = launch.getStatusManager().getStatus();
+		artifacts.add(new Artifact("Logfile", new File(logfile)));
 		super.finish();
 	}
 

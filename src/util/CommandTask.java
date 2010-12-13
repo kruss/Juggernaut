@@ -15,8 +15,8 @@ public class CommandTask extends Task {
 	private String path;
 	private Logger logger;
 
-	private String output;
 	private int result;
+	private String output;
 	
 	public CommandTask(
 			String command, String arguments, 
@@ -27,16 +27,16 @@ public class CommandTask extends Task {
 		this.arguments = arguments;
 		this.path = path;
 		this.logger = logger;
-		output = "";
 		result = Constants.PROCESS_NOK;
+		output = "";
 	}
 	
 	public boolean hasSucceded(){
 		return result == Constants.PROCESS_OK;
 	}
 	
-	public String getOutput(){ return output; }
 	public int getResult(){ return result; }
+	public String getOutput(){ return output; }
 	
 	@Override
 	protected void runTask() {
@@ -61,10 +61,10 @@ public class CommandTask extends Task {
 				process.destroy();	 // not destroying sub-processes on windows
 			}
 			
-			while(errorStream.isAlive() || outputStream.isAlive()){ 
+			while(outputStream.isAlive() || errorStream.isAlive()){ 
 				SystemTools.sleep(50);
 			}
-			output = outputStream.getBuffer();
+			output = outputStream.getBuffer()+errorStream.getBuffer();
 			
 		}catch(Exception e){
 			logger.error(Module.CMD, e);

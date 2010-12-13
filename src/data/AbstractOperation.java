@@ -2,7 +2,6 @@ package data;
 
 import java.util.ArrayList;
 
-
 import launch.AbstractLifecycleObject;
 import launch.LaunchAgent;
 import logger.Logger;
@@ -22,10 +21,10 @@ public abstract class AbstractOperation extends AbstractLifecycleObject {
 		
 		super("Opperation("+config.getId()+")");
 		this.parent = parent;
-		this.logger = parent.getLogger();
+		logger = parent.getLogger();
 		this.config = config.clone();
 		artifacts = new ArrayList<Artifact>();
-
+		
 		parent.getPropertyContainer().addProperties(
 				config.getId(), config.getOptionContainer().getProperties()
 		);

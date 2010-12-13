@@ -3,6 +3,8 @@ TASKS
 
 # remove key-imput from relevant combos
 
+# make command-streamer steram to registered listeners to collect output more flexible (e.g SVN clients)
+
 BUGS
 ----
 

@@ -6,7 +6,6 @@ import html.LaunchHistoryPage;
 import html.OperationHistoryPage;
 
 import java.io.File;
-import java.util.ArrayList;
 
 
 import core.Application;
@@ -15,15 +14,12 @@ public class OperationHistory extends AbstractHistory {
 	
 	private transient AbstractOperation operation;
 	
-	public ArrayList<Artifact> artifacts;
-	
 	public OperationHistory(AbstractOperation operation){
 		
 		this.operation = operation;
 		
 		id = operation.getConfig().getId();
 		name = operation.getConfig().getName();
-		artifacts = new ArrayList<Artifact>();
 	}
 	
 	public void init() throws Exception {	
@@ -32,7 +28,6 @@ public class OperationHistory extends AbstractHistory {
 			Application.getInstance().getFileManager().getHistoryFolderPath()+
 			File.separator+operation.getParent().getStatusManager().getStart().getTime()+
 			File.separator+id;
-
 		super.init();
 	}
 	
@@ -42,7 +37,7 @@ public class OperationHistory extends AbstractHistory {
 		start = operation.getStatusManager().getStart();
 		end = operation.getStatusManager().getEnd();
 		status = operation.getStatusManager().getStatus();
-		artifacts = operation.getArtifacts();
+		artifacts.addAll(operation.getArtifacts());
 		super.finish();
 	}
 	

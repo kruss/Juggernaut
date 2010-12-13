@@ -3,20 +3,16 @@ package html;
 import java.io.File;
 
 import launch.StatusManager;
-import logger.Logger;
 import util.StringTools;
 import data.LaunchHistory;
 import data.OperationHistory;
 
-
-public class LaunchHistoryPage extends AbstractHtmlPage {
-
-	public static final String OUTPUT_FILE = "index.htm";
+public class LaunchHistoryPage extends AbstractHistoryPage {
 	
 	private LaunchHistory history;
 	
 	public LaunchHistoryPage(String name, String path, HtmlLink parent, LaunchHistory history) {
-		super(name, path, parent);
+		super(name, path, parent, history);
 		this.history = history;
 	}
 
@@ -26,25 +22,8 @@ public class LaunchHistoryPage extends AbstractHtmlPage {
 		StringBuilder html = new StringBuilder();
 		html.append(getStatusHtml());
 		html.append(getOperationsHtml());
+		html.append(getArtifactHtml());
 		return html.toString();
-	}
-
-	private String getStatusHtml() {
-		
-		HtmlList list = new HtmlList("Status");
-		list.add("Status", StatusManager.getStatusHtml(history.status));
-		if(!history.description.isEmpty()){
-			list.add("Description", history.description);
-		}
-		if(history.start != null){
-			list.add("Start", StringTools.getTextDate(history.start));
-		}
-		if(history.start != null && history.end != null){
-			list.add("Time", StringTools.getTimeDiff(history.start, history.end)+" '");
-		}
-		HtmlLink logfile = new HtmlLink("Logfile", Logger.OUTPUT_FILE);
-		list.add("Output", logfile.getHtml());
-		return list.getHtml();
 	}
 	
 	private String getOperationsHtml() {

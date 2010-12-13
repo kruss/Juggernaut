@@ -7,6 +7,7 @@ import launch.LaunchAgent;
 import launch.PropertyContainer;
 import launch.StatusManager.Status;
 import data.AbstractOperation;
+import data.Artifact;
 
 public class CommandOperation extends AbstractOperation {
 
@@ -29,20 +30,22 @@ public class CommandOperation extends AbstractOperation {
 		String arguments = PropertyContainer.expand(parent.getPropertyContainer(), config.getArguments());
 		String directory = PropertyContainer.expand(parent.getPropertyContainer(), config.getDirectory());
 		
-		CommandTask commandTask = new CommandTask(
+		CommandTask task = new CommandTask(
 				command, 
 				arguments,
 				directory.isEmpty() ? parent.getFolder() : parent.getFolder()+File.separator+directory, 
 				logger
 		);
-		commandTask.syncRun(0, 0);
+		task.syncRun(0, 0);
 		
-		if(commandTask.hasSucceded()){
+		if(task.hasSucceded()){
 			statusManager.setStatus(Status.SUCCEED);
 		}else{
 			statusManager.setStatus(Status.ERROR);
 		}
 		
-		//TODO provide the command-output as artifact
+		if(!task.getOutput().isEmpty()){
+			artifacts.add(new Artifact("Output", task.getOutput()));
+		}
 	}
 }
