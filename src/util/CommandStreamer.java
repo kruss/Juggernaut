@@ -32,7 +32,7 @@ public class CommandStreamer extends Task {
 	        String line=null;
 	        while( (line = bufferedReader.readLine()) != null){
 	        	buffer.append(line+"\n"); // unix-style for regex-processing
-	        	observer.log(Module.CMD, line);
+	        	observer.debug(Module.CMD, line);
 	        }
 	        
 			bufferedReader.close();
