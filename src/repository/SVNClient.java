@@ -22,6 +22,7 @@ public class SVNClient implements IRepositoryClient {
 	@Override
 	public RevisionInfo getInfo(String url) throws Exception {
 
+		String name = "SVN Info";
 		String path =  SystemTools.getWorkingDir();
 		String command = "svn"; 
 		String arguments = "info "+url;
@@ -30,7 +31,7 @@ public class SVNClient implements IRepositoryClient {
 		CommandTask task = new CommandTask(command, arguments, path, logger);
 		task.syncRun(0, 0);
 		if(!task.hasSucceded()){
-			throw new Exception("SVN info failed: "+task.getResult());
+			throw new Exception(name+" failed: "+task.getResult());
 		}
 		
 		// get result
@@ -43,6 +44,10 @@ public class SVNClient implements IRepositoryClient {
 		if(m1.find() && m1.groupCount() >= 1){
 			result.revision = m1.group(1);
 		}
+		if(result.revision == null){
+			throw new Exception(name+": no revision");
+		}
+		
 		// find e.g: "Last Changed Date: 2010-11-26 12:47:16 +0100 (Fr, 26 Nov 2010)"
 		Pattern p2 = Pattern.compile("^Last Changed Date: (\\d+-\\d+-\\d+ \\d+:\\d+:\\d+)", Pattern.MULTILINE | Pattern.UNIX_LINES);
 		Matcher m2 = p2.matcher(result.output);
@@ -50,14 +55,18 @@ public class SVNClient implements IRepositoryClient {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			result.date = sdf.parse(m2.group(1));
 		}
-		logger.debug(Module.CMD, "revision: "+result.toString());
+		if(result.date == null){
+			throw new Exception(name+": no date");
+		}
 		
+		logger.debug(Module.CMD, result.toString());
 		return result;
 	}
 
 	@Override
 	public CheckoutInfo checkout(String url, String revision, String destination) throws Exception {
 		
+		String name = "SVN Checkout";
 		String path =  SystemTools.getWorkingDir();
 		String command = "svn"; 
 		String arguments = "checkout -r "+revision+" "+url+" "+destination;
@@ -66,7 +75,7 @@ public class SVNClient implements IRepositoryClient {
 		CommandTask task = new CommandTask(command, arguments, path, logger);
 		task.syncRun(0, 0);
 		if(!task.hasSucceded()){
-			throw new Exception("SVN checkout failed: "+task.getResult());
+			throw new Exception(name+" failed: "+task.getResult());
 		}
 		
 		// get result
@@ -79,14 +88,18 @@ public class SVNClient implements IRepositoryClient {
 		if(m.find() && m.groupCount() >= 1){
 			result.revision = m.group(1);
 		}
-		logger.debug(Module.CMD, "revision: "+result.toString());
+		if(result.revision == null){
+			throw new Exception(name+": no revision");
+		}
 		
+		logger.debug(Module.CMD, result.toString());
 		return result;
 	}
 
 	@Override
 	public HistoryInfo getHistory(String url, String revision1, String revision2) throws Exception {
 
+		String name = "SVN History";
 		String path =  SystemTools.getWorkingDir();
 		String command = "svn"; 
 		String arguments = "log -r "+revision2+":"+revision1+" "+url;
@@ -95,7 +108,7 @@ public class SVNClient implements IRepositoryClient {
 		CommandTask task = new CommandTask(command, arguments, path, logger);
 		task.syncRun(0, 0);
 		if(!task.hasSucceded()){
-			throw new Exception("SVN history failed: "+task.getResult());
+			throw new Exception(name+" failed: "+task.getResult());
 		}
 		
 		// get result
@@ -116,8 +129,11 @@ public class SVNClient implements IRepositoryClient {
 			commit.date = sdf.parse(m.group(3));
 			result.commits.add(commit);
 		}
-		logger.debug(Module.CMD, "commits: "+result.toString());
-		
+		if(!revision1.equals(revision2) && result.commits.size() == 0){
+			throw new Exception(name+": no commits");
+		}
+
+		logger.debug(Module.CMD, result.toString());
 		return result;
 	}
 }

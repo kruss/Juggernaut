@@ -21,7 +21,7 @@ public class SVNTrigger extends AbstractTrigger {
 	private SVNClient client;
 	private SVNTriggerConfig config;
 	
-	private RevisionInfo revisionInfo;
+	private RevisionInfo info;
 	
 	public SVNTrigger(SVNTriggerConfig config) {
 		super(config);
@@ -47,8 +47,8 @@ public class SVNTrigger extends AbstractTrigger {
 	public TriggerStatus isTriggered() {
 		
 		try{
+			info = client.getInfo(config.getUrl());
 			String lastRevision = getLastRevision();
-			revisionInfo = client.getInfo(config.getUrl());
 			Date currentDate = new Date();
 			
 			if(lastRevision == null){
@@ -56,13 +56,10 @@ public class SVNTrigger extends AbstractTrigger {
 						config.getName()+" initial run", true
 				);
 			}else{
-				if(!lastRevision.equals(revisionInfo.revision)){
-					if(
-							(revisionInfo.date == null) ||
-							(revisionInfo.date.getTime() + config.getDelay() <= currentDate.getTime())
-					){
+				if(!lastRevision.equals(info.revision)){
+					if( info.date.getTime() + config.getDelay() <= currentDate.getTime() ){
 						return launcher.new TriggerStatus(
-								config.getName()+" revision changed ("+revisionInfo.revision+")", true
+								config.getName()+" revision changed ("+info.revision+")", true
 						);
 					}else{
 						return launcher.new TriggerStatus(
@@ -86,8 +83,8 @@ public class SVNTrigger extends AbstractTrigger {
 	@Override
 	public void wasTriggered(boolean triggered) {
 		
-		if(triggered && revisionInfo != null){
-			setLastRevision(revisionInfo.revision);
+		if(triggered && info != null){
+			setLastRevision(info.revision);
 		}
 	}
 }

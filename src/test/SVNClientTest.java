@@ -14,10 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import repository.SVNClient;
-import repository.IRepositoryClient.CheckoutInfo;
-import repository.IRepositoryClient.HistoryInfo;
 import repository.IRepositoryClient.Revision;
-import repository.IRepositoryClient.RevisionInfo;
 import util.FileTools;
 import util.SystemTools;
 
@@ -57,17 +54,12 @@ public class SVNClientTest {
 		
 		logger.info(Module.APP, "SVN Info");
 		
-		RevisionInfo result = null;
 		try{
-			result = client.getInfo(SVN_REPOSITORY);
+			client.getInfo(SVN_REPOSITORY);
 		}catch(Exception e){
 			logger.error(Module.APP, e);
 			fail(e.getMessage());
 		}
-		
-		assertTrue(result.revision != null);
-		assertTrue(result.date != null);
-		assertTrue(result.output != null);
 	}
 
 	@Test public void testCheckout() {
@@ -76,34 +68,24 @@ public class SVNClientTest {
 		assertTrue(folder.listFiles().length == 0);
 		String revision = Revision.HEAD.toString();
 		
-		CheckoutInfo result = null;
 		try{
-			result = client.checkout(SVN_REPOSITORY, revision, folder.getAbsolutePath());
+			client.checkout(SVN_REPOSITORY, revision, folder.getAbsolutePath());
 		}catch(Exception e){
 			logger.error(Module.APP, e);
 			fail(e.getMessage());
 		}
-		
 		assertTrue(folder.listFiles().length > 0);
-		assertTrue(result.revision != null);
-		assertTrue(result.output != null);
 	}
 	
 	@Test public void testHistory() {
 		
 		logger.info(Module.APP, "SVN History");
 		
-		HistoryInfo result = null;
 		try{
-			result = client.getHistory(SVN_REPOSITORY, "0", Revision.HEAD.toString());
+			client.getHistory(SVN_REPOSITORY, "0", Revision.HEAD.toString());
 		}catch(Exception e){
 			logger.error(Module.APP, e);
 			fail(e.getMessage());
 		}
-		
-		assertTrue(result.revision1 != null);
-		assertTrue(result.revision2 != null);
-		assertTrue(result.commits.size() > 0);
-		assertTrue(result.output != null);
 	}
 }

@@ -19,11 +19,7 @@ public interface IRepositoryClient {
 		public String output;
 		
 		public String toString(){
-			if(revision != null && date != null){
-				return revision+" ("+StringTools.getTextDate(date)+")";
-			}else{
-				return "<invalid>";
-			}
+			return "Revision: "+revision+" ("+StringTools.getTextDate(date)+")";
 		}
 	}
 
@@ -36,11 +32,7 @@ public interface IRepositoryClient {
 		public String output;
 		
 		public String toString(){
-			if(revision != null){
-				return revision;
-			}else{
-				return "<invalid>";
-			}
+			return "Checkout: "+revision;
 		}
 	}
 	
@@ -56,7 +48,7 @@ public interface IRepositoryClient {
 		
 		public String toString(){
 			StringBuilder text = new StringBuilder();
-			text.append("["+revision1+" - "+revision2+"]\n");
+			text.append("History ["+revision1+" - "+revision2+"]\n");
 			for(CommitInfo commit : commits){
 				text.append("- "+commit.toString()+"\n");
 			}
@@ -71,11 +63,7 @@ public interface IRepositoryClient {
 		public String author;
 		
 		public String toString(){
-			if(revision != null && date != null && author != null){
-				return "("+revision+") "+author+" - "+StringTools.getTextDate(date);
-			}else{
-				return "<invalid>";
-			}
+			return "("+revision+") "+author+" - "+StringTools.getTextDate(date);
 		}
 	}
 }

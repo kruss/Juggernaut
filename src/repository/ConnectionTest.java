@@ -25,35 +25,30 @@ public class ConnectionTest extends Task {
 	@Override
 	protected void runTask() {
 		
-		observer.log(Module.APP, "Connection-Test: "+url);
+		observer.log(Module.APP, "Test: "+url);
 		Status status = Status.UNDEFINED;
 		String message = "";
 		try{
 			RevisionInfo info = client.getInfo(url);
-			if(info.revision != null){
-				status = Status.SUCCEED;
-				message = "Url: "+url+"\nRevision: "+info.toString();
-			}else{
-				status = Status.ERROR;
-				message = "Unable to retrieve Revision for:\n"+url;
-			}
+			status = Status.SUCCEED;
+			message = "Url: "+url+"\nRevision: "+info.toString();
 		}catch(Exception e){
 			status = Status.FAILURE;
-			message = e.getClass().getSimpleName();
+			message = (e.getMessage() != null) ? e.getMessage() : e.getClass().getSimpleName();
 			if(!(e instanceof InterruptedException)){
 				observer.error(Module.APP, e);
 			}			
 		}finally{
+			observer.log(Module.APP, "Test: "+status.toString());
 			if(status == Status.SUCCEED){
 				UiTools.infoDialog(
-						"Connection-Test ("+status.toString()+")\n\n"+message
+						"Test - "+status.toString()+"\n\n"+message
 				);
 			}else{
 				UiTools.errorDialog(
-						"Connection-Test ("+status.toString()+")\n\n"+message
+						"Test - "+status.toString()+"\n\n"+message
 				);
 			}
-			observer.log(Module.APP, "Connection-Test: "+status.toString());
 		}
 	}
 

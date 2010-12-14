@@ -69,27 +69,26 @@ public class SVNOperation extends AbstractOperation {
 	@Override
 	protected void execute() throws Exception {
 		
-		lastRevision = getLastRevision();
-		
 		CheckoutInfo checkout = client.checkout(getUrlProperty(), getRevisionProperty(), parent.getFolder());
-		if(checkout.revision != null){
-			currentRevision = checkout.revision;
-			setLastRevision(currentRevision);
-			setRevisionProperty(currentRevision);
-			statusManager.setStatus(Status.SUCCEED);
-		}else{
-			statusManager.setStatus(Status.ERROR);
-		}
+
+		lastRevision = getLastRevision();
+		currentRevision = checkout.revision;
+		setLastRevision(currentRevision);
+		setRevisionProperty(currentRevision);
+
 		Artifact checkoutArtifact = new Artifact("Checkout", checkout.output);
 		checkoutArtifact.description = "Revision: "+checkout.revision;
 		artifacts.add(checkoutArtifact);
 		
-		if(lastRevision != null && currentRevision != null && !lastRevision.equals(currentRevision)){
+		if(lastRevision != null &&  !lastRevision.equals(currentRevision)){
 			HistoryInfo history = client.getHistory(getUrlProperty(), lastRevision, currentRevision);
 			commits = history.commits;
+			
 			Artifact commitArtifact = new Artifact("Commits", history.output);
 			commitArtifact.description = "Intervall: "+history.revision1+" - "+history.revision2;
 			artifacts.add(commitArtifact);
 		}
+		
+		statusManager.setStatus(Status.SUCCEED);
 	}
 }
