@@ -23,11 +23,14 @@ public class Logger implements ILogProvider {
 
 	private Mode mode;
 	private File logfile;
+	private long logfileMax;
 	private ArrayList<ILogListener> listeners;
 	private ArrayList<String> buffer;
 	
-	public void setLogfile(File logfile){
+	/** set a logfile and the max-size in bytes (0 if unlimmited) */
+	public void setLogfile(File logfile, long logfileMax){
 		this.logfile = logfile;
+		this.logfileMax = logfileMax;
 		if(logfile.exists()){
 			logfile.delete();
 		}
@@ -38,6 +41,7 @@ public class Logger implements ILogProvider {
 
 		this.mode = mode;
 		logfile = null;
+		logfileMax = 0;
 		listeners = new ArrayList<ILogListener>();
 		buffer = new ArrayList<String>();
 	}
@@ -139,6 +143,14 @@ public class Logger implements ILogProvider {
 	private void logToFile(String log){
     	
 		try{
+			if(logfileMax > 0){
+				if(logfile.length() >= logfileMax){
+					FileTools.copyFile(
+							logfile.getAbsolutePath(), 
+							logfile.getAbsolutePath()+"."+(new Date()).getTime());
+					logfile.delete();
+				}
+			}
 			FileTools.writeFile(logfile.getAbsolutePath(), log.replaceAll("\n", "\r\n"), true);
 		}catch(Exception e){
 			logToConsole(StringTools.trace(e));

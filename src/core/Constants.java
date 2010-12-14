@@ -16,6 +16,8 @@ public class Constants {
 	public static final String 		HISTORY_FOLDER = DATA_FOLDER+File.separator+"history";
 	public static final String 		TEMP_FOLDER = DATA_FOLDER+File.separator+"temp";
 	
+	public static final long 		LOGFILE_MAX = 2 * 1024; // 2MB
+	
 	public static final int 		PROCESS_OK = 0;
 	public static final int 		PROCESS_NOK = 0;
 }

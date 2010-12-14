@@ -3,6 +3,7 @@ package core;
 import java.io.File;
 import java.util.ArrayList;
 
+import logger.Logger;
 import logger.Logger.Module;
 
 import util.FileTools;
@@ -56,6 +57,7 @@ public class FileManager {
 	public void shutdown() throws Exception {
 		cleanBuildFolder();
 		deleteTempFolder();
+		deleteOldLogfiles();
 	}
 
 	private void initFolders() throws Exception {
@@ -97,7 +99,15 @@ public class FileManager {
 		delete(getTempFolder());
 	}
 	
-	public void delete(File file) throws Exception {
+	private void deleteOldLogfiles() throws Exception {
+		for(File file : getDataFolder().listFiles()){
+			if(file.getName().startsWith(Logger.OUTPUT_FILE+".")){
+				delete(file);
+			}
+		}
+	}
+	
+	private void delete(File file) throws Exception {
 		
 		// TODO retry with unlocker for windows
 		application.getLogger().debug(Module.APP, "delete: "+file.getAbsolutePath());

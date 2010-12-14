@@ -91,7 +91,7 @@ public class LaunchAgent extends AbstractLifecycleObject {
 		history.init();
 		
 		// setup the logger
-		logger.setLogfile(new File(history.logfile));
+		logger.setLogfile(new File(history.logfile), 0);
 		logger.info(Module.APP, "Launch ["+config.getName()+"]");
 		debugProperties(propertyContainer.getProperties(config.getId()));
 		

@@ -128,7 +128,7 @@ public class Application {
 
 			File logFile = new File(fileManager.getDataFolderPath()+File.separator+Logger.OUTPUT_FILE);
 			logger = new Logger(Mode.FILE_AND_CONSOLE);
-			logger.setLogfile(logFile);
+			logger.setLogfile(logFile, Constants.LOGFILE_MAX);
 			logger.info(Module.APP, Constants.APP_FULL_NAME);
 
 			File configFile = new File(fileManager.getDataFolderPath()+File.separator+Configuration.OUTPUT_FILE);
