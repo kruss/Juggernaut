@@ -34,18 +34,19 @@ public class CommandOperation extends AbstractOperation {
 				command, 
 				arguments,
 				directory.isEmpty() ? parent.getFolder() : parent.getFolder()+File.separator+directory, 
-				logger
+						logger
 		);
-		task.syncRun(0, 0);
-		
-		if(task.hasSucceded()){
-			statusManager.setStatus(Status.SUCCEED);
-		}else{
-			statusManager.setStatus(Status.ERROR);
-		}
-		
-		if(!task.getOutput().isEmpty()){
-			artifacts.add(new Artifact("Output", task.getOutput()));
+		try{
+			task.syncRun(0, 0);
+		}finally{
+			if(task.hasSucceded()){
+				statusManager.setStatus(Status.SUCCEED);
+			}else{
+				statusManager.setStatus(Status.ERROR);
+			}
+			if(!task.getOutput().isEmpty()){
+				artifacts.add(new Artifact("Output", task.getOutput()));
+			}
 		}
 	}
 }

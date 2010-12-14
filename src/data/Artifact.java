@@ -53,7 +53,7 @@ public class Artifact {
 			html.append(" ("+StatusManager.getStatusHtml(status)+")");
 		}
 		if(description != null){
-			html.append(" - <i>"+description+"</i>");
+			html.append(" - "+description);
 		}
 		if(content != null){
 			html.append("<p>"+content.replaceAll("\\n", "<br>\n")+"<p>");

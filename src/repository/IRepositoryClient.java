@@ -16,6 +16,7 @@ public interface IRepositoryClient {
 		
 		public String revision;
 		public Date date;
+		public String output;
 		
 		public String toString(){
 			if(revision != null && date != null){
@@ -43,10 +44,27 @@ public interface IRepositoryClient {
 		}
 	}
 	
-	/** get history of url within specified interval, where revision1 > revision2 */
-	public ArrayList<RepositoryCommit> getHistory(String url, String revision1, String revision2) throws Exception;
+	/** get history of url within specified interval, where revision1 < revision2 */
+	public HistoryInfo getHistory(String url, String revision1, String revision2) throws Exception;
 
-	public class RepositoryCommit {
+	public class HistoryInfo {
+		
+		public String revision1;
+		public String revision2;
+		public ArrayList<CommitInfo> commits;
+		public String output;
+		
+		public String toString(){
+			StringBuilder text = new StringBuilder();
+			text.append("["+revision1+" - "+revision2+"]\n");
+			for(CommitInfo commit : commits){
+				text.append("- "+commit.toString()+"\n");
+			}
+			return text.toString();
+		}
+	}
+	
+	public class CommitInfo {
 		
 		public String revision;
 		public Date date;
@@ -54,7 +72,7 @@ public interface IRepositoryClient {
 		
 		public String toString(){
 			if(revision != null && date != null && author != null){
-				return author+" - "+revision+" ("+StringTools.getTextDate(date)+")";
+				return "("+revision+") "+author+" - "+StringTools.getTextDate(date);
 			}else{
 				return "<invalid>";
 			}

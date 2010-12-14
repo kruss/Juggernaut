@@ -30,7 +30,6 @@ public class SVNTrigger extends AbstractTrigger {
 	}
 	
 	private void setLastRevision(String revision){
-		
 		Cache cache = Application.getInstance().getCache();
 		cache.addProperty(
 				config.getId(), Property.REVISION.toString(), revision
@@ -38,7 +37,6 @@ public class SVNTrigger extends AbstractTrigger {
 	}
 	
 	private String getLastRevision(){
-		
 		Cache cache = Application.getInstance().getCache();
 		return cache.getProperty(
 				config.getId(), Property.REVISION.toString()

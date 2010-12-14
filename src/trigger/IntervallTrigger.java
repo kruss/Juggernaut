@@ -24,7 +24,6 @@ public class IntervallTrigger extends AbstractTrigger {
 	}
 	
 	private void setLastDate(Date date){
-		
 		Cache cache = Application.getInstance().getCache();
 		cache.addProperty(
 				config.getId(), Property.DATE.toString(), ""+date.getTime()
@@ -32,7 +31,6 @@ public class IntervallTrigger extends AbstractTrigger {
 	}
 	
 	private Date getLastDate(){
-		
 		Cache cache = Application.getInstance().getCache();
 		String value = cache.getProperty(
 				config.getId(), Property.DATE.toString()

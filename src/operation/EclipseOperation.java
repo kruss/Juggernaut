@@ -78,18 +78,18 @@ public class EclipseOperation extends AbstractOperation {
 				directory, 
 				logger
 		);
-		task.syncRun(0, 0);
-		
-		if(task.hasSucceded()){
-			statusManager.setStatus(Status.SUCCEED);
-		}else{
-			statusManager.setStatus(Status.ERROR);
+		try{
+			task.syncRun(0, 0);
+		}finally{
+			if(task.hasSucceded()){
+				statusManager.setStatus(Status.SUCCEED);
+			}else{
+				statusManager.setStatus(Status.ERROR);
+			}
+			if(!task.getOutput().isEmpty()){
+				artifacts.add(new Artifact("Output", task.getOutput()));
+			}
+			//TODO collect results from cdt-builder
 		}
-		
-		if(!task.getOutput().isEmpty()){
-			artifacts.add(new Artifact("Output", task.getOutput()));
-		}
-		
-		//TODO collect results from cdt-builder
 	}
 }

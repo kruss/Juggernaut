@@ -33,17 +33,19 @@ public class SVNClient implements IRepositoryClient {
 			throw new Exception("SVN info failed: "+task.getResult());
 		}
 		
+		// get result
 		RevisionInfo result = new RevisionInfo();
-		String output = task.getOutput();
+		result.output = task.getOutput();
+		
 		// find e.g: "Revision: 1234"
 		Pattern p1 = Pattern.compile("^Revision: (\\d+)", Pattern.MULTILINE | Pattern.UNIX_LINES);
-		Matcher m1 = p1.matcher(output);
+		Matcher m1 = p1.matcher(result.output);
 		if(m1.find() && m1.groupCount() >= 1){
 			result.revision = m1.group(1);
 		}
 		// find e.g: "Last Changed Date: 2010-11-26 12:47:16 +0100 (Fr, 26 Nov 2010)"
 		Pattern p2 = Pattern.compile("^Last Changed Date: (\\d+-\\d+-\\d+ \\d+:\\d+:\\d+)", Pattern.MULTILINE | Pattern.UNIX_LINES);
-		Matcher m2 = p2.matcher(output);
+		Matcher m2 = p2.matcher(result.output);
 		if(m2.find() && m2.groupCount() >= 1){
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			result.date = sdf.parse(m2.group(1));
@@ -67,8 +69,10 @@ public class SVNClient implements IRepositoryClient {
 			throw new Exception("SVN checkout failed: "+task.getResult());
 		}
 		
+		// get result
 		CheckoutInfo result = new CheckoutInfo();
 		result.output = task.getOutput();
+		
 		// find e.g: "Checked out revision 1234."
 		Pattern p = Pattern.compile("^Checked out revision (\\d+).", Pattern.MULTILINE | Pattern.UNIX_LINES);
 		Matcher m = p.matcher(result.output);
@@ -81,11 +85,11 @@ public class SVNClient implements IRepositoryClient {
 	}
 
 	@Override
-	public ArrayList<RepositoryCommit> getHistory(String url, String revision1, String revision2) throws Exception {
+	public HistoryInfo getHistory(String url, String revision1, String revision2) throws Exception {
 
 		String path =  SystemTools.getWorkingDir();
 		String command = "svn"; 
-		String arguments = "log -r "+revision1+":"+revision2+" "+url;
+		String arguments = "log -r "+revision2+":"+revision1+" "+url;
 
 		// perform task
 		CommandTask task = new CommandTask(command, arguments, path, logger);
@@ -94,23 +98,25 @@ public class SVNClient implements IRepositoryClient {
 			throw new Exception("SVN history failed: "+task.getResult());
 		}
 		
-		ArrayList<RepositoryCommit> result = new ArrayList<RepositoryCommit>();
-		String output = task.getOutput();
+		// get result
+		HistoryInfo result = new HistoryInfo();
+		result.revision1 = revision1;
+		result.revision2 = revision2;
+		result.commits = new ArrayList<CommitInfo>();
+		result.output = task.getOutput();
+		
 		// find e.g: "r4 | kruss | 2010-11-26 12:47:16 +0100 (Fr, 26 Nov 2010) | 1 line"
 		Pattern p = Pattern.compile("^r(\\d+) \\| (\\w+) \\| (\\d+-\\d+-\\d+ \\d+:\\d+:\\d+)", Pattern.MULTILINE | Pattern.UNIX_LINES);
-		Matcher m = p.matcher(output);
+		Matcher m = p.matcher(result.output);
 		while(m.find() && m.groupCount() >= 3){
-			RepositoryCommit commit = new RepositoryCommit();
+			CommitInfo commit = new CommitInfo();
 			commit.revision = m.group(1);
 			commit.author = m.group(2);
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			commit.date = sdf.parse(m.group(3));
-			result.add(commit);
+			result.commits.add(commit);
 		}
-		logger.debug(Module.CMD, "commits: "+result.size());
-		for(RepositoryCommit commit : result){
-			logger.debug(Module.CMD, "commit: "+commit.toString());
-		}
+		logger.debug(Module.CMD, "commits: "+result.toString());
 		
 		return result;
 	}
