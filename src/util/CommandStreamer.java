@@ -10,17 +10,19 @@ import logger.Logger.Module;
 
 public class CommandStreamer extends Task {
 	
+	private CommandTask parent;
 	private InputStream stream;
-	private StringBuilder buffer;
+	private String name;
 	
-	public CommandStreamer(String name, InputStream stream, Logger logger){
+	public String getStreamName(){ return name; }
+	
+	public CommandStreamer(CommandTask parent, String name, InputStream stream, Logger logger){
 		
 		super("Streamer("+name+")", logger);
+		this.parent = parent;
 		this.stream = stream;
-		buffer = new StringBuilder();
+		this.name = name;
 	}
-	
-	public String getBuffer() { return buffer.toString(); }
 	
 	@Override
 	protected void runTask() {
@@ -31,7 +33,7 @@ public class CommandStreamer extends Task {
 	    	
 	        String line=null;
 	        while( (line = bufferedReader.readLine()) != null){
-	        	buffer.append(line+"\n"); // unix-style for regex-processing
+	        	parent.stream(line+"\n");
 	        	observer.debug(Module.CMD, line);
 	        }
 	        

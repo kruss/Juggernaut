@@ -14,9 +14,9 @@ public class CommandTask extends Task {
 	private String arguments;
 	private String path;
 	private Logger logger;
-
+	
+	private StringBuilder output;
 	private int result;
-	private String output;
 	
 	public CommandTask(
 			String command, String arguments, 
@@ -27,16 +27,17 @@ public class CommandTask extends Task {
 		this.arguments = arguments;
 		this.path = path;
 		this.logger = logger;
+		
+		this.output = new StringBuilder();
 		result = Constants.PROCESS_NOK;
-		output = "";
 	}
 	
 	public boolean hasSucceded(){
 		return result == Constants.PROCESS_OK;
 	}
 	
+	public String getOutput(){ return output.toString(); }
 	public int getResult(){ return result; }
-	public String getOutput(){ return output; }
 	
 	@Override
 	protected void runTask() {
@@ -49,8 +50,12 @@ public class CommandTask extends Task {
 			logger.debug(Module.CMD, "directory: "+path);
 			
 			Process process = processBuilder.start();
-			CommandStreamer outputStream = new CommandStreamer("OUT", process.getInputStream(), logger);
-			CommandStreamer errorStream = new CommandStreamer("ERR", process.getErrorStream(), logger);            
+			CommandStreamer outputStream = new CommandStreamer(
+					this, "OUT", process.getInputStream(), logger
+			);
+			CommandStreamer errorStream = new CommandStreamer(
+					this, "ERR", process.getErrorStream(), logger
+			);            
 			outputStream.start();
 			errorStream.start(); 
 			
@@ -64,7 +69,6 @@ public class CommandTask extends Task {
 			while(outputStream.isAlive() || errorStream.isAlive()){ 
 				SystemTools.sleep(50);
 			}
-			output = outputStream.getBuffer()+errorStream.getBuffer();
 			
 		}catch(Exception e){
 			logger.error(Module.CMD, e);
@@ -73,6 +77,10 @@ public class CommandTask extends Task {
 		}
 	}
 
+	public synchronized void stream(String line) {
+		output.append(line);
+	}
+	
 	private ProcessBuilder getProcessBuilder(String commandline, String path) throws Exception {
 		
 		ProcessBuilder processBuilder = null;

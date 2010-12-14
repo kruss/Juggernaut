@@ -13,7 +13,7 @@ import util.SystemTools;
 
 public class SVNClient implements IRepositoryClient {
 	
-	Logger logger;
+	private Logger logger;
 	
 	public SVNClient(Logger logger){
 		this.logger = logger;
