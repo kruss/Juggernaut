@@ -1,21 +1,17 @@
 package data;
 
-import java.util.ArrayList;
-
-import launch.AbstractLifecycleObject;
+import launch.LifecycleObject;
 import launch.LaunchAgent;
 import logger.Logger;
 
-public abstract class AbstractOperation extends AbstractLifecycleObject {
+public abstract class AbstractOperation extends LifecycleObject {
 
 	protected transient LaunchAgent parent;
 	protected transient Logger logger;
 	protected AbstractOperationConfig config;
-	protected ArrayList<Artifact> artifacts;
 	
 	public LaunchAgent getParent(){ return parent; }
 	public AbstractOperationConfig getConfig(){ return config; }
-	public ArrayList<Artifact> getArtifacts(){ return artifacts; }
 
 	public AbstractOperation(LaunchAgent parent, AbstractOperationConfig config){
 		
@@ -23,7 +19,6 @@ public abstract class AbstractOperation extends AbstractLifecycleObject {
 		this.parent = parent;
 		logger = parent.getLogger();
 		this.config = config.clone();
-		artifacts = new ArrayList<Artifact>();
 		
 		parent.getPropertyContainer().addProperties(
 				config.getId(), config.getOptionContainer().getProperties()

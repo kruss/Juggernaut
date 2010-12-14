@@ -23,7 +23,7 @@ public class LaunchHistory extends AbstractHistory {
 	public ArrayList<OperationHistory> operations;
 	
 	public LaunchHistory(LaunchAgent launch){
-
+		super(launch);
 		this.launch = launch;
 		
 		id = launch.getConfig().getId();
@@ -57,7 +57,6 @@ public class LaunchHistory extends AbstractHistory {
 
 		end = launch.getStatusManager().getEnd();
 		status = launch.getStatusManager().getStatus();
-		artifacts.add(new Artifact("Logfile", new File(logfile)));
 		super.finish();
 	}
 

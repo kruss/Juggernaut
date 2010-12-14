@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import core.Application;
+import data.Artifact;
 
 import launch.ILifecycleListener.Lifecycle;
 import launch.StatusManager.Status;
@@ -11,17 +12,19 @@ import logger.Logger;
 import logger.Logger.Module;
 import util.Task;
 
-public abstract class AbstractLifecycleObject extends Task {
-	
+public abstract class LifecycleObject extends Task {
 	
 	protected StatusManager statusManager;
+	protected ArrayList<Artifact> artifacts;
 	private ArrayList<ILifecycleListener> listeners;
 	
 	public StatusManager getStatusManager(){ return statusManager; }
+	public ArrayList<Artifact> getArtifacts(){ return artifacts; }
 	
-	public AbstractLifecycleObject(String name){
+	public LifecycleObject(String name){
 		super(name, Application.getInstance().getLogger());
 		statusManager = new StatusManager(this);
+		artifacts = new ArrayList<Artifact>();
 		listeners = new ArrayList<ILifecycleListener>();
 	}
 	

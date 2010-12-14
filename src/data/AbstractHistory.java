@@ -2,16 +2,20 @@ package data;
 
 import html.AbstractHtmlPage;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
 import util.FileTools;
 
+import launch.LifecycleObject;
 import launch.StatusManager.Status;
 
 public abstract class AbstractHistory {
 
+	private transient LifecycleObject object;
+	
 	public String historyId;
 	
 	public String id;
@@ -23,8 +27,9 @@ public abstract class AbstractHistory {
 	public String folder;
 	public ArrayList<Artifact> artifacts;
 	
-	public AbstractHistory(){
+	public AbstractHistory(LifecycleObject object){
 		
+		this.object = object;
 		historyId = UUID.randomUUID().toString();
 		artifacts = new ArrayList<Artifact>();
 	}
@@ -36,6 +41,10 @@ public abstract class AbstractHistory {
 	
 	public void finish() throws Exception {
 		
+		artifacts.addAll(object.getArtifacts());
+		for(Artifact artifact : artifacts){
+			artifact.finish(new File(folder));
+		}
 		createHtml();
 	}
 

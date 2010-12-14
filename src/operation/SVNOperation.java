@@ -80,13 +80,15 @@ public class SVNOperation extends AbstractOperation {
 		}else{
 			statusManager.setStatus(Status.ERROR);
 		}
-		artifacts.add(new Artifact("Checkout", checkout.output));
+		Artifact checkoutArtifact = new Artifact("Checkout", checkout.output);
+		checkoutArtifact.description = "Revision: "+checkout.revision;
+		artifacts.add(checkoutArtifact);
 		
 		if(lastRevision != null && currentRevision != null && !lastRevision.equals(currentRevision)){
 			HistoryInfo history = client.getHistory(getUrlProperty(), lastRevision, currentRevision);
 			commits = history.commits;
 			Artifact commitArtifact = new Artifact("Commits", history.output);
-			commitArtifact.description = "Intervall ["+history.revision1+" - "+history.revision2+"]";
+			commitArtifact.description = "Intervall: "+history.revision1+" - "+history.revision2;
 			artifacts.add(commitArtifact);
 		}
 	}

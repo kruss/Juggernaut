@@ -124,7 +124,7 @@ public class LaunchManager implements ILifecycleListener {
 	}
 
 	@Override
-	public void lifecycleChanged(AbstractLifecycleObject object, Lifecycle lifecycle) {
+	public void lifecycleChanged(LifecycleObject object, Lifecycle lifecycle) {
 		
 		LaunchAgent agent = (LaunchAgent)object;
 		String date = StringTools.getTextDate(new Date());

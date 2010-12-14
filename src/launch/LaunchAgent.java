@@ -8,6 +8,7 @@ import java.util.HashMap;
 import core.Application;
 import data.AbstractOperation;
 import data.AbstractOperationConfig;
+import data.Artifact;
 import data.LaunchHistory;
 import data.LaunchConfig;
 import data.OperationHistory;
@@ -20,7 +21,7 @@ import logger.Logger;
 import logger.Logger.Mode;
 import logger.Logger.Module;
 
-public class LaunchAgent extends AbstractLifecycleObject {
+public class LaunchAgent extends LifecycleObject {
 
 	private Application application;
 	
@@ -93,6 +94,7 @@ public class LaunchAgent extends AbstractLifecycleObject {
 		// setup the logger
 		logger.setLogfile(new File(history.logfile), 0);
 		logger.info(Module.APP, "Launch ["+config.getName()+"]");
+		artifacts.add(new Artifact("Logfile", logger.getLogfile()));
 		debugProperties(propertyContainer.getProperties(config.getId()));
 		
 		// setup launch-folder

@@ -13,14 +13,14 @@ public class StatusManager {
 		UNDEFINED, PROCESSING, SUCCEED, ERROR, FAILURE, CANCEL
 	}
 	
-	private AbstractLifecycleObject lifecycleObject;
+	private LifecycleObject lifecycleObject;
 	private Status status;
 	private int progress;
 	private int progressMax;
 	private Date start;
 	private Date end;
 	
-	public StatusManager(AbstractLifecycleObject lifecycleObject){
+	public StatusManager(LifecycleObject lifecycleObject){
 		
 		this.lifecycleObject = lifecycleObject;
 		status = Status.UNDEFINED;

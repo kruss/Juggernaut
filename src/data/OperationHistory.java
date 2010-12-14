@@ -15,7 +15,7 @@ public class OperationHistory extends AbstractHistory {
 	private transient AbstractOperation operation;
 	
 	public OperationHistory(AbstractOperation operation){
-		
+		super(operation);
 		this.operation = operation;
 		
 		id = operation.getConfig().getId();
@@ -37,7 +37,6 @@ public class OperationHistory extends AbstractHistory {
 		start = operation.getStatusManager().getStart();
 		end = operation.getStatusManager().getEnd();
 		status = operation.getStatusManager().getStatus();
-		artifacts.addAll(operation.getArtifacts());
 		super.finish();
 	}
 	
