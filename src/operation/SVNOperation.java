@@ -1,12 +1,9 @@
 package operation;
 
-import java.util.ArrayList;
-
 import core.Application;
 import core.Cache;
 import repository.SVNClient;
 import repository.IRepositoryClient.CheckoutInfo;
-import repository.IRepositoryClient.CommitInfo;
 import repository.IRepositoryClient.HistoryInfo;
 
 import launch.LaunchAgent;
@@ -24,14 +21,12 @@ public class SVNOperation extends AbstractOperation implements IRepositoryOperat
 	
 	public String lastRevision;
 	public String currentRevision;
-	public ArrayList<CommitInfo> commits;		
+	public HistoryInfo history;		
 	
 	@Override
-	public String getLastRevision(){ return lastRevision; }
+	public String getRevision(){ return currentRevision; }
 	@Override
-	public String getCurrentRevision(){ return currentRevision; }
-	@Override
-	public ArrayList<CommitInfo> getCommits(){ return commits; }
+	public HistoryInfo getHistory(){ return history; }
 	
 	public SVNOperation(LaunchAgent parent, SVNOperationConfig config) {
 		super(parent, config);
@@ -79,13 +74,13 @@ public class SVNOperation extends AbstractOperation implements IRepositoryOperat
 		String url = getUrlProperty();
 		String revision = getRevisionProperty();
 		
-		checkout(url, revision);
-		getHistory();
+		checkoutUrl(url, revision);
+		getHistoryDelta();
 		
 		statusManager.setStatus(Status.SUCCEED);
 	}
 	
-	private void checkout(String url, String revision) throws Exception {
+	private void checkoutUrl(String url, String revision) throws Exception {
 		
 		lastRevision = getLastRevisionCache();
 
@@ -99,14 +94,13 @@ public class SVNOperation extends AbstractOperation implements IRepositoryOperat
 		artifacts.add(checkoutArtifact);
 	}
 	
-	private void getHistory() throws Exception {
+	private void getHistoryDelta() throws Exception {
 		
 		if(lastRevision != null && !lastRevision.equals(currentRevision)){
 			String startRevision = client.getNextRevision(lastRevision);
 			String endRevision = currentRevision;
 			
-			HistoryInfo history = client.getHistory(getUrlProperty(), startRevision, endRevision);
-			commits = history.commits;
+			history = client.getHistory(getUrlProperty(), startRevision, endRevision);
 			
 			Artifact commitArtifact = new Artifact("Commits", history.output);
 			commitArtifact.description = "Intervall: "+history.revision1+" - "+history.revision2;
