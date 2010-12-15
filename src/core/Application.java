@@ -1,5 +1,7 @@
 package core;
 
+import http.HttpServer;
+
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -52,6 +54,7 @@ public class Application {
 	private FileManager fileManager;
 	private TaskManager taskManager;
 	private LaunchManager launchManager;
+	private HttpServer httpServer;
 	
 	public Logger getLogger(){ return logger; }
 	public Window getWindow(){ return window; }
@@ -62,6 +65,7 @@ public class Application {
 	public FileManager getFileManager(){ return fileManager; }
 	public TaskManager getTaskManager(){ return taskManager; }
 	public LaunchManager getLaunchManager(){ return launchManager; }
+	public HttpServer getHttpServer(){ return httpServer; }
 	
 	private Application(){
 		
@@ -172,9 +176,14 @@ public class Application {
 			taskManager.init();
 			launchManager = new LaunchManager();
 			launchManager.init();
+			httpServer = new HttpServer(
+					Constants.HTTP_PORT, fileManager.getHistoryFolder(), logger
+			);
+			httpServer.asyncRun(1000, 0);
 		}
 		@Override
 		public void shutdown() throws Exception {
+			httpServer.syncKill();
 			launchManager.shutdown();
 			taskManager.shutdown();
 		}

@@ -7,7 +7,7 @@ public class HtmlLink {
 	
 	public HtmlLink(String name, String path) {
 		this.name = name;
-		this.path = path;
+		this.path = path.replaceAll("\\\\", "/");
 	}
 
 	public String getHtml() {

@@ -14,11 +14,11 @@ import core.Constants;
 
 public class Logger implements ILogProvider {
 
-	public static final String OUTPUT_FILE = Constants.APP_NAME+".log";
+	public static final String OUTPUT_FILE = Constants.APP_NAME+".txt";
 	public static final int BUFFER_MAX = 100;
 	
 	public enum Mode { FILE, CONSOLE, FILE_AND_CONSOLE }
-	public enum Module { APP, CMD, TASK }
+	public enum Module { APP, CMD, TASK, HTTP }
 	public enum Level { ERROR, NORMAL, DEBUG }
 
 	private Mode mode;

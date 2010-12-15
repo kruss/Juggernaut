@@ -10,9 +10,9 @@ import java.util.ArrayList;
 
 
 import core.Application;
-import core.Constants;
 
 import launch.LaunchAgent;
+import logger.Logger;
 
 public class LaunchHistory extends AbstractHistory {
 	
@@ -40,7 +40,7 @@ public class LaunchHistory extends AbstractHistory {
 		folder = 
 			Application.getInstance().getFileManager().getHistoryFolderPath()+
 			File.separator+start.getTime();
-		logfile = folder+File.separator+Constants.APP_NAME+".log";
+		logfile = folder+File.separator+Logger.OUTPUT_FILE;
 		
 		super.init();
 		for(OperationHistory entry : operations){
