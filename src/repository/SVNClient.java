@@ -136,4 +136,14 @@ public class SVNClient implements IRepositoryClient {
 		logger.debug(Module.CMD, result.toString());
 		return result;
 	}
+	
+	@Override
+	public String getNextRevision(String revision) throws Exception {
+
+		if(revision.equals(Revision.HEAD.toString())){
+			return Revision.HEAD.toString();
+		}else{
+			return ""+((new Integer(revision)).intValue()+1);
+		}
+	}
 }

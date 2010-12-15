@@ -36,7 +36,7 @@ public interface IRepositoryClient {
 		}
 	}
 	
-	/** get history of url within specified interval, where revision1 < revision2 */
+	/** get history of url within interval: [revision1, revision2] */
 	public HistoryInfo getHistory(String url, String revision1, String revision2) throws Exception;
 
 	public class HistoryInfo {
@@ -66,4 +66,7 @@ public interface IRepositoryClient {
 			return "("+revision+") "+author+" - "+StringTools.getTextDate(date);
 		}
 	}
+	
+	/** get the next revision to the specified one */
+	public String getNextRevision(String revision) throws Exception;
 }

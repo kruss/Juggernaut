@@ -88,4 +88,15 @@ public class SVNClientTest {
 			fail(e.getMessage());
 		}
 	}
+	
+	@Test public void getNextRevision() {
+		
+		try{
+			assertTrue(client.getNextRevision(Revision.HEAD.toString()).equals(Revision.HEAD.toString()));
+			assertTrue(client.getNextRevision("0").equals("1"));
+		}catch(Exception e) {
+			logger.error(Module.APP, e);
+			fail(e.getMessage());
+		}
+	}
 }

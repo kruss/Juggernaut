@@ -15,7 +15,7 @@ import launch.StatusManager.Status;
 import data.AbstractOperation;
 import data.Artifact;
 
-public class SVNOperation extends AbstractOperation {
+public class SVNOperation extends AbstractOperation implements IRepositoryOperation {
 
 	private enum Property { REVISION };
 	
@@ -24,7 +24,14 @@ public class SVNOperation extends AbstractOperation {
 	
 	public String lastRevision;
 	public String currentRevision;
-	public ArrayList<CommitInfo> commits;
+	public ArrayList<CommitInfo> commits;		
+	
+	@Override
+	public String getLastRevision(){ return lastRevision; }
+	@Override
+	public String getCurrentRevision(){ return currentRevision; }
+	@Override
+	public ArrayList<CommitInfo> getCommits(){ return commits; }
 	
 	public SVNOperation(LaunchAgent parent, SVNOperationConfig config) {
 		super(parent, config);
@@ -38,23 +45,17 @@ public class SVNOperation extends AbstractOperation {
 	}
 	
 	
-	private void setLastRevision(String revision){
+	private void setLastRevisionCache(String revision){
 		Cache cache = Application.getInstance().getCache();
 		cache.addProperty(
 				config.getId(), Property.REVISION.toString(), revision
 		);
 	}
 	
-	private String getLastRevision(){
+	private String getLastRevisionCache(){
 		Cache cache = Application.getInstance().getCache();
 		return cache.getProperty(
 				config.getId(), Property.REVISION.toString()
-		);
-	}
-	
-	private void setRevisionProperty(String revision) {
-		parent.getPropertyContainer().addProperty(
-				config.getId(), Property.REVISION.toString(), revision
 		);
 	}
 
@@ -66,29 +67,50 @@ public class SVNOperation extends AbstractOperation {
 		return PropertyContainer.expand(parent.getPropertyContainer(), config.getRevision());
 	}
 	
+	private void setRevisionProperty(String revision) {
+		parent.getPropertyContainer().addProperty(
+				config.getId(), Property.REVISION.toString(), revision
+		);
+	}
+	
 	@Override
 	protected void execute() throws Exception {
 		
-		CheckoutInfo checkout = client.checkout(getUrlProperty(), getRevisionProperty(), parent.getFolder());
+		String url = getUrlProperty();
+		String revision = getRevisionProperty();
+		
+		checkout(url, revision);
+		getHistory();
+		
+		statusManager.setStatus(Status.SUCCEED);
+	}
+	
+	private void checkout(String url, String revision) throws Exception {
+		
+		lastRevision = getLastRevisionCache();
 
-		lastRevision = getLastRevision();
+		CheckoutInfo checkout = client.checkout(url, revision, parent.getFolder());
 		currentRevision = checkout.revision;
-		setLastRevision(currentRevision);
+		setLastRevisionCache(currentRevision);
 		setRevisionProperty(currentRevision);
 
 		Artifact checkoutArtifact = new Artifact("Checkout", checkout.output);
 		checkoutArtifact.description = "Revision: "+checkout.revision;
 		artifacts.add(checkoutArtifact);
+	}
+	
+	private void getHistory() throws Exception {
 		
-		if(lastRevision != null &&  !lastRevision.equals(currentRevision)){
-			HistoryInfo history = client.getHistory(getUrlProperty(), lastRevision, currentRevision);
+		if(lastRevision != null && !lastRevision.equals(currentRevision)){
+			String startRevision = client.getNextRevision(lastRevision);
+			String endRevision = currentRevision;
+			
+			HistoryInfo history = client.getHistory(getUrlProperty(), startRevision, endRevision);
 			commits = history.commits;
 			
 			Artifact commitArtifact = new Artifact("Commits", history.output);
 			commitArtifact.description = "Intervall: "+history.revision1+" - "+history.revision2;
 			artifacts.add(commitArtifact);
 		}
-		
-		statusManager.setStatus(Status.SUCCEED);
 	}
 }
