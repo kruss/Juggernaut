@@ -227,7 +227,7 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 					historyOutput.setText(FileTools.readFile(logfile.getAbsolutePath()));
 					historyOutput.setCaretPosition(0);
 				}catch(Exception e){
-					application.getLogger().error(Module.APP, e);
+					application.getLogger().error(Module.COMMON, e);
 				}
 			}else{
 				historyOutput.setText("");

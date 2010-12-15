@@ -92,7 +92,7 @@ public class Application {
 			!launchManager.isBusy() ||
 			UiTools.confirmDialog("Aboard running launches ?")
 		){
-			logger.info(Module.APP, "Shutdown");
+			logger.info(Module.COMMON, "Shutdown");
 			try{
 				for(int i=components.size()-1; i>=0; i--){
 					components.get(i).shutdown();
@@ -115,7 +115,7 @@ public class Application {
 	}
 	
 	public void popupError(Exception e){
-		logger.error(Module.APP, e);
+		logger.error(Module.COMMON, e);
 		UiTools.errorDialog(e.getClass().getSimpleName()+"\n\n"+e.getMessage());
 	}
 	
@@ -133,7 +133,7 @@ public class Application {
 			File logFile = new File(fileManager.getDataFolderPath()+File.separator+Logger.OUTPUT_FILE);
 			logger = new Logger(Mode.FILE_AND_CONSOLE);
 			logger.setLogfile(logFile, Constants.LOGFILE_MAX);
-			logger.info(Module.APP, Constants.APP_FULL_NAME);
+			logger.info(Module.COMMON, Constants.APP_FULL_NAME);
 
 			File configFile = new File(fileManager.getDataFolderPath()+File.separator+Configuration.OUTPUT_FILE);
 			if(configFile.isFile()){

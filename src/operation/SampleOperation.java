@@ -29,22 +29,22 @@ public class SampleOperation extends AbstractOperation {
 	protected void execute() throws Exception {
 		
 		if(config.isThrowError()){
-			logger.log(Module.APP, "throwing error...");
+			logger.log(Module.COMMON, "throwing error...");
 			statusManager.setStatus(Status.ERROR);
 		}
 		if(config.isThrowException()){
-			logger.log(Module.APP, "throwing exception...");
+			logger.log(Module.COMMON, "throwing exception...");
 			throw new Exception("Sample Exception");
 		}
 		
 		long work = StringTools.millis2sec(config.getIdleTime());
 		if(work > 0){
-			logger.log(Module.APP, "doing some work...");
+			logger.log(Module.COMMON, "doing some work...");
 			for(long i=1; i<=work; i++){
-				logger.debug(Module.APP, "work ("+i+"/"+work+")");
+				logger.debug(Module.COMMON, "work ("+i+"/"+work+")");
 				SystemTools.sleep(StringTools.sec2millis(1));
 			}
 		}
-		logger.log(Module.APP, "done.");
+		logger.log(Module.COMMON, "done.");
 	}
 }

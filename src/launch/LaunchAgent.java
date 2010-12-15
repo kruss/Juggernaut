@@ -93,14 +93,14 @@ public class LaunchAgent extends LifecycleObject {
 		
 		// setup the logger
 		logger.setLogfile(new File(history.logfile), 0);
-		logger.info(Module.APP, "Launch ["+config.getName()+"]");
+		logger.info(Module.COMMON, "Launch ["+config.getName()+"]");
 		artifacts.add(new Artifact("Logfile", logger.getLogfile()));
 		debugProperties(propertyContainer.getProperties(config.getId()));
 		
 		// setup launch-folder
 		File folder = new File(getFolder());
 		if(config.isClean() && folder.isDirectory()){
-			logger.log(Module.APP, "cleaning: "+folder.getAbsolutePath());
+			logger.log(Module.COMMON, "cleaning: "+folder.getAbsolutePath());
 			FileTools.deleteFolder(folder.getAbsolutePath());
 		}
 		if(!folder.isDirectory()){
@@ -114,12 +114,12 @@ public class LaunchAgent extends LifecycleObject {
 		for(AbstractOperation operation : operations){
 			try{
 				Status operationStatus = executeOperation(operation);
-				logger.log(Module.APP, "Operation: "+operationStatus.toString());	
+				logger.log(Module.COMMON, "Operation: "+operationStatus.toString());	
 				if(operationStatus == Status.ERROR){
 					if(!operation.getConfig().isCritical()){
 						statusManager.setStatus(Status.ERROR);
 					}else{
-						logger.emph(Module.APP, "Critical operation failed");
+						logger.emph(Module.COMMON, "Critical operation failed");
 						statusManager.setStatus(Status.FAILURE);
 						aboard = true;
 					}
@@ -128,7 +128,7 @@ public class LaunchAgent extends LifecycleObject {
 					aboard = true;
 				}
 			}catch(InterruptedException e){
-				logger.emph(Module.APP, "Interrupted");
+				logger.emph(Module.COMMON, "Interrupted");
 				statusManager.setStatus(Status.CANCEL);
 				aboard = true;
 				if(operation.isAlive()){
@@ -144,7 +144,7 @@ public class LaunchAgent extends LifecycleObject {
 	private Status executeOperation(AbstractOperation operation)throws Exception {
 		
 		logger.info(
-				Module.APP, 
+				Module.COMMON, 
 				operation.getIndex()+"/"+config.getOperationConfigs().size()+
 				" Operation ["+operation.getConfig().getName()+"]"
 		);
@@ -175,20 +175,20 @@ public class LaunchAgent extends LifecycleObject {
 			history.finish();
 			application.getHistory().addEntry(history); 
 		}catch(Exception e){
-			logger.error(Module.APP, e);
+			logger.error(Module.COMMON, e);
 		}
 		
 		if(triggerStatus == LaunchManager.USER_TRIGGER){
 			try{
 				String path = history.getIndexPath();
-				logger.debug(Module.APP, "browser: "+path);
+				logger.debug(Module.COMMON, "browser: "+path);
 				SystemTools.openBrowser(path);
 			}catch(IOException e) {
-				logger.error(Module.APP, e);
+				logger.error(Module.COMMON, e);
 			}
 		}
 		
-		logger.info(Module.APP, "Launch: "+statusManager.getStatus().toString());
+		logger.info(Module.COMMON, "Launch: "+statusManager.getStatus().toString());
 		logger.clearListeners();
 	}
 	
@@ -199,6 +199,6 @@ public class LaunchAgent extends LifecycleObject {
 		for(String key : keys){
 			info.append("\t"+key+": "+properties.get(key)+"\n");
 		}
-		logger.debug(Module.APP, "Properties [\n"+info.toString()+"]");
+		logger.debug(Module.COMMON, "Properties [\n"+info.toString()+"]");
 	}
 }

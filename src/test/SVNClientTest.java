@@ -52,26 +52,26 @@ public class SVNClientTest {
 	
 	@Test public void testInfo() {
 		
-		logger.info(Module.APP, "SVN Info");
+		logger.info(Module.COMMON, "SVN Info");
 		
 		try{
 			client.getInfo(SVN_REPOSITORY);
 		}catch(Exception e){
-			logger.error(Module.APP, e);
+			logger.error(Module.COMMON, e);
 			fail(e.getMessage());
 		}
 	}
 
 	@Test public void testCheckout() {
 		
-		logger.info(Module.APP, "SVN Checkout");
+		logger.info(Module.COMMON, "SVN Checkout");
 		assertTrue(folder.listFiles().length == 0);
 		String revision = Revision.HEAD.toString();
 		
 		try{
 			client.checkout(SVN_REPOSITORY, revision, folder.getAbsolutePath());
 		}catch(Exception e){
-			logger.error(Module.APP, e);
+			logger.error(Module.COMMON, e);
 			fail(e.getMessage());
 		}
 		assertTrue(folder.listFiles().length > 0);
@@ -79,12 +79,12 @@ public class SVNClientTest {
 	
 	@Test public void testHistory() {
 		
-		logger.info(Module.APP, "SVN History");
+		logger.info(Module.COMMON, "SVN History");
 		
 		try{
 			client.getHistory(SVN_REPOSITORY, "0", Revision.HEAD.toString());
 		}catch(Exception e){
-			logger.error(Module.APP, e);
+			logger.error(Module.COMMON, e);
 			fail(e.getMessage());
 		}
 	}
@@ -95,7 +95,7 @@ public class SVNClientTest {
 			assertTrue(client.getNextRevision(Revision.HEAD.toString()).equals(Revision.HEAD.toString()));
 			assertTrue(client.getNextRevision("0").equals("1"));
 		}catch(Exception e) {
-			logger.error(Module.APP, e);
+			logger.error(Module.COMMON, e);
 			fail(e.getMessage());
 		}
 	}

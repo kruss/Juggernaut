@@ -182,7 +182,7 @@ public class Configuration implements IOptionInitializer {
 	
 	public static Configuration load(String path) throws Exception {
 	
-		Application.getInstance().getLogger().debug(Module.APP, "load: "+path);
+		Application.getInstance().getLogger().debug(Module.COMMON, "load: "+path);
 		XStream xstream = new XStream(new DomDriver());
 		String xml = FileTools.readFile(path);
 		Configuration configuration = (Configuration)xstream.fromXML(xml);
@@ -198,7 +198,7 @@ public class Configuration implements IOptionInitializer {
 	public void save() throws Exception {
 		
 		if(isDirty()){
-			Application.getInstance().getLogger().debug(Module.APP, "save: "+path);
+			Application.getInstance().getLogger().debug(Module.COMMON, "save: "+path);
 			XStream xstream = new XStream(new DomDriver());
 			String xml = xstream.toXML(this);
 			FileTools.writeFile(path, xml, false);

@@ -25,7 +25,7 @@ public class ConnectionTest extends Task {
 	@Override
 	protected void runTask() {
 		
-		observer.log(Module.APP, "Test: "+url);
+		observer.log(Module.COMMON, "Test: "+url);
 		Status status = Status.UNDEFINED;
 		String message = "";
 		try{
@@ -36,10 +36,10 @@ public class ConnectionTest extends Task {
 			status = Status.FAILURE;
 			message = (e.getMessage() != null) ? e.getMessage() : e.getClass().getSimpleName();
 			if(!(e instanceof InterruptedException)){
-				observer.error(Module.APP, e);
+				observer.error(Module.COMMON, e);
 			}			
 		}finally{
-			observer.log(Module.APP, "Test: "+status.toString());
+			observer.log(Module.COMMON, "Test: "+status.toString());
 			if(status == Status.SUCCEED){
 				UiTools.infoDialog(
 						"Test - "+status.toString()+"\n\n"+message

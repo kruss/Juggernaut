@@ -59,7 +59,7 @@ public class SVNClient implements IRepositoryClient {
 			throw new Exception(name+": no date");
 		}
 		
-		logger.debug(Module.CMD, result.toString());
+		logger.debug(Module.COMMAND, result.toString());
 		return result;
 	}
 
@@ -92,7 +92,7 @@ public class SVNClient implements IRepositoryClient {
 			throw new Exception(name+": no revision");
 		}
 		
-		logger.debug(Module.CMD, result.toString());
+		logger.debug(Module.COMMAND, result.toString());
 		return result;
 	}
 
@@ -133,7 +133,7 @@ public class SVNClient implements IRepositoryClient {
 			throw new Exception(name+": no commits");
 		}
 
-		logger.debug(Module.CMD, result.toString());
+		logger.debug(Module.COMMAND, result.toString());
 		return result;
 	}
 	

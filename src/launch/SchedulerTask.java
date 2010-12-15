@@ -45,7 +45,7 @@ public class SchedulerTask extends Task {
 
 	public void checkSchedules() {
 		
-		application.getLogger().debug(Module.APP, "Checking schedules");
+		application.getLogger().debug(Module.COMMON, "Checking schedules");
 		application.getLaunchManager().setScheduled(new Date());
 		ArrayList<LaunchConfig> launchConfigs = getRandomizedLaunchConfigs();
 		for(LaunchConfig launchConfig : launchConfigs){
@@ -70,14 +70,14 @@ public class SchedulerTask extends Task {
 					LaunchStatus launchStatus = application.getLaunchManager().runLaunch(launch);
 					if(launchStatus.launched){
 						application.getLogger().log(
-								Module.APP, 
+								Module.COMMON, 
 								"Launch ["+launchConfig.getName()+"] triggered: "+triggerStatus.message
 						);
 						trigger.wasTriggered(true);
 						launched = true;
 					}else{
 						application.getLogger().log(
-								Module.APP, 
+								Module.COMMON, 
 								"Launch ["+launchConfig.getName()+"] aborded: "+launchStatus.message
 						);
 						trigger.wasTriggered(false);
@@ -88,7 +88,7 @@ public class SchedulerTask extends Task {
 				}
 			}else{
 				application.getLogger().debug(
-						Module.APP, 
+						Module.COMMON, 
 						"Trigger ["+triggerConfig.getId()+"] idle: "+triggerStatus.message
 				);
 			}

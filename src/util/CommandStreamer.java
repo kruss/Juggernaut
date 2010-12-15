@@ -34,13 +34,13 @@ public class CommandStreamer extends Task {
 	        String line=null;
 	        while( (line = bufferedReader.readLine()) != null){
 	        	parent.stream(line+"\n");
-	        	observer.debug(Module.CMD, line);
+	        	observer.debug(Module.COMMAND, line);
 	        }
 	        
 			bufferedReader.close();
 			streamReader.close();
 		}catch(Exception e){ 
-			observer.error(Module.CMD, e); 
+			observer.error(Module.COMMAND, e); 
 		}
 	}
 }

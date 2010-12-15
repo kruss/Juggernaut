@@ -73,7 +73,7 @@ public class SVNTrigger extends AbstractTrigger {
 				}
 			}
 		}catch(Exception e){
-			observer.error(Module.APP, e);
+			observer.error(Module.COMMON, e);
 			return launcher.new TriggerStatus(
 					e.getMessage(), false
 			);

@@ -52,10 +52,10 @@ public abstract class LifecycleObject extends Task {
 			execute();
 		}catch(Exception e){
 			if(e instanceof InterruptedException){
-				getLogger().emph(Module.APP, "Interrupted");
+				getLogger().emph(Module.COMMON, "Interrupted");
 				statusManager.setStatus(Status.CANCEL);
 			}else{
-				getLogger().error(Module.APP, e);
+				getLogger().error(Module.COMMON, e);
 				statusManager.setStatus(Status.FAILURE);
 			}
 		}finally{

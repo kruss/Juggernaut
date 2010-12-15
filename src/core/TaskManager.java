@@ -69,7 +69,7 @@ public class TaskManager extends Task {
 				Task task = tasks.get(i);
 				if(task != null && task.isExpired()){
 						tasks.remove(task);
-						task.getObserver().log(Module.APP, "Task Timeout ["+task.getName()+"]");
+						task.getObserver().log(Module.COMMON, "Task Timeout ["+task.getName()+"]");
 						task.asyncKill();
 				}
 			}

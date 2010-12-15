@@ -57,7 +57,7 @@ public class History {
 	
 	public static History load(String path) throws Exception {
 	
-		Application.getInstance().getLogger().debug(Module.APP, "load: "+path);
+		Application.getInstance().getLogger().debug(Module.COMMON, "load: "+path);
 		XStream xstream = new XStream(new DomDriver());
 		String xml = FileTools.readFile(path);
 		History history = (History)xstream.fromXML(xml);
@@ -70,7 +70,7 @@ public class History {
 	public void save() throws Exception {
 		
 		if(isDirty()){
-			Application.getInstance().getLogger().debug(Module.APP, "save: "+path);
+			Application.getInstance().getLogger().debug(Module.COMMON, "save: "+path);
 			XStream xstream = new XStream(new DomDriver());
 			String xml = xstream.toXML(this);
 			FileTools.writeFile(path, xml, false);
@@ -96,7 +96,7 @@ public class History {
 		try{
 			page.create();
 		}catch(Exception e){
-			Application.getInstance().getLogger().error(Module.APP, e);
+			Application.getInstance().getLogger().error(Module.COMMON, e);
 		}
 	}
 	
@@ -135,14 +135,14 @@ public class History {
 	
 	private synchronized void delete(LaunchHistory entry) {
 		
-		Application.getInstance().getLogger().debug(Module.APP, "deleting history: "+entry.id);
+		Application.getInstance().getLogger().debug(Module.COMMON, "deleting history: "+entry.id);
 		try{
 			entries.remove(entry);
 			FileTools.deleteFolder(entry.folder);
 			dirty = true;
 			save();
 		}catch(Exception e){
-			Application.getInstance().getLogger().error(Module.APP, e);
+			Application.getInstance().getLogger().error(Module.COMMON, e);
 		}
 	}
 	

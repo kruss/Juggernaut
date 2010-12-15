@@ -18,7 +18,7 @@ public class Logger implements ILogProvider {
 	public static final int BUFFER_MAX = 100;
 	
 	public enum Mode { FILE, CONSOLE, FILE_AND_CONSOLE }
-	public enum Module { APP, CMD, TASK, HTTP }
+	public enum Module { COMMON, COMMAND, TASK, HTTP }
 	public enum Level { ERROR, NORMAL, DEBUG }
 
 	private Mode mode;
@@ -105,7 +105,7 @@ public class Logger implements ILogProvider {
 
     	if(isLogging(module, level)){
 	    	String time = "["+StringTools.getTextDate(new Date())+"] ";
-	    	String info = (module != Module.APP) ? "("+module.toString()+") " : "";
+	    	String info = (module != Module.COMMON) ? "("+module.toString()+") " : "";
 	    	String log;
 	    	
 			if(type == Type.INFO){

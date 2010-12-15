@@ -110,7 +110,7 @@ public class FileManager {
 	private void delete(File file) throws Exception {
 		
 		// TODO retry with unlocker for windows
-		application.getLogger().debug(Module.APP, "delete: "+file.getAbsolutePath());
+		application.getLogger().debug(Module.COMMON, "delete: "+file.getAbsolutePath());
 		if(file.isFile()){
 			FileTools.deleteFile(file.getAbsolutePath());
 		}else if(file.isDirectory()){

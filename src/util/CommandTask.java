@@ -46,8 +46,8 @@ public class CommandTask extends Task {
 			String commandline = arguments.isEmpty() ? command : command+" "+arguments;
 			ProcessBuilder processBuilder = getProcessBuilder(commandline, path);
 			
-			logger.log(Module.CMD, "command: "+commandline);
-			logger.debug(Module.CMD, "directory: "+path);
+			logger.log(Module.COMMAND, "command: "+commandline);
+			logger.debug(Module.COMMAND, "directory: "+path);
 			
 			Process process = processBuilder.start();
 			CommandStreamer outputStream = new CommandStreamer(
@@ -71,9 +71,9 @@ public class CommandTask extends Task {
 			}
 			
 		}catch(Exception e){
-			logger.error(Module.CMD, e);
+			logger.error(Module.COMMAND, e);
 		}finally{
-			logger.debug(Module.CMD, "return: "+result);
+			logger.debug(Module.COMMAND, "return: "+result);
 		}
 	}
 

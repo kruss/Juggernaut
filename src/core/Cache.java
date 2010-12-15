@@ -40,7 +40,7 @@ public class Cache {
 		try{ 
 			save(); 
 		}catch(Exception e){
-			Application.getInstance().getLogger().error(Module.APP, e);
+			Application.getInstance().getLogger().error(Module.COMMON, e);
 		}
 	}
 	
@@ -50,7 +50,7 @@ public class Cache {
 	
 	public static Cache load(String path) throws Exception {
 		
-		Application.getInstance().getLogger().debug(Module.APP, "load: "+path);
+		Application.getInstance().getLogger().debug(Module.COMMON, "load: "+path);
 		XStream xstream = new XStream(new DomDriver());
 		String xml = FileTools.readFile(path);
 		Cache cache = (Cache)xstream.fromXML(xml);
@@ -62,7 +62,7 @@ public class Cache {
 	public void save() throws Exception {
 		
 		if(isDirty()){
-			Application.getInstance().getLogger().debug(Module.APP, "save: "+path);
+			Application.getInstance().getLogger().debug(Module.COMMON, "save: "+path);
 			XStream xstream = new XStream(new DomDriver());
 			String xml = xstream.toXML(this);
 			FileTools.writeFile(path, xml, false);
