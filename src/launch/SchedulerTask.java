@@ -16,27 +16,37 @@ import util.Task;
 
 public class SchedulerTask extends Task {
 
+	public static final long DELAY = 60 * 1000; // 1min
 	public static final long TIMEOUT = 60 * 60 * 1000; // 1h
 	
 	private Application application;
+	private boolean cyclic;
 	
-	public SchedulerTask(){
+	public SchedulerTask(boolean cyclic){
 		
 		super("Scheduler", Application.getInstance().getLogger());
 		this.application = Application.getInstance();
+		this.cyclic = cyclic;
+		setCycle();
+	}
+	
+	private void setCycle() {
+		if(cyclic){
+			setCycle(application.getConfig().getSchedulerIntervall());
+		}
 	}
 
 	@Override
 	protected void runTask() {
 		
-		setCycle(application.getConfig().getSchedulerIntervall());
 		checkSchedules();
+		setCycle();
 	}
 
 	public void checkSchedules() {
 		
 		application.getLogger().debug(Module.APP, "Checking schedules");
-		application.getLaunchManager().setLastUpdate(new Date());
+		application.getLaunchManager().setScheduled(new Date());
 		ArrayList<LaunchConfig> launchConfigs = getRandomizedLaunchConfigs();
 		for(LaunchConfig launchConfig : launchConfigs){
 			if(application.getLaunchManager().isReady()){

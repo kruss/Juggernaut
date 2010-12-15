@@ -31,6 +31,7 @@ public abstract class Task extends Thread {
 	
 	public Logger getObserver(){ return observer; }
 	public void setCycle(long cycle){ this.cycle = cycle; }
+	private boolean isCyclic(){ return cycle > 0; }
 	public boolean isExpired(){
 		
 		if(start != null && timeout > 0){
@@ -60,8 +61,6 @@ public abstract class Task extends Thread {
 			observer.debug(Module.TASK, "Stopping Task ["+getName()+"]");
 		}
 	}
-	
-	private boolean isCyclic(){ return cycle > 0; }
 
 	private void runCyclicTask() throws InterruptedException {
 		

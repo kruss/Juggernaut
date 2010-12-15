@@ -18,9 +18,9 @@ public class LaunchManager implements ILifecycleListener {
 	
 	private Application application;
 	private SchedulerTask scheduler;
+	private Date scheduled;
 	private ArrayList<LaunchAgent> agents;
 	private ArrayList<IChangedListener> listeners;
-	private Date update;
 	
 	public SchedulerTask getScheduler(){ return scheduler; }
 	
@@ -32,20 +32,20 @@ public class LaunchManager implements ILifecycleListener {
 		scheduler = null;
 		agents = new ArrayList<LaunchAgent>();
 		listeners = new ArrayList<IChangedListener>();
-		update = null;
+		scheduled = null;
 	}
 	
-	public synchronized void setLastUpdate(Date update){ 
-		this.update = update; 
+	public synchronized void setScheduled(Date scheduled){ 
+		this.scheduled = scheduled; 
 		notifyListeners();
 	}
-	public synchronized Date getLastUpdate(){ return update; }
+	public synchronized Date getScheduled(){ return scheduled; }
 	
 	public void init() {
 		
 		Configuration configuration = application.getConfig();
 		if(configuration.isScheduler()){
-			startScheduler(configuration.getSchedulerIntervall());
+			startScheduler(SchedulerTask.DELAY);
 		}
 	}
 	
@@ -57,13 +57,15 @@ public class LaunchManager implements ILifecycleListener {
 		}
 	}
 	
+	/** run scheduler cyclic */
 	public synchronized void startScheduler(long delay){ 
 		if(scheduler == null){
-			scheduler = new SchedulerTask();
+			scheduler = new SchedulerTask(true);
 			scheduler.asyncRun(delay, SchedulerTask.TIMEOUT); 
 		}
 	}
 	
+	/** stop cyclic scheduler */
 	public synchronized void stopScheduler(){ 
 		if(scheduler != null){
 			scheduler.syncKill();
@@ -71,9 +73,10 @@ public class LaunchManager implements ILifecycleListener {
 		}
 	}
 
+	/** run scheduler once */
 	public void triggerScheduler() {
 		// TODO this should be done as task
-		SchedulerTask scheduler = new SchedulerTask();
+		SchedulerTask scheduler = new SchedulerTask(false);
 		scheduler.checkSchedules();
 	}
 	
