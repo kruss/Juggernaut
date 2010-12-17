@@ -149,6 +149,7 @@ public class Application {
 			}else{
 				history = new History(historyFile.getAbsolutePath());
 				history.save();
+				history.createIndex();
 			}
 
 			File cacheFile = new File(fileManager.getDataFolderPath()+File.separator+Cache.OUTPUT_FILE);

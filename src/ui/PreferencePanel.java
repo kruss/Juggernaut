@@ -55,6 +55,6 @@ public class PreferencePanel extends JPanel implements IChangedListener {
 			application.getLaunchManager().stopScheduler();
 		}
 		
-		application.getHistory().update();
+		application.getHistory().createIndex();
 	}
 }

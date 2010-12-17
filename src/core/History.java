@@ -79,19 +79,37 @@ public class History {
 		}
 	}
 	
-	public synchronized void addEntry(LaunchHistory entry) throws Exception {
+	public synchronized void add(LaunchHistory entry) throws Exception {
 		
 		entry.init();
 		entries.add(0, entry);
 		dirty = true;
 		save();
-		update();
+		cleanup();
+		createIndex();
+	}
+	
+	public synchronized void delete(String id) {
+		
+		for(int i=0; i<entries.size(); i++){
+			LaunchHistory entry = entries.get(i);
+			if(entry.historyId.equals(id)){
+				delete(entry);
+			}
+		}
+	}
+	
+	/** clear old entries */
+	public synchronized void clear() {
+		
+		for(int i = entries.size()-1; i>=0; i--){
+			delete(entries.get(i));
+		}
 	}
 
 	/** recreate the main index-page */
-	public void update(){
+	public void createIndex(){
 		
-		cleanup();
 		HistoryPage page = new HistoryPage(this, getIndexPath());
 		try{
 			page.create();
@@ -106,6 +124,7 @@ public class History {
 			File.separator+HistoryPage.OUTPUT_FILE;
 	}
 
+	/** remove old entries */
 	private void cleanup() {
 		
 		int max = Application.getInstance().getConfig().getMaximumHistory();
@@ -115,25 +134,8 @@ public class History {
 			}
 		}
 	}
-
-	public void clear() {
-		
-		for(int i = entries.size()-1; i>=0; i--){
-			delete(entries.get(i));
-		}
-	}
-
-	public void delete(String historyId) {
-		
-		for(int i=0; i<entries.size(); i++){
-			LaunchHistory entry = entries.get(i);
-			if(entry.historyId.equals(historyId)){
-				delete(entry);
-			}
-		}
-	}
 	
-	private synchronized void delete(LaunchHistory entry) {
+	private void delete(LaunchHistory entry) {
 		
 		Application.getInstance().getLogger().debug(Module.COMMON, "deleting history: "+entry.id);
 		try{
@@ -171,7 +173,7 @@ public class History {
 		}
 	}
 	
-	public ArrayList<HistoryInfo> getHistoryInfo(){
+	public synchronized ArrayList<HistoryInfo> getHistoryInfo(){
 		
 		ArrayList<HistoryInfo> infos = new ArrayList<HistoryInfo>();
 		for(LaunchHistory entry : entries){

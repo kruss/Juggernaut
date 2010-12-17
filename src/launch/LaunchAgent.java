@@ -173,7 +173,7 @@ public class LaunchAgent extends LifecycleObject {
 		
 		try{ 
 			history.finish();
-			application.getHistory().addEntry(history); 
+			application.getHistory().add(history); 
 		}catch(Exception e){
 			logger.error(Module.COMMON, e);
 		}
