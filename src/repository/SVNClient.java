@@ -118,8 +118,8 @@ public class SVNClient implements IRepositoryClient {
 		result.commits = new ArrayList<CommitInfo>();
 		result.output = task.getOutput();
 		
-		// find e.g: "r4 | kruss | 2010-11-26 12:47:16 +0100 (Fr, 26 Nov 2010) | 1 line"
-		Pattern p = Pattern.compile("^r(\\d+) \\| (\\w+) \\| (\\d+-\\d+-\\d+ \\d+:\\d+:\\d+)", Pattern.MULTILINE | Pattern.UNIX_LINES);
+		// find e.g: "r4 | kruss@lear.com | 2010-11-26 12:47:16 +0100 (Fr, 26 Nov 2010) | 1 line"
+		Pattern p = Pattern.compile("^r(\\d+) \\| (.+) \\| (\\d+-\\d+-\\d+ \\d+:\\d+:\\d+)", Pattern.MULTILINE | Pattern.UNIX_LINES);
 		Matcher m = p.matcher(result.output);
 		while(m.find() && m.groupCount() >= 3){
 			CommitInfo commit = new CommitInfo();

@@ -9,6 +9,7 @@ import repository.IRepositoryClient.HistoryInfo;
 import launch.LaunchAgent;
 import launch.PropertyContainer;
 import launch.StatusManager.Status;
+import logger.Logger.Module;
 import data.AbstractOperation;
 import data.Artifact;
 
@@ -74,13 +75,17 @@ public class SVNOperation extends AbstractOperation implements IRepositoryOperat
 		String url = getUrlProperty();
 		String revision = getRevisionProperty();
 		
-		checkoutUrl(url, revision);
-		getHistoryDelta();
+		svnCheckout(url, revision);
+		try{
+			svnHistory();
+		}catch(Exception e){
+			logger.error(Module.COMMAND, e);
+		}
 		
 		statusManager.setStatus(Status.SUCCEED);
 	}
 	
-	private void checkoutUrl(String url, String revision) throws Exception {
+	private void svnCheckout(String url, String revision) throws Exception {
 		
 		lastRevision = getLastRevisionCache();
 
@@ -94,7 +99,7 @@ public class SVNOperation extends AbstractOperation implements IRepositoryOperat
 		artifacts.add(checkoutArtifact);
 	}
 	
-	private void getHistoryDelta() throws Exception {
+	private void svnHistory() throws Exception {
 		
 		if(lastRevision != null && !lastRevision.equals(currentRevision)){
 			String startRevision = client.getNextRevision(lastRevision);
