@@ -97,6 +97,7 @@ public class History {
 				delete(entry);
 			}
 		}
+		createIndex();
 	}
 	
 	/** clear old entries */
@@ -105,6 +106,7 @@ public class History {
 		for(int i = entries.size()-1; i>=0; i--){
 			delete(entries.get(i));
 		}
+		createIndex();
 	}
 
 	/** recreate the main index-page */
