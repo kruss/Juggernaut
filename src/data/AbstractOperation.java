@@ -1,8 +1,14 @@
 package data;
 
+import java.io.File;
+import java.io.IOException;
+
+import util.FileTools;
+
 import launch.LifecycleObject;
 import launch.LaunchAgent;
 import logger.Logger;
+import logger.Logger.Module;
 
 public abstract class AbstractOperation extends LifecycleObject {
 
@@ -57,4 +63,20 @@ public abstract class AbstractOperation extends LifecycleObject {
 	
 	@Override
 	protected void finish() {}
+	
+	/** copy a relative output-folder to history */
+	public void collectOuttput(String outputFolder) {
+		
+		File source = new File(getFolder()+File.separator+outputFolder);
+		File destination = new File(historyFolder+File.separator+outputFolder);
+		if(source.isDirectory() && destination.mkdirs()){
+			logger.debug(Module.COMMAND, "Collecting output: "+source.getAbsolutePath());
+			try{
+				FileTools.copyFolder(source.getAbsolutePath(), destination.getAbsolutePath());
+				artifacts.add(new Artifact("Output ["+outputFolder+"]", destination));
+			}catch(IOException e){
+				logger.error(Module.COMMAND, e);
+			}
+		}
+	}
 }

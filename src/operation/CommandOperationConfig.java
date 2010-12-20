@@ -35,7 +35,7 @@ public class CommandOperationConfig extends AbstractOperationConfig {
 		));
 		optionContainer.getOptions().add(new Option(
 				GROUPS.SETTINGS.toString(),
-				OPTIONS.OUTPUT.toString(), "List of glob-pattern to collect output (comma seperated)", 
+				OPTIONS.OUTPUT.toString(), "List of output-directories to collect (comma seperated)", 
 				Type.TEXT, ""
 		));
 	}
@@ -66,19 +66,19 @@ public class CommandOperationConfig extends AbstractOperationConfig {
 				if(arguments.length() > 0){ 
 					arguments.append(" "); 
 				}
-				arguments.append(strings[i]);
+				arguments.append(strings[i].trim());
 			}
 		}
 		return arguments.toString();
 	}
 	
-	public ArrayList<String> getGlobPattern(){ 
+	public ArrayList<String> getOutputs(){ 
 		
 		ArrayList<String> list = new ArrayList<String>();
 		String value = optionContainer.getOption(OPTIONS.OUTPUT.toString()).getStringValue();
 		String[] strings = value.split(", ");
 		for(String string : strings){
-				list.add(string);
+				list.add(string.trim());
 		}
 		return list;
 	}

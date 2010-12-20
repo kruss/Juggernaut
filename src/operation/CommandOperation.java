@@ -1,6 +1,7 @@
 package operation;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import util.CommandTask;
 import launch.LaunchAgent;
@@ -34,7 +35,7 @@ public class CommandOperation extends AbstractOperation {
 				command, 
 				arguments,
 				directory.isEmpty() ? parent.getFolder() : parent.getFolder()+File.separator+directory, 
-						logger
+				logger
 		);
 		try{
 			task.syncRun(0, 0);
@@ -45,8 +46,18 @@ public class CommandOperation extends AbstractOperation {
 				statusManager.setStatus(Status.ERROR);
 			}
 			if(!task.getOutput().isEmpty()){
-				artifacts.add(new Artifact("Output", task.getOutput()));
+				artifacts.add(new Artifact("Command", task.getOutput()));
 			}
+		}
+	}
+	
+	@Override
+	protected void finish() {
+		super.finish();
+		
+		ArrayList<String> outputs = config.getOutputs();
+		for(String output : outputs){
+			collectOuttput(output);
 		}
 	}
 }

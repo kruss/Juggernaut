@@ -37,6 +37,7 @@ public abstract class AbstractHistory {
 	public void init() throws Exception {
 		
 		FileTools.createFolder(folder);
+		object.setHistoryFolder(folder);
 	}
 	
 	public void finish() throws Exception {

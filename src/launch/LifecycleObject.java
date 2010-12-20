@@ -17,15 +17,18 @@ public abstract class LifecycleObject extends Task {
 	protected StatusManager statusManager;
 	protected ArrayList<Artifact> artifacts;
 	private ArrayList<ILifecycleListener> listeners;
+	protected String historyFolder;
 	
 	public StatusManager getStatusManager(){ return statusManager; }
 	public ArrayList<Artifact> getArtifacts(){ return artifacts; }
+	public void setHistoryFolder(String folder){ this.historyFolder = folder; }
 	
 	public LifecycleObject(String name){
 		super(name, Application.getInstance().getLogger());
 		statusManager = new StatusManager(this);
 		artifacts = new ArrayList<Artifact>();
 		listeners = new ArrayList<ILifecycleListener>();
+		historyFolder = null;
 	}
 	
 	public void addListener(ILifecycleListener listener){ listeners.add(listener); }
