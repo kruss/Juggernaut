@@ -14,11 +14,11 @@ import logger.Logger.Module;
 
 import util.IChangedListener;
 import util.StringTools;
-import util.HeapManager.HeapStatus;
 
 import core.Application;
 import core.Configuration;
 import core.Constants;
+import core.HeapManager.HeapStatus;
 
 public class Window extends JFrame implements IChangedListener {
 

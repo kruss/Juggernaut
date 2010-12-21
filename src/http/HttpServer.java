@@ -13,6 +13,8 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 
+import core.ISystemComponent;
+
 import util.Task;
 
 import logger.Logger;
@@ -20,7 +22,7 @@ import logger.Logger.Module;
 
 
 @SuppressWarnings({ "deprecation", "unchecked" })
-public class HttpServer extends Task {
+public class HttpServer extends Task implements ISystemComponent {
 
 	private int myTcpPort;
 	private File myRootDir;
@@ -41,10 +43,20 @@ public class HttpServer extends Task {
 	}
 	
 	@Override
+	public void init() throws Exception {
+		asyncRun(1000, 0);
+	}
+
+	@Override
+	public void shutdown() throws Exception {
+		syncKill();
+	}
+	
+	@Override
 	protected void runTask() {
 		try{
-			startup();
-		}catch(IOException e){
+			startServer();
+		}catch(Exception e){
 			logger.error(Module.HTTP, e);
 		}
 	}
@@ -52,11 +64,11 @@ public class HttpServer extends Task {
 	@Override
 	public void asyncKill(){
 		
-		shutdown();
+		stopServer();
 		super.asyncKill();
 	}
 	
-	private void startup() throws IOException {
+	private void startServer() throws Exception {
 		
 		logger.log(Module.HTTP, "Startup HTTP - Port: "+myTcpPort);
 		myServerSocket = new ServerSocket( myTcpPort );
@@ -79,7 +91,7 @@ public class HttpServer extends Task {
 		myThread.start();
 	}
 	
-	private void shutdown()
+	private void stopServer()
 	{
 		logger.log(Module.HTTP, "Shutdown HTTP");
 		running = false;

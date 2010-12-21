@@ -17,18 +17,17 @@ import logger.Logger;
 import logger.Logger.Mode;
 import logger.Logger.Module;
 import ui.Window;
-import util.HeapManager;
 import util.UiTools;
 
 public class Application implements ISystemComponent {
 
-	private static Application instance;
+	private static Application application;
 	
 	public static Application getInstance(){
-		if(instance == null){
-			instance = new Application();
+		if(application == null){
+			application = new Application();
 		}
-		return instance;
+		return application;
 	}
 	
 	public static void main(String[] args){
@@ -130,6 +129,12 @@ public class Application implements ISystemComponent {
 		UiTools.errorDialog(e.getClass().getSimpleName()+"\n\n"+e.getMessage());
 	}
 	
+	public void setStatus(String text) {
+		if(window != null){
+			window.setStatus(text);
+		}
+	}
+	
 	private class PersistenceSystem implements ISystemComponent {
 		@Override
 		public void init() throws Exception {
@@ -177,28 +182,28 @@ public class Application implements ISystemComponent {
 	private class RuntimeSystem implements ISystemComponent {
 		@Override
 		public void init() throws Exception {
-			heapManager = new HeapManager();
+			heapManager = new HeapManager(logger);
 			heapManager.init();
 			registry = new Registry();
 			registry.init();
 			taskManager = new TaskManager();
 			taskManager.init();
-			launchManager = new LaunchManager();
-			scheduleManager = new ScheduleManager(
-					configuration, launchManager, logger
-			);
+			launchManager = new LaunchManager(application, configuration);
+			launchManager.init();
+			scheduleManager = new ScheduleManager(configuration, launchManager, logger);
 			scheduleManager.init();
 			httpServer = new HttpServer(
 					Constants.HTTP_PORT, fileManager.getHistoryFolder(), logger
 			);
-			httpServer.asyncRun(1000, 0);
+			httpServer.init();
 		}
 		@Override
 		public void shutdown() throws Exception {
-			httpServer.syncKill();
+			httpServer.shutdown();
 			scheduleManager.shutdown();
 			launchManager.shutdown();
 			taskManager.shutdown();
+			registry.shutdown();
 			heapManager.shutdown();
 		}
 	}

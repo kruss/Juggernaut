@@ -1,13 +1,15 @@
-package util;
+package core;
 
 import java.util.ArrayList;
 
-import core.Application;
+import util.IChangedListener;
+import util.Task;
+
 import logger.Logger;
 import logger.Logger.Module;
 
 /** provides access to the application's heap */
-public class HeapManager {
+public class HeapManager implements ISystemComponent {
 
 	private Logger logger;
 	private Runtime runtime;
@@ -15,8 +17,9 @@ public class HeapManager {
 	private HeapStatusUpdater updater;
 	private ArrayList<IChangedListener> listeners;
 	
-	public HeapManager(){
-		logger = Application.getInstance().getLogger();
+	public HeapManager(Logger logger){
+		
+		this.logger = logger;
 		runtime = Runtime.getRuntime();
 		heap = new HeapStatus();
 		listeners = new ArrayList<IChangedListener>();
@@ -30,14 +33,16 @@ public class HeapManager {
 		}
 	}
 	
-	public void init(){
+	@Override
+	public void init() throws Exception {
 		if(updater == null){
 			updater = new HeapStatusUpdater();
 			updater.asyncRun(0, 0);
 		}
 	}
 	
-	public void shutdown(){
+	@Override
+	public void shutdown() throws Exception {
 		if(updater != null){
 			updater.syncKill();
 			updater = null;

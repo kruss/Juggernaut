@@ -12,7 +12,7 @@ import trigger.SVNTriggerConfig;
 import data.AbstractOperationConfig;
 import data.AbstractTriggerConfig;
 
-public class Registry {
+public class Registry implements ISystemComponent {
 
 	private ArrayList<AbstractOperationConfig> operationConfigs;
 	private ArrayList<AbstractTriggerConfig> triggerConfigs;
@@ -26,16 +26,22 @@ public class Registry {
 		triggerConfigs = new ArrayList<AbstractTriggerConfig>();
 	}
 	
-	public void init() {
+	@Override
+	public void init() throws Exception {
 		
+		operationConfigs.clear();
 		operationConfigs.add(new SampleOperationConfig());
 		operationConfigs.add(new CommandOperationConfig());
 		operationConfigs.add(new SVNOperationConfig());
 		operationConfigs.add(new EclipseOperationConfig());
 		
+		triggerConfigs.clear();
 		triggerConfigs.add(new IntervallTriggerConfig());
 		triggerConfigs.add(new SVNTriggerConfig());
 	}
+	
+	@Override
+	public void shutdown() throws Exception {}
 	
 	public ArrayList<String> getOperationNames(){
 		

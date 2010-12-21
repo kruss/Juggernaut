@@ -10,20 +10,25 @@ import logger.ILogProvider;
 import util.IChangedListener;
 import util.StringTools;
 import core.Application;
+import core.Configuration;
+import core.ISystemComponent;
 
-public class LaunchManager implements ILifecycleListener {
+/** maintains launches to be executed */
+public class LaunchManager implements ISystemComponent, ILifecycleListener {
 
 	public static TriggerStatus USER_TRIGGER;
 	
 	private Application application;
+	private Configuration configuration;
 	private ArrayList<LaunchAgent> agents;
 	private ArrayList<IChangedListener> listeners;
 	
-	public LaunchManager(){
+	public LaunchManager(Application application, Configuration configuration){
 		
 		USER_TRIGGER = new TriggerStatus("Run by user", true);
 		
-		application = Application.getInstance();
+		this.application = application;
+		this.configuration = configuration;
 		agents = new ArrayList<LaunchAgent>();
 		listeners = new ArrayList<IChangedListener>();
 	}
@@ -36,7 +41,11 @@ public class LaunchManager implements ILifecycleListener {
 		}
 	}
 
-	public void shutdown() {
+	@Override
+	public void init() throws Exception {}
+	
+	@Override
+	public void shutdown() throws Exception {
 		for(LaunchAgent agent : agents){
 			agent.syncKill();
 		}
@@ -69,7 +78,7 @@ public class LaunchManager implements ILifecycleListener {
 	}
 	
 	public synchronized boolean isReady() {
-		return agents.size() < application.getConfiguration().getMaximumAgents();
+		return agents.size() < configuration.getMaximumAgents();
 	}
 	
 	private synchronized boolean isRunning(String id) {
@@ -94,12 +103,12 @@ public class LaunchManager implements ILifecycleListener {
 		LaunchAgent agent = (LaunchAgent)object;
 		String date = StringTools.getTextDate(new Date());
 		if(lifecycle == Lifecycle.START){
-			application.getWindow().setStatus(
+			application.setStatus(
 					"Launch ["+agent.getConfig().getName()+"] started at "+date
 			);
 		}
 		if(lifecycle == Lifecycle.FINISH){
-			application.getWindow().setStatus(
+			application.setStatus(
 					"Launch ["+agent.getConfig().getName()+"] finished at "+date
 			);
 			agents.remove(agent);

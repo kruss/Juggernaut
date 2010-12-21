@@ -17,7 +17,7 @@ import launch.LaunchManager.TriggerStatus;
 import logger.Logger;
 import logger.Logger.Module;
 
-/** checks triggers of launches */
+/** checks the configured launches for triggers to be fired */
 public class ScheduleManager implements ISystemComponent {
 
 	private Configuration configuration;
