@@ -30,7 +30,7 @@ public class Window extends JFrame implements IChangedListener {
 	private SchedulerPanel schedulerPanel;
 	private HistoryPanel historyPanel;
 	private PreferencePanel preferencePanel;
-	private JLabel statusBar;
+	private JLabel statusInfo;
 	private JLabel heapInfo;
 	
 	public Window(){
@@ -42,9 +42,10 @@ public class Window extends JFrame implements IChangedListener {
 		menuBar.add(new ToolsMenu());
 		setJMenuBar(menuBar);
 		
-		statusBar = new JLabel();
-		statusBar.setEnabled(false);
+		statusInfo = new JLabel();
+		statusInfo.setEnabled(false);
 		heapInfo = new JLabel();
+		heapInfo.setToolTipText("HEAP");
 		heapInfo.setEnabled(false);
 		
 		configPanel = new ConfigPanel();
@@ -60,7 +61,7 @@ public class Window extends JFrame implements IChangedListener {
 		centerPanel.add(preferencePanel, "Preferences");
 		
 		JPanel infoPanel = new JPanel(new BorderLayout());
-		infoPanel.add(statusBar, BorderLayout.CENTER);
+		infoPanel.add(statusInfo, BorderLayout.CENTER);
 		infoPanel.add(heapInfo, BorderLayout.EAST);
 		
 		Container pane = getContentPane();
@@ -89,7 +90,7 @@ public class Window extends JFrame implements IChangedListener {
 	
 	public void setStatus(String text){
 		
-		statusBar.setText(text);
+		statusInfo.setText(text);
 		application.getLogger().log(Module.COMMON, text);
 	}
 	
