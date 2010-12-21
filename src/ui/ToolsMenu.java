@@ -22,21 +22,28 @@ public class ToolsMenu extends JMenu implements IChangedListener {
 
 	private Application application;
 
-	private JMenuItem printConfig;
+	private JMenuItem exportConfig;
+	private JMenuItem collectGarbage;
 	
 	public ToolsMenu(){
 		super("Tools");
 		
 		application = Application.getInstance();
 		
-		JMenu configuration = new JMenu("Configuration");
-		add(configuration);
+		JMenu configMenu = new JMenu("Configuration");
+		add(configMenu);
 		
-		printConfig = new JMenuItem("Print");
-		printConfig.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){ printConfiguration(); }
+		exportConfig = new JMenuItem("Export");
+		exportConfig.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){ exportConfiguration(); }
 		});
-		configuration.add(printConfig);
+		configMenu.add(exportConfig);
+		
+		collectGarbage = new JMenuItem("Garbage Collector");
+		collectGarbage.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){ collectGarbage(); }
+		});
+		add(collectGarbage);
 		
 		application.getConfig().addListener(this);
 	}
@@ -51,7 +58,7 @@ public class ToolsMenu extends JMenu implements IChangedListener {
 		}
 	}
 	
-	private void printConfiguration(){
+	private void exportConfiguration(){
 		
 		String path = 
 			application.getFileManager().getTempFolderPath()+
@@ -63,6 +70,11 @@ public class ToolsMenu extends JMenu implements IChangedListener {
 		}catch(Exception e){
 			application.popupError(e);
 		}
+	}
+	
+	private void collectGarbage(){
+		
+		application.getHeapManager().cleanup();
 	}
 
 	@Override

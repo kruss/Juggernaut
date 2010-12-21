@@ -16,6 +16,7 @@ import logger.Logger;
 import logger.Logger.Mode;
 import logger.Logger.Module;
 import ui.Window;
+import util.HeapManager;
 import util.UiTools;
 
 public class Application {
@@ -51,6 +52,7 @@ public class Application {
 	private History history;
 	private Cache cache;
 	private Registry registry;
+	private HeapManager heapManager;
 	private FileManager fileManager;
 	private TaskManager taskManager;
 	private LaunchManager launchManager;
@@ -62,6 +64,7 @@ public class Application {
 	public History getHistory(){ return history; }
 	public Cache getCache(){ return cache; }
 	public Registry getRegistry(){ return registry; }
+	public HeapManager getHeapManager(){ return heapManager; }
 	public FileManager getFileManager(){ return fileManager; }
 	public TaskManager getTaskManager(){ return taskManager; }
 	public LaunchManager getLaunchManager(){ return launchManager; }
@@ -171,6 +174,8 @@ public class Application {
 	class Runtime extends Component {
 		@Override
 		public void init() throws Exception {
+			heapManager = new HeapManager();
+			heapManager.init();
 			registry = new Registry();
 			registry.init();
 			taskManager = new TaskManager();
@@ -187,6 +192,7 @@ public class Application {
 			httpServer.syncKill();
 			launchManager.shutdown();
 			taskManager.shutdown();
+			heapManager.shutdown();
 		}
 	}
 	

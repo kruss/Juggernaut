@@ -7,12 +7,14 @@ import java.util.Date;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuBar;
+import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 import logger.Logger.Module;
 
 import util.IChangedListener;
 import util.StringTools;
+import util.HeapManager.HeapStatus;
 
 import core.Application;
 import core.Configuration;
@@ -29,6 +31,7 @@ public class Window extends JFrame implements IChangedListener {
 	private HistoryPanel historyPanel;
 	private PreferencePanel preferencePanel;
 	private JLabel statusBar;
+	private JLabel heapInfo;
 	
 	public Window(){
 		
@@ -41,6 +44,8 @@ public class Window extends JFrame implements IChangedListener {
 		
 		statusBar = new JLabel();
 		statusBar.setEnabled(false);
+		heapInfo = new JLabel();
+		heapInfo.setEnabled(false);
 		
 		configPanel = new ConfigPanel();
 		schedulerPanel = new SchedulerPanel();
@@ -54,9 +59,13 @@ public class Window extends JFrame implements IChangedListener {
 		centerPanel.add(historyPanel, "History");
 		centerPanel.add(preferencePanel, "Preferences");
 		
+		JPanel infoPanel = new JPanel(new BorderLayout());
+		infoPanel.add(statusBar, BorderLayout.CENTER);
+		infoPanel.add(heapInfo, BorderLayout.EAST);
+		
 		Container pane = getContentPane();
 		pane.add(centerPanel, BorderLayout.CENTER);
-		pane.add(statusBar, BorderLayout.SOUTH);
+		pane.add(infoPanel, BorderLayout.SOUTH);
 		pack();
 
 		setSize(Constants.APP_WIDTH, Constants.APP_HEIGHT);
@@ -64,6 +73,7 @@ public class Window extends JFrame implements IChangedListener {
 		setTitle(Constants.APP_FULL_NAME);
 		
 		application.getConfig().addListener(this);
+		application.getHeapManager().addListener(this);
 	}
 	
 	public void init() {
@@ -73,25 +83,35 @@ public class Window extends JFrame implements IChangedListener {
 		historyPanel.init();
 		preferencePanel.init();
 		setStatus(Constants.APP_NAME+" started at "+StringTools.getTextDate(new Date()));
+		setHeapStatus(application.getHeapManager().getHeapStatus());
 		setVisible(true);
 	}
 	
 	public void setStatus(String text){
 		
 		statusBar.setText(text);
-		Application.getInstance().getLogger().log(Module.COMMON, text);
+		application.getLogger().log(Module.COMMON, text);
+	}
+	
+	public void setHeapStatus(HeapStatus status){
+		
+		long MB = 1024 * 1024;
+		String info = Math.round(status.usedMemory / MB)+" / "+Math.round(status.maxMemory / MB)+" MB";
+		heapInfo.setText(info);
 	}
 
 	@Override
 	public void changed(Object object) {
 		
-		if(object == Application.getInstance().getConfig()){
-			Configuration.State state = Application.getInstance().getConfig().getState();
+		if(object == application.getConfig()){
+			Configuration.State state = application.getConfig().getState();
 			if(state == Configuration.State.CLEAN){
 				setTitle(Constants.APP_FULL_NAME);
 			}else if(state == Configuration.State.DIRTY){
 				setTitle(Constants.APP_FULL_NAME+" *");
 			}
+		}else if(object == application.getHeapManager()){
+			setHeapStatus(application.getHeapManager().getHeapStatus());
 		}
 	}
 }
