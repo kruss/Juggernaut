@@ -11,7 +11,7 @@ import util.Task;
  */
 public class TaskManager extends Task {
 
-	private static final long CYCLE = 10 * 1000; // 10 sec
+	private static final long CYCLE = 15 * 1000; // 15 sec
 	
 	private ArrayList<Task> tasks;
 	
