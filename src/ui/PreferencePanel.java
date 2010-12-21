@@ -50,9 +50,9 @@ public class PreferencePanel extends JPanel implements IChangedListener {
 	private void applyChanges(Configuration configuration) {
 		
 		if(configuration.isScheduler()){
-			application.getLaunchManager().startScheduler(0);
+			application.getScheduleManager().startScheduler(0);
 		}else{
-			application.getLaunchManager().stopScheduler();
+			application.getScheduleManager().stopScheduler();
 		}
 		
 		application.getHistory().createIndex();

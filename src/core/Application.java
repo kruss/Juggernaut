@@ -12,6 +12,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import launch.LaunchManager;
+import launch.ScheduleManager;
 import logger.Logger;
 import logger.Logger.Mode;
 import logger.Logger.Module;
@@ -56,6 +57,7 @@ public class Application {
 	private FileManager fileManager;
 	private TaskManager taskManager;
 	private LaunchManager launchManager;
+	private ScheduleManager scheduleManager;
 	private HttpServer httpServer;
 	
 	public Logger getLogger(){ return logger; }
@@ -68,6 +70,7 @@ public class Application {
 	public FileManager getFileManager(){ return fileManager; }
 	public TaskManager getTaskManager(){ return taskManager; }
 	public LaunchManager getLaunchManager(){ return launchManager; }
+	public ScheduleManager getScheduleManager(){ return scheduleManager; } 
 	public HttpServer getHttpServer(){ return httpServer; }
 	
 	private Application(){
@@ -181,7 +184,10 @@ public class Application {
 			taskManager = new TaskManager();
 			taskManager.init();
 			launchManager = new LaunchManager();
-			launchManager.init();
+			scheduleManager = new ScheduleManager(
+					config, launchManager, logger
+			);
+			scheduleManager.init();
 			httpServer = new HttpServer(
 					Constants.HTTP_PORT, fileManager.getHistoryFolder(), logger
 			);
@@ -190,6 +196,7 @@ public class Application {
 		@Override
 		public void shutdown() throws Exception {
 			httpServer.syncKill();
+			scheduleManager.shutdown();
 			launchManager.shutdown();
 			taskManager.shutdown();
 			heapManager.shutdown();

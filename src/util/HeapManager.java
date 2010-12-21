@@ -57,7 +57,7 @@ public class HeapManager {
 		notifyListeners();
 	}
 	
-	public class HeapStatusUpdater extends Task {
+	private class HeapStatusUpdater extends Task {
 
 		public static final long CYCLE = 30 * 1000; // 30 sec
 
@@ -68,7 +68,6 @@ public class HeapManager {
 
 		@Override
 		protected void runTask() {
-			logger.debug(Module.COMMON, "Updating Heap-Status");
 			HeapStatus status = new HeapStatus();
 			status.usedMemory = (runtime.totalMemory() - runtime.freeMemory());
 			status.freeMemory = runtime.freeMemory();
@@ -107,7 +106,7 @@ public class HeapManager {
 		task.asyncRun(0, GarbageCollector.TIMEOUT);
 	}
 	
-	public class GarbageCollector extends Task {
+	private class GarbageCollector extends Task {
 		
 		public static final long TIMEOUT = 10 * 60 * 1000; // 10 min
 		

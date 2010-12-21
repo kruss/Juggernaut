@@ -141,6 +141,7 @@ public class SchedulerPanel extends JPanel implements IChangedListener {
 		});
 		
 		application.getLogger().addListener(applicationConsole);
+		application.getScheduleManager().addListener(this);
 		application.getLaunchManager().addListener(this);
 	}
 	
@@ -169,9 +170,13 @@ public class SchedulerPanel extends JPanel implements IChangedListener {
 			};
 			tableModel.addRow(rowData);
 		}
-		Date scheduled = application.getLaunchManager().getScheduled();
-		String info = scheduled != null ? 
-				"Scheduler: "+StringTools.getTextDate(scheduled) : "Scheduler: idle";
+		setSchedulerUpdate();
+	}
+
+	private void setSchedulerUpdate() {
+		Date update = application.getScheduleManager().getUpdate();
+		String info = update != null ? 
+				"Scheduler: "+StringTools.getTextDate(update) : "Scheduler: idle";
 		launchPanel.setToolTipText(info);
 		launchTable.setToolTipText(info);
 	}
@@ -218,6 +223,8 @@ public class SchedulerPanel extends JPanel implements IChangedListener {
 			LaunchInfo selected = getSelectedLaunch();
 			launches = application.getLaunchManager().getLaunchInfo();
 			refreshUI(selected);
+		}else if(object == application.getScheduleManager()){
+			setSchedulerUpdate();
 		}
 	}
 
@@ -233,7 +240,7 @@ public class SchedulerPanel extends JPanel implements IChangedListener {
 	
 	public void triggerScheduler(){
 		
-		application.getLaunchManager().triggerScheduler();
+		application.getScheduleManager().triggerScheduler(0);
 	}
 	
 	public void stopLaunch(){

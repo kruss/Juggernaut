@@ -10,74 +10,36 @@ import logger.ILogProvider;
 import util.IChangedListener;
 import util.StringTools;
 import core.Application;
-import core.Configuration;
 
 public class LaunchManager implements ILifecycleListener {
 
 	public static TriggerStatus USER_TRIGGER;
 	
 	private Application application;
-	private SchedulerTask scheduler;
-	private Date scheduled;
 	private ArrayList<LaunchAgent> agents;
 	private ArrayList<IChangedListener> listeners;
-	
-	public SchedulerTask getScheduler(){ return scheduler; }
 	
 	public LaunchManager(){
 		
 		USER_TRIGGER = new TriggerStatus("Run by user", true);
 		
 		application = Application.getInstance();
-		scheduler = null;
 		agents = new ArrayList<LaunchAgent>();
 		listeners = new ArrayList<IChangedListener>();
-		scheduled = null;
 	}
 	
-	public synchronized void setScheduled(Date scheduled){ 
-		this.scheduled = scheduled; 
-		notifyListeners();
-	}
-	public synchronized Date getScheduled(){ return scheduled; }
+	public void addListener(IChangedListener listener){ listeners.add(listener); }
 	
-	public void init() {
-		
-		Configuration configuration = application.getConfig();
-		if(configuration.isScheduler()){
-			startScheduler(SchedulerTask.DELAY);
-		}
-	}
-	
-	public void shutdown() {
-		
-		stopScheduler();
-		for(LaunchAgent agent : agents){
-			agent.syncKill();
-		}
-	}
-	
-	/** run scheduler cyclic */
-	public synchronized void startScheduler(long delay){ 
-		if(scheduler == null){
-			scheduler = new SchedulerTask(true);
-			scheduler.asyncRun(delay, SchedulerTask.TIMEOUT); 
-		}
-	}
-	
-	/** stop cyclic scheduler */
-	public synchronized void stopScheduler(){ 
-		if(scheduler != null){
-			scheduler.syncKill();
-			scheduler = null;
+	public void notifyListeners(){
+		for(IChangedListener listener : listeners){
+			listener.changed(this);
 		}
 	}
 
-	/** run scheduler once */
-	public void triggerScheduler() {
-		// TODO this should be done as task
-		SchedulerTask scheduler = new SchedulerTask(false);
-		scheduler.checkSchedules();
+	public void shutdown() {
+		for(LaunchAgent agent : agents){
+			agent.syncKill();
+		}
 	}
 	
 	public synchronized LaunchStatus runLaunch(LaunchAgent launch) {
@@ -143,14 +105,6 @@ public class LaunchManager implements ILifecycleListener {
 			agents.remove(agent);
 		}
 		notifyListeners();
-	}
-	
-	public void addListener(IChangedListener listener){ listeners.add(listener); }
-	
-	public void notifyListeners(){
-		for(IChangedListener listener : listeners){
-			listener.changed(this);
-		}
 	}
 	
 	public class TriggerStatus {

@@ -47,7 +47,7 @@ public abstract class Task extends Thread {
 	
 	public void run(){
 		
-		observer.debug(Module.TASK, "Start Task ["+getName()+"]");
+		observer.debug(Module.TASK, "Start ["+getName()+"]");
 		try{
 			Thread.sleep(delay);
 			if(isCyclic()){
@@ -56,9 +56,9 @@ public abstract class Task extends Thread {
 				runSingleTask();
 			}
 		}catch(InterruptedException e){ 
-			observer.debug(Module.TASK, "Interrupt Task ["+getName()+"]");
+			observer.debug(Module.TASK, "Interrupt ["+getName()+"]");
 		}finally{
-			observer.debug(Module.TASK, "Stopp Task ["+getName()+"]");
+			observer.debug(Module.TASK, "Stopp ["+getName()+"]");
 		}
 	}
 
@@ -66,7 +66,7 @@ public abstract class Task extends Thread {
 		
 		while(isCyclic() && !isInterrupted()){
 			runSingleTask();
-			observer.debug(Module.TASK, "Idle Task ["+getName()+"]");
+			observer.debug(Module.TASK, "Idle ["+getName()+"]");
 			Thread.sleep(cycle);
 		}
 	}
@@ -78,7 +78,7 @@ public abstract class Task extends Thread {
 			manager.register(this);
 		}
 		try{
-			observer.debug(Module.TASK, "Run Task ["+getName()+"]");
+			observer.debug(Module.TASK, "Run ["+getName()+"]");
 			runTask();
 		}finally{
 			if(manager != null){
