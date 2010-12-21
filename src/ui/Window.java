@@ -2,6 +2,8 @@ package ui;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.Date;
 
 import javax.swing.JFrame;
@@ -9,6 +11,8 @@ import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
 import logger.Logger.Module;
 
@@ -18,9 +22,10 @@ import util.StringTools;
 import core.Application;
 import core.Configuration;
 import core.Constants;
+import core.ISystemComponent;
 import core.HeapManager.HeapStatus;
 
-public class Window extends JFrame implements IChangedListener {
+public class Window extends JFrame implements ISystemComponent, IChangedListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -77,15 +82,33 @@ public class Window extends JFrame implements IChangedListener {
 		application.getHeapManager().addListener(this);
 	}
 	
-	public void init() {
+	@Override
+	public void init() throws Exception {
 		
 		configPanel.init();
 		schedulerPanel.init();
 		historyPanel.init();
 		preferencePanel.init();
+		
 		setStatus(Constants.APP_NAME+" started at "+StringTools.getTextDate(new Date()));
 		setHeapStatus(application.getHeapManager().getHeapStatus());
+		
+		UIManager.LookAndFeelInfo styles[] = UIManager.getInstalledLookAndFeels();
+		UIManager.setLookAndFeel(styles[Constants.APP_STYLE].getClassName()); 
+		SwingUtilities.updateComponentTreeUI(this);
+		
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e){ 
+				application.quit(); 
+			}
+		});
 		setVisible(true);
+	}
+	
+	@Override
+	public void shutdown() throws Exception {
+		dispose();
 	}
 	
 	public void setStatus(String text){

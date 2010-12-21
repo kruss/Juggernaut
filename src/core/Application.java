@@ -2,13 +2,7 @@ package core;
 
 import http.HttpServer;
 
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
-
-import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 
 import launch.LaunchManager;
 import launch.ScheduleManager;
@@ -162,7 +156,6 @@ public class Application extends AbstractSystem {
 	}
 	
 	private class RuntimeSystem extends AbstractSystem {
-		
 		@Override
 		public void init() throws Exception {
 			clear();
@@ -182,24 +175,13 @@ public class Application extends AbstractSystem {
 		}
 	}
 	
-	private class UiSystem implements ISystemComponent {
+	private class UiSystem extends AbstractSystem {
 		@Override
 		public void init() throws Exception {
+			clear();
 			window = new Window();
-			window.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-			window.addWindowListener(new WindowAdapter() {
-	            public void windowClosing(WindowEvent e){ 
-	            	quit(); 
-	            }
-	        });
-			UIManager.LookAndFeelInfo styles[] = UIManager.getInstalledLookAndFeels();
-			UIManager.setLookAndFeel(styles[Constants.APP_STYLE].getClassName()); 
-			SwingUtilities.updateComponentTreeUI(window);
-			window.init();
-		}
-		@Override
-		public void shutdown() throws Exception {
-			window.dispose();
+			add(window);
+			super.init();
 		}
 	}
 }
