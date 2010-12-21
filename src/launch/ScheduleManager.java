@@ -8,6 +8,7 @@ import util.IChangedListener;
 import util.Task;
 
 import core.Configuration;
+import core.ISystemComponent;
 import data.AbstractTrigger;
 import data.AbstractTriggerConfig;
 import data.LaunchConfig;
@@ -17,7 +18,7 @@ import logger.Logger;
 import logger.Logger.Module;
 
 /** checks triggers of launches */
-public class ScheduleManager {
+public class ScheduleManager implements ISystemComponent {
 
 	private Configuration configuration;
 	private LaunchManager launchManager;
@@ -61,13 +62,15 @@ public class ScheduleManager {
 		}
 	}
 	
-	public void init() {
+	@Override
+	public void init() throws Exception {
 		if(configuration.isScheduler()){
 			startScheduler(SchedulerTask.DELAY);
 		}
 	}
 	
-	public void shutdown() {
+	@Override
+	public void shutdown() throws Exception {
 		stopScheduler();
 	}
 	

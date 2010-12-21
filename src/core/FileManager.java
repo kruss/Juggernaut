@@ -87,7 +87,7 @@ public class FileManager {
 
 	private boolean isLegacyBuildFile(File folder) {
 		
-		for(LaunchConfig config : application.getConfig().getLaunchConfigs()){
+		for(LaunchConfig config : application.getConfiguration().getLaunchConfigs()){
 			if(folder.getName().contains(config.getId())){
 				return false;
 			}

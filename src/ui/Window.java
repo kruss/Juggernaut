@@ -73,7 +73,7 @@ public class Window extends JFrame implements IChangedListener {
 		setLocation(100, 100);
 		setTitle(Constants.APP_FULL_NAME);
 		
-		application.getConfig().addListener(this);
+		application.getConfiguration().addListener(this);
 		application.getHeapManager().addListener(this);
 	}
 	
@@ -104,8 +104,8 @@ public class Window extends JFrame implements IChangedListener {
 	@Override
 	public void changed(Object object) {
 		
-		if(object == application.getConfig()){
-			Configuration.State state = application.getConfig().getState();
+		if(object == application.getConfiguration()){
+			Configuration.State state = application.getConfiguration().getState();
 			if(state == Configuration.State.CLEAN){
 				setTitle(Constants.APP_FULL_NAME);
 			}else if(state == Configuration.State.DIRTY){

@@ -129,7 +129,7 @@ public class History {
 	/** remove old entries */
 	private void cleanup() {
 		
-		int max = Application.getInstance().getConfig().getMaximumHistory();
+		int max = Application.getInstance().getConfiguration().getMaximumHistory();
 		if(max > 0){
 			while(max < entries.size()){
 				delete(entries.get(entries.size()-1));

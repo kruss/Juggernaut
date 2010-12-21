@@ -133,7 +133,7 @@ public class Logger implements ILogProvider {
 
 	private boolean isLogging(Module module, Level level) {
 		
-		Configuration config = Application.getInstance().getConfig();
+		Configuration config = Application.getInstance().getConfiguration();
 		if(config != null){
 			return getLevelValue(level) >= getLevelValue(config.getLogLevel(module));
 		}else{

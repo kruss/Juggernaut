@@ -45,7 +45,7 @@ public class ToolsMenu extends JMenu implements IChangedListener {
 		});
 		add(collectGarbage);
 		
-		application.getConfig().addListener(this);
+		application.getConfiguration().addListener(this);
 	}
 	
 	class ConfigPage extends AbstractHtmlPage {
@@ -54,7 +54,7 @@ public class ToolsMenu extends JMenu implements IChangedListener {
 		}
 		@Override
 		public String getBody() {
-			return application.getConfig().toHtml();
+			return application.getConfiguration().toHtml();
 		}
 	}
 	

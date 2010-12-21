@@ -122,7 +122,7 @@ public class TriggerConfigPanel extends JPanel implements IChangedListener {
 		
 		if(object == optionEditor){
 			parentPanel.getCurrentConfig().setDirty(true);
-			application.getConfig().notifyListeners();
+			application.getConfiguration().notifyListeners();
 			triggerList.repaint();
 		}
 	}
@@ -233,7 +233,7 @@ public class TriggerConfigPanel extends JPanel implements IChangedListener {
 				LaunchConfig launchConfig = parentPanel.getCurrentConfig();
 				launchConfig.getTriggerConfigs().add(listIndex >=0 ? listIndex+1 : 0, triggerConfig);
 				launchConfig.setDirty(true);
-				application.getConfig().notifyListeners();
+				application.getConfiguration().notifyListeners();
 				refreshUI(triggerConfig);
 			}catch(Exception e){
 				application.popupError(e);
@@ -248,7 +248,7 @@ public class TriggerConfigPanel extends JPanel implements IChangedListener {
 			LaunchConfig launchConfig = parentPanel.getCurrentConfig();
 			launchConfig.getTriggerConfigs().remove(listIndex);
 			launchConfig.setDirty(true);
-			application.getConfig().notifyListeners();
+			application.getConfiguration().notifyListeners();
 			refreshUI(null);
 		}
 	}
@@ -261,7 +261,7 @@ public class TriggerConfigPanel extends JPanel implements IChangedListener {
 			AbstractTriggerConfig triggerConfig = launchConfig.getTriggerConfigs().remove(listIndex);
 			launchConfig.getTriggerConfigs().add(listIndex-1, triggerConfig);
 			launchConfig.setDirty(true);
-			application.getConfig().notifyListeners();
+			application.getConfiguration().notifyListeners();
 			refreshUI(triggerConfig);
 		}
 	}
@@ -274,7 +274,7 @@ public class TriggerConfigPanel extends JPanel implements IChangedListener {
 			AbstractTriggerConfig triggerConfig = launchConfig.getTriggerConfigs().remove(listIndex);
 			launchConfig.getTriggerConfigs().add(listIndex+1, triggerConfig);
 			launchConfig.setDirty(true);
-			application.getConfig().notifyListeners();
+			application.getConfiguration().notifyListeners();
 			refreshUI(triggerConfig);
 		}
 	}

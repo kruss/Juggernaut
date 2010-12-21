@@ -20,7 +20,7 @@ import ui.Window;
 import util.HeapManager;
 import util.UiTools;
 
-public class Application {
+public class Application implements ISystemComponent {
 
 	private static Application instance;
 	
@@ -42,14 +42,14 @@ public class Application {
 		}
 	}
 	
-	private ArrayList<Component> components;
-	private Persistence persistence;
-	private Runtime runtime;
-	private UI ui;
+	private ArrayList<ISystemComponent> systems;
+	private PersistenceSystem persistenceSystem;
+	private RuntimeSystem runtimeSystem;
+	private UiSystem uiSystem;
 	
 	private Logger logger;
 	private Window window;
-	private Configuration config;
+	private Configuration configuration;
 	private History history;
 	private Cache cache;
 	private Registry registry;
@@ -62,7 +62,7 @@ public class Application {
 	
 	public Logger getLogger(){ return logger; }
 	public Window getWindow(){ return window; }
-	public Configuration getConfig(){ return config; }
+	public Configuration getConfiguration(){ return configuration; }
 	public History getHistory(){ return history; }
 	public Cache getCache(){ return cache; }
 	public Registry getRegistry(){ return registry; }
@@ -75,24 +75,31 @@ public class Application {
 	
 	private Application(){
 		
-		persistence = new Persistence();
-		runtime = new Runtime();
-		ui = new UI();
+		persistenceSystem = new PersistenceSystem();
+		runtimeSystem = new RuntimeSystem();
+		uiSystem = new UiSystem();
 
-		components = new ArrayList<Component>();
-		components.add(persistence);
-		components.add(runtime);
-		components.add(ui);
+		systems = new ArrayList<ISystemComponent>();
+		systems.add(persistenceSystem);
+		systems.add(runtimeSystem);
+		systems.add(uiSystem);
 	}
 	
+	@Override
 	public void init() throws Exception {
-		
-		for(int i=0; i<components.size(); i++){
-			components.get(i).init();
+		for(int i=0; i<systems.size(); i++){
+			systems.get(i).init();
 		}
 	}
 
-	public void shutdown(){
+	@Override
+	public void shutdown() throws Exception {
+		for(int i=systems.size()-1; i>=0; i--){
+			systems.get(i).shutdown();
+		}
+	}
+	
+	public void quit() {
 		
 		if(
 			!launchManager.isBusy() ||
@@ -100,9 +107,7 @@ public class Application {
 		){
 			logger.info(Module.COMMON, "Shutdown");
 			try{
-				for(int i=components.size()-1; i>=0; i--){
-					components.get(i).shutdown();
-				}
+				shutdown();
 			}catch(Exception e){
 				popupError(e);
 				System.exit(Constants.PROCESS_NOK);
@@ -113,10 +118,10 @@ public class Application {
 
 	/** drop any unsaved changes and restart ui */
 	public void revert() throws Exception {
-		if(config.isDirty()){
-			ui.shutdown();
-			persistence.init();
-			ui.init();
+		if(configuration.isDirty()){
+			uiSystem.shutdown();
+			persistenceSystem.init();
+			uiSystem.init();
 		}
 	}
 	
@@ -125,12 +130,7 @@ public class Application {
 		UiTools.errorDialog(e.getClass().getSimpleName()+"\n\n"+e.getMessage());
 	}
 	
-	abstract class Component {
-		public abstract void init() throws Exception;
-		public abstract void shutdown() throws Exception;
-	}
-	
-	class Persistence extends Component {
+	private class PersistenceSystem implements ISystemComponent {
 		@Override
 		public void init() throws Exception {
 			fileManager = new FileManager();
@@ -143,10 +143,10 @@ public class Application {
 
 			File configFile = new File(fileManager.getDataFolderPath()+File.separator+Configuration.OUTPUT_FILE);
 			if(configFile.isFile()){
-				config = Configuration.load(configFile.getAbsolutePath());
+				configuration = Configuration.load(configFile.getAbsolutePath());
 			}else{
-				config = new Configuration(configFile.getAbsolutePath());
-				config.save();
+				configuration = new Configuration(configFile.getAbsolutePath());
+				configuration.save();
 			}		
 
 			File historyFile = new File(fileManager.getDataFolderPath()+File.separator+History.OUTPUT_FILE);
@@ -169,12 +169,12 @@ public class Application {
 		@Override
 		public void shutdown() throws Exception {
 			cache.clean();
-			config.chekForSave();
+			configuration.chekForSave();
 			fileManager.shutdown();		
 		}
 	}
 	
-	class Runtime extends Component {
+	private class RuntimeSystem implements ISystemComponent {
 		@Override
 		public void init() throws Exception {
 			heapManager = new HeapManager();
@@ -185,7 +185,7 @@ public class Application {
 			taskManager.init();
 			launchManager = new LaunchManager();
 			scheduleManager = new ScheduleManager(
-					config, launchManager, logger
+					configuration, launchManager, logger
 			);
 			scheduleManager.init();
 			httpServer = new HttpServer(
@@ -203,14 +203,14 @@ public class Application {
 		}
 	}
 	
-	class UI extends Component {
+	private class UiSystem implements ISystemComponent {
 		@Override
 		public void init() throws Exception {
 			window = new Window();
 			window.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 			window.addWindowListener(new WindowAdapter() {
 	            public void windowClosing(WindowEvent e){ 
-	            	Application.getInstance().shutdown(); 
+	            	quit(); 
 	            }
 	        });
 			UIManager.LookAndFeelInfo styles[] = UIManager.getInstalledLookAndFeels();

@@ -99,7 +99,7 @@ public class ConfigPanel extends JPanel implements IChangedListener {
 		add(topPanel, BorderLayout.NORTH);
 		add(tabPanel, BorderLayout.CENTER);
 		
-		application.getConfig().addListener(this);
+		application.getConfiguration().addListener(this);
 	}
 	
 	public void init() {
@@ -134,7 +134,7 @@ public class ConfigPanel extends JPanel implements IChangedListener {
 		
 		int index = launchCombo.getSelectedIndex();
 		if(index >= 0){
-			currentConfig = application.getConfig().getLaunchConfigs().get(index);
+			currentConfig = application.getConfiguration().getLaunchConfigs().get(index);
 		}else{
 			currentConfig = null;
 		}
@@ -151,8 +151,8 @@ public class ConfigPanel extends JPanel implements IChangedListener {
 			removeLaunch.setEnabled(true);
 			renameLaunch.setEnabled(true);
 			if(
-					application.getConfig().getLaunchConfigs().size() > 0 &&
-					application.getConfig().getLaunchConfigs().get(index).isReady()
+					application.getConfiguration().getLaunchConfigs().size() > 0 &&
+					application.getConfiguration().getLaunchConfigs().get(index).isReady()
 			){
 				triggerLaunch.setEnabled(true);
 			}else{
@@ -175,7 +175,7 @@ public class ConfigPanel extends JPanel implements IChangedListener {
 	
 	private void initUI(){
 		
-		ArrayList<LaunchConfig> configs = application.getConfig().getLaunchConfigs();
+		ArrayList<LaunchConfig> configs = application.getConfiguration().getLaunchConfigs();
 		for(LaunchConfig config : configs){
 			launchCombo.addItem(config);
 		}
@@ -201,7 +201,7 @@ public class ConfigPanel extends JPanel implements IChangedListener {
 	@Override
 	public void changed(Object object) {
 		
-		if(object == application.getConfig()){
+		if(object == application.getConfiguration()){
 			launchCombo.repaint();
 			adjustButtons();
 		}
@@ -212,9 +212,9 @@ public class ConfigPanel extends JPanel implements IChangedListener {
 		String name = UiTools.inputDialog("New Launch", "");
 		if(name != null && !name.equals("")){
 			LaunchConfig config = new LaunchConfig(name);
-			application.getConfig().getLaunchConfigs().add(config);
-			Collections.sort(application.getConfig().getLaunchConfigs());
-			application.getConfig().notifyListeners();
+			application.getConfiguration().getLaunchConfigs().add(config);
+			Collections.sort(application.getConfiguration().getLaunchConfigs());
+			application.getConfiguration().notifyListeners();
 			refreshUI(config);
 		}
 	}
@@ -223,9 +223,9 @@ public class ConfigPanel extends JPanel implements IChangedListener {
 		
 		int index = launchCombo.getSelectedIndex();
 		if(index >= 0 && UiTools.confirmDialog("Remove Launch ?")){
-			application.getConfig().getLaunchConfigs().remove(index);
-			application.getConfig().setDirty(true);
-			application.getConfig().notifyListeners();
+			application.getConfiguration().getLaunchConfigs().remove(index);
+			application.getConfiguration().setDirty(true);
+			application.getConfiguration().notifyListeners();
 			refreshUI(null);
 		}
 	}
@@ -234,13 +234,13 @@ public class ConfigPanel extends JPanel implements IChangedListener {
 		
 		int index = launchCombo.getSelectedIndex();
 		if(index >= 0){
-			LaunchConfig config = application.getConfig().getLaunchConfigs().get(index);
+			LaunchConfig config = application.getConfiguration().getLaunchConfigs().get(index);
 			String name = UiTools.inputDialog("Rename Launch", config.getName());
 			if(name != null && !name.equals("")){
 				config.setName(name);
 				config.setDirty(true);
-				Collections.sort(application.getConfig().getLaunchConfigs());
-				application.getConfig().notifyListeners();
+				Collections.sort(application.getConfiguration().getLaunchConfigs());
+				application.getConfiguration().notifyListeners();
 				refreshUI(config);
 			}
 		}
@@ -253,7 +253,7 @@ public class ConfigPanel extends JPanel implements IChangedListener {
 			if(UiTools.confirmDialog("Trigger Launch"))
 			{
 				try{
-					LaunchConfig config = application.getConfig().getLaunchConfigs().get(index);
+					LaunchConfig config = application.getConfiguration().getLaunchConfigs().get(index);
 					LaunchAgent launch = config.createLaunch(LaunchManager.USER_TRIGGER);
 					LaunchStatus status = application.getLaunchManager().runLaunch(launch);
 					if(!status.launched){

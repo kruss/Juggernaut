@@ -124,7 +124,7 @@ public class OperationConfigPanel extends JPanel implements IChangedListener {
 		
 		if(object == optionEditor){
 			parentPanel.getCurrentConfig().setDirty(true);
-			application.getConfig().notifyListeners();
+			application.getConfiguration().notifyListeners();
 			operationList.repaint();
 		}
 	}
@@ -235,7 +235,7 @@ public class OperationConfigPanel extends JPanel implements IChangedListener {
 				LaunchConfig launchConfig = parentPanel.getCurrentConfig();
 				launchConfig.getOperationConfigs().add(listIndex >=0 ? listIndex+1 : 0, operationConfig);
 				launchConfig.setDirty(true);
-				application.getConfig().notifyListeners();
+				application.getConfiguration().notifyListeners();
 				refreshUI(operationConfig);
 			}catch(Exception e){
 				application.popupError(e);
@@ -250,7 +250,7 @@ public class OperationConfigPanel extends JPanel implements IChangedListener {
 			LaunchConfig launchConfig = parentPanel.getCurrentConfig();
 			launchConfig.getOperationConfigs().remove(listIndex);
 			launchConfig.setDirty(true);
-			application.getConfig().notifyListeners();
+			application.getConfiguration().notifyListeners();
 			refreshUI(null);
 		}
 	}
@@ -263,7 +263,7 @@ public class OperationConfigPanel extends JPanel implements IChangedListener {
 			AbstractOperationConfig operationConfig = launchConfig.getOperationConfigs().remove(listIndex);
 			launchConfig.getOperationConfigs().add(listIndex-1, operationConfig);
 			launchConfig.setDirty(true);
-			application.getConfig().notifyListeners();
+			application.getConfiguration().notifyListeners();
 			refreshUI(operationConfig);
 		}
 	}
@@ -276,7 +276,7 @@ public class OperationConfigPanel extends JPanel implements IChangedListener {
 			AbstractOperationConfig operationConfig = launchConfig.getOperationConfigs().remove(listIndex);
 			launchConfig.getOperationConfigs().add(listIndex+1, operationConfig);
 			launchConfig.setDirty(true);
-			application.getConfig().notifyListeners();
+			application.getConfiguration().notifyListeners();
 			refreshUI(operationConfig);
 		}
 	}

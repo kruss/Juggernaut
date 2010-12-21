@@ -48,7 +48,7 @@ public class ProjectMenu extends JMenu implements IChangedListener {
 		quit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_MASK));
 		add(quit);
 		
-		application.getConfig().addListener(this);
+		application.getConfiguration().addListener(this);
 	}
 	
 	private void revert(){
@@ -63,7 +63,7 @@ public class ProjectMenu extends JMenu implements IChangedListener {
 	private void save(){
 		
 		try{
-			Application.getInstance().getConfig().save();
+			Application.getInstance().getConfiguration().save();
 		}catch(Exception e){
 			Application.getInstance().popupError(e);
 		}
@@ -71,14 +71,14 @@ public class ProjectMenu extends JMenu implements IChangedListener {
 	
 	private void quit(){
 		
-		Application.getInstance().shutdown();
+		application.quit();
 	}
 
 	@Override
 	public void changed(Object object) {
 		
-		if(object == application.getConfig()){
-			if(application.getConfig().isDirty()){
+		if(object == application.getConfiguration()){
+			if(application.getConfiguration().isDirty()){
 				revert.setEnabled(true);
 				save.setEnabled(true);
 			}else{

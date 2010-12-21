@@ -32,7 +32,7 @@ public class PreferencePanel extends JPanel implements IChangedListener {
 	}
 	
 	private void initUI() {
-		Configuration configuration = application.getConfig();
+		Configuration configuration = application.getConfiguration();
 		optionEditor.setOptionContainer(configuration.getOptionContainer(), configuration);
 	}
 
@@ -40,7 +40,7 @@ public class PreferencePanel extends JPanel implements IChangedListener {
 	public void changed(Object object) {
 		
 		if(object == optionEditor){
-			Configuration configuration = application.getConfig();
+			Configuration configuration = application.getConfiguration();
 			applyChanges(configuration);
 			configuration.setDirty(true);
 			configuration.notifyListeners();

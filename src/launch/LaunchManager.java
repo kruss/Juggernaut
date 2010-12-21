@@ -69,7 +69,7 @@ public class LaunchManager implements ILifecycleListener {
 	}
 	
 	public synchronized boolean isReady() {
-		return agents.size() < application.getConfig().getMaximumAgents();
+		return agents.size() < application.getConfiguration().getMaximumAgents();
 	}
 	
 	private synchronized boolean isRunning(String id) {
