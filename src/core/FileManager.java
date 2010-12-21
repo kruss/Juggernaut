@@ -14,12 +14,24 @@ import data.LaunchConfig;
 /** 
  * The file-manager controls file-system resources
  */
-public class FileManager {
+public class FileManager implements ISystemComponent {
 	
 	private Application application;
 	
-	public FileManager(){
-		application = Application.getInstance();
+	public FileManager(Application application){
+		this.application = application;
+	}
+	
+	@Override
+	public void init() throws Exception {
+		initFolders();
+	}
+	
+	@Override
+	public void shutdown() throws Exception {
+		cleanBuildFolder();
+		deleteTempFolder();
+		deleteOldLogfiles();
 	}
 	
 	public String getDataFolderPath(){
@@ -49,16 +61,6 @@ public class FileManager {
 	public File getTempFolder(){
 		return new File(getTempFolderPath());
 	}
-	
-	public void init() throws Exception {
-		initFolders();
-	}
-	
-	public void shutdown() throws Exception {
-		cleanBuildFolder();
-		deleteTempFolder();
-		deleteOldLogfiles();
-	}
 
 	private void initFolders() throws Exception {
 		
@@ -78,17 +80,20 @@ public class FileManager {
 
 	private void cleanBuildFolder() throws Exception {
 		
-		for(File file : getBuildFolder().listFiles()){
-			if(isLegacyBuildFile(file)){
-				delete(file);
+		Configuration configuration = application.getConfiguration();
+		if(configuration != null){
+			for(File file : getBuildFolder().listFiles()){
+				if(isLegacyBuildFile(configuration, file)){
+					delete(file);
+				}
 			}
 		}
 	}
 
-	private boolean isLegacyBuildFile(File folder) {
-		
-		for(LaunchConfig config : application.getConfiguration().getLaunchConfigs()){
-			if(folder.getName().contains(config.getId())){
+	private boolean isLegacyBuildFile(Configuration configuration, File file) {
+
+		for(LaunchConfig config : configuration.getLaunchConfigs()){
+			if(file.getName().contains(config.getId())){
 				return false;
 			}
 		}
@@ -107,10 +112,12 @@ public class FileManager {
 		}
 	}
 	
+	// TODO retry with unlocker for windows
 	private void delete(File file) throws Exception {
 		
-		// TODO retry with unlocker for windows
-		application.getLogger().debug(Module.COMMON, "delete: "+file.getAbsolutePath());
+		if(application.getLogger() != null){
+			application.getLogger().debug(Module.COMMON, "delete: "+file.getAbsolutePath());
+		}
 		if(file.isFile()){
 			FileTools.deleteFile(file.getAbsolutePath());
 		}else if(file.isDirectory()){

@@ -49,6 +49,7 @@ public class ProjectMenu extends JMenu implements IChangedListener {
 		add(quit);
 		
 		application.getConfiguration().addListener(this);
+		toggleConfigurationUI();
 	}
 	
 	private void revert(){
@@ -78,13 +79,17 @@ public class ProjectMenu extends JMenu implements IChangedListener {
 	public void changed(Object object) {
 		
 		if(object == application.getConfiguration()){
-			if(application.getConfiguration().isDirty()){
-				revert.setEnabled(true);
-				save.setEnabled(true);
-			}else{
-				revert.setEnabled(false);
-				save.setEnabled(false);
-			}
+			toggleConfigurationUI();
+		}
+	}
+
+	private void toggleConfigurationUI() {
+		if(application.getConfiguration().isDirty()){
+			revert.setEnabled(true);
+			save.setEnabled(true);
+		}else{
+			revert.setEnabled(false);
+			save.setEnabled(false);
 		}
 	}
 }

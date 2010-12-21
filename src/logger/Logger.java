@@ -21,7 +21,7 @@ public class Logger implements ILogProvider {
 	public enum Module { COMMON, COMMAND, TASK, HTTP }
 	public enum Level { ERROR, NORMAL, DEBUG }
 
-	private Mode mode;
+	protected Mode mode;
 	private File logfile;
 	private long logfileMax;
 	private ArrayList<ILogListener> listeners;

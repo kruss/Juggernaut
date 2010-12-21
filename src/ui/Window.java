@@ -38,9 +38,9 @@ public class Window extends JFrame implements ISystemComponent, IChangedListener
 	private JLabel statusInfo;
 	private JLabel heapInfo;
 	
-	public Window(){
+	public Window(Application application){
 		
-		application = Application.getInstance();
+		this.application = application;
 		
 		menuBar = new JMenuBar();
 		menuBar.add(new ProjectMenu());

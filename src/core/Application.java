@@ -7,7 +7,6 @@ import java.io.File;
 import launch.LaunchManager;
 import launch.ScheduleManager;
 import logger.Logger;
-import logger.Logger.Mode;
 import logger.Logger.Module;
 import ui.Window;
 import util.UiTools;
@@ -38,7 +37,7 @@ public class Application extends AbstractSystem {
 	private RuntimeSystem runtimeSystem;
 	private UiSystem uiSystem;
 	
-	private Logger logger;
+	private SystemLogger logger;
 	private Window window;
 	private Configuration configuration;
 	private History history;
@@ -101,7 +100,9 @@ public class Application extends AbstractSystem {
 	}
 	
 	public void popupError(Exception e){
-		logger.error(Module.COMMON, e);
+		if(logger != null){
+			logger.error(Module.COMMON, e);
+		}
 		UiTools.errorDialog(e.getClass().getSimpleName()+"\n\n"+e.getMessage());
 	}
 	
@@ -111,47 +112,21 @@ public class Application extends AbstractSystem {
 		}
 	}
 	
-	private class PersistenceSystem implements ISystemComponent {
+	private class PersistenceSystem extends AbstractSystem {
 		@Override
 		public void init() throws Exception {
-			fileManager = new FileManager();
-			fileManager.init();
-
-			File logFile = new File(fileManager.getDataFolderPath()+File.separator+Logger.OUTPUT_FILE);
-			logger = new Logger(Mode.FILE_AND_CONSOLE);
-			logger.setLogfile(logFile, Constants.LOGFILE_MAX);
-			logger.info(Module.COMMON, Constants.APP_FULL_NAME);
-
-			File configFile = new File(fileManager.getDataFolderPath()+File.separator+Configuration.OUTPUT_FILE);
-			if(configFile.isFile()){
-				configuration = Configuration.load(configFile.getAbsolutePath());
-			}else{
-				configuration = new Configuration(configFile.getAbsolutePath());
-				configuration.save();
-			}		
-
-			File historyFile = new File(fileManager.getDataFolderPath()+File.separator+History.OUTPUT_FILE);
-			if(historyFile.isFile()){
-				history = History.load(historyFile.getAbsolutePath());
-			}else{
-				history = new History(historyFile.getAbsolutePath());
-				history.save();
-				history.createIndex();
-			}
-
-			File cacheFile = new File(fileManager.getDataFolderPath()+File.separator+Cache.OUTPUT_FILE);
-			if(cacheFile.isFile()){
-				cache = Cache.load(cacheFile.getAbsolutePath());
-			}else{
-				cache = new Cache(cacheFile.getAbsolutePath());
-				cache.save();
-			}
-		}
-		@Override
-		public void shutdown() throws Exception {
-			cache.clean();
-			configuration.chekForSave();
-			fileManager.shutdown();		
+			clear();
+			fileManager = new FileManager(application);
+			add(fileManager);
+			logger = new SystemLogger(fileManager);
+			add(logger);
+			configuration = Configuration.create(fileManager);
+			add(configuration);
+			history = History.create(fileManager);
+			add(history);
+			cache = Cache.create(fileManager);
+			add(cache);
+			super.init();
 		}
 	}
 	
@@ -179,9 +154,28 @@ public class Application extends AbstractSystem {
 		@Override
 		public void init() throws Exception {
 			clear();
-			window = new Window();
+			window = new Window(application);
 			add(window);
 			super.init();
 		}
+	}
+	
+	private class SystemLogger extends Logger implements ISystemComponent {
+
+		private FileManager fileManager;
+		
+		public SystemLogger(FileManager fileManager) {
+			super(Mode.FILE_AND_CONSOLE);
+			this.fileManager = fileManager;
+		}
+
+		@Override
+		public void init() throws Exception {
+			File logFile = new File(fileManager.getDataFolderPath()+File.separator+Logger.OUTPUT_FILE);
+			setLogfile(logFile, Constants.LOGFILE_MAX);
+			info(Module.COMMON, Constants.APP_FULL_NAME);
+		}
+		@Override
+		public void shutdown() throws Exception {}
 	}
 }

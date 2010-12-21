@@ -21,7 +21,6 @@ public class AbstractSystem implements ISystemComponent {
 	@Override
 	public void init() throws Exception {
 		for(int i=0; i<components.size(); i++){
-			System.out.println("INIT: "+components.get(i).getClass().getSimpleName());
 			components.get(i).init();
 		}
 	}
@@ -29,7 +28,6 @@ public class AbstractSystem implements ISystemComponent {
 	@Override
 	public void shutdown() throws Exception {
 		for(int i=components.size()-1; i>=0; i--){
-			System.out.println("SHUTDOWN: "+components.get(i).getClass().getSimpleName());
 			components.get(i).shutdown();
 		}
 	}

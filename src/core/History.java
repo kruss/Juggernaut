@@ -20,8 +20,18 @@ import data.LaunchHistory;
 /**
  * the configuration of the application,- will be serialized
  */
-public class History {
+public class History implements ISystemComponent {
 
+	public static History create(FileManager fileManager) throws Exception {
+		
+		File file = new File(fileManager.getDataFolderPath()+File.separator+History.OUTPUT_FILE);
+		if(file.isFile()){
+			return History.load(file.getAbsolutePath());
+		}else{
+			return new History(file.getAbsolutePath());
+		}	
+	}
+	
 	public static final String OUTPUT_FILE = "History.xml";
 	
 	@SuppressWarnings("unused")
@@ -40,6 +50,14 @@ public class History {
 		this.path = path;
 		dirty = true;
 	}
+	
+	@Override
+	public void init() throws Exception {
+		save();
+	}
+
+	@Override
+	public void shutdown() throws Exception {}
 
 	public void addListener(IChangedListener listener){ listeners.add(listener); }
 	

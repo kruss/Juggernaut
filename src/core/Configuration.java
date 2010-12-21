@@ -2,6 +2,7 @@ package core;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.ArrayList;
 
 import javax.swing.JMenuItem;
@@ -30,8 +31,18 @@ import data.Option.Type;
 /**
  * the configuration of the application,- will be serialized
  */
-public class Configuration implements IOptionInitializer {
+public class Configuration implements ISystemComponent, IOptionInitializer {
 
+	public static Configuration create(FileManager fileManager) throws Exception {
+		
+		File file = new File(fileManager.getDataFolderPath()+File.separator+Configuration.OUTPUT_FILE);
+		if(file.isFile()){
+			return Configuration.load(file.getAbsolutePath());
+		}else{
+			return new Configuration(file.getAbsolutePath());
+		}	
+	}
+	
 	public enum GROUPS {
 		GENERAL, NOTIFICATION, LOGGING
 	}
@@ -110,6 +121,16 @@ public class Configuration implements IOptionInitializer {
 		listeners = new ArrayList<IChangedListener>();
 		this.path = path;
 		dirty = true;
+	}
+	
+	@Override
+	public void init() throws Exception {
+		save();
+	}
+
+	@Override
+	public void shutdown() throws Exception {
+		chekForSave();
 	}
 	
 	@Override
