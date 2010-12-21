@@ -73,11 +73,39 @@ public class Application extends AbstractSystem {
 		add(uiSystem);
 	}
 	
+	/** drop any unsaved changes and restart ui */
+	public void revert() throws Exception {
+		if(isInitialized() && configuration.isDirty()){
+			uiSystem.shutdown();
+			persistenceSystem.init();
+			uiSystem.init();
+		}
+	}
+	
+	/** display an error-dialog */
+	public void popupError(Exception e){
+		if(isInitialized()){
+			logger.error(Module.COMMON, e);
+			UiTools.errorDialog(e.getClass().getSimpleName()+"\n\n"+e.getMessage());
+		}
+	}
+	
+	/** set ui-status */
+	public void setStatus(String text) {
+		if(isInitialized()){
+			window.setStatus(text);
+		}
+	}
+	
+	/** quit the application */
 	public void quit() {
 		
 		if(
-			!launchManager.isBusy() ||
-			UiTools.confirmDialog("Aboard running launches ?")
+			isInitialized() &&
+			( 
+				!launchManager.isBusy() || 
+				UiTools.confirmDialog("Aboard running launches ?") 
+			)
 		){
 			logger.info(Module.COMMON, "Shutdown");
 			try{
@@ -87,28 +115,6 @@ public class Application extends AbstractSystem {
 				System.exit(Constants.PROCESS_NOK);
 			}
 			System.exit(Constants.PROCESS_OK);
-		}
-	}
-
-	/** drop any unsaved changes and restart ui */
-	public void revert() throws Exception {
-		if(configuration.isDirty()){
-			uiSystem.shutdown();
-			persistenceSystem.init();
-			uiSystem.init();
-		}
-	}
-	
-	public void popupError(Exception e){
-		if(logger != null){
-			logger.error(Module.COMMON, e);
-		}
-		UiTools.errorDialog(e.getClass().getSimpleName()+"\n\n"+e.getMessage());
-	}
-	
-	public void setStatus(String text) {
-		if(window != null){
-			window.setStatus(text);
 		}
 	}
 	
