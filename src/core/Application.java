@@ -5,7 +5,6 @@ import http.HttpServer;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -19,7 +18,7 @@ import logger.Logger.Module;
 import ui.Window;
 import util.UiTools;
 
-public class Application implements ISystemComponent {
+public class Application extends AbstractSystem {
 
 	private static Application application;
 	
@@ -41,7 +40,6 @@ public class Application implements ISystemComponent {
 		}
 	}
 	
-	private ArrayList<ISystemComponent> systems;
 	private PersistenceSystem persistenceSystem;
 	private RuntimeSystem runtimeSystem;
 	private UiSystem uiSystem;
@@ -75,27 +73,11 @@ public class Application implements ISystemComponent {
 	private Application(){
 		
 		persistenceSystem = new PersistenceSystem();
+		add(persistenceSystem);
 		runtimeSystem = new RuntimeSystem();
+		add(runtimeSystem);
 		uiSystem = new UiSystem();
-
-		systems = new ArrayList<ISystemComponent>();
-		systems.add(persistenceSystem);
-		systems.add(runtimeSystem);
-		systems.add(uiSystem);
-	}
-	
-	@Override
-	public void init() throws Exception {
-		for(int i=0; i<systems.size(); i++){
-			systems.get(i).init();
-		}
-	}
-
-	@Override
-	public void shutdown() throws Exception {
-		for(int i=systems.size()-1; i>=0; i--){
-			systems.get(i).shutdown();
-		}
+		add(uiSystem);
 	}
 	
 	public void quit() {
@@ -179,32 +161,24 @@ public class Application implements ISystemComponent {
 		}
 	}
 	
-	private class RuntimeSystem implements ISystemComponent {
+	private class RuntimeSystem extends AbstractSystem {
+		
 		@Override
 		public void init() throws Exception {
+			clear();
 			heapManager = new HeapManager(logger);
-			heapManager.init();
+			add(heapManager);
 			registry = new Registry();
-			registry.init();
+			add(registry);
 			taskManager = new TaskManager();
-			taskManager.init();
+			add(taskManager);
 			launchManager = new LaunchManager(application, configuration);
-			launchManager.init();
+			add(launchManager);
 			scheduleManager = new ScheduleManager(configuration, launchManager, logger);
-			scheduleManager.init();
-			httpServer = new HttpServer(
-					Constants.HTTP_PORT, fileManager.getHistoryFolder(), logger
-			);
-			httpServer.init();
-		}
-		@Override
-		public void shutdown() throws Exception {
-			httpServer.shutdown();
-			scheduleManager.shutdown();
-			launchManager.shutdown();
-			taskManager.shutdown();
-			registry.shutdown();
-			heapManager.shutdown();
+			add(scheduleManager);
+			httpServer = new HttpServer(Constants.HTTP_PORT, fileManager.getHistoryFolder(), logger);
+			add(httpServer);
+			super.init();
 		}
 	}
 	

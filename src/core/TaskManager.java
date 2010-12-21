@@ -9,7 +9,7 @@ import util.Task;
 /**
  * The task-manager provides timeout control for tasks.
  */
-public class TaskManager extends Task {
+public class TaskManager extends Task implements ISystemComponent {
 
 	private static final long CYCLE = 15 * 1000; // 15 sec
 	
@@ -36,13 +36,15 @@ public class TaskManager extends Task {
 		}
 	}
 	
-	public void init() {
+	@Override
+	public void init() throws Exception {
 		
 		setCycle(CYCLE);
 		asyncRun(0, 0);
 	}
 	
-	public void shutdown() {
+	@Override
+	public void shutdown() throws Exception {
 
 		syncKill();
 		synchronized(tasks){
