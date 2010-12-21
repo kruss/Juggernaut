@@ -24,19 +24,19 @@ public class ScheduleManager implements ISystemComponent {
 	private LaunchManager launchManager;
 	private Logger logger;
 	private SchedulerTask scheduler;
-	private Date update;
+	private Date updated;
 	private ArrayList<IChangedListener> listeners;
 
-	public void setUpdate(Date update){
+	public void setUpdated(Date updated){
 		synchronized(this){
-			this.update = update;
+			this.updated = updated;
 		}
 		notifyListeners();
 	}
 	
-	public Date getUpdate(){ 
+	public Date getUpdated(){ 
 		synchronized(this){
-			return update;
+			return updated;
 		}
 	}
 	
@@ -50,7 +50,7 @@ public class ScheduleManager implements ISystemComponent {
 		this.launchManager = launchManager;
 		this.logger = logger;
 		scheduler = null;
-		update = null;
+		updated = null;
 		listeners = new ArrayList<IChangedListener>();
 	}
 	
@@ -108,7 +108,7 @@ public class ScheduleManager implements ISystemComponent {
 				break;
 			}
 		}
-		setUpdate(new Date());
+		setUpdated(new Date());
 	}
 	
 	private void checkSchedules(LaunchConfig launchConfig) {

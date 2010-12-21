@@ -174,9 +174,9 @@ public class SchedulerPanel extends JPanel implements IChangedListener {
 	}
 
 	private void setSchedulerUpdate() {
-		Date update = application.getScheduleManager().getUpdate();
-		String info = update != null ? 
-				"Scheduler: "+StringTools.getTextDate(update) : "Scheduler: idle";
+		Date updated = application.getScheduleManager().getUpdated();
+		String info = updated != null ? 
+				"Scheduler: "+StringTools.getTextDate(updated) : "Scheduler: idle";
 		launchPanel.setToolTipText(info);
 		launchTable.setToolTipText(info);
 	}
