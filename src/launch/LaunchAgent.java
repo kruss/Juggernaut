@@ -29,7 +29,7 @@ public class LaunchAgent extends LifecycleObject {
 	private FileManager fileManager;
 	private LaunchConfig config;
 	private String trigger;
-	protected PropertyContainer propertyContainer;
+	private PropertyContainer propertyContainer;
 	private ArrayList<AbstractOperation> operations;
 	private LaunchHistory launchHistory;
 	private Logger logger;

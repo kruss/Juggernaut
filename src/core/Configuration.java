@@ -33,11 +33,11 @@ import data.Option.Type;
  */
 public class Configuration implements ISystemComponent, IOptionInitializer, ILogConfig {
 
-	public static Configuration create(FileManager fileManager, Logger logger) throws Exception {
+	public static Configuration create(Cache cache, FileManager fileManager, Logger logger) throws Exception {
 		
 		File file = new File(fileManager.getDataFolderPath()+File.separator+Configuration.OUTPUT_FILE);
 		if(file.isFile()){
-			return Configuration.load(logger, file.getAbsolutePath());
+			return Configuration.load(cache, logger, file.getAbsolutePath());
 		}else{
 			return new Configuration(logger, file.getAbsolutePath());
 		}	
@@ -197,7 +197,7 @@ public class Configuration implements ISystemComponent, IOptionInitializer, ILog
 	
 	public State getState(){ return isDirty() ? State.DIRTY : State.CLEAN; }
 	
-	public static Configuration load(Logger logger, String path) throws Exception {
+	public static Configuration load(Cache cache, Logger logger, String path) throws Exception {
 	
 		logger.debug(Module.COMMON, "load: "+path);
 		XStream xstream = new XStream(new DomDriver());
@@ -208,6 +208,12 @@ public class Configuration implements ISystemComponent, IOptionInitializer, ILog
 		configuration.path = path;
 		for(LaunchConfig launchConfig : configuration.launchConfigs){
 			launchConfig.setDirty(false);
+			for(AbstractOperationConfig operationConfig : launchConfig.getOperationConfigs()){
+				operationConfig.init(configuration, cache);
+			}
+			for(AbstractTriggerConfig triggerConfig : launchConfig.getTriggerConfigs()){
+				triggerConfig.init(configuration, cache);
+			}
 		}
 		configuration.dirty = false;
 		return configuration;

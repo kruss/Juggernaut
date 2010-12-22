@@ -1,7 +1,7 @@
 package operation;
 
-import core.Application;
 import core.Cache;
+import core.Configuration;
 import repository.SVNClient;
 import repository.IRepositoryClient.CheckoutInfo;
 import repository.IRepositoryClient.HistoryInfo;
@@ -29,8 +29,8 @@ public class SVNOperation extends AbstractOperation implements IRepositoryOperat
 	@Override
 	public HistoryInfo getHistory(){ return history; }
 	
-	public SVNOperation(LaunchAgent parent, SVNOperationConfig config) {
-		super(parent, config);
+	public SVNOperation(Configuration configuration, Cache cache, LaunchAgent parent, SVNOperationConfig config) {
+		super(configuration, cache, parent, config);
 		this.config = config;
 		client = new SVNClient(parent.getLogger());
 	}
@@ -42,14 +42,12 @@ public class SVNOperation extends AbstractOperation implements IRepositoryOperat
 	
 	
 	private void setLastRevisionCache(String revision){
-		Cache cache = Application.getInstance().getCache();
 		cache.addProperty(
 				config.getId(), Property.REVISION.toString(), revision
 		);
 	}
 	
 	private String getLastRevisionCache(){
-		Cache cache = Application.getInstance().getCache();
 		return cache.getProperty(
 				config.getId(), Property.REVISION.toString()
 		);

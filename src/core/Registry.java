@@ -14,14 +14,20 @@ import data.AbstractTriggerConfig;
 
 public class Registry implements ISystemComponent {
 
+	private Configuration configuration;
+	private Cache cache;
+	
 	private ArrayList<AbstractOperationConfig> operationConfigs;
 	private ArrayList<AbstractTriggerConfig> triggerConfigs;
 	
 	public ArrayList<AbstractOperationConfig> getOperationConfigs(){ return operationConfigs; }	
 	public ArrayList<AbstractTriggerConfig> getTriggerConfigs(){ return triggerConfigs; }
 	
-	public Registry(){
+	public Registry(Configuration configuration, Cache cache){
 	
+		this.configuration = configuration;
+		this.cache = cache;
+		
 		operationConfigs = new ArrayList<AbstractOperationConfig>();
 		triggerConfigs = new ArrayList<AbstractTriggerConfig>();
 	}
@@ -65,7 +71,9 @@ public class Registry implements ISystemComponent {
 
 		for(AbstractOperationConfig operationConfig : operationConfigs){
 			if(name.equals(operationConfig.getName())){
-				return operationConfig.getClass().newInstance();
+				AbstractOperationConfig instance = operationConfig.getClass().newInstance();
+				instance.init(configuration, cache);
+				return instance;
 			}
 		}
 		throw new Exception("No class for name: "+name);
@@ -75,7 +83,9 @@ public class Registry implements ISystemComponent {
 
 		for(AbstractTriggerConfig triggerConfig : triggerConfigs){
 			if(name.equals(triggerConfig.getName())){
-				return triggerConfig.getClass().newInstance();
+				AbstractTriggerConfig instance = triggerConfig.getClass().newInstance();
+				instance.init(configuration, cache);
+				return instance;
 			}
 		}
 		throw new Exception("No class for name: "+name);

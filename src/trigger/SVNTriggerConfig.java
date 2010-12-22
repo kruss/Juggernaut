@@ -1,6 +1,5 @@
 package trigger;
 
-
 import repository.SVNClient;
 import core.Application;
 import ui.OptionEditor;
@@ -67,6 +66,6 @@ public class SVNTriggerConfig extends AbstractTriggerConfig {
 	
 	@Override
 	public AbstractTrigger createTrigger() {
-		return new SVNTrigger(this);
+		return new SVNTrigger(configuration, cache, this);
 	}
 }

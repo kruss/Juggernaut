@@ -52,9 +52,9 @@ public class Application extends AbstractSystem implements IApplicationAdmin {
 	private HttpServer httpServer;
 	
 	public Logger getLogger(){ return logger; }
-	public Configuration getConfiguration(){ return configuration; }
-	public History getHistory(){ return history; }
-	public Cache getCache(){ return cache; }
+	//public Configuration getConfiguration(){ return configuration; }
+	//public History getHistory(){ return history; }
+	//public Cache getCache(){ return cache; }
 	//public Registry getRegistry(){ return registry; }
 	//public HeapManager getHeapManager(){ return heapManager; }
 	//public FileManager getFileManager(){ return fileManager; }
@@ -107,12 +107,12 @@ public class Application extends AbstractSystem implements IApplicationAdmin {
 	private class PersistenceSystem extends AbstractSystem {
 		@Override
 		public void init() throws Exception {
-			configuration = Configuration.create(fileManager, logger);
+			cache = Cache.create(fileManager, logger);
+			add(cache);
+			configuration = Configuration.create(cache, fileManager, logger);
 			add(configuration);
 			history = History.create(configuration, fileManager, logger);
 			add(history);
-			cache = Cache.create(fileManager, logger);
-			add(cache);
 			super.init();
 			
 			logger.setLogConfig(configuration);
@@ -125,7 +125,7 @@ public class Application extends AbstractSystem implements IApplicationAdmin {
 		public void init() throws Exception {
 			heapManager = new HeapManager(logger);
 			add(heapManager);
-			registry = new Registry();
+			registry = new Registry(configuration, cache);
 			add(registry);
 			taskManager = new TaskManager();
 			add(taskManager);

@@ -72,6 +72,6 @@ public class SVNOperationConfig extends AbstractOperationConfig {
 	
 	@Override
 	public AbstractOperation createOperation(LaunchAgent parent) {
-		return new SVNOperation(parent, this);
+		return new SVNOperation(configuration, cache, parent, this);
 	}
 }

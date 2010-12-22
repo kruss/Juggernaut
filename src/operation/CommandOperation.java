@@ -3,6 +3,9 @@ package operation;
 import java.io.File;
 import java.util.ArrayList;
 
+import core.Cache;
+import core.Configuration;
+
 import util.CommandTask;
 import launch.LaunchAgent;
 import launch.PropertyContainer;
@@ -14,8 +17,8 @@ public class CommandOperation extends AbstractOperation {
 
 	private CommandOperationConfig config;
 	
-	public CommandOperation(LaunchAgent parent, CommandOperationConfig config) {
-		super(parent, config);
+	public CommandOperation(Configuration configuration, Cache cache, LaunchAgent parent, CommandOperationConfig config) {
+		super(configuration, cache, parent, config);
 		this.config = config;
 	}
 

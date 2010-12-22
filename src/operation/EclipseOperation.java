@@ -3,7 +3,8 @@ package operation;
 import java.io.File;
 import java.util.ArrayList;
 
-import core.Application;
+import core.Cache;
+import core.Configuration;
 
 import util.CommandTask;
 import util.StringTools;
@@ -20,8 +21,8 @@ public class EclipseOperation extends AbstractOperation {
 
 	private EclipseOperationConfig config;
 	
-	public EclipseOperation(LaunchAgent parent, EclipseOperationConfig config) {
-		super(parent, config);
+	public EclipseOperation(Configuration configuration, Cache cache, LaunchAgent parent, EclipseOperationConfig config) {
+		super(configuration, cache, parent, config);
 		this.config = config;
 	}
 	
@@ -52,7 +53,7 @@ public class EclipseOperation extends AbstractOperation {
 		ArrayList<String> arguments = new ArrayList<String>();
 		arguments.add("-data \""+parent.getFolder()+"\"");
 		arguments.add("-cdt.builder");
-		if(Application.getInstance().getConfiguration().getLogLevel(Module.COMMAND) == Level.DEBUG){
+		if(configuration.getLogLevel(Module.COMMAND) == Level.DEBUG){
 			arguments.add("-cdt.verbose");
 		}
 		arguments.add("-cdt.import");

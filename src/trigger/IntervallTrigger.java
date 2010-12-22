@@ -2,8 +2,8 @@ package trigger;
 
 import java.util.Date;
 
-import core.Application;
 import core.Cache;
+import core.Configuration;
 
 import data.AbstractTrigger;
 
@@ -15,20 +15,18 @@ public class IntervallTrigger extends AbstractTrigger {
 	
 	private Date newDate;
 	
-	public IntervallTrigger(IntervallTriggerConfig config) {
-		super(config);
+	public IntervallTrigger(Configuration configuration, Cache cache, IntervallTriggerConfig config) {
+		super(configuration, cache, config);
 		this.config = config;
 	}
 	
 	private void setLastDate(Date date){
-		Cache cache = Application.getInstance().getCache();
 		cache.addProperty(
 				config.getId(), Property.DATE.toString(), ""+date.getTime()
 		);
 	}
 	
 	private Date getLastDate(){
-		Cache cache = Application.getInstance().getCache();
 		String value = cache.getProperty(
 				config.getId(), Property.DATE.toString()
 		);

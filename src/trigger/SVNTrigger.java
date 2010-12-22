@@ -2,8 +2,8 @@ package trigger;
 
 import java.util.Date;
 
-import core.Application;
 import core.Cache;
+import core.Configuration;
 
 import repository.SVNClient;
 import repository.IRepositoryClient.RevisionInfo;
@@ -22,21 +22,19 @@ public class SVNTrigger extends AbstractTrigger {
 	
 	private RevisionInfo info;
 	
-	public SVNTrigger(SVNTriggerConfig config) {
-		super(config);
+	public SVNTrigger(Configuration configuration, Cache cache, SVNTriggerConfig config) {
+		super(configuration, cache, config);
 		this.config = config;
 		client = new SVNClient(observer);
 	}
 	
 	private void setLastRevisionCache(String revision){
-		Cache cache = Application.getInstance().getCache();
 		cache.addProperty(
 				config.getId(), Property.REVISION.toString(), revision
 		);
 	}
 	
 	private String getLastRevisionCache(){
-		Cache cache = Application.getInstance().getCache();
 		return cache.getProperty(
 				config.getId(), Property.REVISION.toString()
 		);

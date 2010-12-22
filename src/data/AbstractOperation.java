@@ -3,6 +3,9 @@ package data;
 import java.io.File;
 import java.io.IOException;
 
+import core.Cache;
+import core.Configuration;
+
 import util.FileTools;
 
 import launch.LifecycleObject;
@@ -12,16 +15,25 @@ import logger.Logger.Module;
 
 public abstract class AbstractOperation extends LifecycleObject {
 
-	protected transient LaunchAgent parent;
-	protected transient Logger logger;
+	protected Configuration configuration;
+	protected Cache cache;
+	protected LaunchAgent parent;
+	protected Logger logger;
 	protected AbstractOperationConfig config;
 	
 	public LaunchAgent getParent(){ return parent; }
 	public AbstractOperationConfig getConfig(){ return config; }
 
-	public AbstractOperation(LaunchAgent parent, AbstractOperationConfig config){
-		
+	public AbstractOperation(
+			Configuration configuration, 
+			Cache cache, 
+			LaunchAgent parent, 
+			AbstractOperationConfig config)
+	{
 		super("Opperation("+config.getId()+")");
+		
+		this.configuration = configuration;
+		this.cache = cache;
 		this.parent = parent;
 		logger = parent.getLogger();
 		this.config = config.clone();

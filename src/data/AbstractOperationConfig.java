@@ -7,6 +7,9 @@ import launch.LaunchAgent;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
+import core.Cache;
+import core.Configuration;
+
 import data.Option.Type;
 
 /**
@@ -21,6 +24,9 @@ public abstract class AbstractOperationConfig implements IOptionInitializer {
 	public enum OPTIONS {
 		ACTIVE, CRITICAL
 	}
+
+	protected transient Configuration configuration;
+	protected transient Cache cache;
 	
 	private String id;
 	protected OptionContainer optionContainer;
@@ -41,6 +47,11 @@ public abstract class AbstractOperationConfig implements IOptionInitializer {
 				OPTIONS.CRITICAL.toString(), "Errors will aboard the launch",
 				Type.BOOLEAN, false
 		));
+	}
+	
+	public void init(Configuration configuration, Cache cache) {
+		this.configuration = configuration;
+		this.cache = cache;
 	}
 	
 	@Override

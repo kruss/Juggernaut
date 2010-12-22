@@ -87,6 +87,6 @@ public class EclipseOperationConfig extends AbstractOperationConfig {
 	
 	@Override
 	public AbstractOperation createOperation(LaunchAgent parent) {
-		return new EclipseOperation(parent, this);
+		return new EclipseOperation(configuration, cache, parent, this);
 	}
 }

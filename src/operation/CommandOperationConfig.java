@@ -90,6 +90,6 @@ public class CommandOperationConfig extends AbstractOperationConfig {
 	
 	@Override
 	public AbstractOperation createOperation(LaunchAgent parent) {
-		return new CommandOperation(parent, this);
+		return new CommandOperation(configuration, cache, parent, this);
 	}
 }

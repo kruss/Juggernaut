@@ -60,6 +60,6 @@ public class SampleOperationConfig extends AbstractOperationConfig {
 	
 	@Override
 	public AbstractOperation createOperation(LaunchAgent parent) {
-		return new SampleOperation(parent, this);
+		return new SampleOperation(configuration, cache, parent, this);
 	}
 }

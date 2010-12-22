@@ -6,6 +6,9 @@ import java.util.UUID;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
+import core.Cache;
+import core.Configuration;
+
 import data.Option.Type;
 
 
@@ -22,8 +25,10 @@ public abstract class AbstractTriggerConfig implements IOptionInitializer {
 		ACTIVE
 	}
 	
-	private String id;
+	protected transient Configuration configuration;
+	protected transient Cache cache;
 	
+	private String id;
 	protected OptionContainer optionContainer;
 	
 	public AbstractTriggerConfig(){
@@ -37,6 +42,11 @@ public abstract class AbstractTriggerConfig implements IOptionInitializer {
 				OPTIONS.ACTIVE.toString(), "The trigger's active state",
 				Type.BOOLEAN, true
 		));
+	}
+	
+	public void init(Configuration configuration, Cache cache) {
+		this.configuration = configuration;
+		this.cache = cache;
 	}
 	
 	@Override
