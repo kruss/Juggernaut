@@ -55,8 +55,8 @@ public class Application extends AbstractSystem implements IApplicationAdmin {
 	public Configuration getConfiguration(){ return configuration; }
 	public History getHistory(){ return history; }
 	public Cache getCache(){ return cache; }
-	public Registry getRegistry(){ return registry; }
-	public HeapManager getHeapManager(){ return heapManager; }
+	//public Registry getRegistry(){ return registry; }
+	//public HeapManager getHeapManager(){ return heapManager; }
 	public FileManager getFileManager(){ return fileManager; }
 	public TaskManager getTaskManager(){ return taskManager; }
 	//public LaunchManager getLaunchManager(){ return launchManager; }

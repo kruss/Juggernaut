@@ -26,24 +26,26 @@ public class History implements ISystemComponent {
 		
 		File file = new File(fileManager.getDataFolderPath()+File.separator+History.OUTPUT_FILE);
 		if(file.isFile()){
-			return History.load(file.getAbsolutePath());
+			return History.load(file.getAbsolutePath(), fileManager);
 		}else{
-			return new History(file.getAbsolutePath());
+			return new History(file.getAbsolutePath(), fileManager);
 		}	
 	}
 	
 	public static final String OUTPUT_FILE = "History.xml";
 	
+	private transient FileManager fileManager;
+	
 	@SuppressWarnings("unused")
 	private String version;
-	
 	private ArrayList<LaunchHistory> entries;
 	private transient ArrayList<IChangedListener> listeners;
 	private transient String path;
 	private transient boolean dirty;
 
-	public History(String path){
+	public History(String path, FileManager fileManager){
 		
+		this.fileManager = fileManager;
 		version = Constants.APP_VERSION;
 		entries = new ArrayList<LaunchHistory>();
 		listeners = new ArrayList<IChangedListener>();
@@ -73,12 +75,13 @@ public class History implements ISystemComponent {
 	public void setDirty(boolean dirty){ this.dirty = dirty; }
 	public boolean isDirty(){ return dirty; }
 	
-	public static History load(String path) throws Exception {
+	public static History load(String path, FileManager fileManager) throws Exception {
 	
 		Application.getInstance().getLogger().debug(Module.COMMON, "load: "+path);
 		XStream xstream = new XStream(new DomDriver());
 		String xml = FileTools.readFile(path);
 		History history = (History)xstream.fromXML(xml);
+		history.fileManager = fileManager;
 		history.listeners = new ArrayList<IChangedListener>();
 		history.path = path;
 		history.dirty = false;
@@ -140,7 +143,7 @@ public class History implements ISystemComponent {
 	
 	public String getIndexPath() {
 		return 
-			Application.getInstance().getFileManager().getHistoryFolderPath()+
+			fileManager.getHistoryFolderPath()+
 			File.separator+HistoryPage.OUTPUT_FILE;
 	}
 
