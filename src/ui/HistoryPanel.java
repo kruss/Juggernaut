@@ -22,9 +22,10 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
+import logger.Logger;
 import logger.Logger.Module;
 
-import core.Application;
+import core.History;
 import core.History.HistoryInfo;
 
 import util.FileTools;
@@ -36,7 +37,9 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 
 	private static final long serialVersionUID = 1L;
 
-	private Application application;
+	private History history;
+	private Logger logger;
+	
 	private JScrollPane historyPanel;
 	private JTable historyTable;
 	private DefaultTableModel tableModel;
@@ -48,9 +51,13 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 	private ArrayList<HistoryInfo> entries;
 	private String filter;
 	
-	public HistoryPanel(){
+	public HistoryPanel(
+			History history, 
+			Logger logger)
+	{
+		this.history = history;
+		this.logger = logger;
 		
-		application = Application.getInstance();
 		entries = new ArrayList<HistoryInfo>();
 		filter = "";
 		
@@ -145,12 +152,12 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 			public void keyTyped(KeyEvent e) {}
 		});
 		
-		application.getHistory().addListener(this);
+		history.addListener(this);
 	}
 	
 	public void init() {
 		
-		entries = application.getHistory().getHistoryInfo();
+		entries = history.getHistoryInfo();
 		initUI();
 		adjustSelection();
 	}
@@ -227,7 +234,7 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 					historyOutput.setText(FileTools.readFile(logfile.getAbsolutePath()));
 					historyOutput.setCaretPosition(0);
 				}catch(Exception e){
-					application.getLogger().error(Module.COMMON, e);
+					logger.error(Module.COMMON, e);
 				}
 			}else{
 				historyOutput.setText("");
@@ -242,9 +249,9 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 	@Override
 	public void changed(Object object) {
 		
-		if(object == application.getHistory()){
+		if(object == history){
 			HistoryInfo selected = getSelectedHistory();
-			entries = application.getHistory().getHistoryInfo();
+			entries = history.getHistoryInfo();
 			refreshUI(selected);
 		}
 	}
@@ -262,7 +269,7 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 	public void deleteAllHistory(){
 		
 		if(UiTools.confirmDialog("Delete all history ?")){
-			application.getHistory().clear();
+			history.clear();
 			refreshUI(null);
 		}
 	}
@@ -274,7 +281,7 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 				entry != null && 
 				UiTools.confirmDialog("Delete history ["+entry.name+" ("+StringTools.getTextDate(entry.start)+")"+"] ?")
 		){
-			application.getHistory().delete(entry.historyId);
+			history.delete(entry.historyId);
 			refreshUI(null);
 		}
 	}

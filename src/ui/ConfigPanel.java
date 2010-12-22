@@ -22,15 +22,17 @@ import launch.LaunchManager.LaunchStatus;
 import util.IChangedListener;
 import util.UiTools;
 
-
-import core.Application;
+import core.Configuration;
 import data.LaunchConfig;
 
 public class ConfigPanel extends JPanel implements IChangedListener {
 
 	private static final long serialVersionUID = 1L;
 
-	private Application application;
+	private Window window; 
+	private Configuration configuration; 
+	private LaunchManager launchManager;
+	
 	private ArrayList<IChangedListener> listeners;
 	private JComboBox launchCombo;
 	private SelectionListener selectionListener;
@@ -46,11 +48,15 @@ public class ConfigPanel extends JPanel implements IChangedListener {
 		
 	public LaunchConfig getCurrentConfig(){ return currentConfig; }
 	
-	public ConfigPanel(){
-		
-		application = Application.getInstance();
+	public ConfigPanel(
+			Window window, 
+			Configuration configuration, 
+			LaunchManager launchManager)
+	{
+		this.window = window;
+		this.configuration = configuration;
+		this.launchManager = launchManager;
 		listeners = new ArrayList<IChangedListener>();
-		
 		
 		launchCombo = new JComboBox();
 		launchCombo.setToolTipText("Configured Launches");
@@ -99,7 +105,7 @@ public class ConfigPanel extends JPanel implements IChangedListener {
 		add(topPanel, BorderLayout.NORTH);
 		add(tabPanel, BorderLayout.CENTER);
 		
-		application.getConfiguration().addListener(this);
+		configuration.addListener(this);
 	}
 	
 	public void init() {
@@ -134,7 +140,7 @@ public class ConfigPanel extends JPanel implements IChangedListener {
 		
 		int index = launchCombo.getSelectedIndex();
 		if(index >= 0){
-			currentConfig = application.getConfiguration().getLaunchConfigs().get(index);
+			currentConfig = configuration.getLaunchConfigs().get(index);
 		}else{
 			currentConfig = null;
 		}
@@ -151,8 +157,8 @@ public class ConfigPanel extends JPanel implements IChangedListener {
 			removeLaunch.setEnabled(true);
 			renameLaunch.setEnabled(true);
 			if(
-					application.getConfiguration().getLaunchConfigs().size() > 0 &&
-					application.getConfiguration().getLaunchConfigs().get(index).isReady()
+					configuration.getLaunchConfigs().size() > 0 &&
+					configuration.getLaunchConfigs().get(index).isReady()
 			){
 				triggerLaunch.setEnabled(true);
 			}else{
@@ -175,7 +181,7 @@ public class ConfigPanel extends JPanel implements IChangedListener {
 	
 	private void initUI(){
 		
-		ArrayList<LaunchConfig> configs = application.getConfiguration().getLaunchConfigs();
+		ArrayList<LaunchConfig> configs = configuration.getLaunchConfigs();
 		for(LaunchConfig config : configs){
 			launchCombo.addItem(config);
 		}
@@ -201,7 +207,7 @@ public class ConfigPanel extends JPanel implements IChangedListener {
 	@Override
 	public void changed(Object object) {
 		
-		if(object == application.getConfiguration()){
+		if(object == configuration){
 			launchCombo.repaint();
 			adjustButtons();
 		}
@@ -212,9 +218,9 @@ public class ConfigPanel extends JPanel implements IChangedListener {
 		String name = UiTools.inputDialog("New Launch", "");
 		if(name != null && !name.equals("")){
 			LaunchConfig config = new LaunchConfig(name);
-			application.getConfiguration().getLaunchConfigs().add(config);
-			Collections.sort(application.getConfiguration().getLaunchConfigs());
-			application.getConfiguration().notifyListeners();
+			configuration.getLaunchConfigs().add(config);
+			Collections.sort(configuration.getLaunchConfigs());
+			configuration.notifyListeners();
 			refreshUI(config);
 		}
 	}
@@ -224,9 +230,9 @@ public class ConfigPanel extends JPanel implements IChangedListener {
 		int index = launchCombo.getSelectedIndex();
 		if(index >= 0 && UiTools.confirmDialog("Remove Launch ?")){
 			// TODO remove build-folder if existent
-			application.getConfiguration().getLaunchConfigs().remove(index);
-			application.getConfiguration().setDirty(true);
-			application.getConfiguration().notifyListeners();
+			configuration.getLaunchConfigs().remove(index);
+			configuration.setDirty(true);
+			configuration.notifyListeners();
 			refreshUI(null);
 		}
 	}
@@ -235,13 +241,13 @@ public class ConfigPanel extends JPanel implements IChangedListener {
 		
 		int index = launchCombo.getSelectedIndex();
 		if(index >= 0){
-			LaunchConfig config = application.getConfiguration().getLaunchConfigs().get(index);
+			LaunchConfig config = configuration.getLaunchConfigs().get(index);
 			String name = UiTools.inputDialog("Rename Launch", config.getName());
 			if(name != null && !name.equals("")){
 				config.setName(name);
 				config.setDirty(true);
-				Collections.sort(application.getConfiguration().getLaunchConfigs());
-				application.getConfiguration().notifyListeners();
+				Collections.sort(configuration.getLaunchConfigs());
+				configuration.notifyListeners();
 				refreshUI(config);
 			}
 		}
@@ -254,14 +260,14 @@ public class ConfigPanel extends JPanel implements IChangedListener {
 			if(UiTools.confirmDialog("Trigger Launch"))
 			{
 				try{
-					LaunchConfig config = application.getConfiguration().getLaunchConfigs().get(index);
+					LaunchConfig config = configuration.getLaunchConfigs().get(index);
 					LaunchAgent launch = config.createLaunch(LaunchManager.USER_TRIGGER);
-					LaunchStatus status = application.getLaunchManager().runLaunch(launch);
+					LaunchStatus status = launchManager.runLaunch(launch);
 					if(!status.launched){
 						UiTools.infoDialog(status.message);
 					}
 				}catch(Exception e){
-					application.getWindow().popupError(e);
+					window.popupError(e);
 				}
 			}
 		}

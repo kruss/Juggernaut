@@ -21,20 +21,23 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
+import launch.LaunchManager;
+import launch.ScheduleManager;
 import launch.LaunchManager.LaunchInfo;
 import logger.ILogProvider;
+import logger.Logger;
 
 import util.IChangedListener;
 import util.StringTools;
 import util.UiTools;
 
-import core.Application;
-
 public class SchedulerPanel extends JPanel implements IChangedListener {
 
 	private static final long serialVersionUID = 1L;
 
-	private Application application;
+	private LaunchManager launchManager;
+	private ScheduleManager scheduleManager;
+	
 	private JScrollPane launchPanel;
 	private JTable launchTable;
 	private DefaultTableModel tableModel;
@@ -46,9 +49,14 @@ public class SchedulerPanel extends JPanel implements IChangedListener {
 	
 	private ArrayList<LaunchInfo> launches;
 	
-	public SchedulerPanel()
+	public SchedulerPanel(
+			LaunchManager launchManager,
+			ScheduleManager scheduleManager,
+			Logger logger)
 	{
-		application = Application.getInstance();
+		this.launchManager = launchManager;
+		this.scheduleManager = scheduleManager;
+		
 		launches = new ArrayList<LaunchInfo>();
 		
 		tableModel = new DefaultTableModel(){
@@ -140,9 +148,9 @@ public class SchedulerPanel extends JPanel implements IChangedListener {
 			public void keyTyped(KeyEvent e) {}
 		});
 		
-		application.getLogger().addListener(applicationConsole);
-		application.getScheduleManager().addListener(this);
-		application.getLaunchManager().addListener(this);
+		launchManager.addListener(this);
+		scheduleManager.addListener(this);
+		logger.addListener(applicationConsole);
 	}
 	
 	public void init() {
@@ -174,7 +182,7 @@ public class SchedulerPanel extends JPanel implements IChangedListener {
 	}
 
 	private void setSchedulerUpdate() {
-		Date updated = application.getScheduleManager().getUpdated();
+		Date updated = scheduleManager.getUpdated();
 		String info = updated != null ? 
 				"Scheduler: "+StringTools.getTextDate(updated) : "Scheduler: idle";
 		launchPanel.setToolTipText(info);
@@ -201,7 +209,7 @@ public class SchedulerPanel extends JPanel implements IChangedListener {
 		LaunchInfo selected = getSelectedLaunch();
 		if(selected != null){
 			stopLaunch.setEnabled(true);
-			ILogProvider provider = application.getLaunchManager().getLoggingProvider(selected.id); 
+			ILogProvider provider = launchManager.getLoggingProvider(selected.id); 
 			if(provider != launchConsole.getProvider()){
 				launchConsole.deregister();
 				launchConsole.clearConsole();
@@ -219,11 +227,11 @@ public class SchedulerPanel extends JPanel implements IChangedListener {
 	@Override
 	public void changed(Object object) {
 		
-		if(object == application.getLaunchManager()){
+		if(object == launchManager){
 			LaunchInfo selected = getSelectedLaunch();
-			launches = application.getLaunchManager().getLaunchInfo();
+			launches = launchManager.getLaunchInfo();
 			refreshUI(selected);
-		}else if(object == application.getScheduleManager()){
+		}else if(object == scheduleManager){
 			setSchedulerUpdate();
 		}
 	}
@@ -240,14 +248,14 @@ public class SchedulerPanel extends JPanel implements IChangedListener {
 	
 	public void triggerScheduler(){
 		
-		application.getScheduleManager().triggerScheduler(0);
+		scheduleManager.triggerScheduler(0);
 	}
 	
 	public void stopLaunch(){
 		
 		LaunchInfo selected = getSelectedLaunch();
 		if(selected != null && UiTools.confirmDialog("Stop launch ["+selected.name+"]?")){
-			application.getLaunchManager().stopLaunch(selected.id);
+			launchManager.stopLaunch(selected.id);
 		}
 	}
 }

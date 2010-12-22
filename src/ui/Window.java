@@ -31,6 +31,7 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 	private static final long serialVersionUID = 1L;
 
 	private Application application;
+	
 	private JMenuBar menuBar;
 	private ConfigPanel configPanel;
 	private SchedulerPanel schedulerPanel;
@@ -54,10 +55,10 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 		heapInfo.setToolTipText("HEAP");
 		heapInfo.setEnabled(false);
 		
-		configPanel = new ConfigPanel();
-		schedulerPanel = new SchedulerPanel();
-		historyPanel = new HistoryPanel();
-		preferencePanel = new PreferencePanel();
+		configPanel = new ConfigPanel(this, application.getConfiguration(), application.getLaunchManager());
+		schedulerPanel = new SchedulerPanel(application.getLaunchManager(), application.getScheduleManager(), application.getLogger());
+		historyPanel = new HistoryPanel(application.getHistory(), application.getLogger());
+		preferencePanel = new PreferencePanel(application.getConfiguration(), application.getScheduleManager(), application.getHistory());
 		
 		JTabbedPane centerPanel = new JTabbedPane();
 		centerPanel.setTabPlacement(JTabbedPane.TOP);

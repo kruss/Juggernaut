@@ -4,21 +4,32 @@ import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import launch.ScheduleManager;
+
 import util.IChangedListener;
 
-import core.Application;
 import core.Configuration;
+import core.History;
 
 public class PreferencePanel extends JPanel implements IChangedListener {
 
 	private static final long serialVersionUID = 1L;
 
-	private Application application;
+	private Configuration configuration;
+	private ScheduleManager scheduleManager;
+	private History history;
+	
 	private OptionEditor optionEditor;
 	
-	public PreferencePanel(){
+	public PreferencePanel(
+			Configuration configuration,
+			ScheduleManager scheduleManager,
+			History history)
+	{
+		this.configuration = configuration;
+		this.scheduleManager = scheduleManager;
+		this.history = history;
 		
-		application = Application.getInstance();
 		optionEditor = new OptionEditor();
 		
 		setLayout(new BorderLayout());
@@ -32,7 +43,6 @@ public class PreferencePanel extends JPanel implements IChangedListener {
 	}
 	
 	private void initUI() {
-		Configuration configuration = application.getConfiguration();
 		optionEditor.setOptionContainer(configuration.getOptionContainer(), configuration);
 	}
 
@@ -40,7 +50,6 @@ public class PreferencePanel extends JPanel implements IChangedListener {
 	public void changed(Object object) {
 		
 		if(object == optionEditor){
-			Configuration configuration = application.getConfiguration();
 			applyChanges(configuration);
 			configuration.setDirty(true);
 			configuration.notifyListeners();
@@ -50,11 +59,11 @@ public class PreferencePanel extends JPanel implements IChangedListener {
 	private void applyChanges(Configuration configuration) {
 		
 		if(configuration.isScheduler()){
-			application.getScheduleManager().startScheduler(0);
+			scheduleManager.startScheduler(0);
 		}else{
-			application.getScheduleManager().stopScheduler();
+			scheduleManager.stopScheduler();
 		}
 		
-		application.getHistory().createIndex();
+		history.createIndex();
 	}
 }
