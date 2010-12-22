@@ -18,6 +18,7 @@ import logger.Logger.Module;
 
 import util.IChangedListener;
 import util.StringTools;
+import util.UiTools;
 
 import core.Application;
 import core.Configuration;
@@ -91,25 +92,50 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 		historyPanel.init();
 		preferencePanel.init();
 		
-		setStatus(Constants.APP_NAME+" started at "+StringTools.getTextDate(new Date()));
-		setHeap(application.getHeapManager().getHeapStatus());
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e){ 
+				quit(); 
+			}
+		});
 		
 		UIManager.LookAndFeelInfo styles[] = UIManager.getInstalledLookAndFeels();
 		UIManager.setLookAndFeel(styles[Constants.APP_STYLE].getClassName()); 
 		SwingUtilities.updateComponentTreeUI(this);
 		
-		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent e){ 
-				application.quit(); 
-			}
-		});
+		setStatus(Constants.APP_NAME+" started at "+StringTools.getTextDate(new Date()));
+		setHeap(application.getHeapManager().getHeapStatus());
 		setVisible(true);
 	}
 	
 	@Override
 	public void shutdown() throws Exception {
+		
+		if(application.getConfiguration().isDirty() && UiTools.confirmDialog("Save changes ?")){
+			application.getConfiguration().save();
+		}
 		dispose();
+	}
+	
+	/** quit the application */
+	public void quit() {
+		
+		if(!application.getLaunchManager().isBusy() || UiTools.confirmDialog("Aboard running launches ?")){
+			application.getLogger().info(Module.COMMON, "Shutdown");
+			try{
+				application.shutdown();
+			}catch(Exception e){
+				popupError(e);
+				System.exit(Constants.PROCESS_NOK);
+			}
+			System.exit(Constants.PROCESS_OK);
+		}
+	}
+	
+	public void popupError(Exception e){
+		
+		application.getLogger().error(Module.COMMON, e);
+		UiTools.errorDialog(e.getClass().getSimpleName()+"\n\n"+e.getMessage());
 	}
 	
 	public void setStatus(String text){

@@ -68,7 +68,7 @@ public class ToolsMenu extends JMenu implements IChangedListener {
 			page.create();
 			SystemTools.openBrowser(path);
 		}catch(Exception e){
-			application.popupError(e);
+			application.getWindow().popupError(e);
 		}
 	}
 	

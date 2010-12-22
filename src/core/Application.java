@@ -4,9 +4,7 @@ import http.HttpServer;
 import launch.LaunchManager;
 import launch.ScheduleManager;
 import logger.Logger;
-import logger.Logger.Module;
 import ui.Window;
-import util.UiTools;
 
 public class Application extends AbstractSystem {
 
@@ -81,35 +79,6 @@ public class Application extends AbstractSystem {
 			persistenceSystem.init();
 			uiSystem.clear();
 			uiSystem.init();
-		}
-	}
-	
-	/** display an error-dialog */
-	public void popupError(Exception e){
-		if(isInitialized()){
-			logger.error(Module.COMMON, e);
-			UiTools.errorDialog(e.getClass().getSimpleName()+"\n\n"+e.getMessage());
-		}
-	}
-	
-	/** quit the application */
-	public void quit() {
-		
-		if(
-			isInitialized() &&
-			( 
-				!launchManager.isBusy() || 
-				UiTools.confirmDialog("Aboard running launches ?") 
-			)
-		){
-			logger.info(Module.COMMON, "Shutdown");
-			try{
-				shutdown();
-			}catch(Exception e){
-				popupError(e);
-				System.exit(Constants.PROCESS_NOK);
-			}
-			System.exit(Constants.PROCESS_OK);
 		}
 	}
 	

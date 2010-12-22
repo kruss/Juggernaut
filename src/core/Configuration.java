@@ -15,7 +15,6 @@ import logger.Logger.Module;
 import util.FileTools;
 import util.IChangedListener;
 import util.StringTools;
-import util.UiTools;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
@@ -129,9 +128,7 @@ public class Configuration implements ISystemComponent, IOptionInitializer {
 	}
 
 	@Override
-	public void shutdown() throws Exception {
-		chekForSave();
-	}
+	public void shutdown() throws Exception {}
 	
 	@Override
 	public void initOptions(OptionContainer container) {
@@ -228,13 +225,6 @@ public class Configuration implements ISystemComponent, IOptionInitializer {
 			}
 			dirty = false;
 			notifyListeners();
-		}
-	}
-
-	public void chekForSave() throws Exception {
-		
-		if(isDirty() && UiTools.confirmDialog("Save changes ?")){
-			save();
 		}
 	}
 
