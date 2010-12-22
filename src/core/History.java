@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import launch.StatusManager.Status;
+import logger.Logger;
 import logger.Logger.Module;
 
 import util.FileTools;
@@ -22,19 +23,21 @@ import data.LaunchHistory;
  */
 public class History implements ISystemComponent {
 
-	public static History create(FileManager fileManager) throws Exception {
+	public static History create(Configuration configuration, FileManager fileManager, Logger logger) throws Exception {
 		
 		File file = new File(fileManager.getDataFolderPath()+File.separator+History.OUTPUT_FILE);
 		if(file.isFile()){
-			return History.load(file.getAbsolutePath(), fileManager);
+			return History.load(configuration, fileManager, logger, file.getAbsolutePath());
 		}else{
-			return new History(file.getAbsolutePath(), fileManager);
+			return new History(configuration, fileManager, logger, file.getAbsolutePath());
 		}	
 	}
 	
 	public static final String OUTPUT_FILE = "History.xml";
 	
+	private transient Configuration configuration;
 	private transient FileManager fileManager;
+	private transient Logger logger;
 	
 	@SuppressWarnings("unused")
 	private String version;
@@ -43,9 +46,12 @@ public class History implements ISystemComponent {
 	private transient String path;
 	private transient boolean dirty;
 
-	public History(String path, FileManager fileManager){
+	public History(Configuration configuration, FileManager fileManager, Logger logger, String path){
 		
+		this.configuration = configuration;
 		this.fileManager = fileManager;
+		this.logger = logger;
+		
 		version = Constants.APP_VERSION;
 		entries = new ArrayList<LaunchHistory>();
 		listeners = new ArrayList<IChangedListener>();
@@ -75,13 +81,15 @@ public class History implements ISystemComponent {
 	public void setDirty(boolean dirty){ this.dirty = dirty; }
 	public boolean isDirty(){ return dirty; }
 	
-	public static History load(String path, FileManager fileManager) throws Exception {
+	public static History load(Configuration configuration, FileManager fileManager, Logger logger, String path) throws Exception {
 	
-		Application.getInstance().getLogger().debug(Module.COMMON, "load: "+path);
+		logger.debug(Module.COMMON, "load: "+path);
 		XStream xstream = new XStream(new DomDriver());
 		String xml = FileTools.readFile(path);
 		History history = (History)xstream.fromXML(xml);
+		history.configuration = configuration;
 		history.fileManager = fileManager;
+		history.logger = logger;
 		history.listeners = new ArrayList<IChangedListener>();
 		history.path = path;
 		history.dirty = false;
@@ -91,7 +99,7 @@ public class History implements ISystemComponent {
 	public void save() throws Exception {
 		
 		if(isDirty()){
-			Application.getInstance().getLogger().debug(Module.COMMON, "save: "+path);
+			logger.debug(Module.COMMON, "save: "+path);
 			XStream xstream = new XStream(new DomDriver());
 			String xml = xstream.toXML(this);
 			FileTools.writeFile(path, xml, false);
@@ -137,7 +145,7 @@ public class History implements ISystemComponent {
 		try{
 			page.create();
 		}catch(Exception e){
-			Application.getInstance().getLogger().error(Module.COMMON, e);
+			logger.error(Module.COMMON, e);
 		}
 	}
 	
@@ -150,7 +158,7 @@ public class History implements ISystemComponent {
 	/** remove old entries */
 	private void cleanup() {
 		
-		int max = Application.getInstance().getConfiguration().getMaximumHistory();
+		int max = configuration.getMaximumHistory();
 		if(max > 0){
 			while(max < entries.size()){
 				delete(entries.get(entries.size()-1));
@@ -160,14 +168,14 @@ public class History implements ISystemComponent {
 	
 	private void delete(LaunchHistory entry) {
 		
-		Application.getInstance().getLogger().debug(Module.COMMON, "deleting history: "+entry.id);
+		logger.debug(Module.COMMON, "deleting history: "+entry.id);
 		try{
 			entries.remove(entry);
 			FileTools.deleteFolder(entry.folder);
 			dirty = true;
 			save();
 		}catch(Exception e){
-			Application.getInstance().getLogger().error(Module.COMMON, e);
+			logger.error(Module.COMMON, e);
 		}
 	}
 	

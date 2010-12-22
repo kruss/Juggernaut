@@ -33,13 +33,13 @@ import data.Option.Type;
  */
 public class Configuration implements ISystemComponent, IOptionInitializer, ILogConfig {
 
-	public static Configuration create(FileManager fileManager) throws Exception {
+	public static Configuration create(FileManager fileManager, Logger logger) throws Exception {
 		
 		File file = new File(fileManager.getDataFolderPath()+File.separator+Configuration.OUTPUT_FILE);
 		if(file.isFile()){
-			return Configuration.load(file.getAbsolutePath());
+			return Configuration.load(logger, file.getAbsolutePath());
 		}else{
-			return new Configuration(file.getAbsolutePath());
+			return new Configuration(logger, file.getAbsolutePath());
 		}	
 	}
 	
@@ -55,16 +55,19 @@ public class Configuration implements ISystemComponent, IOptionInitializer, ILog
 	public enum State { CLEAN, DIRTY }
 	public static final String OUTPUT_FILE = "Configuration.xml";
 	
+	private transient Logger logger;
+	
 	@SuppressWarnings("unused")
 	private String version;
-	
 	private OptionContainer optionContainer;
 	private ArrayList<LaunchConfig> launchConfigs;
 	private transient ArrayList<IChangedListener> listeners;
 	private transient String path;
 	private transient boolean dirty;
 
-	public Configuration(String path){
+	public Configuration(Logger logger, String path){
+		
+		this.logger = logger;
 		
 		version = Constants.APP_VERSION;
 		optionContainer = new OptionContainer();
@@ -134,11 +137,6 @@ public class Configuration implements ISystemComponent, IOptionInitializer, ILog
 	@Override
 	public void initOptions(OptionContainer container) {
 		
-//		OptionEditor.addNotificationTest(
-//				container.getOption(OPTIONS.SMTP_SERVER.toString(), OPTIONS.SMTP_ADDRESS.toString()),
-//				new SMTPClient(Application.getInstance().getLogger())
-//		);
-		
 		// TODO temp...
 		final Option smtpServer = container.getOption(OPTIONS.SMTP_SERVER.toString());
 		JMenuItem testConnection = new JMenuItem("Test");
@@ -199,12 +197,13 @@ public class Configuration implements ISystemComponent, IOptionInitializer, ILog
 	
 	public State getState(){ return isDirty() ? State.DIRTY : State.CLEAN; }
 	
-	public static Configuration load(String path) throws Exception {
+	public static Configuration load(Logger logger, String path) throws Exception {
 	
-		Application.getInstance().getLogger().debug(Module.COMMON, "load: "+path);
+		logger.debug(Module.COMMON, "load: "+path);
 		XStream xstream = new XStream(new DomDriver());
 		String xml = FileTools.readFile(path);
 		Configuration configuration = (Configuration)xstream.fromXML(xml);
+		configuration.logger = logger;
 		configuration.listeners = new ArrayList<IChangedListener>();
 		configuration.path = path;
 		for(LaunchConfig launchConfig : configuration.launchConfigs){
@@ -217,7 +216,7 @@ public class Configuration implements ISystemComponent, IOptionInitializer, ILog
 	public void save() throws Exception {
 		
 		if(isDirty()){
-			Application.getInstance().getLogger().debug(Module.COMMON, "save: "+path);
+			logger.debug(Module.COMMON, "save: "+path);
 			XStream xstream = new XStream(new DomDriver());
 			String xml = xstream.toXML(this);
 			FileTools.writeFile(path, xml, false);

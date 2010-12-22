@@ -3,6 +3,7 @@ package core;
 import java.io.File;
 
 import launch.PropertyContainer;
+import logger.Logger;
 import logger.Logger.Module;
 import util.FileTools;
 
@@ -14,27 +15,29 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
  */
 public class Cache implements ISystemComponent {
 
-	public static Cache create(FileManager fileManager) throws Exception {
+	public static Cache create(FileManager fileManager, Logger logger) throws Exception {
 		
 		File file = new File(fileManager.getDataFolderPath()+File.separator+Cache.OUTPUT_FILE);
 		if(file.isFile()){
-			return Cache.load(file.getAbsolutePath());
+			return Cache.load(logger, file.getAbsolutePath());
 		}else{
-			return new Cache(file.getAbsolutePath());
+			return new Cache(logger, file.getAbsolutePath());
 		}	
 	}
 	
 	public static final String OUTPUT_FILE = "Cache.xml";
 	
+	private transient Logger logger;
+	
 	@SuppressWarnings("unused")
 	private String version;
-	
 	private PropertyContainer propertyContainer;
-	
 	private transient String path;
 	private transient boolean dirty;
 	
-	public Cache(String path){
+	public Cache(Logger logger, String path){
+		
+		this.logger = logger;
 		
 		version = Constants.APP_VERSION;
 		propertyContainer = new PropertyContainer();
@@ -62,7 +65,7 @@ public class Cache implements ISystemComponent {
 		try{ 
 			save(); 
 		}catch(Exception e){
-			Application.getInstance().getLogger().error(Module.COMMON, e);
+			logger.error(Module.COMMON, e);
 		}
 	}
 	
@@ -70,12 +73,13 @@ public class Cache implements ISystemComponent {
 		return propertyContainer.getProperty(id, name);
 	}
 	
-	public static Cache load(String path) throws Exception {
+	public static Cache load(Logger logger, String path) throws Exception {
 		
-		Application.getInstance().getLogger().debug(Module.COMMON, "load: "+path);
+		logger.debug(Module.COMMON, "load: "+path);
 		XStream xstream = new XStream(new DomDriver());
 		String xml = FileTools.readFile(path);
 		Cache cache = (Cache)xstream.fromXML(xml);
+		cache.logger = logger;
 		cache.path = path;
 		cache.dirty = false;
 		return cache;
@@ -84,7 +88,7 @@ public class Cache implements ISystemComponent {
 	public void save() throws Exception {
 		
 		if(isDirty()){
-			Application.getInstance().getLogger().debug(Module.COMMON, "save: "+path);
+			logger.debug(Module.COMMON, "save: "+path);
 			XStream xstream = new XStream(new DomDriver());
 			String xml = xstream.toXML(this);
 			FileTools.writeFile(path, xml, false);

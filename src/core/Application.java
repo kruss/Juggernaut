@@ -107,11 +107,11 @@ public class Application extends AbstractSystem implements IApplicationAdmin {
 	private class PersistenceSystem extends AbstractSystem {
 		@Override
 		public void init() throws Exception {
-			configuration = Configuration.create(fileManager);
+			configuration = Configuration.create(fileManager, logger);
 			add(configuration);
-			history = History.create(fileManager);
+			history = History.create(configuration, fileManager, logger);
 			add(history);
-			cache = Cache.create(fileManager);
+			cache = Cache.create(fileManager, logger);
 			add(cache);
 			super.init();
 			
