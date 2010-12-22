@@ -1,6 +1,7 @@
 package operation;
 
-import core.Application;
+
+import core.TaskManager;
 
 import repository.SVNClient;
 import repository.IRepositoryClient.Revision;
@@ -39,8 +40,9 @@ public class SVNOperationConfig extends AbstractOperationConfig {
 		
 		OptionEditor.addRepositoryTest(
 				container.getOption(OPTIONS.URL.toString()),
-				new SVNClient(Application.getInstance().getLogger()),
-				Application.getInstance().getLogger()
+				new SVNClient(taskManager, logger),
+				taskManager,
+				logger
 		);
 	}
 	
@@ -71,7 +73,7 @@ public class SVNOperationConfig extends AbstractOperationConfig {
 	}
 	
 	@Override
-	public AbstractOperation createOperation(LaunchAgent parent) {
-		return new SVNOperation(configuration, cache, parent, this);
+	public AbstractOperation createOperation(LaunchAgent parent, TaskManager taskManager) {
+		return new SVNOperation(configuration, cache, taskManager, parent, this);
 	}
 }

@@ -1,7 +1,6 @@
 package trigger;
 
 import repository.SVNClient;
-import core.Application;
 import ui.OptionEditor;
 import util.StringTools;
 import data.AbstractTrigger;
@@ -37,8 +36,9 @@ public class SVNTriggerConfig extends AbstractTriggerConfig {
 		
 		OptionEditor.addRepositoryTest(
 				container.getOption(OPTIONS.URL.toString()),
-				new SVNClient(Application.getInstance().getLogger()),
-				Application.getInstance().getLogger()
+				new SVNClient(taskManager, logger),
+				taskManager,
+				logger
 		);
 	}
 	
@@ -66,6 +66,6 @@ public class SVNTriggerConfig extends AbstractTriggerConfig {
 	
 	@Override
 	public AbstractTrigger createTrigger() {
-		return new SVNTrigger(configuration, cache, this);
+		return new SVNTrigger(configuration, cache, taskManager, logger, this);
 	}
 }

@@ -8,6 +8,7 @@ import java.util.HashMap;
 import core.Configuration;
 import core.FileManager;
 import core.History;
+import core.TaskManager;
 import data.AbstractOperation;
 import data.AbstractOperationConfig;
 import data.AbstractTrigger;
@@ -35,9 +36,15 @@ public class LaunchAgent extends LifecycleObject {
 	private Logger logger;
 	private boolean aboard;
 	
-	public LaunchAgent(Configuration configuration, History history, FileManager fileManager, LaunchConfig config, String trigger){
-
-		super("Launch("+config.getId()+")");
+	public LaunchAgent(
+			Configuration configuration, 
+			History history, 
+			FileManager fileManager, 
+			TaskManager taskManager, 
+			LaunchConfig config, 
+			String trigger)
+	{
+		super("Launch("+config.getId()+")", taskManager);
 		
 		this.fileManager = fileManager;
 		this.history = history;
@@ -56,7 +63,7 @@ public class LaunchAgent extends LifecycleObject {
 		operations = new ArrayList<AbstractOperation>();
 		for(AbstractOperationConfig operationConfig : config.getOperationConfigs()){
 			if(operationConfig.isActive()){
-				AbstractOperation operation = operationConfig.createOperation(this);
+				AbstractOperation operation = operationConfig.createOperation(this, taskManager);
 				operations.add(operation);
 				propertyContainer.addProperties(
 						operationConfig.getId(), 

@@ -55,6 +55,6 @@ public class IntervallTriggerConfig extends AbstractTriggerConfig {
 	
 	@Override
 	public AbstractTrigger createTrigger() {
-		return new IntervallTrigger(configuration, cache, this);
+		return new IntervallTrigger(configuration, cache, logger, this);
 	}
 }

@@ -7,25 +7,31 @@ import logger.Logger.Module;
 
 
 import core.Constants;
+import core.TaskManager;
 
 public class CommandTask extends Task {
 
 	private String command;
 	private String arguments;
 	private String path;
+	private TaskManager taskManager;
 	private Logger logger;
 	
 	private StringBuilder output;
 	private int result;
 	
 	public CommandTask(
-			String command, String arguments, 
-			String path, Logger logger
-	){
-		super("Command("+command+")", logger);
+			String command, 
+			String arguments, 
+			String path, 
+			TaskManager taskManager, 
+			Logger logger)
+	{
+		super("Command("+command+")", taskManager);
 		this.command = command;
 		this.arguments = arguments;
 		this.path = path;
+		this.taskManager = taskManager;
 		this.logger = logger;
 		
 		this.output = new StringBuilder();
@@ -51,10 +57,10 @@ public class CommandTask extends Task {
 			
 			Process process = processBuilder.start();
 			CommandStreamer outputStream = new CommandStreamer(
-					this, "OUT", process.getInputStream(), logger
+					this, "OUT", process.getInputStream(), taskManager, logger
 			);
 			CommandStreamer errorStream = new CommandStreamer(
-					this, "ERR", process.getErrorStream(), logger
+					this, "ERR", process.getErrorStream(), taskManager, logger
 			);            
 			outputStream.start();
 			errorStream.start(); 

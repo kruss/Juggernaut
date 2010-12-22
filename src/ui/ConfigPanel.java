@@ -27,6 +27,7 @@ import core.FileManager;
 import core.History;
 import core.ISystemComponent;
 import core.Registry;
+import core.TaskManager;
 import data.AbstractTrigger;
 import data.LaunchConfig;
 
@@ -37,6 +38,7 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangedLis
 	private Configuration configuration; 
 	private History history;
 	private FileManager fileManager;
+	private TaskManager taskManager;
 	private LaunchManager launchManager;
 	
 	private ArrayList<IChangedListener> listeners;
@@ -58,12 +60,14 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangedLis
 			Configuration configuration, 
 			History history,
 			FileManager fileManager,
+			TaskManager taskManager,
 			LaunchManager launchManager,
 			Registry registry)
 	{
 		this.configuration = configuration;
 		this.history = history;
 		this.fileManager = fileManager;
+		this.taskManager = taskManager;
 		this.launchManager = launchManager;
 		listeners = new ArrayList<IChangedListener>();
 		
@@ -274,7 +278,7 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangedLis
 			{
 				try{
 					LaunchConfig config = configuration.getLaunchConfigs().get(index);
-					LaunchAgent launch = config.createLaunch(configuration, history, fileManager, AbstractTrigger.USER_TRIGGER);
+					LaunchAgent launch = config.createLaunch(configuration, history, fileManager, taskManager, AbstractTrigger.USER_TRIGGER);
 					LaunchStatus status = launchManager.runLaunch(launch);
 					if(!status.launched){
 						UiTools.infoDialog(status.message);

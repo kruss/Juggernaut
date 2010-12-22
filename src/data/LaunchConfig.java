@@ -13,6 +13,7 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 import core.Configuration;
 import core.FileManager;
 import core.History;
+import core.TaskManager;
 
 import data.Option.Type;
 
@@ -137,8 +138,8 @@ public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitialize
 	public ArrayList<AbstractOperationConfig> getOperationConfigs(){ return operations; }
 	public ArrayList<AbstractTriggerConfig> getTriggerConfigs(){ return triggers; }
 	
-	public LaunchAgent createLaunch(Configuration configuration, History history, FileManager fileManager, String trigger){
-		return new LaunchAgent(configuration, history, fileManager, this, trigger);
+	public LaunchAgent createLaunch(Configuration configuration, History history, FileManager fileManager, TaskManager taskManager, String trigger){
+		return new LaunchAgent(configuration, history, fileManager, taskManager, this, trigger);
 	}
 	
 	@Override

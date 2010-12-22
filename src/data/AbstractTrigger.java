@@ -1,6 +1,5 @@
 package data;
 
-import core.Application;
 import core.Cache;
 import core.Configuration;
 import logger.Logger;
@@ -12,19 +11,20 @@ public abstract class AbstractTrigger {
 	protected Configuration configuration;
 	protected Cache cache;
 	protected AbstractTriggerConfig config;
-	protected transient Logger observer;
+	protected Logger logger;
 	
 	public AbstractTriggerConfig getConfig(){ return config; }
 	
 	public AbstractTrigger(
 			Configuration configuration, 
 			Cache cache, 
+			Logger logger,
 			AbstractTriggerConfig config)
 	{
 		this.configuration = configuration;
 		this.cache = cache;
+		this.logger = logger;
 		this.config = config.clone();
-		observer = Application.getInstance().getLogger();
 	}
 	
 	public abstract TriggerStatus isTriggered();

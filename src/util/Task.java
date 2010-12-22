@@ -2,34 +2,26 @@ package util;
 
 import java.util.Date;
 
-import logger.Logger;
-import logger.Logger.Module;
-
-
-import core.Application;
 import core.TaskManager;
 
 public abstract class Task extends Thread {
 
-	private TaskManager manager;
-	protected Logger observer;
+	private TaskManager taskManager;
 	private long delay;
 	private long cycle;
 	private long timeout;
 	private Date start;
 
-	public Task(String name, Logger logger){
+	public Task(String name, TaskManager taskManager){
 		
 		super(name);
-		manager = Application.getInstance().getTaskManager();
-		observer = logger;
+		this.taskManager = taskManager;
 		delay = 0;
 		cycle = 0;
 		timeout = 0;
 		start = null;
 	}
 	
-	public Logger getObserver(){ return observer; }
 	public void setCycle(long cycle){ this.cycle = cycle; }
 	private boolean isCyclic(){ return cycle > 0; }
 	public boolean isExpired(){
@@ -47,7 +39,7 @@ public abstract class Task extends Thread {
 	
 	public void run(){
 		
-		observer.debug(Module.TASK, "Start ["+getName()+"]");
+		taskManager.debug("Start ["+getName()+"]");
 		try{
 			Thread.sleep(delay);
 			if(isCyclic()){
@@ -56,9 +48,9 @@ public abstract class Task extends Thread {
 				runSingleTask();
 			}
 		}catch(InterruptedException e){ 
-			observer.debug(Module.TASK, "Interrupt ["+getName()+"]");
+			taskManager.debug("Interrupt ["+getName()+"]");
 		}finally{
-			observer.debug(Module.TASK, "Stopp ["+getName()+"]");
+			taskManager.debug("Stopp ["+getName()+"]");
 		}
 	}
 
@@ -66,7 +58,7 @@ public abstract class Task extends Thread {
 		
 		while(isCyclic() && !isInterrupted()){
 			runSingleTask();
-			observer.debug(Module.TASK, "Idle ["+getName()+"]");
+			taskManager.debug("Idle ["+getName()+"]");
 			Thread.sleep(cycle);
 		}
 	}
@@ -74,15 +66,15 @@ public abstract class Task extends Thread {
 	private void runSingleTask(){
 		
 		start = new Date();
-		if(manager != null){
-			manager.register(this);
+		if(taskManager != null){
+			taskManager.register(this);
 		}
 		try{
-			observer.debug(Module.TASK, "Run ["+getName()+"]");
+			taskManager.debug("Run ["+getName()+"]");
 			runTask();
 		}finally{
-			if(manager != null){
-				manager.deregister(this);
+			if(taskManager != null){
+				taskManager.deregister(this);
 			}
 			start = null;
 		}

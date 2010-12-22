@@ -2,12 +2,15 @@ package data;
 
 import java.util.UUID;
 
+import logger.Logger;
+
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 import core.Cache;
 import core.Configuration;
+import core.TaskManager;
 
 import data.Option.Type;
 
@@ -27,6 +30,8 @@ public abstract class AbstractTriggerConfig implements IOptionInitializer {
 	
 	protected transient Configuration configuration;
 	protected transient Cache cache;
+	protected transient TaskManager taskManager;
+	protected transient Logger logger;
 	
 	private String id;
 	protected OptionContainer optionContainer;
@@ -44,9 +49,11 @@ public abstract class AbstractTriggerConfig implements IOptionInitializer {
 		));
 	}
 	
-	public void init(Configuration configuration, Cache cache) {
+	public void init(Configuration configuration, Cache cache, TaskManager taskManager, Logger logger) {
 		this.configuration = configuration;
 		this.cache = cache;
+		this.taskManager = taskManager;
+		this.logger = logger;
 	}
 	
 	@Override

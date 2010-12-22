@@ -3,7 +3,6 @@ package core;
 import http.HttpServer;
 import launch.LaunchManager;
 import launch.ScheduleManager;
-import logger.Logger;
 import ui.ConfigPanel;
 import ui.HistoryPanel;
 import ui.PreferencePanel;
@@ -51,14 +50,14 @@ public class Application extends AbstractSystem implements IApplicationAdmin {
 	private ScheduleManager scheduleManager;
 	private HttpServer httpServer;
 	
-	public Logger getLogger(){ return logger; }
+	//public Logger getLogger(){ return logger; }
 	//public Configuration getConfiguration(){ return configuration; }
 	//public History getHistory(){ return history; }
 	//public Cache getCache(){ return cache; }
 	//public Registry getRegistry(){ return registry; }
 	//public HeapManager getHeapManager(){ return heapManager; }
 	//public FileManager getFileManager(){ return fileManager; }
-	public TaskManager getTaskManager(){ return taskManager; }
+	//public TaskManager getTaskManager(){ return taskManager; }
 	//public LaunchManager getLaunchManager(){ return launchManager; }
 	//public ScheduleManager getScheduleManager(){ return scheduleManager; } 
 	//public HttpServer getHttpServer(){ return httpServer; }
@@ -109,7 +108,7 @@ public class Application extends AbstractSystem implements IApplicationAdmin {
 		public void init() throws Exception {
 			cache = Cache.create(fileManager, logger);
 			add(cache);
-			configuration = Configuration.create(cache, fileManager, logger);
+			configuration = Configuration.create(cache, fileManager, taskManager, logger);
 			add(configuration);
 			history = History.create(configuration, fileManager, logger);
 			add(history);
@@ -123,17 +122,17 @@ public class Application extends AbstractSystem implements IApplicationAdmin {
 	private class RuntimeSystem extends AbstractSystem {
 		@Override
 		public void init() throws Exception {
-			heapManager = new HeapManager(logger);
-			add(heapManager);
-			registry = new Registry(configuration, cache);
-			add(registry);
-			taskManager = new TaskManager();
+			taskManager = new TaskManager(logger);
 			add(taskManager);
+			heapManager = new HeapManager(taskManager, logger);
+			add(heapManager);
+			registry = new Registry(configuration, cache, taskManager, logger);
+			add(registry);
 			launchManager = new LaunchManager(configuration);
 			add(launchManager);
-			scheduleManager = new ScheduleManager(configuration, history, fileManager, launchManager, logger);
+			scheduleManager = new ScheduleManager(configuration, history, fileManager, taskManager, launchManager, logger);
 			add(scheduleManager);
-			httpServer = new HttpServer(Constants.HTTP_PORT, fileManager.getHistoryFolder(), logger);
+			httpServer = new HttpServer(Constants.HTTP_PORT, fileManager, taskManager, logger);
 			add(httpServer);
 			super.init();
 		}
@@ -156,7 +155,7 @@ public class Application extends AbstractSystem implements IApplicationAdmin {
 			add(projectMenu);
 			toolsMenu = new ToolsMenu(configuration, fileManager, heapManager);
 			add(toolsMenu);
-			configPanel = new ConfigPanel(configuration, history, fileManager, launchManager, registry);
+			configPanel = new ConfigPanel(configuration, history, fileManager, taskManager, launchManager, registry);
 			add(configPanel);
 			schedulerPanel = new SchedulerPanel(launchManager, scheduleManager, logger);
 			add(schedulerPanel);

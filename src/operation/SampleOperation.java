@@ -2,6 +2,7 @@ package operation;
 
 import core.Cache;
 import core.Configuration;
+import core.TaskManager;
 import util.StringTools;
 import util.SystemTools;
 import launch.LaunchAgent;
@@ -13,8 +14,8 @@ public class SampleOperation extends AbstractOperation {
 
 	private SampleOperationConfig config;
 	
-	public SampleOperation(Configuration configuration, Cache cache, LaunchAgent parent, SampleOperationConfig config) {
-		super(configuration, cache, parent, config);
+	public SampleOperation(Configuration configuration, Cache cache, TaskManager taskManager, LaunchAgent parent, SampleOperationConfig config) {
+		super(configuration, cache, taskManager, parent, config);
 		this.config = config;
 	}
 

@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import core.Cache;
 import core.Configuration;
+import core.TaskManager;
 
 import util.FileTools;
 
@@ -18,6 +19,7 @@ public abstract class AbstractOperation extends LifecycleObject {
 	protected Configuration configuration;
 	protected Cache cache;
 	protected LaunchAgent parent;
+	protected TaskManager taskManager;
 	protected Logger logger;
 	protected AbstractOperationConfig config;
 	
@@ -27,14 +29,16 @@ public abstract class AbstractOperation extends LifecycleObject {
 	public AbstractOperation(
 			Configuration configuration, 
 			Cache cache, 
+			TaskManager taskManager, 
 			LaunchAgent parent, 
 			AbstractOperationConfig config)
 	{
-		super("Opperation("+config.getId()+")");
+		super("Opperation("+config.getId()+")", taskManager);
 		
 		this.configuration = configuration;
 		this.cache = cache;
 		this.parent = parent;
+		this.taskManager = taskManager;
 		logger = parent.getLogger();
 		this.config = config.clone();
 		

@@ -24,6 +24,8 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import core.TaskManager;
+
 import logger.Logger;
 
 import repository.ConnectionTest;
@@ -272,7 +274,7 @@ public class OptionEditor extends JPanel {
 	}
 
 	// TODO should be a generic test-client
-	public static void addRepositoryTest(final Option option, final IRepositoryClient client, final Logger logger) {
+	public static void addRepositoryTest(final Option option, final IRepositoryClient client, final TaskManager taskManager, final Logger logger) {
 
 		if(option.component instanceof JTextField){
 			JButton button = new JButton(" Test ");
@@ -281,6 +283,7 @@ public class OptionEditor extends JPanel {
 					ConnectionTest tester = new ConnectionTest(
 							client, 
 							((JTextField)option.component).getText(),
+							taskManager,
 							logger
 					);
 					tester.asyncRun(0, ConnectionTest.TIMEOUT);

@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import core.TaskManager;
+
 import logger.Logger;
 import logger.Logger.Module;
 
@@ -13,9 +15,11 @@ import util.SystemTools;
 
 public class SVNClient implements IRepositoryClient {
 	
+	private TaskManager taskManager;
 	private Logger logger;
 	
-	public SVNClient(Logger logger){
+	public SVNClient(TaskManager taskManager, Logger logger){
+		this.taskManager = taskManager;
 		this.logger = logger;
 	}
 	
@@ -28,7 +32,7 @@ public class SVNClient implements IRepositoryClient {
 		String arguments = "info "+url;
 
 		// perform task
-		CommandTask task = new CommandTask(command, arguments, path, logger);
+		CommandTask task = new CommandTask(command, arguments, path, taskManager, logger);
 		task.syncRun(0, 0);
 		if(!task.hasSucceded()){
 			throw new Exception(name+" failed: "+task.getResult());
@@ -72,7 +76,7 @@ public class SVNClient implements IRepositoryClient {
 		String arguments = "checkout -r "+revision+" "+url+" "+destination;
 
 		// perform task
-		CommandTask task = new CommandTask(command, arguments, path, logger);
+		CommandTask task = new CommandTask(command, arguments, path, taskManager, logger);
 		task.syncRun(0, 0);
 		if(!task.hasSucceded()){
 			throw new Exception(name+" failed: "+task.getResult());
@@ -105,7 +109,7 @@ public class SVNClient implements IRepositoryClient {
 		String arguments = "log -r "+revision2+":"+revision1+" "+url;
 
 		// perform task
-		CommandTask task = new CommandTask(command, arguments, path, logger);
+		CommandTask task = new CommandTask(command, arguments, path, taskManager, logger);
 		task.syncRun(0, 0);
 		if(!task.hasSucceded()){
 			throw new Exception(name+" failed: "+task.getResult());

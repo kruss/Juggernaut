@@ -2,6 +2,8 @@ package core;
 
 import java.util.ArrayList;
 
+import logger.Logger;
+
 import operation.CommandOperationConfig;
 import operation.EclipseOperationConfig;
 import operation.SVNOperationConfig;
@@ -16,6 +18,8 @@ public class Registry implements ISystemComponent {
 
 	private Configuration configuration;
 	private Cache cache;
+	private TaskManager taskManager;
+	private Logger logger;
 	
 	private ArrayList<AbstractOperationConfig> operationConfigs;
 	private ArrayList<AbstractTriggerConfig> triggerConfigs;
@@ -23,10 +27,12 @@ public class Registry implements ISystemComponent {
 	public ArrayList<AbstractOperationConfig> getOperationConfigs(){ return operationConfigs; }	
 	public ArrayList<AbstractTriggerConfig> getTriggerConfigs(){ return triggerConfigs; }
 	
-	public Registry(Configuration configuration, Cache cache){
+	public Registry(Configuration configuration, Cache cache, TaskManager taskManager, Logger logger){
 	
 		this.configuration = configuration;
 		this.cache = cache;
+		this.taskManager = taskManager;
+		this.logger = logger;
 		
 		operationConfigs = new ArrayList<AbstractOperationConfig>();
 		triggerConfigs = new ArrayList<AbstractTriggerConfig>();
@@ -72,7 +78,7 @@ public class Registry implements ISystemComponent {
 		for(AbstractOperationConfig operationConfig : operationConfigs){
 			if(name.equals(operationConfig.getName())){
 				AbstractOperationConfig instance = operationConfig.getClass().newInstance();
-				instance.init(configuration, cache);
+				instance.init(configuration, cache, taskManager, logger);
 				return instance;
 			}
 		}
@@ -84,7 +90,7 @@ public class Registry implements ISystemComponent {
 		for(AbstractTriggerConfig triggerConfig : triggerConfigs){
 			if(name.equals(triggerConfig.getName())){
 				AbstractTriggerConfig instance = triggerConfig.getClass().newInstance();
-				instance.init(configuration, cache);
+				instance.init(configuration, cache, taskManager, logger);
 				return instance;
 			}
 		}

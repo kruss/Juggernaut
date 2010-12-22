@@ -2,6 +2,7 @@ package operation;
 
 import core.Cache;
 import core.Configuration;
+import core.TaskManager;
 import repository.SVNClient;
 import repository.IRepositoryClient.CheckoutInfo;
 import repository.IRepositoryClient.HistoryInfo;
@@ -29,10 +30,10 @@ public class SVNOperation extends AbstractOperation implements IRepositoryOperat
 	@Override
 	public HistoryInfo getHistory(){ return history; }
 	
-	public SVNOperation(Configuration configuration, Cache cache, LaunchAgent parent, SVNOperationConfig config) {
-		super(configuration, cache, parent, config);
+	public SVNOperation(Configuration configuration, Cache cache, TaskManager taskManager, LaunchAgent parent, SVNOperationConfig config) {
+		super(configuration, cache, taskManager, parent, config);
 		this.config = config;
-		client = new SVNClient(parent.getLogger());
+		client = new SVNClient(taskManager,parent.getLogger());
 	}
 	
 	@Override

@@ -3,7 +3,7 @@ package launch;
 import java.util.ArrayList;
 import java.util.Date;
 
-import core.Application;
+import core.TaskManager;
 import data.Artifact;
 
 import launch.ILifecycleListener.Lifecycle;
@@ -23,8 +23,8 @@ public abstract class LifecycleObject extends Task {
 	public ArrayList<Artifact> getArtifacts(){ return artifacts; }
 	public void setHistoryFolder(String folder){ this.historyFolder = folder; }
 	
-	public LifecycleObject(String name){
-		super(name, Application.getInstance().getLogger());
+	public LifecycleObject(String name, TaskManager taskManager){
+		super(name, taskManager);
 		statusManager = new StatusManager(this);
 		artifacts = new ArrayList<Artifact>();
 		listeners = new ArrayList<ILifecycleListener>();

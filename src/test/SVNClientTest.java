@@ -13,6 +13,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import core.TaskManager;
+
 import repository.SVNClient;
 import repository.IRepositoryClient.Revision;
 import util.FileTools;
@@ -23,12 +25,14 @@ public class SVNClientTest {
 	private static final String SVN_REPOSITORY = "svn://10.40.38.84:3690/cppdemo/trunk";
 	
 	private Logger logger;
+	private TaskManager taskManager;
 	private SVNClient client;
 	private File folder;
 	
 	public SVNClientTest(){
 		logger = new Logger(Mode.CONSOLE);
-		client = new SVNClient(logger);
+		taskManager = new TaskManager(logger);
+		client = new SVNClient(taskManager, logger);
 		folder = new File(SystemTools.getWorkingDir()+File.separator+(new Date()).getTime()); 
 	}
 	

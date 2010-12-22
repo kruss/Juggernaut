@@ -1,5 +1,6 @@
 package operation;
 
+import core.TaskManager;
 import util.StringTools;
 import launch.LaunchAgent;
 import data.AbstractOperation;
@@ -59,7 +60,7 @@ public class SampleOperationConfig extends AbstractOperationConfig {
 	public boolean isValid(){ return true; }
 	
 	@Override
-	public AbstractOperation createOperation(LaunchAgent parent) {
-		return new SampleOperation(configuration, cache, parent, this);
+	public AbstractOperation createOperation(LaunchAgent parent, TaskManager taskManager) {
+		return new SampleOperation(configuration, cache, taskManager, parent, this);
 	}
 }

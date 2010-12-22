@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import core.TaskManager;
+
 import logger.Logger;
 import logger.Logger.Module;
 
@@ -13,15 +15,17 @@ public class CommandStreamer extends Task {
 	private CommandTask parent;
 	private InputStream stream;
 	private String name;
+	private Logger logger;
 	
 	public String getStreamName(){ return name; }
 	
-	public CommandStreamer(CommandTask parent, String name, InputStream stream, Logger logger){
+	public CommandStreamer(CommandTask parent, String name, InputStream stream, TaskManager taskManager, Logger logger){
 		
-		super("Streamer("+name+")", logger);
+		super("Streamer("+name+")", taskManager);
 		this.parent = parent;
 		this.stream = stream;
 		this.name = name;
+		this.logger = logger;
 	}
 	
 	@Override
@@ -34,13 +38,13 @@ public class CommandStreamer extends Task {
 	        String line=null;
 	        while( (line = bufferedReader.readLine()) != null){
 	        	parent.stream(line+"\n");
-	        	observer.debug(Module.COMMAND, line);
+	        	logger.debug(Module.COMMAND, line);
 	        }
 	        
 			bufferedReader.close();
 			streamReader.close();
 		}catch(Exception e){ 
-			observer.error(Module.COMMAND, e); 
+			logger.error(Module.COMMAND, e); 
 		}
 	}
 }

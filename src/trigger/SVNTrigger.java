@@ -4,10 +4,12 @@ import java.util.Date;
 
 import core.Cache;
 import core.Configuration;
+import core.TaskManager;
 
 import repository.SVNClient;
 import repository.IRepositoryClient.RevisionInfo;
 
+import logger.Logger;
 import logger.Logger.Module;
 
 
@@ -22,10 +24,10 @@ public class SVNTrigger extends AbstractTrigger {
 	
 	private RevisionInfo info;
 	
-	public SVNTrigger(Configuration configuration, Cache cache, SVNTriggerConfig config) {
-		super(configuration, cache, config);
+	public SVNTrigger(Configuration configuration, Cache cache, TaskManager taskManager, Logger logger, SVNTriggerConfig config) {
+		super(configuration, cache, logger, config);
 		this.config = config;
-		client = new SVNClient(observer);
+		client = new SVNClient(taskManager, logger);
 	}
 	
 	private void setLastRevisionCache(String revision){
@@ -70,7 +72,7 @@ public class SVNTrigger extends AbstractTrigger {
 				}
 			}
 		}catch(Exception e){
-			observer.error(Module.COMMON, e);
+			logger.error(Module.COMMON, e);
 			return new TriggerStatus(
 					e.getMessage(), false
 			);

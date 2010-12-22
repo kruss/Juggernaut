@@ -1,5 +1,6 @@
 package repository;
 
+import core.TaskManager;
 import launch.StatusManager.Status;
 import logger.Logger;
 import logger.Logger.Module;
@@ -13,19 +14,20 @@ public class ConnectionTest extends Task {
 	
 	private IRepositoryClient client;
 	private String url;
+	private Logger logger;
 	
-	public ConnectionTest(IRepositoryClient client, String url, Logger logger) {
+	public ConnectionTest(IRepositoryClient client, String url, TaskManager taskManager, Logger logger) {
 		
-		super("ConnectionTest", logger);
+		super("ConnectionTest", taskManager);
 		this.client = client;
 		this.url = url;
-		
+		this.logger = logger;
 	}
 
 	@Override
 	protected void runTask() {
 		
-		observer.log(Module.COMMON, "Test: "+url);
+		logger.log(Module.COMMON, "Test: "+url);
 		Status status = Status.UNDEFINED;
 		String message = "";
 		try{
@@ -36,10 +38,10 @@ public class ConnectionTest extends Task {
 			status = Status.FAILURE;
 			message = (e.getMessage() != null) ? e.getMessage() : e.getClass().getSimpleName();
 			if(!(e instanceof InterruptedException)){
-				observer.error(Module.COMMON, e);
+				logger.error(Module.COMMON, e);
 			}			
 		}finally{
-			observer.log(Module.COMMON, "Test: "+status.toString());
+			logger.log(Module.COMMON, "Test: "+status.toString());
 			if(status == Status.SUCCEED){
 				UiTools.infoDialog(
 						"Test - "+status.toString()+"\n\n"+message

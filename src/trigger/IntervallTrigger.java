@@ -2,6 +2,8 @@ package trigger;
 
 import java.util.Date;
 
+import logger.Logger;
+
 import core.Cache;
 import core.Configuration;
 
@@ -15,8 +17,8 @@ public class IntervallTrigger extends AbstractTrigger {
 	
 	private Date newDate;
 	
-	public IntervallTrigger(Configuration configuration, Cache cache, IntervallTriggerConfig config) {
-		super(configuration, cache, config);
+	public IntervallTrigger(Configuration configuration, Cache cache, Logger logger, IntervallTriggerConfig config) {
+		super(configuration, cache, logger, config);
 		this.config = config;
 	}
 	

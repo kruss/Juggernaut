@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import core.Cache;
 import core.Configuration;
+import core.TaskManager;
 
 import util.CommandTask;
 import util.StringTools;
@@ -21,8 +22,8 @@ public class EclipseOperation extends AbstractOperation {
 
 	private EclipseOperationConfig config;
 	
-	public EclipseOperation(Configuration configuration, Cache cache, LaunchAgent parent, EclipseOperationConfig config) {
-		super(configuration, cache, parent, config);
+	public EclipseOperation(Configuration configuration, Cache cache, TaskManager taskManager, LaunchAgent parent, EclipseOperationConfig config) {
+		super(configuration, cache, taskManager, parent, config);
 		this.config = config;
 	}
 	
@@ -77,6 +78,7 @@ public class EclipseOperation extends AbstractOperation {
 				command, 
 				StringTools.join(arguments, " "),
 				directory, 
+				taskManager,
 				logger
 		);
 		try{

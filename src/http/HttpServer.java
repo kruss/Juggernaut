@@ -13,14 +13,16 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 
+import core.FileManager;
 import core.ISystemComponent;
+import core.TaskManager;
 
 import util.Task;
 
 import logger.Logger;
 import logger.Logger.Module;
 
-
+// TODO refactor
 @SuppressWarnings({ "deprecation", "unchecked" })
 public class HttpServer extends Task implements ISystemComponent {
 
@@ -33,12 +35,12 @@ public class HttpServer extends Task implements ISystemComponent {
 	
 	public boolean isRunning(){ return running; }
 	
-	public HttpServer( int port, File dir, Logger logger )
+	public HttpServer(int port, FileManager fileManager, TaskManager taskManager, Logger logger)
 	{
-		super("HttpServer", logger);
+		super("HttpServer", taskManager);
 		this.logger = logger;
-		myTcpPort = port;
-		myRootDir = dir;
+		myTcpPort = port; // TODO from configuration
+		myRootDir = fileManager.getHistoryFolder();
 		running = false;
 	}
 	

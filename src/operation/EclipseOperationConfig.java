@@ -2,6 +2,8 @@ package operation;
 
 import java.util.ArrayList;
 
+import core.TaskManager;
+
 import launch.LaunchAgent;
 import data.AbstractOperation;
 import data.AbstractOperationConfig;
@@ -86,7 +88,7 @@ public class EclipseOperationConfig extends AbstractOperationConfig {
 	}
 	
 	@Override
-	public AbstractOperation createOperation(LaunchAgent parent) {
-		return new EclipseOperation(configuration, cache, parent, this);
+	public AbstractOperation createOperation(LaunchAgent parent, TaskManager taskManager) {
+		return new EclipseOperation(configuration, cache, taskManager, parent, this);
 	}
 }

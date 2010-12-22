@@ -11,6 +11,7 @@ import core.Configuration;
 import core.FileManager;
 import core.History;
 import core.ISystemComponent;
+import core.TaskManager;
 import data.AbstractTrigger;
 import data.AbstractTriggerConfig;
 import data.LaunchConfig;
@@ -25,6 +26,7 @@ public class ScheduleManager implements ISystemComponent {
 	private Configuration configuration;
 	private History history;
 	private FileManager fileManager;
+	private TaskManager taskManager;
 	private LaunchManager launchManager;
 	private Logger logger;
 	private SchedulerTask scheduler;
@@ -48,6 +50,7 @@ public class ScheduleManager implements ISystemComponent {
 			Configuration configuration, 
 			History history,
 			FileManager fileManager,
+			TaskManager taskManager,
 			LaunchManager launchManager, 
 			Logger logger
 	){
@@ -55,6 +58,7 @@ public class ScheduleManager implements ISystemComponent {
 		this.configuration = configuration;
 		this.history = history;
 		this.fileManager = fileManager;
+		this.taskManager = taskManager;
 		this.launchManager = launchManager;
 		this.logger = logger;
 		scheduler = null;
@@ -129,7 +133,7 @@ public class ScheduleManager implements ISystemComponent {
 				if(!launched)
 				{
 					LaunchAgent launch = launchConfig.createLaunch(
-							configuration, history, fileManager, triggerStatus.message);
+							configuration, history, fileManager, taskManager, triggerStatus.message);
 					LaunchStatus launchStatus = launchManager.runLaunch(launch);
 					if(launchStatus.launched){
 						logger.log(
@@ -178,7 +182,7 @@ public class ScheduleManager implements ISystemComponent {
 		private boolean cyclic;
 		
 		public SchedulerTask(boolean cyclic){
-			super("SchedulerTask", logger);
+			super("SchedulerTask", taskManager);
 			this.cyclic = cyclic;
 			setCycle();
 		}

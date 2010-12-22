@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import core.Cache;
 import core.Configuration;
+import core.TaskManager;
 
 import util.CommandTask;
 import launch.LaunchAgent;
@@ -17,8 +18,8 @@ public class CommandOperation extends AbstractOperation {
 
 	private CommandOperationConfig config;
 	
-	public CommandOperation(Configuration configuration, Cache cache, LaunchAgent parent, CommandOperationConfig config) {
-		super(configuration, cache, parent, config);
+	public CommandOperation(Configuration configuration, Cache cache, TaskManager taskManager, LaunchAgent parent, CommandOperationConfig config) {
+		super(configuration, cache, taskManager, parent, config);
 		this.config = config;
 	}
 
@@ -38,6 +39,7 @@ public class CommandOperation extends AbstractOperation {
 				command, 
 				arguments,
 				directory.isEmpty() ? parent.getFolder() : parent.getFolder()+File.separator+directory, 
+				taskManager,
 				logger
 		);
 		try{

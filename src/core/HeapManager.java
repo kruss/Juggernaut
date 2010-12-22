@@ -11,14 +11,16 @@ import logger.Logger.Module;
 /** provides access to the application's heap */
 public class HeapManager implements ISystemComponent {
 
+	private TaskManager taskManager;
 	private Logger logger;
 	private Runtime runtime;
 	private HeapStatus heap;
 	private HeapStatusUpdater updater;
 	private ArrayList<IChangedListener> listeners;
 	
-	public HeapManager(Logger logger){
+	public HeapManager(TaskManager taskManager, Logger logger){
 		
+		this.taskManager = taskManager;
 		this.logger = logger;
 		runtime = Runtime.getRuntime();
 		heap = new HeapStatus();
@@ -67,7 +69,7 @@ public class HeapManager implements ISystemComponent {
 		public static final long CYCLE = 30 * 1000; // 30 sec
 
 		public HeapStatusUpdater() {
-			super("HeapStatus", logger);
+			super("HeapStatus", taskManager);
 			setCycle(CYCLE);
 		}
 
@@ -116,7 +118,7 @@ public class HeapManager implements ISystemComponent {
 		public static final long TIMEOUT = 10 * 60 * 1000; // 10 min
 		
 		public GarbageCollector() {
-			super("GarbageCollector", logger);
+			super("GarbageCollector", taskManager);
 		}
 
 		@Override
