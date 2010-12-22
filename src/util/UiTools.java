@@ -11,17 +11,18 @@ import core.Constants;
 public class UiTools {
 
 	public static void infoDialog(String text){ 
-
 		JOptionPane.showMessageDialog(null, text, Constants.APP_NAME, JOptionPane.PLAIN_MESSAGE); 
 	}
 	
+	public static void errorDialog(Exception e){
+		errorDialog("["+e.getClass().getSimpleName()+"] "+e.getMessage()+"\n\n"+StringTools.trace(e, 5));
+	}
+	
 	public static void errorDialog(String text){ 
-
 		JOptionPane.showMessageDialog(null, text, Constants.APP_NAME, JOptionPane.ERROR_MESSAGE); 
 	}
 
 	public static String inputDialog(String text, String value){ 
-		
 		if(value != null){
 			return JOptionPane.showInputDialog(text, value);
 		}else{
@@ -30,7 +31,6 @@ public class UiTools {
 	}	
 	
 	public static boolean confirmDialog(String text) {
-
 		int option = UiTools.optionDialog(
 				text, UiTools.YES_NO_OPTIONS
 		);
@@ -49,7 +49,6 @@ public class UiTools {
 	 * returns index of selected option or -1 if aboarded
 	 */
 	public static int optionDialog(String text, String[] options){ 
-
 		return JOptionPane.showOptionDialog(
 			null, text, "Confirm", 
 			JOptionPane.YES_NO_CANCEL_OPTION, 
@@ -66,7 +65,6 @@ public class UiTools {
 	}
 	
 	private static File filesystemDialog(String text, String path, int mode){
-		
 		JFileChooser fileChooser = new JFileChooser(path);
 		fileChooser.setDialogTitle(text);
 		fileChooser.setFileSelectionMode(mode);

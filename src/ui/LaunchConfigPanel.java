@@ -7,28 +7,29 @@ import javax.swing.JScrollPane;
 
 import util.IChangedListener;
 
-
-import core.Application;
+import core.Configuration;
 import data.LaunchConfig;
 
 public class LaunchConfigPanel extends JPanel implements IChangedListener {
 
 	private static final long serialVersionUID = 1L;
 
-	private Application application;
-	private ConfigPanel parentPanel;
+	private ConfigPanel parent;
+	private Configuration configuration;
+	
 	private OptionEditor optionEditor;
 	
-	public LaunchConfigPanel(ConfigPanel parentPanel){
+	public LaunchConfigPanel(ConfigPanel parent, Configuration configuration){
 		
-		this.parentPanel = parentPanel;
-		application = Application.getInstance();
+		this.parent = parent;
+		this.configuration = configuration;
+		
 		optionEditor = new OptionEditor();
 
 		setLayout(new BorderLayout());
 		add(new JScrollPane(optionEditor), BorderLayout.CENTER);
 		
-		parentPanel.addListener(this);
+		parent.addListener(this);
 		optionEditor.addListener(this);
 	}
 
@@ -39,19 +40,19 @@ public class LaunchConfigPanel extends JPanel implements IChangedListener {
 	@Override
 	public void changed(Object object) {
 		
-		if(object == parentPanel){
+		if(object == parent){
 			initUI();
 		}
 		
 		if(object == optionEditor){
-			parentPanel.getCurrentConfig().setDirty(true);
-			application.getConfiguration().notifyListeners();
+			parent.getCurrentConfig().setDirty(true);
+			configuration.notifyListeners();
 		}
 	}
 
 	private void initUI() {
 
-		LaunchConfig config = parentPanel.getCurrentConfig();
+		LaunchConfig config = parent.getCurrentConfig();
 		if(config != null){
 			optionEditor.setOptionContainer(config.getOptionContainer(), config);
 		}else{

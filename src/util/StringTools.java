@@ -108,14 +108,17 @@ public class StringTools {
 		return hour2millis(day * 24);
 	}
 
-	/** get stack-trace of an exception */
+
 	public static String trace(Exception e){
+		return trace(e, MAX_EXCEPTION_TRACE);
+	}
+	
+	public static String trace(Exception e, int depth){
 
 		StringBuilder trace = new StringBuilder();
-		
 		trace.append("["+e.getClass().getSimpleName()+"] "+e.getMessage()+"\n\n");
 		StackTraceElement[] stack = e.getStackTrace();
-		int len = stack.length > MAX_EXCEPTION_TRACE ? MAX_EXCEPTION_TRACE : stack.length;
+		int len = stack.length > depth ? depth : stack.length;
 		for(int i=0; i<len; i++){
 			if(stack[i].getLineNumber()>0){
 				trace.append(stack[i].getClassName()+"::"+stack[i].getMethodName()+" ("+stack[i].getLineNumber()+")\n");
@@ -124,7 +127,6 @@ public class StringTools {
 			}
 		}
 		if(len < stack.length){ trace.append("...\n"); }
-		
 		return trace.toString();
 	}
 	

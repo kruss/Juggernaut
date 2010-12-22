@@ -9,31 +9,43 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
+import launch.LaunchManager;
+import logger.Logger;
+import logger.Logger.Module;
+
 import util.IChangedListener;
+import util.UiTools;
 
 
 import core.Application;
 import core.Configuration;
+import core.Constants;
 
 public class ProjectMenu extends JMenu implements IChangedListener {
 
 	private static final long serialVersionUID = 1L;
 
-	private Window window; 
+	private Application application; 
 	private Configuration configuration;
+	private LaunchManager launchManager;
+	private Logger logger;
 
 	private JMenuItem revert;
 	private JMenuItem save;
 	private JMenuItem quit;
 	
 	public ProjectMenu(
-			Window window, 
-			Configuration configuration)
+			Application application, 
+			Configuration configuration,
+			LaunchManager launchManager,
+			Logger logger)
 	{
 		super("Project");
 		
-		this.window = window;
+		this.application = application;
 		this.configuration = configuration;
+		this.launchManager = launchManager;
+		this.logger = logger;
 		
 		revert = new JMenuItem("Revert");
 		revert.addActionListener(new ActionListener(){
@@ -62,24 +74,36 @@ public class ProjectMenu extends JMenu implements IChangedListener {
 	private void revert(){
 		
 		try{
-			Application.getInstance().revert();
+			application.revert();
 		}catch(Exception e){
-			Application.getInstance().getWindow().popupError(e);
+			UiTools.errorDialog(e);
 		}
 	}
 	
 	private void save(){
 		
 		try{
-			Application.getInstance().getConfiguration().save();
+			configuration.save();
 		}catch(Exception e){
-			Application.getInstance().getWindow().popupError(e);
+			UiTools.errorDialog(e);
 		}
 	}
 	
-	private void quit(){
+	public void quit(){
 		
-		window.quit();
+		if(!launchManager.isBusy() || UiTools.confirmDialog("Aboard running launches ?")){
+			logger.info(Module.COMMON, "Shutdown");
+			try{
+				if(configuration.isDirty() && UiTools.confirmDialog("Save changes ?")){
+					configuration.save();
+				}
+				application.shutdown();
+			}catch(Exception e){
+				UiTools.errorDialog(e);
+				System.exit(Constants.PROCESS_NOK);
+			}
+			System.exit(Constants.PROCESS_OK);
+		}
 	}
 
 	@Override

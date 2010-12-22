@@ -11,6 +11,7 @@ import javax.swing.JMenuItem;
 
 import util.IChangedListener;
 import util.SystemTools;
+import util.UiTools;
 
 
 import core.Configuration;
@@ -22,7 +23,6 @@ public class ToolsMenu extends JMenu implements IChangedListener {
 
 	private static final long serialVersionUID = 1L;
 
-	private Window window; 
 	private Configuration configuration;
 	private FileManager fileManager;
 	private HeapManager heapManager;
@@ -31,13 +31,12 @@ public class ToolsMenu extends JMenu implements IChangedListener {
 	private JMenuItem collectGarbage;
 	
 	public ToolsMenu(
-			Window window, 
 			Configuration configuration,
 			FileManager fileManager,
-			HeapManager heapManager){
+			HeapManager heapManager)
+	{
 		super("Tools");
 		
-		this.window = window;
 		this.configuration = configuration;
 		this.fileManager = fileManager;
 		this.heapManager = heapManager;
@@ -80,7 +79,7 @@ public class ToolsMenu extends JMenu implements IChangedListener {
 			page.create();
 			SystemTools.openBrowser(path);
 		}catch(Exception e){
-			window.popupError(e);
+			UiTools.errorDialog(e);
 		}
 	}
 	

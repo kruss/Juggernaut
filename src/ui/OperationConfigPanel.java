@@ -22,7 +22,8 @@ import javax.swing.event.ListSelectionListener;
 import util.IChangedListener;
 import util.UiTools;
 
-import core.Application;
+import core.Configuration;
+import core.Registry;
 import data.AbstractOperationConfig;
 import data.LaunchConfig;
 
@@ -30,8 +31,10 @@ public class OperationConfigPanel extends JPanel implements IChangedListener {
 
 	private static final long serialVersionUID = 1L;
 
-	private Application application;
-	private ConfigPanel parentPanel;
+	private ConfigPanel parent;
+	private Configuration configuration;
+	private Registry registry;
+	
 	private OptionEditor optionEditor;
 	private SelectionListener selectionListener;
 	private KeyListener keySelectionListener;
@@ -45,10 +48,15 @@ public class OperationConfigPanel extends JPanel implements IChangedListener {
 	
 	public AbstractOperationConfig getCurrentConfig(){ return currentConfig; }
 	
-	public OperationConfigPanel(ConfigPanel parentPanel){
+	public OperationConfigPanel(
+			ConfigPanel parent, 
+			Configuration configuration, 
+			Registry registry)
+	{
+		this.parent = parent;
+		this.configuration = configuration;
+		this.registry = registry;
 		
-		this.parentPanel = parentPanel;
-		application = Application.getInstance();
 		optionEditor = new OptionEditor();		
 		selectionListener = new SelectionListener();
 		keySelectionListener = new KeySelectionListener();
@@ -97,7 +105,7 @@ public class OperationConfigPanel extends JPanel implements IChangedListener {
 		add(centerPanel, BorderLayout.CENTER);
 		add(bottomPanel, BorderLayout.SOUTH);
 		
-		parentPanel.addListener(this);
+		parent.addListener(this);
 		optionEditor.addListener(this);
 	}
 	
@@ -110,7 +118,7 @@ public class OperationConfigPanel extends JPanel implements IChangedListener {
 	
 	private void initOperationCombo() {
 		
-		for(String operationName : application.getRegistry().getOperationNames()){
+		for(String operationName : registry.getOperationNames()){
 			operationCombo.addItem(operationName);
 		}
 	}
@@ -118,13 +126,13 @@ public class OperationConfigPanel extends JPanel implements IChangedListener {
 	@Override
 	public void changed(Object object) {
 		
-		if(object == parentPanel){
+		if(object == parent){
 			refreshUI(null);
 		}
 		
 		if(object == optionEditor){
-			parentPanel.getCurrentConfig().setDirty(true);
-			application.getConfiguration().notifyListeners();
+			parent.getCurrentConfig().setDirty(true);
+			configuration.notifyListeners();
 			operationList.repaint();
 		}
 	}
@@ -156,14 +164,14 @@ public class OperationConfigPanel extends JPanel implements IChangedListener {
 		
 		int listIndex = operationList.getSelectedIndex();
 		if(listIndex >= 0){
-			currentConfig = parentPanel.getCurrentConfig().getOperationConfigs().get(listIndex);
+			currentConfig = parent.getCurrentConfig().getOperationConfigs().get(listIndex);
 			optionEditor.setOptionContainer(currentConfig.getOptionContainer(), currentConfig);
 		}else{
 			currentConfig = null;
 			optionEditor.setOptionContainer(null, null);
 		}
 		adjustButtons();
-		parentPanel.repaint();
+		parent.repaint();
 	}
 	
 	private void adjustButtons() {
@@ -197,7 +205,7 @@ public class OperationConfigPanel extends JPanel implements IChangedListener {
 	private void initUI(){
 		
 		DefaultListModel listModel = new DefaultListModel();
-		LaunchConfig config = parentPanel.getCurrentConfig();
+		LaunchConfig config = parent.getCurrentConfig();
 		if(config != null){
 			for(AbstractOperationConfig operationConfig : config.getOperationConfigs()){
 				listModel.addElement(operationConfig);
@@ -231,14 +239,14 @@ public class OperationConfigPanel extends JPanel implements IChangedListener {
 		if(comboIndex >= 0){
 			String operationName = (String)operationCombo.getItemAt(comboIndex);
 			try{
-				AbstractOperationConfig operationConfig = application.getRegistry().createOperationConfig(operationName);
-				LaunchConfig launchConfig = parentPanel.getCurrentConfig();
+				AbstractOperationConfig operationConfig = registry.createOperationConfig(operationName);
+				LaunchConfig launchConfig = parent.getCurrentConfig();
 				launchConfig.getOperationConfigs().add(listIndex >=0 ? listIndex+1 : 0, operationConfig);
 				launchConfig.setDirty(true);
-				application.getConfiguration().notifyListeners();
+				configuration.notifyListeners();
 				refreshUI(operationConfig);
 			}catch(Exception e){
-				application.getWindow().popupError(e);
+				UiTools.errorDialog(e);
 			}
 		}
 	}
@@ -247,10 +255,10 @@ public class OperationConfigPanel extends JPanel implements IChangedListener {
 		
 		int listIndex = operationList.getSelectedIndex();
 		if(listIndex >= 0 && UiTools.confirmDialog("Remove Operation ?")){
-			LaunchConfig launchConfig = parentPanel.getCurrentConfig();
+			LaunchConfig launchConfig = parent.getCurrentConfig();
 			launchConfig.getOperationConfigs().remove(listIndex);
 			launchConfig.setDirty(true);
-			application.getConfiguration().notifyListeners();
+			configuration.notifyListeners();
 			refreshUI(null);
 		}
 	}
@@ -259,11 +267,11 @@ public class OperationConfigPanel extends JPanel implements IChangedListener {
 		
 		int listIndex = operationList.getSelectedIndex();
 		if(listIndex > 0){
-			LaunchConfig launchConfig = parentPanel.getCurrentConfig();
+			LaunchConfig launchConfig = parent.getCurrentConfig();
 			AbstractOperationConfig operationConfig = launchConfig.getOperationConfigs().remove(listIndex);
 			launchConfig.getOperationConfigs().add(listIndex-1, operationConfig);
 			launchConfig.setDirty(true);
-			application.getConfiguration().notifyListeners();
+			configuration.notifyListeners();
 			refreshUI(operationConfig);
 		}
 	}
@@ -272,11 +280,11 @@ public class OperationConfigPanel extends JPanel implements IChangedListener {
 		
 		int listIndex = operationList.getSelectedIndex();
 		if(listIndex >= 0 && listIndex < operationList.getModel().getSize()-1){
-			LaunchConfig launchConfig = parentPanel.getCurrentConfig();
+			LaunchConfig launchConfig = parent.getCurrentConfig();
 			AbstractOperationConfig operationConfig = launchConfig.getOperationConfigs().remove(listIndex);
 			launchConfig.getOperationConfigs().add(listIndex+1, operationConfig);
 			launchConfig.setDirty(true);
-			application.getConfiguration().notifyListeners();
+			configuration.notifyListeners();
 			refreshUI(operationConfig);
 		}
 	}

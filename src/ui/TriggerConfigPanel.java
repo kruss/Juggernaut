@@ -20,7 +20,8 @@ import javax.swing.event.ListSelectionListener;
 
 import util.IChangedListener;
 import util.UiTools;
-import core.Application;
+import core.Configuration;
+import core.Registry;
 import data.AbstractTriggerConfig;
 import data.LaunchConfig;
 
@@ -28,8 +29,10 @@ public class TriggerConfigPanel extends JPanel implements IChangedListener {
 
 	private static final long serialVersionUID = 1L;
 
-	private Application application;
-	private ConfigPanel parentPanel;
+	private ConfigPanel parent;
+	private Configuration configuration;
+	private Registry registry;
+	
 	private OptionEditor optionEditor;
 	private SelectionListener selectionListener;
 	private KeyListener keySelectionListener;
@@ -43,10 +46,15 @@ public class TriggerConfigPanel extends JPanel implements IChangedListener {
 	
 	public AbstractTriggerConfig getCurrentConfig(){ return currentConfig; }
 	
-	public TriggerConfigPanel(ConfigPanel parentPanel){
-		
-		this.parentPanel = parentPanel;
-		application = Application.getInstance();
+	public TriggerConfigPanel(
+			ConfigPanel parent, 
+			Configuration configuration, 
+			Registry registry)
+	{
+		this.parent = parent;
+		this.configuration = configuration;
+		this.registry = registry;
+
 		optionEditor = new OptionEditor();		
 		selectionListener = new SelectionListener();
 		keySelectionListener = new KeySelectionListener();
@@ -95,7 +103,7 @@ public class TriggerConfigPanel extends JPanel implements IChangedListener {
 		add(centerPanel, BorderLayout.CENTER);
 		add(bottomPanel, BorderLayout.SOUTH);
 		
-		parentPanel.addListener(this);
+		parent.addListener(this);
 		optionEditor.addListener(this);
 	}
 	
@@ -108,7 +116,7 @@ public class TriggerConfigPanel extends JPanel implements IChangedListener {
 	
 	private void initTriggerCombo() {
 		
-		for(String triggerName : application.getRegistry().getTriggerNames()){
+		for(String triggerName : registry.getTriggerNames()){
 			triggerCombo.addItem(triggerName);
 		}
 	}
@@ -116,13 +124,13 @@ public class TriggerConfigPanel extends JPanel implements IChangedListener {
 	@Override
 	public void changed(Object object) {
 		
-		if(object == parentPanel){
+		if(object == parent){
 			refreshUI(null);
 		}
 		
 		if(object == optionEditor){
-			parentPanel.getCurrentConfig().setDirty(true);
-			application.getConfiguration().notifyListeners();
+			parent.getCurrentConfig().setDirty(true);
+			configuration.notifyListeners();
 			triggerList.repaint();
 		}
 	}
@@ -154,14 +162,14 @@ public class TriggerConfigPanel extends JPanel implements IChangedListener {
 		
 		int listIndex = triggerList.getSelectedIndex();
 		if(listIndex >= 0){
-			currentConfig = parentPanel.getCurrentConfig().getTriggerConfigs().get(listIndex);
+			currentConfig = parent.getCurrentConfig().getTriggerConfigs().get(listIndex);
 			optionEditor.setOptionContainer(currentConfig.getOptionContainer(), currentConfig);
 		}else{
 			currentConfig = null;
 			optionEditor.setOptionContainer(null, null);
 		}
 		adjustButtons();
-		parentPanel.repaint();
+		parent.repaint();
 	}
 	
 	private void adjustButtons() {
@@ -195,7 +203,7 @@ public class TriggerConfigPanel extends JPanel implements IChangedListener {
 	private void initUI(){
 		
 		DefaultListModel listModel = new DefaultListModel();
-		LaunchConfig config = parentPanel.getCurrentConfig();
+		LaunchConfig config = parent.getCurrentConfig();
 		if(config != null){
 			for(AbstractTriggerConfig triggerConfig : config.getTriggerConfigs()){
 				listModel.addElement(triggerConfig);
@@ -229,14 +237,14 @@ public class TriggerConfigPanel extends JPanel implements IChangedListener {
 		if(comboIndex >= 0){
 			String triggerName = (String)triggerCombo.getItemAt(comboIndex);
 			try{
-				AbstractTriggerConfig triggerConfig = application.getRegistry().createTriggerConfig(triggerName);
-				LaunchConfig launchConfig = parentPanel.getCurrentConfig();
+				AbstractTriggerConfig triggerConfig = registry.createTriggerConfig(triggerName);
+				LaunchConfig launchConfig = parent.getCurrentConfig();
 				launchConfig.getTriggerConfigs().add(listIndex >=0 ? listIndex+1 : 0, triggerConfig);
 				launchConfig.setDirty(true);
-				application.getConfiguration().notifyListeners();
+				configuration.notifyListeners();
 				refreshUI(triggerConfig);
 			}catch(Exception e){
-				application.getWindow().popupError(e);
+				UiTools.errorDialog(e);
 			}
 		}
 	}
@@ -245,10 +253,10 @@ public class TriggerConfigPanel extends JPanel implements IChangedListener {
 		
 		int listIndex = triggerList.getSelectedIndex();
 		if(listIndex >= 0 && UiTools.confirmDialog("Remove Trigger ?")){
-			LaunchConfig launchConfig = parentPanel.getCurrentConfig();
+			LaunchConfig launchConfig = parent.getCurrentConfig();
 			launchConfig.getTriggerConfigs().remove(listIndex);
 			launchConfig.setDirty(true);
-			application.getConfiguration().notifyListeners();
+			configuration.notifyListeners();
 			refreshUI(null);
 		}
 	}
@@ -257,11 +265,11 @@ public class TriggerConfigPanel extends JPanel implements IChangedListener {
 		
 		int listIndex = triggerList.getSelectedIndex();
 		if(listIndex > 0){
-			LaunchConfig launchConfig = parentPanel.getCurrentConfig();
+			LaunchConfig launchConfig = parent.getCurrentConfig();
 			AbstractTriggerConfig triggerConfig = launchConfig.getTriggerConfigs().remove(listIndex);
 			launchConfig.getTriggerConfigs().add(listIndex-1, triggerConfig);
 			launchConfig.setDirty(true);
-			application.getConfiguration().notifyListeners();
+			configuration.notifyListeners();
 			refreshUI(triggerConfig);
 		}
 	}
@@ -270,11 +278,11 @@ public class TriggerConfigPanel extends JPanel implements IChangedListener {
 		
 		int listIndex = triggerList.getSelectedIndex();
 		if(listIndex >= 0 && listIndex < triggerList.getModel().getSize()-1){
-			LaunchConfig launchConfig = parentPanel.getCurrentConfig();
+			LaunchConfig launchConfig = parent.getCurrentConfig();
 			AbstractTriggerConfig triggerConfig = launchConfig.getTriggerConfigs().remove(listIndex);
 			launchConfig.getTriggerConfigs().add(listIndex+1, triggerConfig);
 			launchConfig.setDirty(true);
-			application.getConfiguration().notifyListeners();
+			configuration.notifyListeners();
 			refreshUI(triggerConfig);
 		}
 	}

@@ -23,13 +23,13 @@ import util.IChangedListener;
 import util.UiTools;
 
 import core.Configuration;
+import core.Registry;
 import data.LaunchConfig;
 
 public class ConfigPanel extends JPanel implements IChangedListener {
 
 	private static final long serialVersionUID = 1L;
 
-	private Window window; 
 	private Configuration configuration; 
 	private LaunchManager launchManager;
 	
@@ -49,11 +49,10 @@ public class ConfigPanel extends JPanel implements IChangedListener {
 	public LaunchConfig getCurrentConfig(){ return currentConfig; }
 	
 	public ConfigPanel(
-			Window window, 
 			Configuration configuration, 
-			LaunchManager launchManager)
+			LaunchManager launchManager,
+			Registry registry)
 	{
-		this.window = window;
 		this.configuration = configuration;
 		this.launchManager = launchManager;
 		listeners = new ArrayList<IChangedListener>();
@@ -91,9 +90,9 @@ public class ConfigPanel extends JPanel implements IChangedListener {
 		topPanel.add(launchCombo, BorderLayout.CENTER);
 		topPanel.add(buttonPanel, BorderLayout.SOUTH);
 		
-		launchPanel =  new LaunchConfigPanel(this);
-		operationPanel = new OperationConfigPanel(this);
-		triggerPanel = new TriggerConfigPanel(this);
+		launchPanel =  new LaunchConfigPanel(this, configuration);
+		operationPanel = new OperationConfigPanel(this, configuration, registry);
+		triggerPanel = new TriggerConfigPanel(this, configuration, registry);
 		
 		tabPanel = new JTabbedPane();
 		tabPanel.setTabPlacement(JTabbedPane.LEFT);
@@ -267,7 +266,7 @@ public class ConfigPanel extends JPanel implements IChangedListener {
 						UiTools.infoDialog(status.message);
 					}
 				}catch(Exception e){
-					window.popupError(e);
+					UiTools.errorDialog(e);
 				}
 			}
 		}

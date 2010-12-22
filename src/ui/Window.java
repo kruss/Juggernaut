@@ -18,7 +18,6 @@ import logger.Logger.Module;
 
 import util.IChangedListener;
 import util.StringTools;
-import util.UiTools;
 
 import core.Application;
 import core.Configuration;
@@ -32,29 +31,30 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 
 	private Application application;
 	
-	private JMenuBar menuBar;
+	private ProjectMenu projectMenu;
+	private ToolsMenu toolsMenu;
+	
 	private ConfigPanel configPanel;
 	private SchedulerPanel schedulerPanel;
 	private HistoryPanel historyPanel;
 	private PreferencePanel preferencePanel;
-	private JLabel statusInfo;
-	private JLabel heapInfo;
+	
+	private JLabel statusLabel;
+	private JLabel heapLabel;
 	
 	public Window(Application application){
 		
 		this.application = application;
 		
-		menuBar = new JMenuBar();
-		menuBar.add(new ProjectMenu(this, application.getConfiguration()));
-		menuBar.add(new ToolsMenu(this, application.getConfiguration(), application.getFileManager(), application.getHeapManager()));
+		projectMenu = new ProjectMenu(application, application.getConfiguration(), application.getLaunchManager(), application.getLogger());
+		toolsMenu = new ToolsMenu(application.getConfiguration(), application.getFileManager(), application.getHeapManager());
+		
+		JMenuBar menuBar = new JMenuBar();
+		menuBar.add(projectMenu);
+		menuBar.add(toolsMenu);
 		setJMenuBar(menuBar);
 		
-		statusInfo = new JLabel();
-		statusInfo.setEnabled(false);
-		heapInfo = new JLabel();
-		heapInfo.setEnabled(false);
-		
-		configPanel = new ConfigPanel(this, application.getConfiguration(), application.getLaunchManager());
+		configPanel = new ConfigPanel(application.getConfiguration(), application.getLaunchManager(), application.getRegistry());
 		schedulerPanel = new SchedulerPanel(application.getLaunchManager(), application.getScheduleManager(), application.getLogger());
 		historyPanel = new HistoryPanel(application.getHistory(), application.getLogger());
 		preferencePanel = new PreferencePanel(application.getConfiguration(), application.getScheduleManager(), application.getHistory());
@@ -66,9 +66,14 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 		centerPanel.add(historyPanel, "History");
 		centerPanel.add(preferencePanel, "Preferences");
 		
+		statusLabel = new JLabel();
+		statusLabel.setEnabled(false);
+		heapLabel = new JLabel();
+		heapLabel.setEnabled(false);
+		
 		JPanel infoPanel = new JPanel(new BorderLayout());
-		infoPanel.add(statusInfo, BorderLayout.CENTER);
-		infoPanel.add(heapInfo, BorderLayout.EAST);
+		infoPanel.add(statusLabel, BorderLayout.CENTER);
+		infoPanel.add(heapLabel, BorderLayout.EAST);
 		
 		Container pane = getContentPane();
 		pane.add(centerPanel, BorderLayout.CENTER);
@@ -95,7 +100,7 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e){ 
-				quit(); 
+				projectMenu.quit(); 
 			}
 		});
 		
@@ -110,37 +115,12 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 	
 	@Override
 	public void shutdown() throws Exception {
-		
-		if(application.getConfiguration().isDirty() && UiTools.confirmDialog("Save changes ?")){
-			application.getConfiguration().save();
-		}
 		dispose();
-	}
-	
-	/** quit the application */
-	public void quit() {
-		
-		if(!application.getLaunchManager().isBusy() || UiTools.confirmDialog("Aboard running launches ?")){
-			application.getLogger().info(Module.COMMON, "Shutdown");
-			try{
-				application.shutdown();
-			}catch(Exception e){
-				popupError(e);
-				System.exit(Constants.PROCESS_NOK);
-			}
-			System.exit(Constants.PROCESS_OK);
-		}
-	}
-	
-	public void popupError(Exception e){
-		
-		application.getLogger().error(Module.COMMON, e);
-		UiTools.errorDialog(e.getClass().getSimpleName()+"\n\n"+e.getMessage());
 	}
 	
 	public void setStatus(String text){
 		
-		statusInfo.setText(text);
+		statusLabel.setText(text);
 		application.getLogger().log(Module.COMMON, text);
 	}
 	
@@ -153,7 +133,7 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 		
 		long MB = 1024 * 1024;
 		String info = Math.round(status.usedMemory / MB)+" / "+Math.round(status.maxMemory / MB)+" MB";
-		heapInfo.setText(info);
+		heapLabel.setText(info);
 	}
 
 	@Override
