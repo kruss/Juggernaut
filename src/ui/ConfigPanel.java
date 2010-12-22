@@ -23,6 +23,8 @@ import util.IChangedListener;
 import util.UiTools;
 
 import core.Configuration;
+import core.FileManager;
+import core.History;
 import core.ISystemComponent;
 import core.Registry;
 import data.AbstractTrigger;
@@ -33,6 +35,8 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangedLis
 	private static final long serialVersionUID = 1L;
 
 	private Configuration configuration; 
+	private History history;
+	private FileManager fileManager;
 	private LaunchManager launchManager;
 	
 	private ArrayList<IChangedListener> listeners;
@@ -52,10 +56,14 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangedLis
 	
 	public ConfigPanel(
 			Configuration configuration, 
+			History history,
+			FileManager fileManager,
 			LaunchManager launchManager,
 			Registry registry)
 	{
 		this.configuration = configuration;
+		this.history = history;
+		this.fileManager = fileManager;
 		this.launchManager = launchManager;
 		listeners = new ArrayList<IChangedListener>();
 		
@@ -266,7 +274,7 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangedLis
 			{
 				try{
 					LaunchConfig config = configuration.getLaunchConfigs().get(index);
-					LaunchAgent launch = config.createLaunch(AbstractTrigger.USER_TRIGGER);
+					LaunchAgent launch = config.createLaunch(configuration, history, fileManager, AbstractTrigger.USER_TRIGGER);
 					LaunchStatus status = launchManager.runLaunch(launch);
 					if(!status.launched){
 						UiTools.infoDialog(status.message);

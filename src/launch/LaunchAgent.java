@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import core.Application;
+import core.Configuration;
+import core.FileManager;
+import core.History;
 import data.AbstractOperation;
 import data.AbstractOperationConfig;
 import data.AbstractTrigger;
@@ -23,25 +25,26 @@ import logger.Logger.Module;
 
 public class LaunchAgent extends LifecycleObject {
 
-	private Application application;
-	
+	private History history;
+	private FileManager fileManager;
 	private LaunchConfig config;
 	private String trigger;
 	protected PropertyContainer propertyContainer;
 	private ArrayList<AbstractOperation> operations;
-	private LaunchHistory history;
+	private LaunchHistory launchHistory;
 	private Logger logger;
 	private boolean aboard;
 	
-	public LaunchAgent(LaunchConfig config, String trigger){
+	public LaunchAgent(Configuration configuration, History history, FileManager fileManager, LaunchConfig config, String trigger){
 
 		super("Launch("+config.getId()+")");
-		this.application = Application.getInstance();
 		
+		this.fileManager = fileManager;
+		this.history = history;
 		this.config = config.clone();
 		this.trigger = trigger;
 		logger = new Logger(Mode.FILE);
-		logger.setLogConfig(application.getConfiguration());
+		logger.setLogConfig(configuration);
 		
 		propertyContainer = new PropertyContainer();
 		propertyContainer.addProperty(config.getId(), "Name", config.getName());
@@ -62,9 +65,9 @@ public class LaunchAgent extends LifecycleObject {
 			}
 		}
 		
-		history = new LaunchHistory(this);
+		launchHistory = new LaunchHistory(this);
 		for(AbstractOperation operation : operations){
-			history.operations.add(new OperationHistory(operation));
+			launchHistory.operations.add(new OperationHistory(operation));
 		}
 		
 		statusManager.setProgressMax(operations.size());
@@ -79,7 +82,7 @@ public class LaunchAgent extends LifecycleObject {
 	@Override
 	public String getFolder() {
 		return 
-			Application.getInstance().getFileManager().getBuildFolderPath()+
+			fileManager.getBuildFolderPath()+
 			File.separator+config.getId();
 	}
 
@@ -90,10 +93,10 @@ public class LaunchAgent extends LifecycleObject {
 	protected void init() throws Exception {
 		
 		// setup the history-folder
-		history.init();
+		launchHistory.init();
 		
 		// setup the logger
-		logger.setLogfile(new File(history.logfile), 0);
+		logger.setLogfile(new File(launchHistory.logfile), 0);
 		logger.info(Module.COMMON, "Launch ["+config.getName()+"]");
 		artifacts.add(new Artifact("Logfile", logger.getLogfile()));
 		debugProperties(propertyContainer.getProperties(config.getId()));
@@ -173,15 +176,15 @@ public class LaunchAgent extends LifecycleObject {
 		//TODO perform notification
 		
 		try{ 
-			history.finish();
-			application.getHistory().add(history); 
+			launchHistory.finish();
+			history.add(launchHistory); 
 		}catch(Exception e){
 			logger.error(Module.COMMON, e);
 		}
 		
 		if(trigger == AbstractTrigger.USER_TRIGGER){
 			try{
-				String path = history.getIndexPath();
+				String path = launchHistory.getIndexPath();
 				logger.debug(Module.COMMON, "browser: "+path);
 				SystemTools.openBrowser(path);
 			}catch(IOException e) {

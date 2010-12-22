@@ -8,6 +8,8 @@ import util.IChangedListener;
 import util.Task;
 
 import core.Configuration;
+import core.FileManager;
+import core.History;
 import core.ISystemComponent;
 import data.AbstractTrigger;
 import data.AbstractTriggerConfig;
@@ -21,6 +23,8 @@ import logger.Logger.Module;
 public class ScheduleManager implements ISystemComponent {
 
 	private Configuration configuration;
+	private History history;
+	private FileManager fileManager;
 	private LaunchManager launchManager;
 	private Logger logger;
 	private SchedulerTask scheduler;
@@ -42,11 +46,15 @@ public class ScheduleManager implements ISystemComponent {
 	
 	public ScheduleManager(
 			Configuration configuration, 
+			History history,
+			FileManager fileManager,
 			LaunchManager launchManager, 
 			Logger logger
 	){
 		
 		this.configuration = configuration;
+		this.history = history;
+		this.fileManager = fileManager;
 		this.launchManager = launchManager;
 		this.logger = logger;
 		scheduler = null;
@@ -120,7 +128,8 @@ public class ScheduleManager implements ISystemComponent {
 			if(triggerStatus.triggered){
 				if(!launched)
 				{
-					LaunchAgent launch = launchConfig.createLaunch(triggerStatus.message);
+					LaunchAgent launch = launchConfig.createLaunch(
+							configuration, history, fileManager, triggerStatus.message);
 					LaunchStatus launchStatus = launchManager.runLaunch(launch);
 					if(launchStatus.launched){
 						logger.log(

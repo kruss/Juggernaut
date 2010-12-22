@@ -131,7 +131,7 @@ public class Application extends AbstractSystem implements IApplicationAdmin {
 			add(taskManager);
 			launchManager = new LaunchManager(configuration);
 			add(launchManager);
-			scheduleManager = new ScheduleManager(configuration, launchManager, logger);
+			scheduleManager = new ScheduleManager(configuration, history, fileManager, launchManager, logger);
 			add(scheduleManager);
 			httpServer = new HttpServer(Constants.HTTP_PORT, fileManager.getHistoryFolder(), logger);
 			add(httpServer);
@@ -156,7 +156,7 @@ public class Application extends AbstractSystem implements IApplicationAdmin {
 			add(projectMenu);
 			toolsMenu = new ToolsMenu(configuration, fileManager, heapManager);
 			add(toolsMenu);
-			configPanel = new ConfigPanel(configuration, launchManager, registry);
+			configPanel = new ConfigPanel(configuration, history, fileManager, launchManager, registry);
 			add(configPanel);
 			schedulerPanel = new SchedulerPanel(launchManager, scheduleManager, logger);
 			add(schedulerPanel);
