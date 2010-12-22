@@ -65,9 +65,9 @@ public class LaunchAgent extends LifecycleObject {
 			}
 		}
 		
-		launchHistory = new LaunchHistory(this);
+		launchHistory = new LaunchHistory(this, fileManager);
 		for(AbstractOperation operation : operations){
-			launchHistory.operations.add(new OperationHistory(operation));
+			launchHistory.operations.add(new OperationHistory(operation, fileManager));
 		}
 		
 		statusManager.setProgressMax(operations.size());

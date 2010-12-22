@@ -8,8 +8,7 @@ import html.LaunchHistoryPage;
 import java.io.File;
 import java.util.ArrayList;
 
-
-import core.Application;
+import core.FileManager;
 
 import launch.LaunchAgent;
 import logger.Logger;
@@ -17,14 +16,17 @@ import logger.Logger;
 public class LaunchHistory extends AbstractHistory {
 	
 	private transient LaunchAgent launch;
+	private transient FileManager fileManager;
 	
 	public String logfile;
 	public String trigger;
 	public ArrayList<OperationHistory> operations;
 	
-	public LaunchHistory(LaunchAgent launch){
+	public LaunchHistory(LaunchAgent launch, FileManager fileManager){
 		super(launch);
+		
 		this.launch = launch;
+		this.fileManager = fileManager;
 		
 		id = launch.getConfig().getId();
 		name = launch.getConfig().getName();
@@ -38,7 +40,7 @@ public class LaunchHistory extends AbstractHistory {
 		
 		start = launch.getStatusManager().getStart();
 		folder = 
-			Application.getInstance().getFileManager().getHistoryFolderPath()+
+			fileManager.getHistoryFolderPath()+
 			File.separator+start.getTime();
 		logfile = folder+File.separator+Logger.OUTPUT_FILE;
 		

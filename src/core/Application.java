@@ -57,7 +57,7 @@ public class Application extends AbstractSystem implements IApplicationAdmin {
 	public Cache getCache(){ return cache; }
 	//public Registry getRegistry(){ return registry; }
 	//public HeapManager getHeapManager(){ return heapManager; }
-	public FileManager getFileManager(){ return fileManager; }
+	//public FileManager getFileManager(){ return fileManager; }
 	public TaskManager getTaskManager(){ return taskManager; }
 	//public LaunchManager getLaunchManager(){ return launchManager; }
 	//public ScheduleManager getScheduleManager(){ return scheduleManager; } 

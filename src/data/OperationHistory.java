@@ -7,16 +7,18 @@ import html.OperationHistoryPage;
 
 import java.io.File;
 
-
-import core.Application;
+import core.FileManager;
 
 public class OperationHistory extends AbstractHistory {
 	
 	private transient AbstractOperation operation;
+	private transient FileManager fileManager;
 	
-	public OperationHistory(AbstractOperation operation){
+	public OperationHistory(AbstractOperation operation, FileManager fileManager){
 		super(operation);
+		
 		this.operation = operation;
+		this.fileManager = fileManager;
 		
 		id = operation.getConfig().getId();
 		name = operation.getConfig().getName();
@@ -25,7 +27,7 @@ public class OperationHistory extends AbstractHistory {
 	public void init() throws Exception {	
 		
 		folder = 
-			Application.getInstance().getFileManager().getHistoryFolderPath()+
+			fileManager.getHistoryFolderPath()+
 			File.separator+operation.getParent().getStatusManager().getStart().getTime()+
 			File.separator+id;
 		super.init();
