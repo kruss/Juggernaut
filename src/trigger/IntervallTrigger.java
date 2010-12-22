@@ -5,9 +5,6 @@ import java.util.Date;
 import core.Application;
 import core.Cache;
 
-import launch.LaunchManager.TriggerStatus;
-
-
 import data.AbstractTrigger;
 
 public class IntervallTrigger extends AbstractTrigger {
@@ -49,14 +46,14 @@ public class IntervallTrigger extends AbstractTrigger {
 		newDate = new Date();
 		
 		if(lastDate == null){
-			return launcher.new TriggerStatus(config.getName()+" initial run", true);
+			return new TriggerStatus(config.getName()+" initial run", true);
 		}else{
 			if((lastDate.getTime() + config.getIntervall()) <= newDate.getTime()){
-				return launcher.new TriggerStatus(
+				return new TriggerStatus(
 						config.getName()+" time elapsed", true
 				);
 			}else{
-				return launcher.new TriggerStatus(
+				return new TriggerStatus(
 						config.getName()+" time not elapsed", false
 				);
 			}

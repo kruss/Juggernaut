@@ -25,6 +25,7 @@ import util.UiTools;
 import core.Configuration;
 import core.ISystemComponent;
 import core.Registry;
+import data.AbstractTrigger;
 import data.LaunchConfig;
 
 public class ConfigPanel extends JPanel implements ISystemComponent, IChangedListener {
@@ -265,7 +266,7 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangedLis
 			{
 				try{
 					LaunchConfig config = configuration.getLaunchConfigs().get(index);
-					LaunchAgent launch = config.createLaunch(LaunchManager.USER_TRIGGER);
+					LaunchAgent launch = config.createLaunch(AbstractTrigger.USER_TRIGGER);
 					LaunchStatus status = launchManager.runLaunch(launch);
 					if(!status.launched){
 						UiTools.infoDialog(status.message);

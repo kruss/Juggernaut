@@ -12,20 +12,17 @@ import util.IChangedListener;
 import util.StringTools;
 import core.Configuration;
 import core.ISystemComponent;
+import data.AbstractTrigger;
 
 /** maintains launches to be executed */
 public class LaunchManager implements ISystemComponent, ILifecycleListener {
 
-	public static TriggerStatus USER_TRIGGER;
-	
 	private Configuration configuration;
 	private ArrayList<LaunchAgent> agents;
 	private ArrayList<IChangedListener> listeners;
 	private ArrayList<IStatusClient> clients;
 	
 	public LaunchManager(Configuration configuration){
-		
-		USER_TRIGGER = new TriggerStatus("Run by user", true);
 		
 		this.configuration = configuration;
 		agents = new ArrayList<LaunchAgent>();
@@ -61,7 +58,7 @@ public class LaunchManager implements ISystemComponent, ILifecycleListener {
 	
 	public synchronized LaunchStatus runLaunch(LaunchAgent launch) {
 		
-		if(isReady() || launch.getTriggerStatus() == USER_TRIGGER){
+		if(isReady() || launch.getTrigger().equals(AbstractTrigger.USER_TRIGGER)){
 			if(!isRunning(launch.getConfig().getId())){
 				agents.add(launch);
 				launch.addListener(this);
@@ -120,17 +117,6 @@ public class LaunchManager implements ISystemComponent, ILifecycleListener {
 		notifyListeners();
 	}
 	
-	public class TriggerStatus {
-		
-		public String message;
-		public boolean triggered;
-		
-		public TriggerStatus(String message, boolean triggered){
-			this.message = message;
-			this.triggered = triggered;
-		}
-	}
-	
 	public class LaunchStatus {
 		
 		public String message;
@@ -154,7 +140,7 @@ public class LaunchManager implements ISystemComponent, ILifecycleListener {
 		public LaunchInfo(LaunchAgent launch){
 			name = launch.getConfig().getName();
 			id = launch.getConfig().getId();
-			trigger = launch.getTriggerStatus().message;
+			trigger = launch.getTrigger();
 			start = launch.getStatusManager().getStart();
 			progress = launch.getStatusManager().getProgress();
 			status = launch.getStatusManager().getStatus();

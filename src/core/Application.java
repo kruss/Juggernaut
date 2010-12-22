@@ -40,7 +40,6 @@ public class Application extends AbstractSystem implements IApplicationAdmin {
 	private UISystem uiSystem;
 	
 	private SystemLogger logger;
-	private Window window;
 	private Configuration configuration;
 	private History history;
 	private Cache cache;
@@ -53,7 +52,6 @@ public class Application extends AbstractSystem implements IApplicationAdmin {
 	private HttpServer httpServer;
 	
 	public Logger getLogger(){ return logger; }
-	public Window getWindow(){ return window; }
 	public Configuration getConfiguration(){ return configuration; }
 	public History getHistory(){ return history; }
 	public Cache getCache(){ return cache; }
@@ -61,9 +59,9 @@ public class Application extends AbstractSystem implements IApplicationAdmin {
 	public HeapManager getHeapManager(){ return heapManager; }
 	public FileManager getFileManager(){ return fileManager; }
 	public TaskManager getTaskManager(){ return taskManager; }
-	public LaunchManager getLaunchManager(){ return launchManager; }
-	public ScheduleManager getScheduleManager(){ return scheduleManager; } 
-	public HttpServer getHttpServer(){ return httpServer; }
+	//public LaunchManager getLaunchManager(){ return launchManager; }
+	//public ScheduleManager getScheduleManager(){ return scheduleManager; } 
+	//public HttpServer getHttpServer(){ return httpServer; }
 	
 	private Application(){
 		
@@ -150,6 +148,7 @@ public class Application extends AbstractSystem implements IApplicationAdmin {
 		public SchedulerPanel schedulerPanel;
 		public HistoryPanel historyPanel;
 		public PreferencePanel preferencePanel;
+		public Window window;
 		
 		@Override
 		public void init() throws Exception {

@@ -6,7 +6,6 @@ import java.util.UUID;
 import util.StringTools;
 
 import launch.LaunchAgent;
-import launch.LaunchManager.TriggerStatus;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
@@ -134,7 +133,7 @@ public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitialize
 	public ArrayList<AbstractOperationConfig> getOperationConfigs(){ return operations; }
 	public ArrayList<AbstractTriggerConfig> getTriggerConfigs(){ return triggers; }
 	
-	public LaunchAgent createLaunch(TriggerStatus trigger){
+	public LaunchAgent createLaunch(String trigger){
 		return new LaunchAgent(this, trigger);
 	}
 	

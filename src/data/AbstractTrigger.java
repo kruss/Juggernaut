@@ -1,14 +1,13 @@
 package data;
 
 import core.Application;
-import launch.LaunchManager;
-import launch.LaunchManager.TriggerStatus;
 import logger.Logger;
 
 public abstract class AbstractTrigger {
 	
+	public static String USER_TRIGGER = "Run by user";
+	
 	protected AbstractTriggerConfig config;
-	protected LaunchManager launcher;
 	protected transient Logger observer;
 	
 	public AbstractTriggerConfig getConfig(){ return config; }
@@ -16,11 +15,20 @@ public abstract class AbstractTrigger {
 	public AbstractTrigger(AbstractTriggerConfig config){
 		
 		this.config = config.clone();
-		Application application = Application.getInstance();
-		launcher = application.getLaunchManager();
-		observer = application.getLogger();
+		observer = Application.getInstance().getLogger();
 	}
 	
 	public abstract TriggerStatus isTriggered();
 	public abstract void wasTriggered(boolean triggered);
+	
+	public class TriggerStatus {
+		
+		public String message;
+		public boolean triggered;
+		
+		public TriggerStatus(String message, boolean triggered){
+			this.message = message;
+			this.triggered = triggered;
+		}
+	}
 }

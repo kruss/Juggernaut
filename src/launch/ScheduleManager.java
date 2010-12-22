@@ -12,8 +12,8 @@ import core.ISystemComponent;
 import data.AbstractTrigger;
 import data.AbstractTriggerConfig;
 import data.LaunchConfig;
+import data.AbstractTrigger.TriggerStatus;
 import launch.LaunchManager.LaunchStatus;
-import launch.LaunchManager.TriggerStatus;
 import logger.Logger;
 import logger.Logger.Module;
 
@@ -120,7 +120,7 @@ public class ScheduleManager implements ISystemComponent {
 			if(triggerStatus.triggered){
 				if(!launched)
 				{
-					LaunchAgent launch = launchConfig.createLaunch(triggerStatus);
+					LaunchAgent launch = launchConfig.createLaunch(triggerStatus.message);
 					LaunchStatus launchStatus = launchManager.runLaunch(launch);
 					if(launchStatus.launched){
 						logger.log(

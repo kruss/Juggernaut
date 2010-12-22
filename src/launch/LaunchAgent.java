@@ -8,6 +8,7 @@ import java.util.HashMap;
 import core.Application;
 import data.AbstractOperation;
 import data.AbstractOperationConfig;
+import data.AbstractTrigger;
 import data.Artifact;
 import data.LaunchHistory;
 import data.LaunchConfig;
@@ -15,7 +16,6 @@ import data.OperationHistory;
 import util.FileTools;
 import util.StringTools;
 import util.SystemTools;
-import launch.LaunchManager.TriggerStatus;
 import launch.StatusManager.Status;
 import logger.Logger;
 import logger.Logger.Mode;
@@ -26,27 +26,27 @@ public class LaunchAgent extends LifecycleObject {
 	private Application application;
 	
 	private LaunchConfig config;
-	private TriggerStatus triggerStatus;
+	private String trigger;
 	protected PropertyContainer propertyContainer;
 	private ArrayList<AbstractOperation> operations;
 	private LaunchHistory history;
 	private Logger logger;
 	private boolean aboard;
 	
-	public LaunchAgent(LaunchConfig config, TriggerStatus trigger){
+	public LaunchAgent(LaunchConfig config, String trigger){
 
 		super("Launch("+config.getId()+")");
 		this.application = Application.getInstance();
 		
 		this.config = config.clone();
-		triggerStatus = trigger;
+		this.trigger = trigger;
 		logger = new Logger(Mode.FILE);
 		logger.setLogConfig(application.getConfiguration());
 		
 		propertyContainer = new PropertyContainer();
 		propertyContainer.addProperty(config.getId(), "Name", config.getName());
 		propertyContainer.addProperty(config.getId(), "Folder", getFolder());
-		propertyContainer.addProperty(config.getId(), "Trigger", trigger.message);
+		propertyContainer.addProperty(config.getId(), "Trigger", trigger);
 		propertyContainer.addProperty(config.getId(), "Clean", ""+config.isClean());
 		propertyContainer.addProperty(config.getId(), "Timeout", StringTools.millis2min(config.getTimeout())+" min");
 		
@@ -72,7 +72,7 @@ public class LaunchAgent extends LifecycleObject {
 	}
 	
 	public LaunchConfig getConfig(){ return config; }
-	public TriggerStatus getTriggerStatus(){ return triggerStatus; }
+	public String getTrigger(){ return trigger; }
 	public PropertyContainer getPropertyContainer(){ return propertyContainer; }
 	public ArrayList<AbstractOperation> getOperations(){ return operations; }
 	
@@ -179,7 +179,7 @@ public class LaunchAgent extends LifecycleObject {
 			logger.error(Module.COMMON, e);
 		}
 		
-		if(triggerStatus == LaunchManager.USER_TRIGGER){
+		if(trigger == AbstractTrigger.USER_TRIGGER){
 			try{
 				String path = history.getIndexPath();
 				logger.debug(Module.COMMON, "browser: "+path);
