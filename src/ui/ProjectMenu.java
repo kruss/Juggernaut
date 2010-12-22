@@ -13,20 +13,27 @@ import util.IChangedListener;
 
 
 import core.Application;
+import core.Configuration;
 
 public class ProjectMenu extends JMenu implements IChangedListener {
 
 	private static final long serialVersionUID = 1L;
 
-	private Application application;
+	private Window window; 
+	private Configuration configuration;
+
 	private JMenuItem revert;
 	private JMenuItem save;
 	private JMenuItem quit;
 	
-	public ProjectMenu(){
+	public ProjectMenu(
+			Window window, 
+			Configuration configuration)
+	{
 		super("Project");
 		
-		application = Application.getInstance();
+		this.window = window;
+		this.configuration = configuration;
 		
 		revert = new JMenuItem("Revert");
 		revert.addActionListener(new ActionListener(){
@@ -48,7 +55,7 @@ public class ProjectMenu extends JMenu implements IChangedListener {
 		quit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_MASK));
 		add(quit);
 		
-		application.getConfiguration().addListener(this);
+		configuration.addListener(this);
 		toggleConfigurationUI();
 	}
 	
@@ -72,19 +79,19 @@ public class ProjectMenu extends JMenu implements IChangedListener {
 	
 	private void quit(){
 		
-		application.getWindow().quit();
+		window.quit();
 	}
 
 	@Override
 	public void changed(Object object) {
 		
-		if(object == application.getConfiguration()){
+		if(object == configuration){
 			toggleConfigurationUI();
 		}
 	}
 
 	private void toggleConfigurationUI() {
-		if(application.getConfiguration().isDirty()){
+		if(configuration.isDirty()){
 			revert.setEnabled(true);
 			save.setEnabled(true);
 		}else{

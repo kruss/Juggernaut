@@ -13,22 +13,34 @@ import util.IChangedListener;
 import util.SystemTools;
 
 
-import core.Application;
+import core.Configuration;
 import core.Constants;
+import core.FileManager;
+import core.HeapManager;
 
 public class ToolsMenu extends JMenu implements IChangedListener {
 
 	private static final long serialVersionUID = 1L;
 
-	private Application application;
-
+	private Window window; 
+	private Configuration configuration;
+	private FileManager fileManager;
+	private HeapManager heapManager;
+	
 	private JMenuItem exportConfig;
 	private JMenuItem collectGarbage;
 	
-	public ToolsMenu(){
+	public ToolsMenu(
+			Window window, 
+			Configuration configuration,
+			FileManager fileManager,
+			HeapManager heapManager){
 		super("Tools");
 		
-		application = Application.getInstance();
+		this.window = window;
+		this.configuration = configuration;
+		this.fileManager = fileManager;
+		this.heapManager = heapManager;
 		
 		JMenu configMenu = new JMenu("Configuration");
 		add(configMenu);
@@ -45,36 +57,36 @@ public class ToolsMenu extends JMenu implements IChangedListener {
 		});
 		add(collectGarbage);
 		
-		application.getConfiguration().addListener(this);
+		configuration.addListener(this);
 	}
 	
-	class ConfigPage extends AbstractHtmlPage {
+	private class ConfigPage extends AbstractHtmlPage {
 		public ConfigPage(String path) {
 			super(Constants.APP_NAME+" [ Configuration ]", path, null);
 		}
 		@Override
 		public String getBody() {
-			return application.getConfiguration().toHtml();
+			return configuration.toHtml();
 		}
 	}
 	
 	private void exportConfiguration(){
 		
 		String path = 
-			application.getFileManager().getTempFolderPath()+
+			fileManager.getTempFolderPath()+
 			File.separator+"Configuration.htm";
 		ConfigPage page = new ConfigPage(path);
 		try{
 			page.create();
 			SystemTools.openBrowser(path);
 		}catch(Exception e){
-			application.getWindow().popupError(e);
+			window.popupError(e);
 		}
 	}
 	
 	private void collectGarbage(){
 		
-		application.getHeapManager().cleanup();
+		heapManager.cleanup();
 	}
 
 	@Override

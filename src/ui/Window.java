@@ -45,14 +45,13 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 		this.application = application;
 		
 		menuBar = new JMenuBar();
-		menuBar.add(new ProjectMenu());
-		menuBar.add(new ToolsMenu());
+		menuBar.add(new ProjectMenu(this, application.getConfiguration()));
+		menuBar.add(new ToolsMenu(this, application.getConfiguration(), application.getFileManager(), application.getHeapManager()));
 		setJMenuBar(menuBar);
 		
 		statusInfo = new JLabel();
 		statusInfo.setEnabled(false);
 		heapInfo = new JLabel();
-		heapInfo.setToolTipText("HEAP");
 		heapInfo.setEnabled(false);
 		
 		configPanel = new ConfigPanel(this, application.getConfiguration(), application.getLaunchManager());
