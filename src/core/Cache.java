@@ -49,7 +49,7 @@ public class Cache implements ISystemComponent {
 
 	@Override
 	public void shutdown() throws Exception {
-		clean();
+		cleanup();
 	}
 	
 	public void setDirty(boolean dirty){ this.dirty = dirty; }
@@ -92,7 +92,7 @@ public class Cache implements ISystemComponent {
 		}
 	}
 
-	public void clean() {
+	public void cleanup() {
 		// TODO clean cache
 	}
 }

@@ -223,6 +223,7 @@ public class ConfigPanel extends JPanel implements IChangedListener {
 		
 		int index = launchCombo.getSelectedIndex();
 		if(index >= 0 && UiTools.confirmDialog("Remove Launch ?")){
+			// TODO remove build-folder if existent
 			application.getConfiguration().getLaunchConfigs().remove(index);
 			application.getConfiguration().setDirty(true);
 			application.getConfiguration().notifyListeners();

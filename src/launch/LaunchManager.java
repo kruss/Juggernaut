@@ -7,9 +7,9 @@ import java.util.Date;
 import launch.StatusManager.Status;
 import logger.ILogProvider;
 
+import ui.IStatusClient;
 import util.IChangedListener;
 import util.StringTools;
-import core.Application;
 import core.Configuration;
 import core.ISystemComponent;
 
@@ -18,19 +18,19 @@ public class LaunchManager implements ISystemComponent, ILifecycleListener {
 
 	public static TriggerStatus USER_TRIGGER;
 	
-	private Application application;
 	private Configuration configuration;
 	private ArrayList<LaunchAgent> agents;
 	private ArrayList<IChangedListener> listeners;
+	private ArrayList<IStatusClient> clients;
 	
-	public LaunchManager(Application application, Configuration configuration){
+	public LaunchManager(Configuration configuration){
 		
 		USER_TRIGGER = new TriggerStatus("Run by user", true);
 		
-		this.application = application;
 		this.configuration = configuration;
 		agents = new ArrayList<LaunchAgent>();
 		listeners = new ArrayList<IChangedListener>();
+		clients = new ArrayList<IStatusClient>();
 	}
 	
 	public void addListener(IChangedListener listener){ listeners.add(listener); }
@@ -38,6 +38,14 @@ public class LaunchManager implements ISystemComponent, ILifecycleListener {
 	public void notifyListeners(){
 		for(IChangedListener listener : listeners){
 			listener.changed(this);
+		}
+	}
+	
+	public void addClient(IStatusClient client){ clients.add(client); }
+	
+	public void setStatus(String text){
+		for(IStatusClient client : clients){
+			client.status(text);
 		}
 	}
 
@@ -103,14 +111,10 @@ public class LaunchManager implements ISystemComponent, ILifecycleListener {
 		LaunchAgent agent = (LaunchAgent)object;
 		String date = StringTools.getTextDate(new Date());
 		if(lifecycle == Lifecycle.START){
-			application.setStatus(
-					"Launch ["+agent.getConfig().getName()+"] started at "+date
-			);
+			setStatus("Launch ["+agent.getConfig().getName()+"] started at "+date);
 		}
 		if(lifecycle == Lifecycle.FINISH){
-			application.setStatus(
-					"Launch ["+agent.getConfig().getName()+"] finished at "+date
-			);
+			setStatus("Launch ["+agent.getConfig().getName()+"] finished at "+date);
 			agents.remove(agent);
 		}
 		notifyListeners();

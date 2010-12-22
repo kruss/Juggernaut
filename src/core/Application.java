@@ -1,9 +1,6 @@
 package core;
 
 import http.HttpServer;
-
-import java.io.File;
-
 import launch.LaunchManager;
 import launch.ScheduleManager;
 import logger.Logger;
@@ -33,9 +30,10 @@ public class Application extends AbstractSystem {
 		}
 	}
 	
+	private IOSystem ioSystem;
 	private PersistenceSystem persistenceSystem;
 	private RuntimeSystem runtimeSystem;
-	private UiSystem uiSystem;
+	private UISystem uiSystem;
 	
 	private SystemLogger logger;
 	private Window window;
@@ -65,11 +63,13 @@ public class Application extends AbstractSystem {
 	
 	private Application(){
 		
+		ioSystem = new IOSystem();
+		add(ioSystem);
 		persistenceSystem = new PersistenceSystem();
 		add(persistenceSystem);
 		runtimeSystem = new RuntimeSystem();
 		add(runtimeSystem);
-		uiSystem = new UiSystem();
+		uiSystem = new UISystem();
 		add(uiSystem);
 	}
 	
@@ -77,7 +77,9 @@ public class Application extends AbstractSystem {
 	public void revert() throws Exception {
 		if(isInitialized() && configuration.isDirty()){
 			uiSystem.shutdown();
+			persistenceSystem.clear();
 			persistenceSystem.init();
+			uiSystem.clear();
 			uiSystem.init();
 		}
 	}
@@ -87,13 +89,6 @@ public class Application extends AbstractSystem {
 		if(isInitialized()){
 			logger.error(Module.COMMON, e);
 			UiTools.errorDialog(e.getClass().getSimpleName()+"\n\n"+e.getMessage());
-		}
-	}
-	
-	/** set ui-status */
-	public void setStatus(String text) {
-		if(isInitialized()){
-			window.setStatus(text);
 		}
 	}
 	
@@ -118,14 +113,22 @@ public class Application extends AbstractSystem {
 		}
 	}
 	
+	/** io related components */
+	private class IOSystem extends AbstractSystem {
+		@Override
+		public void init() throws Exception {
+			logger = new SystemLogger();
+			add(logger);
+			fileManager = new FileManager(logger);
+			add(fileManager);
+			super.init();
+		}
+	}
+	
+	/** persistence related components */
 	private class PersistenceSystem extends AbstractSystem {
 		@Override
 		public void init() throws Exception {
-			clear();
-			fileManager = new FileManager(application);
-			add(fileManager);
-			logger = new SystemLogger(fileManager);
-			add(logger);
 			configuration = Configuration.create(fileManager);
 			add(configuration);
 			history = History.create(fileManager);
@@ -136,17 +139,17 @@ public class Application extends AbstractSystem {
 		}
 	}
 	
+	/** runtime related components */
 	private class RuntimeSystem extends AbstractSystem {
 		@Override
 		public void init() throws Exception {
-			clear();
 			heapManager = new HeapManager(logger);
 			add(heapManager);
 			registry = new Registry();
 			add(registry);
 			taskManager = new TaskManager();
 			add(taskManager);
-			launchManager = new LaunchManager(application, configuration);
+			launchManager = new LaunchManager(configuration);
 			add(launchManager);
 			scheduleManager = new ScheduleManager(configuration, launchManager, logger);
 			add(scheduleManager);
@@ -156,32 +159,13 @@ public class Application extends AbstractSystem {
 		}
 	}
 	
-	private class UiSystem extends AbstractSystem {
+	/** ui related componets */
+	private class UISystem extends AbstractSystem {
 		@Override
 		public void init() throws Exception {
-			clear();
 			window = new Window(application);
 			add(window);
 			super.init();
 		}
-	}
-	
-	private class SystemLogger extends Logger implements ISystemComponent {
-
-		private FileManager fileManager;
-		
-		public SystemLogger(FileManager fileManager) {
-			super(Mode.FILE_AND_CONSOLE);
-			this.fileManager = fileManager;
-		}
-
-		@Override
-		public void init() throws Exception {
-			File logFile = new File(fileManager.getDataFolderPath()+File.separator+Logger.OUTPUT_FILE);
-			setLogfile(logFile, Constants.LOGFILE_MAX);
-			info(Module.COMMON, Constants.APP_FULL_NAME);
-		}
-		@Override
-		public void shutdown() throws Exception {}
 	}
 }

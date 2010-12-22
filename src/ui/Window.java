@@ -25,7 +25,7 @@ import core.Constants;
 import core.ISystemComponent;
 import core.HeapManager.HeapStatus;
 
-public class Window extends JFrame implements ISystemComponent, IChangedListener {
+public class Window extends JFrame implements ISystemComponent, IStatusClient, IChangedListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -80,6 +80,7 @@ public class Window extends JFrame implements ISystemComponent, IChangedListener
 		
 		application.getConfiguration().addListener(this);
 		application.getHeapManager().addListener(this);
+		application.getLaunchManager().addClient(this);
 	}
 	
 	@Override
@@ -91,7 +92,7 @@ public class Window extends JFrame implements ISystemComponent, IChangedListener
 		preferencePanel.init();
 		
 		setStatus(Constants.APP_NAME+" started at "+StringTools.getTextDate(new Date()));
-		setHeapStatus(application.getHeapManager().getHeapStatus());
+		setHeap(application.getHeapManager().getHeapStatus());
 		
 		UIManager.LookAndFeelInfo styles[] = UIManager.getInstalledLookAndFeels();
 		UIManager.setLookAndFeel(styles[Constants.APP_STYLE].getClassName()); 
@@ -117,7 +118,12 @@ public class Window extends JFrame implements ISystemComponent, IChangedListener
 		application.getLogger().log(Module.COMMON, text);
 	}
 	
-	public void setHeapStatus(HeapStatus status){
+	@Override
+	public void status(String text) {
+		setStatus(text);
+	}
+	
+	public void setHeap(HeapStatus status){
 		
 		long MB = 1024 * 1024;
 		String info = Math.round(status.usedMemory / MB)+" / "+Math.round(status.maxMemory / MB)+" MB";
@@ -135,7 +141,7 @@ public class Window extends JFrame implements ISystemComponent, IChangedListener
 				setTitle(Constants.APP_FULL_NAME+" *");
 			}
 		}else if(object == application.getHeapManager()){
-			setHeapStatus(application.getHeapManager().getHeapStatus());
+			setHeap(application.getHeapManager().getHeapStatus());
 		}
 	}
 }

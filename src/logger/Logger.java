@@ -33,6 +33,8 @@ public class Logger implements ILogProvider {
 		this.logfileMax = logfileMax;
 		if(logfile.exists()){
 			logfile.delete();
+		}else if(!logfile.getParentFile().exists()){
+			logfile.getParentFile().mkdirs();
 		}
 	}
 	public File getLogfile(){ return logfile; }
