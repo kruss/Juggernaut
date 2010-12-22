@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import javax.swing.JMenuItem;
 import javax.swing.JTextField;
 
+import logger.ILogConfig;
 import logger.Logger;
 import logger.Logger.Level;
 import logger.Logger.Module;
@@ -30,7 +31,7 @@ import data.Option.Type;
 /**
  * the configuration of the application,- will be serialized
  */
-public class Configuration implements ISystemComponent, IOptionInitializer {
+public class Configuration implements ISystemComponent, IOptionInitializer, ILogConfig {
 
 	public static Configuration create(FileManager fileManager) throws Exception {
 		
@@ -169,7 +170,7 @@ public class Configuration implements ISystemComponent, IOptionInitializer {
 		return optionContainer.getOption(OPTIONS.MAXIMUM_HISTORY.toString()).getIntegerValue();
 	}
 	
-	/** get log-level for module */
+	@Override
 	public Level getLogLevel(Module module){
 		return Level.valueOf(optionContainer.getOption(module.toString()+"_"+OPTIONS.LOGGING).getStringValue());
 	}

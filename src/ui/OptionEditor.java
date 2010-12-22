@@ -28,7 +28,6 @@ import logger.Logger;
 
 import repository.ConnectionTest;
 import repository.IRepositoryClient;
-import repository.SVNClient;
 
 import data.IOptionInitializer;
 import data.Option;
@@ -272,15 +271,17 @@ public class OptionEditor extends JPanel {
 		return panel;
 	}
 
-	public static void addRepositoryTest(final Option option, IRepositoryClient client, final Logger logger) {
+	// TODO should be a generic test-client
+	public static void addRepositoryTest(final Option option, final IRepositoryClient client, final Logger logger) {
 
 		if(option.component instanceof JTextField){
 			JButton button = new JButton(" Test ");
 			button.addActionListener(new ActionListener(){
 				public void actionPerformed(ActionEvent e){ 
 					ConnectionTest tester = new ConnectionTest(
-							new SVNClient(logger), 
-							((JTextField)option.component).getText()
+							client, 
+							((JTextField)option.component).getText(),
+							logger
 					);
 					tester.asyncRun(0, ConnectionTest.TIMEOUT);
 				}

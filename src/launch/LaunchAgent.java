@@ -41,6 +41,7 @@ public class LaunchAgent extends LifecycleObject {
 		this.config = config.clone();
 		triggerStatus = trigger;
 		logger = new Logger(Mode.FILE);
+		logger.setLogConfig(application.getConfiguration());
 		
 		propertyContainer = new PropertyContainer();
 		propertyContainer.addProperty(config.getId(), "Name", config.getName());

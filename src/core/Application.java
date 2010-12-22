@@ -116,6 +116,8 @@ public class Application extends AbstractSystem implements IApplicationAdmin {
 			cache = Cache.create(fileManager);
 			add(cache);
 			super.init();
+			
+			logger.setLogConfig(configuration);
 		}
 	}
 	

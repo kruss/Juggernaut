@@ -1,9 +1,9 @@
 package repository;
 
 import launch.StatusManager.Status;
+import logger.Logger;
 import logger.Logger.Module;
 import repository.IRepositoryClient.RevisionInfo;
-import core.Application;
 import util.Task;
 import util.UiTools;
 
@@ -14,9 +14,9 @@ public class ConnectionTest extends Task {
 	private IRepositoryClient client;
 	private String url;
 	
-	public ConnectionTest(IRepositoryClient client, String url) {
+	public ConnectionTest(IRepositoryClient client, String url, Logger logger) {
 		
-		super("ConnectionTest", Application.getInstance().getLogger());
+		super("ConnectionTest", logger);
 		this.client = client;
 		this.url = url;
 		

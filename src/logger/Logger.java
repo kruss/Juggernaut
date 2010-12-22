@@ -7,8 +7,6 @@ import java.util.Date;
 import util.FileTools;
 import util.StringTools;
 
-import core.Application;
-import core.Configuration;
 import core.Constants;
 
 
@@ -21,14 +19,20 @@ public class Logger implements ILogProvider {
 	public enum Module { COMMON, COMMAND, TASK, HTTP }
 	public enum Level { ERROR, NORMAL, DEBUG }
 
-	protected Mode mode;
+	private Mode mode;
+	private ILogConfig config;
 	private File logfile;
 	private long logfileMax;
 	private ArrayList<ILogListener> listeners;
 	private ArrayList<String> buffer;
 	
+	public void setLogConfig(ILogConfig config){
+		this.config = config;
+	}
+	
 	/** set a logfile and the max-size in bytes (0 if unlimmited) */
 	public void setLogfile(File logfile, long logfileMax){
+		
 		this.logfile = logfile;
 		this.logfileMax = logfileMax;
 		if(logfile.exists()){
@@ -42,6 +46,7 @@ public class Logger implements ILogProvider {
 	public Logger(Mode mode){
 
 		this.mode = mode;
+		config = null;
 		logfile = null;
 		logfileMax = 0;
 		listeners = new ArrayList<ILogListener>();
@@ -135,7 +140,6 @@ public class Logger implements ILogProvider {
 
 	private boolean isLogging(Module module, Level level) {
 		
-		Configuration config = Application.getInstance().getConfiguration();
 		if(config != null){
 			return getLevelValue(level) >= getLevelValue(config.getLogLevel(module));
 		}else{
