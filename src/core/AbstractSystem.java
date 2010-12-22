@@ -26,7 +26,9 @@ public class AbstractSystem implements ISystemComponent {
 	public void init() throws Exception {
 		
 		for(int i=0; i<components.size(); i++){
-			components.get(i).init();
+			ISystemComponent component = components.get(i);
+			System.out.println("INIT: "+(getClass().getSimpleName())+"::"+component.getClass().getSimpleName()); // TODO use logger
+			component.init();
 		}
 		init = true;
 	}
@@ -36,7 +38,9 @@ public class AbstractSystem implements ISystemComponent {
 		
 		init = false;
 		for(int i=components.size()-1; i>=0; i--){
-			components.get(i).shutdown();
+			ISystemComponent component = components.get(i);
+			System.out.println("SHUTDOWN: "+(getClass().getSimpleName())+"::"+component.getClass().getSimpleName()); // TODO use logger
+			component.shutdown();
 		}
 	}
 }

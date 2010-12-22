@@ -4,9 +4,15 @@ import http.HttpServer;
 import launch.LaunchManager;
 import launch.ScheduleManager;
 import logger.Logger;
+import ui.ConfigPanel;
+import ui.HistoryPanel;
+import ui.PreferencePanel;
+import ui.ProjectMenu;
+import ui.SchedulerPanel;
+import ui.ToolsMenu;
 import ui.Window;
 
-public class Application extends AbstractSystem {
+public class Application extends AbstractSystem implements IApplicationAdmin {
 
 	private static Application application;
 	
@@ -71,7 +77,7 @@ public class Application extends AbstractSystem {
 		add(uiSystem);
 	}
 	
-	/** drop any unsaved changes and restart ui */
+	@Override
 	public void revert() throws Exception {
 		if(isInitialized() && configuration.isDirty()){
 			uiSystem.shutdown();
@@ -80,6 +86,11 @@ public class Application extends AbstractSystem {
 			uiSystem.clear();
 			uiSystem.init();
 		}
+	}
+	
+	@Override
+	public void quit() throws Exception {
+		shutdown();
 	}
 	
 	/** io related components */
@@ -130,9 +141,32 @@ public class Application extends AbstractSystem {
 	
 	/** ui related componets */
 	private class UISystem extends AbstractSystem {
+		
+		public ProjectMenu projectMenu;
+		public ToolsMenu toolsMenu;
+		public ConfigPanel configPanel;
+		public SchedulerPanel schedulerPanel;
+		public HistoryPanel historyPanel;
+		public PreferencePanel preferencePanel;
+		
 		@Override
 		public void init() throws Exception {
-			window = new Window(application);
+			projectMenu = new ProjectMenu(application, configuration, launchManager, logger);
+			add(projectMenu);
+			toolsMenu = new ToolsMenu(configuration, fileManager, heapManager);
+			add(toolsMenu);
+			configPanel = new ConfigPanel(configuration, launchManager, registry);
+			add(configPanel);
+			schedulerPanel = new SchedulerPanel(launchManager, scheduleManager, logger);
+			add(schedulerPanel);
+			historyPanel = new HistoryPanel(history, logger);
+			add(historyPanel);
+			preferencePanel = new PreferencePanel(configuration, scheduleManager, history);
+			add(preferencePanel);
+			window = new Window(
+					configuration, launchManager, heapManager, logger, 
+					projectMenu, toolsMenu, 
+					configPanel, schedulerPanel, historyPanel, preferencePanel);
 			add(window);
 			super.init();
 		}

@@ -18,8 +18,9 @@ import core.Configuration;
 import core.Constants;
 import core.FileManager;
 import core.HeapManager;
+import core.ISystemComponent;
 
-public class ToolsMenu extends JMenu implements IChangedListener {
+public class ToolsMenu extends JMenu implements ISystemComponent, IChangedListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -59,15 +60,11 @@ public class ToolsMenu extends JMenu implements IChangedListener {
 		configuration.addListener(this);
 	}
 	
-	private class ConfigPage extends AbstractHtmlPage {
-		public ConfigPage(String path) {
-			super(Constants.APP_NAME+" [ Configuration ]", path, null);
-		}
-		@Override
-		public String getBody() {
-			return configuration.toHtml();
-		}
-	}
+	@Override
+	public void init() throws Exception {}
+	
+	@Override
+	public void shutdown() throws Exception {}
 	
 	private void exportConfiguration(){
 		
@@ -80,6 +77,16 @@ public class ToolsMenu extends JMenu implements IChangedListener {
 			SystemTools.openBrowser(path);
 		}catch(Exception e){
 			UiTools.errorDialog(e);
+		}
+	}
+	
+	private class ConfigPage extends AbstractHtmlPage {
+		public ConfigPage(String path) {
+			super(Constants.APP_NAME+" [ Configuration ]", path, null);
+		}
+		@Override
+		public String getBody() {
+			return configuration.toHtml();
 		}
 	}
 	

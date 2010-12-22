@@ -23,10 +23,11 @@ import util.IChangedListener;
 import util.UiTools;
 
 import core.Configuration;
+import core.ISystemComponent;
 import core.Registry;
 import data.LaunchConfig;
 
-public class ConfigPanel extends JPanel implements IChangedListener {
+public class ConfigPanel extends JPanel implements ISystemComponent, IChangedListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -107,7 +108,8 @@ public class ConfigPanel extends JPanel implements IChangedListener {
 		configuration.addListener(this);
 	}
 	
-	public void init() {
+	@Override
+	public void init() throws Exception {
 		
 		launchPanel.init();
 		operationPanel.init();
@@ -115,6 +117,9 @@ public class ConfigPanel extends JPanel implements IChangedListener {
 		initUI();
 		adjustSelection();
 	}
+	
+	@Override
+	public void shutdown() throws Exception {}
 	
 	public void addListener(IChangedListener listener){ listeners.add(listener); }
 	

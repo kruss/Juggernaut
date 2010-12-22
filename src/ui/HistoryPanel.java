@@ -26,6 +26,7 @@ import logger.Logger;
 import logger.Logger.Module;
 
 import core.History;
+import core.ISystemComponent;
 import core.History.HistoryInfo;
 
 import util.FileTools;
@@ -33,7 +34,7 @@ import util.IChangedListener;
 import util.StringTools;
 import util.UiTools;
 
-public class HistoryPanel extends JPanel implements IChangedListener {
+public class HistoryPanel extends JPanel implements ISystemComponent, IChangedListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -155,12 +156,16 @@ public class HistoryPanel extends JPanel implements IChangedListener {
 		history.addListener(this);
 	}
 	
-	public void init() {
+	@Override
+	public void init() throws Exception {
 		
 		entries = history.getHistoryInfo();
 		initUI();
 		adjustSelection();
 	}
+	
+	@Override
+	public void shutdown() throws Exception {}
 
 	private void clearUI() {
 	

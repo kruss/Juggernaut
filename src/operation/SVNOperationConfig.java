@@ -39,7 +39,8 @@ public class SVNOperationConfig extends AbstractOperationConfig {
 		
 		OptionEditor.addRepositoryTest(
 				container.getOption(OPTIONS.URL.toString()),
-				new SVNClient(Application.getInstance().getLogger())
+				new SVNClient(Application.getInstance().getLogger()),
+				Application.getInstance().getLogger()
 		);
 	}
 	

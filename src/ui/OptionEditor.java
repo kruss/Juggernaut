@@ -24,7 +24,7 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import core.Application;
+import logger.Logger;
 
 import repository.ConnectionTest;
 import repository.IRepositoryClient;
@@ -272,14 +272,14 @@ public class OptionEditor extends JPanel {
 		return panel;
 	}
 
-	public static void addRepositoryTest(final Option option, IRepositoryClient client) {
+	public static void addRepositoryTest(final Option option, IRepositoryClient client, final Logger logger) {
 
 		if(option.component instanceof JTextField){
 			JButton button = new JButton(" Test ");
 			button.addActionListener(new ActionListener(){
 				public void actionPerformed(ActionEvent e){ 
 					ConnectionTest tester = new ConnectionTest(
-							new SVNClient(Application.getInstance().getLogger()), 
+							new SVNClient(logger), 
 							((JTextField)option.component).getText()
 					);
 					tester.asyncRun(0, ConnectionTest.TIMEOUT);

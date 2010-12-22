@@ -21,6 +21,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
+import core.ISystemComponent;
+
 import launch.LaunchManager;
 import launch.ScheduleManager;
 import launch.LaunchManager.LaunchInfo;
@@ -31,7 +33,7 @@ import util.IChangedListener;
 import util.StringTools;
 import util.UiTools;
 
-public class SchedulerPanel extends JPanel implements IChangedListener {
+public class SchedulerPanel extends JPanel implements ISystemComponent, IChangedListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -153,11 +155,16 @@ public class SchedulerPanel extends JPanel implements IChangedListener {
 		logger.addListener(applicationConsole);
 	}
 	
-	public void init() {
+	@Override
+	public void init() throws Exception {
+		
 		initUI();
 		adjustSelection();
 	}
-
+	
+	@Override
+	public void shutdown() throws Exception {}
+	
 	private void clearUI() {
 	
 		launchTable.clearSelection();

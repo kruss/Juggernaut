@@ -16,16 +16,16 @@ import logger.Logger.Module;
 import util.IChangedListener;
 import util.UiTools;
 
-
-import core.Application;
 import core.Configuration;
 import core.Constants;
+import core.IApplicationAdmin;
+import core.ISystemComponent;
 
-public class ProjectMenu extends JMenu implements IChangedListener {
+public class ProjectMenu extends JMenu implements ISystemComponent, IChangedListener {
 
 	private static final long serialVersionUID = 1L;
 
-	private Application application; 
+	private IApplicationAdmin application; 
 	private Configuration configuration;
 	private LaunchManager launchManager;
 	private Logger logger;
@@ -35,7 +35,7 @@ public class ProjectMenu extends JMenu implements IChangedListener {
 	private JMenuItem quit;
 	
 	public ProjectMenu(
-			Application application, 
+			IApplicationAdmin application, 
 			Configuration configuration,
 			LaunchManager launchManager,
 			Logger logger)
@@ -71,6 +71,12 @@ public class ProjectMenu extends JMenu implements IChangedListener {
 		toggleConfigurationUI();
 	}
 	
+	@Override
+	public void init() throws Exception {}
+	
+	@Override
+	public void shutdown() throws Exception {}
+	
 	private void revert(){
 		
 		try{
@@ -97,7 +103,7 @@ public class ProjectMenu extends JMenu implements IChangedListener {
 				if(configuration.isDirty() && UiTools.confirmDialog("Save changes ?")){
 					configuration.save();
 				}
-				application.shutdown();
+				application.quit();
 			}catch(Exception e){
 				UiTools.errorDialog(e);
 				System.exit(Constants.PROCESS_NOK);

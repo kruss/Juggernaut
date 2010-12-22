@@ -10,8 +10,9 @@ import util.IChangedListener;
 
 import core.Configuration;
 import core.History;
+import core.ISystemComponent;
 
-public class PreferencePanel extends JPanel implements IChangedListener {
+public class PreferencePanel extends JPanel implements ISystemComponent, IChangedListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -38,9 +39,14 @@ public class PreferencePanel extends JPanel implements IChangedListener {
 		optionEditor.addListener(this);
 	}
 	
-	public void init() {
+	@Override
+	public void init() throws Exception {
+		
 		initUI();
 	}
+	
+	@Override
+	public void shutdown() throws Exception {}
 	
 	private void initUI() {
 		optionEditor.setOptionContainer(configuration.getOptionContainer(), configuration);

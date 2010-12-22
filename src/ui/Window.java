@@ -14,50 +14,52 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import launch.LaunchManager;
+import logger.Logger;
 import logger.Logger.Module;
 
 import util.IChangedListener;
 import util.StringTools;
 
-import core.Application;
 import core.Configuration;
 import core.Constants;
+import core.HeapManager;
 import core.ISystemComponent;
 import core.HeapManager.HeapStatus;
 
 public class Window extends JFrame implements ISystemComponent, IStatusClient, IChangedListener {
 
 	private static final long serialVersionUID = 1L;
-
-	private Application application;
 	
+	private Configuration configuration;
+	private HeapManager heapManager;
+	private Logger logger;
 	private ProjectMenu projectMenu;
-	private ToolsMenu toolsMenu;
-	
-	private ConfigPanel configPanel;
-	private SchedulerPanel schedulerPanel;
-	private HistoryPanel historyPanel;
-	private PreferencePanel preferencePanel;
 	
 	private JLabel statusLabel;
 	private JLabel heapLabel;
 	
-	public Window(Application application){
-		
-		this.application = application;
-		
-		projectMenu = new ProjectMenu(application, application.getConfiguration(), application.getLaunchManager(), application.getLogger());
-		toolsMenu = new ToolsMenu(application.getConfiguration(), application.getFileManager(), application.getHeapManager());
+	public Window(
+			Configuration configuration,
+			LaunchManager launchManager,
+			HeapManager heapManager,
+			Logger logger,
+			ProjectMenu projectMenu,
+			ToolsMenu toolsMenu,
+			ConfigPanel configPanel,
+			SchedulerPanel schedulerPanel,
+			HistoryPanel historyPanel,
+			PreferencePanel preferencePanel)
+	{
+		this.configuration = configuration;
+		this.heapManager = heapManager;
+		this.logger = logger;
+		this.projectMenu = projectMenu;
 		
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.add(projectMenu);
 		menuBar.add(toolsMenu);
 		setJMenuBar(menuBar);
-		
-		configPanel = new ConfigPanel(application.getConfiguration(), application.getLaunchManager(), application.getRegistry());
-		schedulerPanel = new SchedulerPanel(application.getLaunchManager(), application.getScheduleManager(), application.getLogger());
-		historyPanel = new HistoryPanel(application.getHistory(), application.getLogger());
-		preferencePanel = new PreferencePanel(application.getConfiguration(), application.getScheduleManager(), application.getHistory());
 		
 		JTabbedPane centerPanel = new JTabbedPane();
 		centerPanel.setTabPlacement(JTabbedPane.TOP);
@@ -84,18 +86,13 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 		setLocation(100, 100);
 		setTitle(Constants.APP_FULL_NAME);
 		
-		application.getConfiguration().addListener(this);
-		application.getHeapManager().addListener(this);
-		application.getLaunchManager().addClient(this);
+		configuration.addListener(this);
+		heapManager.addListener(this);
+		launchManager.addClient(this);
 	}
 	
 	@Override
 	public void init() throws Exception {
-		
-		configPanel.init();
-		schedulerPanel.init();
-		historyPanel.init();
-		preferencePanel.init();
 		
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
@@ -109,7 +106,7 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 		SwingUtilities.updateComponentTreeUI(this);
 		
 		setStatus(Constants.APP_NAME+" started at "+StringTools.getTextDate(new Date()));
-		setHeap(application.getHeapManager().getHeapStatus());
+		setHeap(heapManager.getHeapStatus());
 		setVisible(true);
 	}
 	
@@ -121,7 +118,7 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 	public void setStatus(String text){
 		
 		statusLabel.setText(text);
-		application.getLogger().log(Module.COMMON, text);
+		logger.log(Module.COMMON, text);
 	}
 	
 	@Override
@@ -139,15 +136,15 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 	@Override
 	public void changed(Object object) {
 		
-		if(object == application.getConfiguration()){
-			Configuration.State state = application.getConfiguration().getState();
+		if(object == configuration){
+			Configuration.State state = configuration.getState();
 			if(state == Configuration.State.CLEAN){
 				setTitle(Constants.APP_FULL_NAME);
 			}else if(state == Configuration.State.DIRTY){
 				setTitle(Constants.APP_FULL_NAME+" *");
 			}
-		}else if(object == application.getHeapManager()){
-			setHeap(application.getHeapManager().getHeapStatus());
+		}else if(object == heapManager){
+			setHeap(heapManager.getHeapStatus());
 		}
 	}
 }
