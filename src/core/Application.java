@@ -15,17 +15,10 @@ public class Application extends AbstractSystem implements IApplicationAdmin {
 
 	private static Application application;
 	
-	public static Application getInstance(){
-		if(application == null){
-			application = new Application();
-		}
-		return application;
-	}
-	
 	public static void main(String[] args){
 		
 		try{ 
-			Application application = Application.getInstance();
+			application = new Application();
 			application.init(); 
 		}catch(Exception e){
 			e.printStackTrace();
@@ -38,31 +31,10 @@ public class Application extends AbstractSystem implements IApplicationAdmin {
 	private RuntimeSystem runtimeSystem;
 	private UISystem uiSystem;
 	
-	private SystemLogger logger;
-	private Configuration configuration;
-	private History history;
-	private Cache cache;
-	private Registry registry;
-	private HeapManager heapManager;
-	private FileManager fileManager;
-	private TaskManager taskManager;
-	private LaunchManager launchManager;
-	private ScheduleManager scheduleManager;
-	private HttpServer httpServer;
+	private Application(){}
 	
-	//public Logger getLogger(){ return logger; }
-	//public Configuration getConfiguration(){ return configuration; }
-	//public History getHistory(){ return history; }
-	//public Cache getCache(){ return cache; }
-	//public Registry getRegistry(){ return registry; }
-	//public HeapManager getHeapManager(){ return heapManager; }
-	//public FileManager getFileManager(){ return fileManager; }
-	//public TaskManager getTaskManager(){ return taskManager; }
-	//public LaunchManager getLaunchManager(){ return launchManager; }
-	//public ScheduleManager getScheduleManager(){ return scheduleManager; } 
-	//public HttpServer getHttpServer(){ return httpServer; }
-	
-	private Application(){
+	@Override
+	public void init() throws Exception {
 		
 		ioSystem = new IOSystem();
 		add(ioSystem);
@@ -72,11 +44,18 @@ public class Application extends AbstractSystem implements IApplicationAdmin {
 		add(runtimeSystem);
 		uiSystem = new UISystem();
 		add(uiSystem);
+		super.init();
+	}
+	
+	@Override
+	public void quit() throws Exception {
+		shutdown();
 	}
 	
 	@Override
 	public void revert() throws Exception {
-		if(isInitialized() && configuration.isDirty()){
+		
+		if(isInitialized() && persistenceSystem.configuration.isDirty()){
 			uiSystem.shutdown();
 			persistenceSystem.clear();
 			persistenceSystem.init();
@@ -85,15 +64,15 @@ public class Application extends AbstractSystem implements IApplicationAdmin {
 		}
 	}
 	
-	@Override
-	public void quit() throws Exception {
-		shutdown();
-	}
-	
 	/** io related components */
 	private class IOSystem extends AbstractSystem {
+		
+		public SystemLogger logger;
+		public FileManager fileManager;
+		
 		@Override
 		public void init() throws Exception {
+			
 			logger = new SystemLogger();
 			add(logger);
 			fileManager = new FileManager(logger);
@@ -104,35 +83,77 @@ public class Application extends AbstractSystem implements IApplicationAdmin {
 	
 	/** persistence related components */
 	private class PersistenceSystem extends AbstractSystem {
+		
+		public Cache cache;
+		public Configuration configuration;
+		public History history;
+		
 		@Override
 		public void init() throws Exception {
-			cache = Cache.create(fileManager, logger);
+			
+			cache = Cache.create(
+					ioSystem.fileManager, 
+					ioSystem.logger);
 			add(cache);
-			configuration = Configuration.create(cache, fileManager, taskManager, logger);
+			configuration = Configuration.create(
+					cache, 
+					ioSystem.fileManager, 
+					runtimeSystem.taskManager, // TODO remove dependency
+					ioSystem.logger);
 			add(configuration);
-			history = History.create(configuration, fileManager, logger);
+			history = History.create(
+					configuration, 
+					ioSystem.fileManager, 
+					ioSystem.logger);
 			add(history);
 			super.init();
 			
-			logger.setLogConfig(configuration);
+			ioSystem.logger.setLogConfig(configuration);
 		}
 	}
 	
 	/** runtime related components */
 	private class RuntimeSystem extends AbstractSystem {
+		
+		public TaskManager taskManager;
+		public HeapManager heapManager;
+		public Registry registry;
+		public LaunchManager launchManager;
+		public ScheduleManager scheduleManager;
+		public HttpServer httpServer;
+		
 		@Override
 		public void init() throws Exception {
-			taskManager = new TaskManager(logger);
+			
+			taskManager = new TaskManager(
+					ioSystem.logger);
 			add(taskManager);
-			heapManager = new HeapManager(taskManager, logger);
+			heapManager = new HeapManager(
+					taskManager, 
+					ioSystem.logger);
 			add(heapManager);
-			registry = new Registry(configuration, cache, taskManager, logger);
+			registry = new Registry(
+					persistenceSystem.configuration, 
+					persistenceSystem.cache, 
+					taskManager, 
+					ioSystem.logger);
 			add(registry);
-			launchManager = new LaunchManager(configuration);
+			launchManager = new LaunchManager(
+					persistenceSystem.configuration);
 			add(launchManager);
-			scheduleManager = new ScheduleManager(configuration, history, fileManager, taskManager, launchManager, logger);
+			scheduleManager = new ScheduleManager(
+					persistenceSystem.configuration, 
+					persistenceSystem.history, 
+					ioSystem.fileManager, 
+					taskManager, 
+					launchManager, 
+					ioSystem.logger);
 			add(scheduleManager);
-			httpServer = new HttpServer(Constants.HTTP_PORT, fileManager, taskManager, logger);
+			httpServer = new HttpServer(
+					Constants.HTTP_PORT, 
+					ioSystem.fileManager, 
+					taskManager, 
+					ioSystem.logger);
 			add(httpServer);
 			super.init();
 		}
@@ -151,22 +172,51 @@ public class Application extends AbstractSystem implements IApplicationAdmin {
 		
 		@Override
 		public void init() throws Exception {
-			projectMenu = new ProjectMenu(application, configuration, launchManager, logger);
+			
+			projectMenu = new ProjectMenu(
+					application, 
+					persistenceSystem.configuration, 
+					runtimeSystem.launchManager, 
+					ioSystem.logger);
 			add(projectMenu);
-			toolsMenu = new ToolsMenu(configuration, fileManager, heapManager);
+			toolsMenu = new ToolsMenu(
+					persistenceSystem.configuration, 
+					ioSystem.fileManager, 
+					runtimeSystem.heapManager);
 			add(toolsMenu);
-			configPanel = new ConfigPanel(configuration, history, fileManager, taskManager, launchManager, registry);
+			configPanel = new ConfigPanel(
+					persistenceSystem.configuration, 
+					persistenceSystem.history, 
+					ioSystem.fileManager, 
+					runtimeSystem.taskManager, 
+					runtimeSystem.launchManager, 
+					runtimeSystem.registry);
 			add(configPanel);
-			schedulerPanel = new SchedulerPanel(launchManager, scheduleManager, logger);
+			schedulerPanel = new SchedulerPanel(
+					runtimeSystem.launchManager, 
+					runtimeSystem.scheduleManager, 
+					ioSystem.logger);
 			add(schedulerPanel);
-			historyPanel = new HistoryPanel(history, logger);
+			historyPanel = new HistoryPanel(
+					persistenceSystem.history, 
+					ioSystem.logger);
 			add(historyPanel);
-			preferencePanel = new PreferencePanel(configuration, scheduleManager, history);
+			preferencePanel = new PreferencePanel(
+					persistenceSystem.configuration, 
+					runtimeSystem.scheduleManager, 
+					persistenceSystem.history);
 			add(preferencePanel);
 			window = new Window(
-					configuration, launchManager, heapManager, logger, 
-					projectMenu, toolsMenu, 
-					configPanel, schedulerPanel, historyPanel, preferencePanel);
+					persistenceSystem.configuration, 
+					runtimeSystem.launchManager, 
+					runtimeSystem.heapManager, 
+					ioSystem.logger, 
+					projectMenu, 
+					toolsMenu, 
+					configPanel, 
+					schedulerPanel, 
+					historyPanel, 
+					preferencePanel);
 			add(window);
 			super.init();
 		}
