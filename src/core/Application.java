@@ -11,7 +11,7 @@ import ui.SchedulerPanel;
 import ui.ToolsMenu;
 import ui.Window;
 
-public class Application extends AbstractSystem implements IApplicationAdmin {
+public class Application extends AbstractSystem {
 
 	private static Application application;
 	
@@ -46,16 +46,10 @@ public class Application extends AbstractSystem implements IApplicationAdmin {
 		add(uiSystem);
 		super.init();
 	}
-	
-	@Override
-	public void quit() throws Exception {
-		shutdown();
-	}
-	
-	@Override
+
 	public void revert() throws Exception {
 		
-		if(isInitialized() && persistenceSystem.configuration.isDirty()){
+		if(uiSystem.isInitialized() && persistenceSystem.configuration.isDirty()){
 			uiSystem.shutdown();
 			persistenceSystem.clear();
 			persistenceSystem.init();

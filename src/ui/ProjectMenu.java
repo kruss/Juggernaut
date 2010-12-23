@@ -18,14 +18,14 @@ import util.UiTools;
 
 import core.Configuration;
 import core.Constants;
-import core.IApplicationAdmin;
+import core.Application;
 import core.ISystemComponent;
 
 public class ProjectMenu extends JMenu implements ISystemComponent, IChangedListener {
 
 	private static final long serialVersionUID = 1L;
 
-	private IApplicationAdmin application; 
+	private Application application; 
 	private Configuration configuration;
 	private LaunchManager launchManager;
 	private Logger logger;
@@ -35,7 +35,7 @@ public class ProjectMenu extends JMenu implements ISystemComponent, IChangedList
 	private JMenuItem quit;
 	
 	public ProjectMenu(
-			IApplicationAdmin application, 
+			Application application, 
 			Configuration configuration,
 			LaunchManager launchManager,
 			Logger logger)
@@ -103,7 +103,7 @@ public class ProjectMenu extends JMenu implements ISystemComponent, IChangedList
 				if(configuration.isDirty() && UiTools.confirmDialog("Save changes ?")){
 					configuration.save();
 				}
-				application.quit();
+				application.shutdown();
 			}catch(Exception e){
 				UiTools.errorDialog(e);
 				System.exit(Constants.PROCESS_NOK);
