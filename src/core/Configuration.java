@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import javax.swing.JMenuItem;
 import javax.swing.JTextField;
 
-import logger.ILogConfig;
+import logger.ILogManager;
 import logger.Logger;
 import logger.Logger.Level;
 import logger.Logger.Module;
@@ -31,7 +31,7 @@ import data.Option.Type;
 /**
  * the configuration of the application,- will be serialized
  */
-public class Configuration implements ISystemComponent, IOptionInitializer, ILogConfig {
+public class Configuration implements ISystemComponent, IOptionInitializer, ILogManager {
 
 	public static Configuration create(Cache cache, FileManager fileManager, TaskManager taskManager, Logger logger) throws Exception {
 		
@@ -129,6 +129,7 @@ public class Configuration implements ISystemComponent, IOptionInitializer, ILog
 	@Override
 	public void init() throws Exception {
 		save();
+		logger.setLogManager(this);
 	}
 
 	@Override

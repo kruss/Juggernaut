@@ -24,7 +24,7 @@ public class SystemLogger extends Logger implements ISystemComponent {
 
 	private void initLogger() {
 		File logFile = new File(SystemTools.getWorkingDir()+File.separator+Logger.OUTPUT_FILE);
-		setLogfile(logFile, Constants.LOGFILE_MAX);
+		setLogFile(logFile, Constants.LOGFILE_MAX);
 		info(Module.COMMON, Constants.APP_FULL_NAME);
 	}
 

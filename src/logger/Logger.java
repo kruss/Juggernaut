@@ -20,18 +20,14 @@ public class Logger implements ILogProvider {
 	public enum Level { ERROR, NORMAL, DEBUG }
 
 	private Mode mode;
-	private ILogConfig config;
 	private File logfile;
 	private long logfileMax;
 	private ArrayList<ILogListener> listeners;
 	private ArrayList<String> buffer;
-	
-	public void setLogConfig(ILogConfig config){
-		this.config = config;
-	}
-	
+	private ILogManager logManager;
+
 	/** set a logfile and the max-size in bytes (0 if unlimmited) */
-	public void setLogfile(File logfile, long logfileMax){
+	public void setLogFile(File logfile, long logfileMax){
 		
 		this.logfile = logfile;
 		this.logfileMax = logfileMax;
@@ -41,12 +37,16 @@ public class Logger implements ILogProvider {
 			logfile.getParentFile().mkdirs();
 		}
 	}
-	public File getLogfile(){ return logfile; }
+	public File getLogFile(){ return logfile; }
+	
+	public void setLogManager(ILogManager logManager){
+		this.logManager = logManager;
+	}
 	
 	public Logger(Mode mode){
 
 		this.mode = mode;
-		config = null;
+		logManager = null;
 		logfile = null;
 		logfileMax = 0;
 		listeners = new ArrayList<ILogListener>();
@@ -140,8 +140,8 @@ public class Logger implements ILogProvider {
 
 	private boolean isLogging(Module module, Level level) {
 		
-		if(config != null){
-			return getLevelValue(level) >= getLevelValue(config.getLogLevel(module));
+		if(logManager != null){
+			return getLevelValue(level) >= getLevelValue(logManager.getLogLevel(module));
 		}else{
 			return true;
 		}

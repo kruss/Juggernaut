@@ -110,8 +110,6 @@ public class Application extends AbstractSystem {
 					core.logger);
 			add(history);
 			super.init();
-			
-			core.logger.setLogConfig(configuration);
 		}
 	}
 	

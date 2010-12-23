@@ -51,7 +51,7 @@ public class LaunchAgent extends LifecycleObject {
 		this.config = config.clone();
 		this.trigger = trigger;
 		logger = new Logger(Mode.FILE);
-		logger.setLogConfig(configuration);
+		logger.setLogManager(configuration);
 		
 		propertyContainer = new PropertyContainer();
 		propertyContainer.addProperty(config.getId(), "Name", config.getName());
@@ -103,9 +103,9 @@ public class LaunchAgent extends LifecycleObject {
 		launchHistory.init();
 		
 		// setup the logger
-		logger.setLogfile(new File(launchHistory.logfile), 0);
+		logger.setLogFile(new File(launchHistory.logfile), 0);
 		logger.info(Module.COMMON, "Launch ["+config.getName()+"]");
-		artifacts.add(new Artifact("Logfile", logger.getLogfile()));
+		artifacts.add(new Artifact("Logfile", logger.getLogFile()));
 		debugProperties(propertyContainer.getProperties(config.getId()));
 		
 		// setup launch-folder
