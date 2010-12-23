@@ -2,6 +2,8 @@ package operation;
 
 import java.util.ArrayList;
 
+import core.Cache;
+import core.Configuration;
 import core.TaskManager;
 
 import launch.LaunchAgent;
@@ -91,7 +93,12 @@ public class CommandOperationConfig extends AbstractOperationConfig {
 	}
 	
 	@Override
-	public AbstractOperation createOperation(LaunchAgent parent, TaskManager taskManager) {
+	public AbstractOperation createOperation(
+			Configuration configuration, 
+			Cache cache, 
+			TaskManager taskManager, 
+			LaunchAgent parent)
+	{
 		return new CommandOperation(configuration, cache, taskManager, parent, this);
 	}
 }

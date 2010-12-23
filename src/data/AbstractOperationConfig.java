@@ -27,8 +27,6 @@ public abstract class AbstractOperationConfig implements IOptionInitializer {
 		ACTIVE, CRITICAL
 	}
 
-	protected transient Configuration configuration;
-	protected transient Cache cache;
 	protected transient TaskManager taskManager;
 	protected transient Logger logger;
 	
@@ -53,9 +51,7 @@ public abstract class AbstractOperationConfig implements IOptionInitializer {
 		));
 	}
 	
-	public void initInstance(Configuration configuration, Cache cache, TaskManager taskManager, Logger logger) {
-		this.configuration = configuration;
-		this.cache = cache;
+	public void initInstance(TaskManager taskManager, Logger logger) {
 		this.taskManager = taskManager;
 		this.logger = logger;
 	}
@@ -87,7 +83,11 @@ public abstract class AbstractOperationConfig implements IOptionInitializer {
 	public abstract String getName();
 	public abstract String getDescription();
 	public abstract boolean isValid();
-	public abstract AbstractOperation createOperation(LaunchAgent parent, TaskManager taskManager);
+	public abstract AbstractOperation createOperation(
+			Configuration configuration, 
+			Cache cache, 
+			TaskManager taskManager, 
+			LaunchAgent parent);
 	
 	public AbstractOperationConfig clone(){
 		

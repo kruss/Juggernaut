@@ -87,23 +87,22 @@ public class Application extends AbstractSystem {
 	/** persistence related components */
 	private class PersistenceSystem extends AbstractSystem {
 		
-		public Cache cache;
 		public Configuration configuration;
+		public Cache cache;
 		public History history;
 		
 		@Override
 		public void init() throws Exception {
 			
-			cache = Cache.create(
-					core.fileManager, 
-					core.logger);
-			add(cache);
 			configuration = Configuration.create(
-					cache, 
 					core.fileManager, 
 					core.taskManager,
 					core.logger);
 			add(configuration);
+			cache = Cache.create(
+					core.fileManager, 
+					core.logger);
+			add(cache);
 			history = History.create(
 					configuration, 
 					core.fileManager, 
@@ -125,8 +124,6 @@ public class Application extends AbstractSystem {
 		public void init() throws Exception {
 			
 			registry = new Registry(
-					persistence.configuration, 
-					persistence.cache, 
 					core.taskManager, 
 					core.logger);
 			add(registry);
@@ -135,6 +132,7 @@ public class Application extends AbstractSystem {
 			add(launchManager);
 			scheduleManager = new ScheduleManager(
 					persistence.configuration, 
+					persistence.cache,
 					persistence.history, 
 					core.fileManager, 
 					core.taskManager, 
@@ -178,6 +176,7 @@ public class Application extends AbstractSystem {
 			add(toolsMenu);
 			configPanel = new ConfigPanel(
 					persistence.configuration, 
+					persistence.cache,
 					persistence.history, 
 					core.fileManager, 
 					core.taskManager, 

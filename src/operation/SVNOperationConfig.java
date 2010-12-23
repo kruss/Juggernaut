@@ -1,6 +1,8 @@
 package operation;
 
 
+import core.Cache;
+import core.Configuration;
 import core.TaskManager;
 
 import repository.SVNClient;
@@ -73,7 +75,12 @@ public class SVNOperationConfig extends AbstractOperationConfig {
 	}
 	
 	@Override
-	public AbstractOperation createOperation(LaunchAgent parent, TaskManager taskManager) {
+	public AbstractOperation createOperation(
+			Configuration configuration, 
+			Cache cache, 
+			TaskManager taskManager, 
+			LaunchAgent parent)
+	{
 		return new SVNOperation(configuration, cache, taskManager, parent, this);
 	}
 }

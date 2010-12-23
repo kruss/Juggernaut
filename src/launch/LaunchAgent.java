@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import core.Cache;
 import core.Configuration;
 import core.FileManager;
 import core.History;
@@ -28,7 +29,7 @@ public class LaunchAgent extends LifecycleObject {
 
 	private History history;
 	private FileManager fileManager;
-	private LaunchConfig config;
+	private LaunchConfig launchConfig;
 	private String trigger;
 	private PropertyContainer propertyContainer;
 	private ArrayList<AbstractOperation> operations;
@@ -38,32 +39,33 @@ public class LaunchAgent extends LifecycleObject {
 	
 	public LaunchAgent(
 			Configuration configuration, 
+			Cache cache,
 			History history, 
 			FileManager fileManager, 
 			TaskManager taskManager, 
-			LaunchConfig config, 
+			LaunchConfig launchConfig,
 			String trigger)
 	{
-		super("Launch("+config.getId()+")", taskManager);
+		super("Launch("+launchConfig.getId()+")", taskManager);
 		
 		this.fileManager = fileManager;
 		this.history = history;
-		this.config = config.clone();
+		this.launchConfig = launchConfig.clone();
 		this.trigger = trigger;
 		logger = new Logger(Mode.FILE);
 		logger.setLogManager(configuration);
 		
 		propertyContainer = new PropertyContainer();
-		propertyContainer.addProperty(config.getId(), "Name", config.getName());
-		propertyContainer.addProperty(config.getId(), "Folder", getFolder());
-		propertyContainer.addProperty(config.getId(), "Trigger", trigger);
-		propertyContainer.addProperty(config.getId(), "Clean", ""+config.isClean());
-		propertyContainer.addProperty(config.getId(), "Timeout", StringTools.millis2min(config.getTimeout())+" min");
+		propertyContainer.addProperty(launchConfig.getId(), "Name", launchConfig.getName());
+		propertyContainer.addProperty(launchConfig.getId(), "Folder", getFolder());
+		propertyContainer.addProperty(launchConfig.getId(), "Trigger", trigger);
+		propertyContainer.addProperty(launchConfig.getId(), "Clean", ""+launchConfig.isClean());
+		propertyContainer.addProperty(launchConfig.getId(), "Timeout", StringTools.millis2min(launchConfig.getTimeout())+" min");
 		
 		operations = new ArrayList<AbstractOperation>();
-		for(AbstractOperationConfig operationConfig : config.getOperationConfigs()){
+		for(AbstractOperationConfig operationConfig : launchConfig.getOperationConfigs()){
 			if(operationConfig.isActive()){
-				AbstractOperation operation = operationConfig.createOperation(this, taskManager);
+				AbstractOperation operation = operationConfig.createOperation(configuration, cache, taskManager, this);
 				operations.add(operation);
 				propertyContainer.addProperties(
 						operationConfig.getId(), 
@@ -81,7 +83,7 @@ public class LaunchAgent extends LifecycleObject {
 		aboard = false;
 	}
 	
-	public LaunchConfig getConfig(){ return config; }
+	public LaunchConfig getConfig(){ return launchConfig; }
 	public String getTrigger(){ return trigger; }
 	public PropertyContainer getPropertyContainer(){ return propertyContainer; }
 	public ArrayList<AbstractOperation> getOperations(){ return operations; }
@@ -90,7 +92,7 @@ public class LaunchAgent extends LifecycleObject {
 	public String getFolder() {
 		return 
 			fileManager.getBuildFolderPath()+
-			File.separator+config.getId();
+			File.separator+launchConfig.getId();
 	}
 
 	@Override
@@ -104,13 +106,13 @@ public class LaunchAgent extends LifecycleObject {
 		
 		// setup the logger
 		logger.setLogFile(new File(launchHistory.logfile), 0);
-		logger.info(Module.COMMON, "Launch ["+config.getName()+"]");
+		logger.info(Module.COMMON, "Launch ["+launchConfig.getName()+"]");
 		artifacts.add(new Artifact("Logfile", logger.getLogFile()));
-		debugProperties(propertyContainer.getProperties(config.getId()));
+		debugProperties(propertyContainer.getProperties(launchConfig.getId()));
 		
 		// setup launch-folder
 		File folder = new File(getFolder());
-		if(config.isClean() && folder.isDirectory()){
+		if(launchConfig.isClean() && folder.isDirectory()){
 			logger.log(Module.COMMON, "cleaning: "+folder.getAbsolutePath());
 			FileTools.deleteFolder(folder.getAbsolutePath());
 		}
@@ -156,7 +158,7 @@ public class LaunchAgent extends LifecycleObject {
 		
 		logger.info(
 				Module.COMMON, 
-				operation.getIndex()+"/"+config.getOperationConfigs().size()+
+				operation.getIndex()+"/"+launchConfig.getOperationConfigs().size()+
 				" Operation ["+operation.getConfig().getName()+"]"
 		);
 		debugProperties(propertyContainer.getProperties(operation.getConfig().getId()));
@@ -176,7 +178,7 @@ public class LaunchAgent extends LifecycleObject {
 	protected void finish() {
 
 		propertyContainer.addProperties(
-				config.getId(), 
+				launchConfig.getId(), 
 				statusManager.getProperties()
 		);
 		

@@ -7,6 +7,7 @@ import java.util.Date;
 import util.IChangedListener;
 import util.Task;
 
+import core.Cache;
 import core.Configuration;
 import core.FileManager;
 import core.History;
@@ -24,6 +25,7 @@ import logger.Logger.Module;
 public class ScheduleManager implements ISystemComponent {
 
 	private Configuration configuration;
+	private Cache cache;
 	private History history;
 	private FileManager fileManager;
 	private TaskManager taskManager;
@@ -47,7 +49,8 @@ public class ScheduleManager implements ISystemComponent {
 	}
 	
 	public ScheduleManager(
-			Configuration configuration, 
+			Configuration configuration,
+			Cache cache,
 			History history,
 			FileManager fileManager,
 			TaskManager taskManager,
@@ -56,6 +59,7 @@ public class ScheduleManager implements ISystemComponent {
 	){
 		
 		this.configuration = configuration;
+		this.cache = cache;
 		this.history = history;
 		this.fileManager = fileManager;
 		this.taskManager = taskManager;
@@ -127,13 +131,16 @@ public class ScheduleManager implements ISystemComponent {
 		
 		boolean launched = false;
 		for(AbstractTriggerConfig triggerConfig : launchConfig.getTriggerConfigs()){
-			AbstractTrigger trigger = triggerConfig.createTrigger();
+			AbstractTrigger trigger = triggerConfig.createTrigger(
+					configuration, cache, taskManager, logger
+			);
 			TriggerStatus triggerStatus = trigger.isTriggered();
 			if(triggerStatus.triggered){
 				if(!launched)
 				{
 					LaunchAgent launch = launchConfig.createLaunch(
-							configuration, history, fileManager, taskManager, triggerStatus.message);
+							configuration, cache, history, fileManager, taskManager, triggerStatus.message
+					);
 					LaunchStatus launchStatus = launchManager.runLaunch(launch);
 					if(launchStatus.launched){
 						logger.log(

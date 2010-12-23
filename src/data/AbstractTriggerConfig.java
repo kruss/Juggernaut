@@ -28,8 +28,6 @@ public abstract class AbstractTriggerConfig implements IOptionInitializer {
 		ACTIVE
 	}
 	
-	protected transient Configuration configuration;
-	protected transient Cache cache;
 	protected transient TaskManager taskManager;
 	protected transient Logger logger;
 	
@@ -49,9 +47,7 @@ public abstract class AbstractTriggerConfig implements IOptionInitializer {
 		));
 	}
 	
-	public void initInstance(Configuration configuration, Cache cache, TaskManager taskManager, Logger logger) {
-		this.configuration = configuration;
-		this.cache = cache;
+	public void initInstance(TaskManager taskManager, Logger logger) {
 		this.taskManager = taskManager;
 		this.logger = logger;
 	}
@@ -79,7 +75,11 @@ public abstract class AbstractTriggerConfig implements IOptionInitializer {
 	public abstract String getName();
 	public abstract String getDescription();
 	public abstract boolean isValid();
-	public abstract AbstractTrigger createTrigger();
+	public abstract AbstractTrigger createTrigger(
+			Configuration configuration, 
+			Cache cache, 
+			TaskManager taskManager, 
+			Logger logger);
 	
 	public AbstractTriggerConfig clone(){
 		

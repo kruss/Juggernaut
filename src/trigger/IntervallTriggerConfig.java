@@ -1,5 +1,9 @@
 package trigger;
 
+import logger.Logger;
+import core.Cache;
+import core.Configuration;
+import core.TaskManager;
 import util.StringTools;
 import data.AbstractTrigger;
 import data.AbstractTriggerConfig;
@@ -54,7 +58,12 @@ public class IntervallTriggerConfig extends AbstractTriggerConfig {
 	public boolean isValid(){ return true; }
 	
 	@Override
-	public AbstractTrigger createTrigger() {
+	public AbstractTrigger createTrigger(
+			Configuration configuration, 
+			Cache cache, 
+			TaskManager taskManager, 
+			Logger logger)
+	{
 		return new IntervallTrigger(configuration, cache, logger, this);
 	}
 }

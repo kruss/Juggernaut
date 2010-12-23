@@ -1,5 +1,9 @@
 package trigger;
 
+import logger.Logger;
+import core.Cache;
+import core.Configuration;
+import core.TaskManager;
 import repository.SVNClient;
 import ui.OptionEditor;
 import util.StringTools;
@@ -65,7 +69,12 @@ public class SVNTriggerConfig extends AbstractTriggerConfig {
 	}
 	
 	@Override
-	public AbstractTrigger createTrigger() {
+	public AbstractTrigger createTrigger(
+			Configuration configuration, 
+			Cache cache, 
+			TaskManager taskManager, 
+			Logger logger)
+	{
 		return new SVNTrigger(configuration, cache, taskManager, logger, this);
 	}
 }

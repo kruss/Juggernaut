@@ -22,6 +22,7 @@ import launch.LaunchManager.LaunchStatus;
 import util.IChangedListener;
 import util.UiTools;
 
+import core.Cache;
 import core.Configuration;
 import core.FileManager;
 import core.History;
@@ -36,6 +37,7 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangedLis
 	private static final long serialVersionUID = 1L;
 
 	private Configuration configuration; 
+	private Cache cache;
 	private History history;
 	private FileManager fileManager;
 	private TaskManager taskManager;
@@ -58,6 +60,7 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangedLis
 	
 	public ConfigPanel(
 			Configuration configuration, 
+			Cache cache,
 			History history,
 			FileManager fileManager,
 			TaskManager taskManager,
@@ -65,6 +68,7 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangedLis
 			Registry registry)
 	{
 		this.configuration = configuration;
+		this.cache = cache;
 		this.history = history;
 		this.fileManager = fileManager;
 		this.taskManager = taskManager;
@@ -278,7 +282,7 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangedLis
 			{
 				try{
 					LaunchConfig config = configuration.getLaunchConfigs().get(index);
-					LaunchAgent launch = config.createLaunch(configuration, history, fileManager, taskManager, AbstractTrigger.USER_TRIGGER);
+					LaunchAgent launch = config.createLaunch(configuration, cache, history, fileManager, taskManager, AbstractTrigger.USER_TRIGGER);
 					LaunchStatus status = launchManager.runLaunch(launch);
 					if(!status.launched){
 						UiTools.infoDialog(status.message);

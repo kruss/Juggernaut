@@ -33,11 +33,11 @@ import data.Option.Type;
  */
 public class Configuration implements ISystemComponent, IOptionInitializer, ILogManager {
 
-	public static Configuration create(Cache cache, FileManager fileManager, TaskManager taskManager, Logger logger) throws Exception {
+	public static Configuration create(FileManager fileManager, TaskManager taskManager, Logger logger) throws Exception {
 		
 		File file = new File(fileManager.getDataFolderPath()+File.separator+Configuration.OUTPUT_FILE);
 		if(file.isFile()){
-			return Configuration.load(cache, taskManager, logger, file.getAbsolutePath());
+			return Configuration.load(taskManager, logger, file.getAbsolutePath());
 		}else{
 			return new Configuration(logger, file.getAbsolutePath());
 		}	
@@ -198,7 +198,7 @@ public class Configuration implements ISystemComponent, IOptionInitializer, ILog
 	
 	public State getState(){ return isDirty() ? State.DIRTY : State.CLEAN; }
 	
-	public static Configuration load(Cache cache, TaskManager taskManager, Logger logger, String path) throws Exception {
+	public static Configuration load(TaskManager taskManager, Logger logger, String path) throws Exception {
 	
 		logger.debug(Module.COMMON, "load: "+path);
 		XStream xstream = new XStream(new DomDriver());
@@ -210,10 +210,10 @@ public class Configuration implements ISystemComponent, IOptionInitializer, ILog
 		for(LaunchConfig launchConfig : configuration.launchConfigs){
 			launchConfig.setDirty(false);
 			for(AbstractOperationConfig operationConfig : launchConfig.getOperationConfigs()){
-				operationConfig.initInstance(configuration, cache, taskManager, logger);
+				operationConfig.initInstance(taskManager, logger);
 			}
 			for(AbstractTriggerConfig triggerConfig : launchConfig.getTriggerConfigs()){
-				triggerConfig.initInstance(configuration, cache, taskManager, logger);
+				triggerConfig.initInstance(taskManager, logger);
 			}
 		}
 		configuration.dirty = false;

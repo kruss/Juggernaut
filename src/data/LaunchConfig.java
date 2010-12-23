@@ -10,6 +10,7 @@ import launch.LaunchAgent;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
+import core.Cache;
 import core.Configuration;
 import core.FileManager;
 import core.History;
@@ -138,10 +139,6 @@ public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitialize
 	public ArrayList<AbstractOperationConfig> getOperationConfigs(){ return operations; }
 	public ArrayList<AbstractTriggerConfig> getTriggerConfigs(){ return triggers; }
 	
-	public LaunchAgent createLaunch(Configuration configuration, History history, FileManager fileManager, TaskManager taskManager, String trigger){
-		return new LaunchAgent(configuration, history, fileManager, taskManager, this, trigger);
-	}
-	
 	@Override
 	public String toString(){ 
 		if(isActive()){
@@ -162,5 +159,16 @@ public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitialize
 		String xml = xstream.toXML(this);
 		LaunchConfig config = (LaunchConfig)xstream.fromXML(xml);
 		return config;
+	}
+	
+	public LaunchAgent createLaunch(
+			Configuration configuration, 
+			Cache cache,
+			History history, 
+			FileManager fileManager, 
+			TaskManager taskManager, 
+			String trigger)
+	{
+		return new LaunchAgent(configuration, cache, history, fileManager, taskManager, this, trigger);
 	}
 }

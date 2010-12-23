@@ -18,8 +18,6 @@ import data.AbstractTriggerConfig;
 /** runtime object factory */
 public class Registry implements ISystemComponent {
 
-	private Configuration configuration;
-	private Cache cache;
 	private TaskManager taskManager;
 	private Logger logger;
 	
@@ -27,13 +25,9 @@ public class Registry implements ISystemComponent {
 	private ArrayList<Class<?>> triggerConfigs;
 	
 	public Registry(
-			Configuration configuration, 
-			Cache cache, 
 			TaskManager taskManager, 
 			Logger logger)
 	{
-		this.configuration = configuration;
-		this.cache = cache;
 		this.taskManager = taskManager;
 		this.logger = logger;
 		
@@ -97,7 +91,7 @@ public class Registry implements ISystemComponent {
 		for(Class<?> clazz : operationConfigs){
 			if(name.equals(getOperationName(clazz))){
 				AbstractOperationConfig instance = (AbstractOperationConfig) clazz.newInstance();
-				instance.initInstance(configuration, cache, taskManager, logger);
+				instance.initInstance(taskManager, logger);
 				return instance;
 			}
 		}
@@ -109,7 +103,7 @@ public class Registry implements ISystemComponent {
 		for(Class<?> clazz : triggerConfigs){
 			if(name.equals(getTriggerName(clazz))){
 				AbstractTriggerConfig instance = (AbstractTriggerConfig) clazz.newInstance();
-				instance.initInstance(configuration, cache, taskManager, logger);
+				instance.initInstance(taskManager, logger);
 				return instance;
 			}
 		}

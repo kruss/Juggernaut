@@ -1,7 +1,7 @@
 TASKS
 -----
 
-# make command-streamer steram to registered listeners to collect output more flexible (e.g SVN clients)
+# auto-reload for index-page
 
 BUGS
 ----

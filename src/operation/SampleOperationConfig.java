@@ -1,5 +1,7 @@
 package operation;
 
+import core.Cache;
+import core.Configuration;
 import core.TaskManager;
 import util.StringTools;
 import launch.LaunchAgent;
@@ -60,7 +62,12 @@ public class SampleOperationConfig extends AbstractOperationConfig {
 	public boolean isValid(){ return true; }
 	
 	@Override
-	public AbstractOperation createOperation(LaunchAgent parent, TaskManager taskManager) {
+	public AbstractOperation createOperation(
+			Configuration configuration, 
+			Cache cache, 
+			TaskManager taskManager, 
+			LaunchAgent parent)
+	{
 		return new SampleOperation(configuration, cache, taskManager, parent, this);
 	}
 }
