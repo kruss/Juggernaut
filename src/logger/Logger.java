@@ -143,7 +143,7 @@ public class Logger implements ILogProvider {
 		if(logManager != null){
 			return getLevelValue(level) >= getLevelValue(logManager.getLogLevel(module));
 		}else{
-			return true;
+			return getLevelValue(level) >= getLevelValue(Level.NORMAL);
 		}
 	}
 	private void logToFile(String log){
