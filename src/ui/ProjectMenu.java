@@ -79,11 +79,18 @@ public class ProjectMenu extends JMenu implements ISystemComponent, IChangedList
 	
 	private void revert(){
 		
-		try{
-			application.revert();
-		}catch(Exception e){
-			UiTools.errorDialog(e);
-		}
+		Thread thread = new Thread(new Runnable(){
+			@Override
+			public void run() {
+				try{
+					application.revert();
+				}catch(Exception e){
+					UiTools.errorDialog(e);
+					System.exit(Constants.PROCESS_NOK);
+				}
+			}
+		});
+		thread.start();
 	}
 	
 	private void save(){
@@ -99,16 +106,22 @@ public class ProjectMenu extends JMenu implements ISystemComponent, IChangedList
 		
 		if(!launchManager.isBusy() || UiTools.confirmDialog("Aboard running launches ?")){
 			logger.info(Module.COMMON, "Shutdown");
-			try{
-				if(configuration.isDirty() && UiTools.confirmDialog("Save changes ?")){
-					configuration.save();
-				}
-				application.shutdown();
-			}catch(Exception e){
-				UiTools.errorDialog(e);
-				System.exit(Constants.PROCESS_NOK);
+			if(configuration.isDirty() && UiTools.confirmDialog("Save changes ?")){
+				save();
 			}
-			System.exit(Constants.PROCESS_OK);
+			Thread thread = new Thread(new Runnable(){
+				@Override
+				public void run() {
+					try{
+						application.shutdown();
+					}catch(Exception e){
+						UiTools.errorDialog(e);
+						System.exit(Constants.PROCESS_NOK);
+					}
+					System.exit(Constants.PROCESS_OK);
+				}
+			});
+			thread.start();
 		}
 	}
 

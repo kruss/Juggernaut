@@ -2,6 +2,7 @@ TASKS
 -----
 
 # auto-reload for index-page
+# filter for index-page
 
 BUGS
 ----
@@ -10,4 +11,4 @@ BUGS
 NOTES
 -----
 
-# serialized objects contain absolute paths
+# serialized objects may contain absolute paths
