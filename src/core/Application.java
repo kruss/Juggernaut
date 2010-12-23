@@ -26,43 +26,45 @@ public class Application extends AbstractSystem {
 		}
 	}
 	
-	private IOSystem ioSystem;
-	private PersistenceSystem persistenceSystem;
-	private RuntimeSystem runtimeSystem;
-	private UISystem uiSystem;
+	private CoreSystem core;
+	private PersistenceSystem persistence;
+	private RuntimeSystem runtime;
+	private UISystem ui;
 	
 	private Application(){}
 	
 	@Override
 	public void init() throws Exception {
 		
-		ioSystem = new IOSystem();
-		add(ioSystem);
-		persistenceSystem = new PersistenceSystem();
-		add(persistenceSystem);
-		runtimeSystem = new RuntimeSystem();
-		add(runtimeSystem);
-		uiSystem = new UISystem();
-		add(uiSystem);
+		core = new CoreSystem();
+		add(core);
+		persistence = new PersistenceSystem();
+		add(persistence);
+		runtime = new RuntimeSystem();
+		add(runtime);
+		ui = new UISystem();
+		add(ui);
 		super.init();
 	}
 
 	public void revert() throws Exception {
 		
-		if(uiSystem.isInitialized() && persistenceSystem.configuration.isDirty()){
-			uiSystem.shutdown();
-			persistenceSystem.clear();
-			persistenceSystem.init();
-			uiSystem.clear();
-			uiSystem.init();
+		if(ui.isInitialized() && persistence.configuration.isDirty()){
+			ui.shutdown();
+			persistence.clear();
+			persistence.init();
+			ui.clear();
+			ui.init();
 		}
 	}
 	
 	/** io related components */
-	private class IOSystem extends AbstractSystem {
+	private class CoreSystem extends AbstractSystem {
 		
 		public SystemLogger logger;
 		public FileManager fileManager;
+		public TaskManager taskManager;
+		public HeapManager heapManager;
 		
 		@Override
 		public void init() throws Exception {
@@ -71,6 +73,13 @@ public class Application extends AbstractSystem {
 			add(logger);
 			fileManager = new FileManager(logger);
 			add(fileManager);
+			taskManager = new TaskManager(
+					logger);
+			add(taskManager);
+			heapManager = new HeapManager(
+					taskManager, 
+					logger);
+			add(heapManager);
 			super.init();
 		}
 	}
@@ -86,31 +95,29 @@ public class Application extends AbstractSystem {
 		public void init() throws Exception {
 			
 			cache = Cache.create(
-					ioSystem.fileManager, 
-					ioSystem.logger);
+					core.fileManager, 
+					core.logger);
 			add(cache);
 			configuration = Configuration.create(
 					cache, 
-					ioSystem.fileManager, 
-					runtimeSystem.taskManager, // TODO remove dependency
-					ioSystem.logger);
+					core.fileManager, 
+					core.taskManager,
+					core.logger);
 			add(configuration);
 			history = History.create(
 					configuration, 
-					ioSystem.fileManager, 
-					ioSystem.logger);
+					core.fileManager, 
+					core.logger);
 			add(history);
 			super.init();
 			
-			ioSystem.logger.setLogConfig(configuration);
+			core.logger.setLogConfig(configuration);
 		}
 	}
 	
 	/** runtime related components */
 	private class RuntimeSystem extends AbstractSystem {
 		
-		public TaskManager taskManager;
-		public HeapManager heapManager;
 		public Registry registry;
 		public LaunchManager launchManager;
 		public ScheduleManager scheduleManager;
@@ -119,35 +126,28 @@ public class Application extends AbstractSystem {
 		@Override
 		public void init() throws Exception {
 			
-			taskManager = new TaskManager(
-					ioSystem.logger);
-			add(taskManager);
-			heapManager = new HeapManager(
-					taskManager, 
-					ioSystem.logger);
-			add(heapManager);
 			registry = new Registry(
-					persistenceSystem.configuration, 
-					persistenceSystem.cache, 
-					taskManager, 
-					ioSystem.logger);
+					persistence.configuration, 
+					persistence.cache, 
+					core.taskManager, 
+					core.logger);
 			add(registry);
 			launchManager = new LaunchManager(
-					persistenceSystem.configuration);
+					persistence.configuration);
 			add(launchManager);
 			scheduleManager = new ScheduleManager(
-					persistenceSystem.configuration, 
-					persistenceSystem.history, 
-					ioSystem.fileManager, 
-					taskManager, 
+					persistence.configuration, 
+					persistence.history, 
+					core.fileManager, 
+					core.taskManager, 
 					launchManager, 
-					ioSystem.logger);
+					core.logger);
 			add(scheduleManager);
 			httpServer = new HttpServer(
 					Constants.HTTP_PORT, 
-					ioSystem.fileManager, 
-					taskManager, 
-					ioSystem.logger);
+					core.fileManager, 
+					core.taskManager, 
+					core.logger);
 			add(httpServer);
 			super.init();
 		}
@@ -169,42 +169,42 @@ public class Application extends AbstractSystem {
 			
 			projectMenu = new ProjectMenu(
 					application, 
-					persistenceSystem.configuration, 
-					runtimeSystem.launchManager, 
-					ioSystem.logger);
+					persistence.configuration, 
+					runtime.launchManager, 
+					core.logger);
 			add(projectMenu);
 			toolsMenu = new ToolsMenu(
-					persistenceSystem.configuration, 
-					ioSystem.fileManager, 
-					runtimeSystem.heapManager);
+					persistence.configuration, 
+					core.fileManager, 
+					core.heapManager);
 			add(toolsMenu);
 			configPanel = new ConfigPanel(
-					persistenceSystem.configuration, 
-					persistenceSystem.history, 
-					ioSystem.fileManager, 
-					runtimeSystem.taskManager, 
-					runtimeSystem.launchManager, 
-					runtimeSystem.registry);
+					persistence.configuration, 
+					persistence.history, 
+					core.fileManager, 
+					core.taskManager, 
+					runtime.launchManager, 
+					runtime.registry);
 			add(configPanel);
 			schedulerPanel = new SchedulerPanel(
-					runtimeSystem.launchManager, 
-					runtimeSystem.scheduleManager, 
-					ioSystem.logger);
+					runtime.launchManager, 
+					runtime.scheduleManager, 
+					core.logger);
 			add(schedulerPanel);
 			historyPanel = new HistoryPanel(
-					persistenceSystem.history, 
-					ioSystem.logger);
+					persistence.history, 
+					core.logger);
 			add(historyPanel);
 			preferencePanel = new PreferencePanel(
-					persistenceSystem.configuration, 
-					runtimeSystem.scheduleManager, 
-					persistenceSystem.history);
+					persistence.configuration, 
+					runtime.scheduleManager, 
+					persistence.history);
 			add(preferencePanel);
 			window = new Window(
-					persistenceSystem.configuration, 
-					runtimeSystem.launchManager, 
-					runtimeSystem.heapManager, 
-					ioSystem.logger, 
+					persistence.configuration, 
+					runtime.launchManager, 
+					core.heapManager, 
+					core.logger, 
 					projectMenu, 
 					toolsMenu, 
 					configPanel, 

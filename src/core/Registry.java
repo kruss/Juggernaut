@@ -3,6 +3,7 @@ package core;
 import java.util.ArrayList;
 
 import logger.Logger;
+import logger.Logger.Module;
 
 import operation.CommandOperationConfig;
 import operation.EclipseOperationConfig;
@@ -14,6 +15,7 @@ import trigger.SVNTriggerConfig;
 import data.AbstractOperationConfig;
 import data.AbstractTriggerConfig;
 
+/** runtime object factory */
 public class Registry implements ISystemComponent {
 
 	private Configuration configuration;
@@ -21,35 +23,36 @@ public class Registry implements ISystemComponent {
 	private TaskManager taskManager;
 	private Logger logger;
 	
-	private ArrayList<AbstractOperationConfig> operationConfigs;
-	private ArrayList<AbstractTriggerConfig> triggerConfigs;
+	private ArrayList<Class<?>> operationConfigs;
+	private ArrayList<Class<?>> triggerConfigs;
 	
-	public ArrayList<AbstractOperationConfig> getOperationConfigs(){ return operationConfigs; }	
-	public ArrayList<AbstractTriggerConfig> getTriggerConfigs(){ return triggerConfigs; }
-	
-	public Registry(Configuration configuration, Cache cache, TaskManager taskManager, Logger logger){
-	
+	public Registry(
+			Configuration configuration, 
+			Cache cache, 
+			TaskManager taskManager, 
+			Logger logger)
+	{
 		this.configuration = configuration;
 		this.cache = cache;
 		this.taskManager = taskManager;
 		this.logger = logger;
 		
-		operationConfigs = new ArrayList<AbstractOperationConfig>();
-		triggerConfigs = new ArrayList<AbstractTriggerConfig>();
+		operationConfigs = new ArrayList<Class<?>>();
+		triggerConfigs = new ArrayList<Class<?>>();
 	}
 	
 	@Override
 	public void init() throws Exception {
 		
 		operationConfigs.clear();
-		operationConfigs.add(new SampleOperationConfig());
-		operationConfigs.add(new CommandOperationConfig());
-		operationConfigs.add(new SVNOperationConfig());
-		operationConfigs.add(new EclipseOperationConfig());
+		operationConfigs.add(SampleOperationConfig.class);
+		operationConfigs.add(CommandOperationConfig.class);
+		operationConfigs.add(SVNOperationConfig.class);
+		operationConfigs.add(EclipseOperationConfig.class);
 		
 		triggerConfigs.clear();
-		triggerConfigs.add(new IntervallTriggerConfig());
-		triggerConfigs.add(new SVNTriggerConfig());
+		triggerConfigs.add(IntervallTriggerConfig.class);
+		triggerConfigs.add(SVNTriggerConfig.class);
 	}
 	
 	@Override
@@ -58,27 +61,43 @@ public class Registry implements ISystemComponent {
 	public ArrayList<String> getOperationNames(){
 		
 		ArrayList<String> names = new ArrayList<String>();
-		for(AbstractOperationConfig operationConfig : operationConfigs){
-			names.add(operationConfig.getName());
+		for(Class<?> clazz : operationConfigs){
+			try{
+				names.add(getOperationName(clazz));
+			}catch(Exception e) {
+				logger.error(Module.COMMON, e);
+			}
 		}
 		return names;
 	}
 	
+	private String getOperationName(Class<?> clazz) throws Exception {
+		return ((AbstractOperationConfig) clazz.newInstance()).getName();
+	}
+
 	public ArrayList<String> getTriggerNames(){
 		
 		ArrayList<String> names = new ArrayList<String>();
-		for(AbstractTriggerConfig triggerConfig : triggerConfigs){
-			names.add(triggerConfig.getName());
+		for(Class<?> clazz : triggerConfigs){
+			try{
+				names.add(getTriggerName(clazz));
+			}catch(Exception e) {
+				logger.error(Module.COMMON, e);
+			}
 		}
 		return names;
+	}
+	
+	private String getTriggerName(Class<?> clazz) throws Exception {
+		return ((AbstractTriggerConfig) clazz.newInstance()).getName();
 	}
 
 	public AbstractOperationConfig createOperationConfig(String name) throws Exception {
 
-		for(AbstractOperationConfig operationConfig : operationConfigs){
-			if(name.equals(operationConfig.getName())){
-				AbstractOperationConfig instance = operationConfig.getClass().newInstance();
-				instance.init(configuration, cache, taskManager, logger);
+		for(Class<?> clazz : operationConfigs){
+			if(name.equals(getOperationName(clazz))){
+				AbstractOperationConfig instance = (AbstractOperationConfig) clazz.newInstance();
+				instance.initInstance(configuration, cache, taskManager, logger);
 				return instance;
 			}
 		}
@@ -87,10 +106,10 @@ public class Registry implements ISystemComponent {
 	
 	public AbstractTriggerConfig createTriggerConfig(String name) throws Exception {
 
-		for(AbstractTriggerConfig triggerConfig : triggerConfigs){
-			if(name.equals(triggerConfig.getName())){
-				AbstractTriggerConfig instance = triggerConfig.getClass().newInstance();
-				instance.init(configuration, cache, taskManager, logger);
+		for(Class<?> clazz : triggerConfigs){
+			if(name.equals(getTriggerName(clazz))){
+				AbstractTriggerConfig instance = (AbstractTriggerConfig) clazz.newInstance();
+				instance.initInstance(configuration, cache, taskManager, logger);
 				return instance;
 			}
 		}

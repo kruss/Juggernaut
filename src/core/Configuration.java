@@ -209,10 +209,10 @@ public class Configuration implements ISystemComponent, IOptionInitializer, ILog
 		for(LaunchConfig launchConfig : configuration.launchConfigs){
 			launchConfig.setDirty(false);
 			for(AbstractOperationConfig operationConfig : launchConfig.getOperationConfigs()){
-				operationConfig.init(configuration, cache, taskManager, logger);
+				operationConfig.initInstance(configuration, cache, taskManager, logger);
 			}
 			for(AbstractTriggerConfig triggerConfig : launchConfig.getTriggerConfigs()){
-				triggerConfig.init(configuration, cache, taskManager, logger);
+				triggerConfig.initInstance(configuration, cache, taskManager, logger);
 			}
 		}
 		configuration.dirty = false;

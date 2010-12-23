@@ -49,7 +49,7 @@ public abstract class AbstractTriggerConfig implements IOptionInitializer {
 		));
 	}
 	
-	public void init(Configuration configuration, Cache cache, TaskManager taskManager, Logger logger) {
+	public void initInstance(Configuration configuration, Cache cache, TaskManager taskManager, Logger logger) {
 		this.configuration = configuration;
 		this.cache = cache;
 		this.taskManager = taskManager;
