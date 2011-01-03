@@ -19,15 +19,16 @@ import data.Artifact;
 import data.LaunchHistory;
 import data.LaunchConfig;
 import data.OperationHistory;
+import smtp.SmtpClient;
 import util.FileTools;
 import util.StringTools;
 import util.SystemTools;
 import launch.StatusManager.Status;
+import data.Error;
 
 import logger.Logger;
 import logger.Logger.Mode;
 import logger.ILogConfig.Module;
-import mail.SmtpManager;
 
 public class LaunchAgent extends LifecycleObject {
 
@@ -48,7 +49,7 @@ public class LaunchAgent extends LifecycleObject {
 			History history, 
 			FileManager fileManager, 
 			TaskManager taskManager, 
-			SmtpManager smtpManager,
+			SmtpClient smtpClient,
 			LaunchConfig launchConfig,
 			String trigger)
 	{
@@ -80,7 +81,7 @@ public class LaunchAgent extends LifecycleObject {
 			}
 		}
 		
-		launchNotification = new LaunchNotification(this, smtpManager);
+		launchNotification = new LaunchNotification(smtpClient, cache, this);
 		
 		launchHistory = new LaunchHistory(this, fileManager);
 		for(AbstractOperation operation : operations){
@@ -185,6 +186,13 @@ public class LaunchAgent extends LifecycleObject {
 	@Override
 	protected void finish() {
 
+		for(AbstractOperation operation : operations){
+			if(StatusManager.isError(operation.getStatusManager().getStatus())){
+				statusManager.addError(launchConfig.getId(), "Launch did not succeed");
+				break;
+			}
+		}
+		
 		propertyContainer.addProperties(
 				launchConfig.getId(), 
 				statusManager.getProperties()
@@ -236,5 +244,16 @@ public class LaunchAgent extends LifecycleObject {
 			}	
 		}
 		return list;
+	}
+	
+	public ArrayList<Error> getNotifyingErrors(){
+		
+		ArrayList<Error> errors = new ArrayList<Error>();
+		for(AbstractOperation operation : operations){
+			if(operation.getConfig().isNotifying()){
+				errors.addAll(operation.getStatusManager().getErrors());
+			}
+		}
+		return errors;
 	}
 }

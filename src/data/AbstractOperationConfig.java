@@ -24,7 +24,7 @@ public abstract class AbstractOperationConfig implements IOptionInitializer {
 	}
 	
 	public enum OPTIONS {
-		ACTIVE, CRITICAL
+		ACTIVE, NOTIFY, CRITICAL
 	}
 
 	protected transient TaskManager taskManager;
@@ -43,6 +43,11 @@ public abstract class AbstractOperationConfig implements IOptionInitializer {
 				GROUPS.GENERAL.toString(),
 				OPTIONS.ACTIVE.toString(), "The operation's active state",
 				Type.BOOLEAN, true
+		));
+		optionContainer.getOptions().add(new Option(
+				GROUPS.GENERAL.toString(),
+				OPTIONS.NOTIFY.toString(), "Errors will be notified to committer",
+				Type.BOOLEAN, false
 		));
 		optionContainer.getOptions().add(new Option(
 				GROUPS.GENERAL.toString(),
@@ -65,6 +70,10 @@ public abstract class AbstractOperationConfig implements IOptionInitializer {
 	
 	public boolean isActive(){ 
 		return optionContainer.getOption(OPTIONS.ACTIVE.toString()).getBooleanValue(); 
+	}
+	
+	public boolean isNotifying() {
+		return optionContainer.getOption(OPTIONS.NOTIFY.toString()).getBooleanValue(); 
 	}
 	
 	public boolean isCritical() {

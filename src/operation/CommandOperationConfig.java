@@ -2,6 +2,8 @@ package operation;
 
 import java.util.ArrayList;
 
+import util.StringTools;
+
 import core.Cache;
 import core.Configuration;
 import core.TaskManager;
@@ -65,12 +67,13 @@ public class CommandOperationConfig extends AbstractOperationConfig {
 		StringBuilder arguments = new StringBuilder();
 		String value = optionContainer.getOption(OPTIONS.ARGUMENTS.toString()).getStringValue();
 		String[] strings = value.split("\\n");
-		for(int i=0; i<strings.length; i++){
-			if(!strings[i].startsWith("//")){
+		for(String string : strings){
+			String trim = string.trim();
+			if(!trim.isEmpty() && !trim.startsWith("//")){
 				if(arguments.length() > 0){ 
 					arguments.append(" "); 
 				}
-				arguments.append(strings[i].trim());
+				arguments.append(trim);
 			}
 		}
 		return arguments.toString();
@@ -78,13 +81,8 @@ public class CommandOperationConfig extends AbstractOperationConfig {
 	
 	public ArrayList<String> getOutputs(){ 
 		
-		ArrayList<String> list = new ArrayList<String>();
 		String value = optionContainer.getOption(OPTIONS.OUTPUT.toString()).getStringValue();
-		String[] strings = value.split(", ");
-		for(String string : strings){
-				list.add(string.trim());
-		}
-		return list;
+		return StringTools.split(value, ", ");
 	}
 	
 	@Override

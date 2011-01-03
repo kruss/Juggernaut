@@ -80,7 +80,7 @@ public abstract class AbstractHtmlPage {
 		}
 	}
 	
-	private String getCSS(){
+	public static String getCSS(){
 		
 		StringBuilder css = new StringBuilder();
 		css.append("<style type=\"text/css\"> \n");

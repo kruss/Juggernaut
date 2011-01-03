@@ -3,11 +3,11 @@ package data;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import smtp.SmtpClient;
+import smtp.ISmtpConfig.NotificationMode;
 import util.StringTools;
 
 import launch.LaunchAgent;
-import mail.SmtpManager;
-import mail.ISmtpConfig.NotificationMode;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
@@ -131,11 +131,7 @@ public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitialize
 		
 		ArrayList<String> list = new ArrayList<String>();
 		String value = optionContainer.getOption(OPTIONS.ADMINISTRATORS.toString()).getStringValue();
-		String[] strings = value.split(", ");
-		for(String string : strings){
-				list.add(string.trim());
-		}
-		return list;
+		return StringTools.split(value, ", ");
 	}
 	
 	public String getSmtpMessage() {
@@ -188,9 +184,9 @@ public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitialize
 			History history, 
 			FileManager fileManager, 
 			TaskManager taskManager, 
-			SmtpManager smtpManager,
+			SmtpClient smtpClient,
 			String trigger)
 	{
-		return new LaunchAgent(configuration, cache, history, fileManager, taskManager, smtpManager, this, trigger);
+		return new LaunchAgent(configuration, cache, history, fileManager, taskManager, smtpClient, this, trigger);
 	}
 }

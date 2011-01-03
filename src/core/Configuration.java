@@ -10,8 +10,8 @@ import javax.swing.JTextField;
 
 import logger.ILogConfig;
 import logger.Logger;
-import mail.ISmtpConfig;
 
+import smtp.ISmtpConfig;
 import util.FileTools;
 import util.IChangedListener;
 import util.StringTools;
@@ -197,13 +197,8 @@ implements
 	@Override
 	public ArrayList<String> getAdministrators() {
 		
-		ArrayList<String> list = new ArrayList<String>();
 		String value = optionContainer.getOption(OPTIONS.ADMINISTRATORS.toString()).getStringValue();
-		String[] strings = value.split(", ");
-		for(String string : strings){
-				list.add(string.trim());
-		}
-		return list;
+		return StringTools.split(value, ", ");
 	}
 	
 	public void addListener(IChangedListener listener){ listeners.add(listener); }

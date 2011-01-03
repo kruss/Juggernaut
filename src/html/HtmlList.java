@@ -4,13 +4,19 @@ import java.util.ArrayList;
 
 public class HtmlList {
 
+	public enum Type { UL, OL }
+	
 	private String name;
 	private ArrayList<ListEntry> entries;
+	private Type type;
 	
 	public HtmlList(String name){
 		this.name = name;
 		entries = new ArrayList<ListEntry>();
+		type = Type.UL;
 	}
+	
+	public void setType(Type type){ this.type = type; }
 	
 	public void add(String name, String content){
 		
@@ -24,11 +30,11 @@ public class HtmlList {
 		if(name!=null){
 			html.append("<h3>"+name+"</h3>\n");
 		}
-		html.append("<ul>\n");
+		html.append("<"+type.toString()+">\n");
 		for(ListEntry entry : entries){
 			html.append(entry.getHtml());
 		}
-		html.append("</ul>\n");
+		html.append("</"+type.toString()+">\n");
 		return html.toString();
 	}
 	
@@ -42,7 +48,11 @@ public class HtmlList {
 		}
 		
 		public String getHtml(){
-			return "<li><b>"+name+"</b>: "+content+"</li>\n";
+			if(name != null){
+				return "<li><b>"+name+"</b>: "+content+"</li>\n";
+			}else{
+				return "<li>"+content+"</li>\n";
+			}
 		}
 	}
 }

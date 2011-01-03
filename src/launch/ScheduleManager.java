@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 
+import smtp.SmtpClient;
 import util.IChangedListener;
 import util.Task;
 
@@ -21,7 +22,6 @@ import launch.LaunchManager.LaunchStatus;
 
 import logger.Logger;
 import logger.ILogConfig.Module;
-import mail.SmtpManager;
 
 /** checks the configured launches for triggers to be fired */
 public class ScheduleManager implements ISystemComponent {
@@ -31,7 +31,7 @@ public class ScheduleManager implements ISystemComponent {
 	private History history;
 	private FileManager fileManager;
 	private TaskManager taskManager;
-	private SmtpManager smtpManager;
+	private SmtpClient smtpClient;
 	private LaunchManager launchManager;
 	private Logger logger;
 	private SchedulerTask scheduler;
@@ -57,7 +57,7 @@ public class ScheduleManager implements ISystemComponent {
 			History history,
 			FileManager fileManager,
 			TaskManager taskManager,
-			SmtpManager smtpManager,
+			SmtpClient smtpClient,
 			LaunchManager launchManager, 
 			Logger logger
 	){
@@ -67,7 +67,7 @@ public class ScheduleManager implements ISystemComponent {
 		this.history = history;
 		this.fileManager = fileManager;
 		this.taskManager = taskManager;
-		this.smtpManager = smtpManager;
+		this.smtpClient = smtpClient;
 		this.launchManager = launchManager;
 		this.logger = logger;
 		scheduler = null;
@@ -144,7 +144,7 @@ public class ScheduleManager implements ISystemComponent {
 				if(!launched)
 				{
 					LaunchAgent launch = launchConfig.createLaunch(
-							configuration, cache, history, fileManager, taskManager, smtpManager, triggerStatus.message
+							configuration, cache, history, fileManager, taskManager, smtpClient, triggerStatus.message
 					);
 					LaunchStatus launchStatus = launchManager.runLaunch(launch);
 					if(launchStatus.launched){

@@ -11,6 +11,7 @@ import util.FileTools;
 
 import launch.LifecycleObject;
 import launch.LaunchAgent;
+import launch.StatusManager;
 
 import logger.Logger;
 import logger.ILogConfig.Module;
@@ -79,7 +80,12 @@ public abstract class AbstractOperation extends LifecycleObject {
 	protected void init() throws Exception {}
 	
 	@Override
-	protected void finish() {}
+	protected void finish() {
+		
+		if(StatusManager.isError(statusManager.getStatus())){
+			statusManager.addError(config.getId(), "Operation did not succeed");
+		}
+	}
 	
 	/** copy a relative output-folder to history */
 	public void collectOuttput(String outputFolder) {

@@ -151,6 +151,19 @@ public class StringTools {
 		return join.toString();
 	}
 	
+	public static ArrayList<String> split(String value, String delim){
+		
+		ArrayList<String> list = new ArrayList<String>();
+		String[] strings = value.split(delim);
+		for(String string : strings){
+				String trim = string.trim();
+				if(!trim.isEmpty()){
+					list.add(trim);
+				}
+		}
+		return list;
+	}
+	
 	public static <T extends Enum<T>> ArrayList<String> enum2strings(Class<T> clazz) {      
 		try{         
 			ArrayList<String> list = new ArrayList<String>();                
@@ -161,5 +174,11 @@ public class StringTools {
 		}catch(Exception e) {         
 			throw new RuntimeException(e);     
 		} 
+	}
+
+	public static void addUnique(ArrayList<String> list, String item) {
+		if(!list.contains(item)){
+			list.add(item);
+		}
 	} 
 }

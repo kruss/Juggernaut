@@ -3,8 +3,7 @@ package core;
 import http.HttpServer;
 import launch.LaunchManager;
 import launch.ScheduleManager;
-import mail.SmtpManager;
-import mail.SmtpClient;
+import smtp.SmtpClient;
 import ui.ConfigPanel;
 import ui.HistoryPanel;
 import ui.PreferencePanel;
@@ -119,7 +118,7 @@ public class Application extends AbstractSystem {
 	private class RuntimeSystem extends AbstractSystem {
 		
 		public Registry registry;
-		public SmtpManager smtpManager;
+		public SmtpClient smtpClient;
 		public LaunchManager launchManager;
 		public ScheduleManager scheduleManager;
 		public HttpServer httpServer;
@@ -131,11 +130,9 @@ public class Application extends AbstractSystem {
 					core.taskManager, 
 					core.logger);
 			add(registry);
-			smtpManager = new SmtpManager(
-					persistence.configuration, 
-					new SmtpClient(persistence.configuration), 
-					core.logger);
-			add(smtpManager);
+			smtpClient = new SmtpClient(
+					persistence.configuration);
+			add(smtpClient);
 			launchManager = new LaunchManager(
 					persistence.configuration);
 			add(launchManager);
@@ -145,7 +142,7 @@ public class Application extends AbstractSystem {
 					persistence.history, 
 					core.fileManager, 
 					core.taskManager,
-					smtpManager,
+					smtpClient,
 					launchManager, 
 					core.logger);
 			add(scheduleManager);
@@ -190,7 +187,7 @@ public class Application extends AbstractSystem {
 					persistence.history, 
 					core.fileManager, 
 					core.taskManager, 
-					runtime.smtpManager,
+					runtime.smtpClient,
 					runtime.launchManager, 
 					runtime.registry);
 			add(configPanel);

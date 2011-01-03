@@ -23,6 +23,7 @@ public class LaunchHistoryPage extends AbstractHistoryPage {
 		html.append(getStatusHtml());
 		html.append(getOperationsHtml());
 		html.append(getArtifactHtml());
+		html.append(getErrorHtml());
 		return html.toString();
 	}
 	

@@ -2,6 +2,8 @@ package operation;
 
 import java.util.ArrayList;
 
+import util.StringTools;
+
 import core.Cache;
 import core.Configuration;
 import core.TaskManager;
@@ -62,7 +64,8 @@ public class EclipseOperationConfig extends AbstractOperationConfig {
 		String value = optionContainer.getOption(OPTIONS.BUILD.toString()).getStringValue();
 		String[] strings = value.split("\\n");
 		for(String string : strings){
-			if(!string.startsWith("//")){
+			String trim = string.trim();
+			if(!trim.isEmpty() && !trim.startsWith("//")){
 				list.add(string);
 			}
 		}
@@ -71,13 +74,8 @@ public class EclipseOperationConfig extends AbstractOperationConfig {
 	
 	public ArrayList<String> getExcludePattern(){ 
 		
-		ArrayList<String> list = new ArrayList<String>();
 		String value = optionContainer.getOption(OPTIONS.EXCLUDE.toString()).getStringValue();
-		String[] strings = value.split(", ");
-		for(String string : strings){
-				list.add(string);
-		}
-		return list;
+		return StringTools.split(value, ", ");
 	}
 	
 	public boolean isCleanBuild(){ 

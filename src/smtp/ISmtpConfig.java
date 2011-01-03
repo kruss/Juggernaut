@@ -1,10 +1,10 @@
-package mail;
+package smtp;
 
 import java.util.ArrayList;
 
 public interface ISmtpConfig {
 
-	public enum NotificationMode { DISABLED, ADMINS, ADMINS_AND_COMMITTER }
+	public enum NotificationMode { DISABLED, ADMINSTRATORS, COMMITTER }
 
 	public NotificationMode getNotificationMode();
 	

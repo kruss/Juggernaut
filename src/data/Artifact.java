@@ -16,8 +16,9 @@ public class Artifact {
 	public String name;
 	public String description;
 	private String content;
+	private String mimetype;
 	private File file;
-	private Status status;
+	public Status status;
 	
 	public ArrayList<Artifact> childs;
 	
@@ -25,6 +26,14 @@ public class Artifact {
 		
 		init(name);
 		this.content = content;
+		this.mimetype = "txt";
+	}
+	
+	public Artifact(String name, String content, String mimetype){
+		
+		init(name);
+		this.content = content;
+		this.mimetype = mimetype;
 	}
 	
 	public Artifact(String name, File file){
@@ -48,7 +57,7 @@ public class Artifact {
 		if(content != null){
 			String path = 
 				folder.getAbsolutePath()+File.separator+
-				UUID.randomUUID().toString()+".txt";
+				UUID.randomUUID().toString()+"."+mimetype;
 			FileTools.writeFile(path, content, false);
 			file = new File(path);
 			content = null;
