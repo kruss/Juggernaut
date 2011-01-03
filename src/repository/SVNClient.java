@@ -7,8 +7,9 @@ import java.util.regex.Pattern;
 
 import core.TaskManager;
 
+
 import logger.Logger;
-import logger.Logger.Module;
+import logger.ILogConfig.Module;
 
 import util.CommandTask;
 import util.SystemTools;

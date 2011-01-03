@@ -18,6 +18,7 @@ import javax.swing.JTabbedPane;
 import launch.LaunchAgent;
 import launch.LaunchManager;
 import launch.LaunchManager.LaunchStatus;
+import mail.SmtpManager;
 
 import util.IChangedListener;
 import util.UiTools;
@@ -41,6 +42,7 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangedLis
 	private History history;
 	private FileManager fileManager;
 	private TaskManager taskManager;
+	private SmtpManager smtpManager;
 	private LaunchManager launchManager;
 	
 	private ArrayList<IChangedListener> listeners;
@@ -64,6 +66,7 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangedLis
 			History history,
 			FileManager fileManager,
 			TaskManager taskManager,
+			SmtpManager smtpManager,
 			LaunchManager launchManager,
 			Registry registry)
 	{
@@ -72,6 +75,7 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangedLis
 		this.history = history;
 		this.fileManager = fileManager;
 		this.taskManager = taskManager;
+		this.smtpManager = smtpManager;
 		this.launchManager = launchManager;
 		listeners = new ArrayList<IChangedListener>();
 		
@@ -282,7 +286,9 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangedLis
 			{
 				try{
 					LaunchConfig config = configuration.getLaunchConfigs().get(index);
-					LaunchAgent launch = config.createLaunch(configuration, cache, history, fileManager, taskManager, AbstractTrigger.USER_TRIGGER);
+					LaunchAgent launch = config.createLaunch(
+							configuration, cache, history, fileManager, taskManager, smtpManager, AbstractTrigger.USER_TRIGGER
+					);
 					LaunchStatus status = launchManager.runLaunch(launch);
 					if(!status.launched){
 						UiTools.infoDialog(status.message);

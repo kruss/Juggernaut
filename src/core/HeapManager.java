@@ -5,8 +5,9 @@ import java.util.ArrayList;
 import util.IChangedListener;
 import util.Task;
 
+
 import logger.Logger;
-import logger.Logger.Module;
+import logger.ILogConfig.Module;
 
 /** provides access to the application's heap */
 public class HeapManager implements ISystemComponent {

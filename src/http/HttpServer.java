@@ -19,8 +19,9 @@ import core.TaskManager;
 
 import util.Task;
 
+
 import logger.Logger;
-import logger.Logger.Module;
+import logger.ILogConfig.Module;
 
 // TODO refactor
 @SuppressWarnings({ "deprecation", "unchecked" })

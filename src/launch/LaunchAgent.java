@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import operation.IRepositoryOperation;
+
 import core.Cache;
 import core.Configuration;
 import core.FileManager;
@@ -21,9 +23,11 @@ import util.FileTools;
 import util.StringTools;
 import util.SystemTools;
 import launch.StatusManager.Status;
+
 import logger.Logger;
 import logger.Logger.Mode;
-import logger.Logger.Module;
+import logger.ILogConfig.Module;
+import mail.SmtpManager;
 
 public class LaunchAgent extends LifecycleObject {
 
@@ -33,6 +37,7 @@ public class LaunchAgent extends LifecycleObject {
 	private String trigger;
 	private PropertyContainer propertyContainer;
 	private ArrayList<AbstractOperation> operations;
+	private LaunchNotification launchNotification;
 	private LaunchHistory launchHistory;
 	private Logger logger;
 	private boolean aboard;
@@ -43,6 +48,7 @@ public class LaunchAgent extends LifecycleObject {
 			History history, 
 			FileManager fileManager, 
 			TaskManager taskManager, 
+			SmtpManager smtpManager,
 			LaunchConfig launchConfig,
 			String trigger)
 	{
@@ -53,7 +59,7 @@ public class LaunchAgent extends LifecycleObject {
 		this.launchConfig = launchConfig.clone();
 		this.trigger = trigger;
 		logger = new Logger(Mode.FILE);
-		logger.setLogManager(configuration);
+		logger.setConfig(configuration);
 		
 		propertyContainer = new PropertyContainer();
 		propertyContainer.addProperty(launchConfig.getId(), "Name", launchConfig.getName());
@@ -73,6 +79,8 @@ public class LaunchAgent extends LifecycleObject {
 				);
 			}
 		}
+		
+		launchNotification = new LaunchNotification(this, smtpManager);
 		
 		launchHistory = new LaunchHistory(this, fileManager);
 		for(AbstractOperation operation : operations){
@@ -182,7 +190,11 @@ public class LaunchAgent extends LifecycleObject {
 				statusManager.getProperties()
 		);
 		
-		//TODO perform notification
+		try{ 
+			launchNotification.performNotification();
+		}catch(Exception e){
+			logger.error(Module.SMTP, e);
+		}
 		
 		try{ 
 			launchHistory.finish();
@@ -213,5 +225,16 @@ public class LaunchAgent extends LifecycleObject {
 			info.append("\t"+key+": "+properties.get(key)+"\n");
 		}
 		logger.debug(Module.COMMON, "Properties [\n"+info.toString()+"]");
+	}
+	
+	public ArrayList<IRepositoryOperation> getRepositoryOperations(){
+		
+		ArrayList<IRepositoryOperation> list = new ArrayList<IRepositoryOperation>();
+		for(AbstractOperation operation : operations){
+			if(operation instanceof IRepositoryOperation){
+				list.add((IRepositoryOperation) operation);
+			}	
+		}
+		return list;
 	}
 }

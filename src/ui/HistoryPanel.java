@@ -22,8 +22,9 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
+
 import logger.Logger;
-import logger.Logger.Module;
+import logger.ILogConfig.Module;
 
 import core.History;
 import core.ISystemComponent;

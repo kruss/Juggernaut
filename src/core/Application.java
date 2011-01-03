@@ -5,6 +5,8 @@ import launch.LaunchManager;
 import launch.ScheduleManager;
 import logger.Logger;
 import logger.Logger.Mode;
+import mail.SmtpManager;
+import mail.SmtpClient;
 import ui.ConfigPanel;
 import ui.HistoryPanel;
 import ui.Monitor;
@@ -146,6 +148,7 @@ public class Application extends AbstractSystem {
 		}
 		
 		public Registry registry;
+		public SmtpManager smtpManager;
 		public LaunchManager launchManager;
 		public ScheduleManager scheduleManager;
 		public HttpServer httpServer;
@@ -157,6 +160,11 @@ public class Application extends AbstractSystem {
 					core.taskManager, 
 					core.logger);
 			add(registry);
+			smtpManager = new SmtpManager(
+					persistence.configuration, 
+					new SmtpClient(persistence.configuration), 
+					core.logger);
+			add(smtpManager);
 			launchManager = new LaunchManager(
 					persistence.configuration);
 			add(launchManager);
@@ -165,7 +173,8 @@ public class Application extends AbstractSystem {
 					persistence.cache,
 					persistence.history, 
 					core.fileManager, 
-					core.taskManager, 
+					core.taskManager,
+					smtpManager,
 					launchManager, 
 					core.logger);
 			add(scheduleManager);
@@ -214,6 +223,7 @@ public class Application extends AbstractSystem {
 					persistence.history, 
 					core.fileManager, 
 					core.taskManager, 
+					runtime.smtpManager,
 					runtime.launchManager, 
 					runtime.registry);
 			add(configPanel);

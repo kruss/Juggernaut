@@ -10,8 +10,9 @@ import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
 import launch.LaunchManager;
+
 import logger.Logger;
-import logger.Logger.Module;
+import logger.ILogConfig.Module;
 
 import util.IChangedListener;
 import util.UiTools;

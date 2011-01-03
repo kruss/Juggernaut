@@ -10,7 +10,8 @@ import repository.IRepositoryClient.HistoryInfo;
 import launch.LaunchAgent;
 import launch.PropertyContainer;
 import launch.StatusManager.Status;
-import logger.Logger.Module;
+
+import logger.ILogConfig.Module;
 import data.AbstractOperation;
 import data.Artifact;
 

@@ -2,8 +2,9 @@ package core;
 
 import java.util.ArrayList;
 
+
 import logger.Logger;
-import logger.Logger.Module;
+import logger.ILogConfig.Module;
 
 import operation.CommandOperationConfig;
 import operation.EclipseOperationConfig;

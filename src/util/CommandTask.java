@@ -2,8 +2,9 @@ package util;
 
 import java.io.File;
 
+
 import logger.Logger;
-import logger.Logger.Module;
+import logger.ILogConfig.Module;
 
 
 import core.Constants;

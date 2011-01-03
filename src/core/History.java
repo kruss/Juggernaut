@@ -7,8 +7,9 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import launch.StatusManager.Status;
+
 import logger.Logger;
-import logger.Logger.Module;
+import logger.ILogConfig.Module;
 
 import util.FileTools;
 import util.IChangedListener;

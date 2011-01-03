@@ -3,8 +3,9 @@ package core;
 import java.io.File;
 
 import launch.PropertyContainer;
+
 import logger.Logger;
-import logger.Logger.Module;
+import logger.ILogConfig.Module;
 import util.FileTools;
 
 import com.thoughtworks.xstream.XStream;

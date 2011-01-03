@@ -7,7 +7,8 @@ import util.StringTools;
 import util.SystemTools;
 import launch.LaunchAgent;
 import launch.StatusManager.Status;
-import logger.Logger.Module;
+
+import logger.ILogConfig.Module;
 import data.AbstractOperation;
 
 public class SampleOperation extends AbstractOperation {

@@ -13,8 +13,9 @@ import util.SystemTools;
 import launch.LaunchAgent;
 import launch.PropertyContainer;
 import launch.StatusManager.Status;
-import logger.Logger.Level;
-import logger.Logger.Module;
+
+import logger.ILogConfig.Level;
+import logger.ILogConfig.Module;
 import data.AbstractOperation;
 import data.Artifact;
 

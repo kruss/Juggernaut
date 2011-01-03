@@ -6,8 +6,9 @@ import java.io.InputStreamReader;
 
 import core.TaskManager;
 
+
 import logger.Logger;
-import logger.Logger.Module;
+import logger.ILogConfig.Module;
 
 
 public class CommandStreamer extends Task {

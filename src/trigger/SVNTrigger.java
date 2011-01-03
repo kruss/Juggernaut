@@ -9,8 +9,9 @@ import core.TaskManager;
 import repository.SVNClient;
 import repository.IRepositoryClient.RevisionInfo;
 
+
 import logger.Logger;
-import logger.Logger.Module;
+import logger.ILogConfig.Module;
 
 
 import data.AbstractTrigger;

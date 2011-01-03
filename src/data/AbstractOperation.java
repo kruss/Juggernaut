@@ -11,8 +11,9 @@ import util.FileTools;
 
 import launch.LifecycleObject;
 import launch.LaunchAgent;
+
 import logger.Logger;
-import logger.Logger.Module;
+import logger.ILogConfig.Module;
 
 public abstract class AbstractOperation extends LifecycleObject {
 

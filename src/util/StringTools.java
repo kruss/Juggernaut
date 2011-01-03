@@ -150,4 +150,16 @@ public class StringTools {
 		}
 		return join.toString();
 	}
+	
+	public static <T extends Enum<T>> ArrayList<String> enum2strings(Class<T> clazz) {      
+		try{         
+			ArrayList<String> list = new ArrayList<String>();                
+			for(Object obj : clazz.getEnumConstants()){             
+				list.add((String) obj.toString());          
+			}          
+			return list;     
+		}catch(Exception e) {         
+			throw new RuntimeException(e);     
+		} 
+	} 
 }

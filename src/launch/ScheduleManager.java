@@ -18,8 +18,10 @@ import data.AbstractTriggerConfig;
 import data.LaunchConfig;
 import data.AbstractTrigger.TriggerStatus;
 import launch.LaunchManager.LaunchStatus;
+
 import logger.Logger;
-import logger.Logger.Module;
+import logger.ILogConfig.Module;
+import mail.SmtpManager;
 
 /** checks the configured launches for triggers to be fired */
 public class ScheduleManager implements ISystemComponent {
@@ -29,6 +31,7 @@ public class ScheduleManager implements ISystemComponent {
 	private History history;
 	private FileManager fileManager;
 	private TaskManager taskManager;
+	private SmtpManager smtpManager;
 	private LaunchManager launchManager;
 	private Logger logger;
 	private SchedulerTask scheduler;
@@ -54,6 +57,7 @@ public class ScheduleManager implements ISystemComponent {
 			History history,
 			FileManager fileManager,
 			TaskManager taskManager,
+			SmtpManager smtpManager,
 			LaunchManager launchManager, 
 			Logger logger
 	){
@@ -63,6 +67,7 @@ public class ScheduleManager implements ISystemComponent {
 		this.history = history;
 		this.fileManager = fileManager;
 		this.taskManager = taskManager;
+		this.smtpManager = smtpManager;
 		this.launchManager = launchManager;
 		this.logger = logger;
 		scheduler = null;
@@ -139,7 +144,7 @@ public class ScheduleManager implements ISystemComponent {
 				if(!launched)
 				{
 					LaunchAgent launch = launchConfig.createLaunch(
-							configuration, cache, history, fileManager, taskManager, triggerStatus.message
+							configuration, cache, history, fileManager, taskManager, smtpManager, triggerStatus.message
 					);
 					LaunchStatus launchStatus = launchManager.runLaunch(launch);
 					if(launchStatus.launched){

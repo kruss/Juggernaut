@@ -8,8 +8,9 @@ import data.Artifact;
 
 import launch.ILifecycleListener.Lifecycle;
 import launch.StatusManager.Status;
+
 import logger.Logger;
-import logger.Logger.Module;
+import logger.ILogConfig.Module;
 import util.Task;
 
 public abstract class LifecycleObject extends Task {

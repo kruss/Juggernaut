@@ -2,8 +2,9 @@ package repository;
 
 import core.TaskManager;
 import launch.StatusManager.Status;
+
 import logger.Logger;
-import logger.Logger.Module;
+import logger.ILogConfig.Module;
 import repository.IRepositoryClient.RevisionInfo;
 import util.Task;
 import util.UiTools;

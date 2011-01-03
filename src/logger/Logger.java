@@ -4,27 +4,28 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 
+import logger.ILogConfig.Level;
+import logger.ILogConfig.Module;
+
 import util.FileTools;
 import util.StringTools;
 
 import core.Constants;
 
 
-public class Logger implements ILogProvider {
+public class Logger implements ILogger, ILogProvider {
 
 	public static final String OUTPUT_FILE = Constants.APP_NAME+".txt";
 	public static final int BUFFER_MAX = 100;
 	
 	public enum Mode { FILE, CONSOLE, FILE_AND_CONSOLE }
-	public enum Module { COMMON, COMMAND, TASK, HTTP }
-	public enum Level { ERROR, NORMAL, DEBUG }
-
+	
 	private Mode mode;
 	private File logfile;
 	private long logfileMax;
 	private ArrayList<ILogListener> listeners;
 	private ArrayList<String> buffer;
-	private ILogManager logManager;
+	private ILogConfig config;
 
 	/** set a logfile and the max-size in bytes (0 if unlimmited) */
 	public void setLogFile(File logfile, long logfileMax){
@@ -39,14 +40,14 @@ public class Logger implements ILogProvider {
 	}
 	public File getLogFile(){ return logfile; }
 	
-	public void setLogManager(ILogManager logManager){
-		this.logManager = logManager;
+	public void setConfig(ILogConfig config){
+		this.config = config;
 	}
 	
 	public Logger(Mode mode){
 
 		this.mode = mode;
-		logManager = null;
+		config = null;
 		logfile = null;
 		logfileMax = 0;
 		listeners = new ArrayList<ILogListener>();
@@ -89,21 +90,32 @@ public class Logger implements ILogProvider {
 	
 	private enum Type { DEBUG, NORMAL, EMPHASISED, ERROR, INFO }
 	
+	@Override
 	public void info(Module module, String text){ 
 		createLog(module, Level.NORMAL, text, Type.INFO); 
 	}
+	
+	@Override
 	public void emph(Module module, String text){ 	
 		createLog(module, Level.NORMAL, text, Type.EMPHASISED); 				
 	}
+	
+	@Override
 	public void log(Module module, String text){ 
 		createLog(module, Level.NORMAL, text, Type.NORMAL); 
 	}
+	
+	@Override
     public void error(Module module, String text){ 
     	createLog(module, Level.ERROR, text, Type.ERROR); 
     }
+    
+    @Override
     public void error(Module module, Exception e){ 
     	createLog(module, Level.ERROR, StringTools.trace(e), Type.ERROR); 
     }
+    
+    @Override
     public void debug(Module module, String text){ 
     	createLog(module, Level.DEBUG, text, Type.DEBUG);
     }
@@ -140,8 +152,8 @@ public class Logger implements ILogProvider {
 
 	private boolean isLogging(Module module, Level level) {
 		
-		if(logManager != null){
-			return getLevelValue(level) >= getLevelValue(logManager.getLogLevel(module));
+		if(config != null){
+			return getLevelValue(level) >= getLevelValue(config.getLogLevel(module));
 		}else{
 			return getLevelValue(level) >= getLevelValue(Level.NORMAL);
 		}
@@ -173,15 +185,6 @@ public class Logger implements ILogProvider {
     	}
     	buffer.add(log);
     }
-    
-	public static ArrayList<String> getLevelNames() {
-		
-		ArrayList<String> levels = new ArrayList<String>();
-		for(Level level : Level.values()){
-			levels.add(level.toString());
-		}
-		return levels;
-	}
 	
 	public static int getLevelValue(Level level){
 		

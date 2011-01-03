@@ -6,6 +6,8 @@ import java.util.UUID;
 import util.StringTools;
 
 import launch.LaunchAgent;
+import mail.SmtpManager;
+import mail.ISmtpConfig.NotificationMode;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
@@ -29,7 +31,7 @@ public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitialize
 	}
 	
 	public enum OPTIONS {
-		ACTIVE, DESCRIPTION, CLEAN, TIMEOUT, NOTIFY, ADMINISTRATORS, MESSAGE
+		ACTIVE, DESCRIPTION, CLEAN, TIMEOUT, NOTIFICATION, ADMINISTRATORS, MESSAGE
 	}
 	
 	private String id;
@@ -68,12 +70,12 @@ public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitialize
 		));
 		optionContainer.getOptions().add(new Option(
 				GROUPS.NOTIFICATION.toString(),
-				OPTIONS.NOTIFY.toString(), "Enable mail notification for launch",
-				Type.BOOLEAN, false
+				OPTIONS.NOTIFICATION.toString(), "The launch's notification-mode",
+				Type.TEXT_LIST, StringTools.enum2strings(NotificationMode.class), NotificationMode.DISABLED.toString()
 		));
 		optionContainer.getOptions().add(new Option(
 				GROUPS.NOTIFICATION.toString(),
-				OPTIONS.ADMINISTRATORS.toString(), "mail-list of launch admins (comma seperated)", 
+				OPTIONS.ADMINISTRATORS.toString(), "email-list of launch admins (comma seperated)", 
 				Type.TEXT, ""
 		));
 		optionContainer.getOptions().add(new Option(
@@ -119,6 +121,25 @@ public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitialize
 	/** the timout in millis */
 	public long getTimeout() {
 		return StringTools.min2millis(optionContainer.getOption(OPTIONS.TIMEOUT.toString()).getIntegerValue());
+	}
+	
+	public NotificationMode getNotificationMode(){
+		return NotificationMode.valueOf(optionContainer.getOption(OPTIONS.NOTIFICATION.toString()).getStringValue());
+	}
+	
+	public ArrayList<String> getAdministrators() {
+		
+		ArrayList<String> list = new ArrayList<String>();
+		String value = optionContainer.getOption(OPTIONS.ADMINISTRATORS.toString()).getStringValue();
+		String[] strings = value.split(", ");
+		for(String string : strings){
+				list.add(string.trim());
+		}
+		return list;
+	}
+	
+	public String getSmtpMessage() {
+		return optionContainer.getOption(OPTIONS.MESSAGE.toString()).getStringValue();
 	}
 	
 	public void setDirty(boolean dirty){ this.dirty = dirty; }
@@ -167,8 +188,9 @@ public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitialize
 			History history, 
 			FileManager fileManager, 
 			TaskManager taskManager, 
+			SmtpManager smtpManager,
 			String trigger)
 	{
-		return new LaunchAgent(configuration, cache, history, fileManager, taskManager, this, trigger);
+		return new LaunchAgent(configuration, cache, history, fileManager, taskManager, smtpManager, this, trigger);
 	}
 }

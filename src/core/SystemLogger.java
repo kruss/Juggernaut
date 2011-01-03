@@ -4,7 +4,9 @@ import java.io.File;
 
 import util.SystemTools;
 
+
 import logger.Logger;
+import logger.ILogConfig.Module;
 
 public class SystemLogger extends Logger implements ISystemComponent {
 	

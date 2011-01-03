@@ -8,10 +8,9 @@ import java.util.ArrayList;
 import javax.swing.JMenuItem;
 import javax.swing.JTextField;
 
-import logger.ILogManager;
+import logger.ILogConfig;
 import logger.Logger;
-import logger.Logger.Level;
-import logger.Logger.Module;
+import mail.ISmtpConfig;
 
 import util.FileTools;
 import util.IChangedListener;
@@ -31,7 +30,13 @@ import data.Option.Type;
 /**
  * the configuration of the application,- will be serialized
  */
-public class Configuration implements ISystemComponent, IOptionInitializer, ILogManager {
+public class Configuration 
+implements 
+	ISystemComponent, 
+	IOptionInitializer, 
+	ILogConfig,
+	ISmtpConfig
+{
 
 	public static Configuration create(FileManager fileManager, TaskManager taskManager, Logger logger) throws Exception {
 		
@@ -49,7 +54,7 @@ public class Configuration implements ISystemComponent, IOptionInitializer, ILog
 	
 	public enum OPTIONS {
 		SCHEDULER, SCHEDULER_INTERVAL, MAXIMUM_AGENTS, MAXIMUM_HISTORY,
-		NOTIFY, ADMINISTRATORS, SMTP_SERVER, SMTP_ADDRESS, LOGGING
+		NOTIFICATION, ADMINISTRATORS, SMTP_SERVER, SMTP_ADDRESS, LOGGING
 	}
 	
 	public enum State { CLEAN, DIRTY }
@@ -94,12 +99,12 @@ public class Configuration implements ISystemComponent, IOptionInitializer, ILog
 		));
 		optionContainer.getOptions().add(new Option(
 				GROUPS.NOTIFICATION.toString(),
-				OPTIONS.NOTIFY.toString(), "Enable mail notification for application",
-				Type.BOOLEAN, false
+				OPTIONS.NOTIFICATION.toString(), "The application's notification-mode",
+				Type.TEXT_LIST, StringTools.enum2strings(NotificationMode.class), NotificationMode.DISABLED.toString()
 		));
 		optionContainer.getOptions().add(new Option(
 				GROUPS.NOTIFICATION.toString(),
-				OPTIONS.ADMINISTRATORS.toString(), "mail-list of application admins (comma seperated)", 
+				OPTIONS.ADMINISTRATORS.toString(), "email-list of application admins (comma seperated)", 
 				Type.TEXT, ""
 		));
 		optionContainer.getOptions().add(new Option(
@@ -116,7 +121,7 @@ public class Configuration implements ISystemComponent, IOptionInitializer, ILog
 			optionContainer.getOptions().add(new Option(
 					GROUPS.LOGGING.toString(),
 					module.toString()+"_"+OPTIONS.LOGGING, "Log-Level for "+module.toString()+" module",
-					Type.TEXT_LIST, Logger.getLevelNames(), Level.NORMAL.toString()
+					Type.TEXT_LIST, StringTools.enum2strings(Level.class), Level.NORMAL.toString()
 			));
 		}
 		
@@ -129,7 +134,7 @@ public class Configuration implements ISystemComponent, IOptionInitializer, ILog
 	@Override
 	public void init() throws Exception {
 		save();
-		logger.setLogManager(this);
+		logger.setConfig(this);
 	}
 
 	@Override
@@ -172,6 +177,33 @@ public class Configuration implements ISystemComponent, IOptionInitializer, ILog
 	@Override
 	public Level getLogLevel(Module module){
 		return Level.valueOf(optionContainer.getOption(module.toString()+"_"+OPTIONS.LOGGING).getStringValue());
+	}
+	
+	@Override
+	public NotificationMode getNotificationMode(){
+		return NotificationMode.valueOf(optionContainer.getOption(OPTIONS.NOTIFICATION.toString()).getStringValue());
+	}
+	
+	@Override
+	public String getSmtpServer() {
+		return optionContainer.getOption(OPTIONS.SMTP_SERVER.toString()).getStringValue();
+	}
+	
+	@Override
+	public String getSmtpAddress() {
+		return optionContainer.getOption(OPTIONS.SMTP_ADDRESS.toString()).getStringValue();
+	}
+	
+	@Override
+	public ArrayList<String> getAdministrators() {
+		
+		ArrayList<String> list = new ArrayList<String>();
+		String value = optionContainer.getOption(OPTIONS.ADMINISTRATORS.toString()).getStringValue();
+		String[] strings = value.split(", ");
+		for(String string : strings){
+				list.add(string.trim());
+		}
+		return list;
 	}
 	
 	public void addListener(IChangedListener listener){ listeners.add(listener); }
