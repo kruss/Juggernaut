@@ -3,13 +3,10 @@ package core;
 import http.HttpServer;
 import launch.LaunchManager;
 import launch.ScheduleManager;
-import logger.Logger;
-import logger.Logger.Mode;
 import mail.SmtpManager;
 import mail.SmtpClient;
 import ui.ConfigPanel;
 import ui.HistoryPanel;
-import ui.Monitor;
 import ui.PreferencePanel;
 import ui.ProjectMenu;
 import ui.SchedulerPanel;
@@ -36,54 +33,36 @@ public class Application extends AbstractSystem {
 	private RuntimeSystem runtime;
 	private UISystem ui;
 	
-	private Application(){
-		monitor = new Monitor(new Logger(Mode.CONSOLE));
-	}
+	private Application(){}
 	
 	@Override
 	public void init() throws Exception {
 		
-		core = new CoreSystem(monitor);
+		core = new CoreSystem();
 		add(core);
-		persistence = new PersistenceSystem(monitor);
+		persistence = new PersistenceSystem();
 		add(persistence);
-		runtime = new RuntimeSystem(monitor);
+		runtime = new RuntimeSystem();
 		add(runtime);
-		ui = new UISystem(monitor);
+		ui = new UISystem();
 		add(ui);
-		
-		monitor.start();
+
 		super.init();
-		monitor.stop();
-	}
-	
-	@Override
-	public void shutdown() throws Exception {
-		
-		monitor.start();
-		super.shutdown();
-		monitor.dispose();
 	}
 
 	public void revert() throws Exception {
 		
 		if(ui.isInitialized() && persistence.configuration.isDirty()){
-			monitor.start();
 			ui.shutdown();
 			persistence.clear();
 			persistence.init();
 			ui.clear();
 			ui.init();
-			monitor.stop();
 		}
 	}
 	
 	/** io related components */
 	private class CoreSystem extends AbstractSystem {
-		
-		public CoreSystem(Monitor monitor){
-			this.monitor = monitor;
-		}
 		
 		public SystemLogger logger;
 		public FileManager fileManager;
@@ -110,10 +89,6 @@ public class Application extends AbstractSystem {
 	
 	/** persistence related components */
 	private class PersistenceSystem extends AbstractSystem {
-		
-		public PersistenceSystem(Monitor monitor){
-			this.monitor = monitor;
-		}
 		
 		public Configuration configuration;
 		public Cache cache;
@@ -142,10 +117,6 @@ public class Application extends AbstractSystem {
 	
 	/** runtime related components */
 	private class RuntimeSystem extends AbstractSystem {
-		
-		public RuntimeSystem(Monitor monitor){
-			this.monitor = monitor;
-		}
 		
 		public Registry registry;
 		public SmtpManager smtpManager;
@@ -190,10 +161,6 @@ public class Application extends AbstractSystem {
 	
 	/** ui related componets */
 	private class UISystem extends AbstractSystem {
-		
-		public UISystem(Monitor monitor){
-			this.monitor = monitor;
-		}
 		
 		public ProjectMenu projectMenu;
 		public ToolsMenu toolsMenu;
