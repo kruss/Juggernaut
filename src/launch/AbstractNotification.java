@@ -7,8 +7,6 @@ import http.IHttpServer;
 
 import java.util.ArrayList;
 import java.util.Collections;
-
-import core.Constants;
 import data.Artifact;
 
 import operation.IRepositoryOperation;
@@ -125,7 +123,7 @@ public abstract class AbstractNotification {
 				HtmlLink link = new HtmlLink(url, url);
 				link.setExtern(true);
 				HtmlList list = new HtmlList("Output");
-				list.add(Constants.APP_NAME, link.getHtml());
+				list.add("Logfile", link.getHtml());
 				return list.getHtml();
 			}catch(Exception e){
 				launch.getLogger().error(Module.HTTP, e);
