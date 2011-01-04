@@ -1,10 +1,8 @@
 package launch;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 import core.Cache;
-import core.Constants;
 
 import launch.StatusManager.Status;
 import data.Error;
@@ -12,94 +10,70 @@ import logger.ILogConfig.Module;
 
 import data.Artifact;
 
-import operation.IRepositoryOperation;
-import repository.IRepositoryClient.CommitInfo;
-import repository.IRepositoryClient.HistoryInfo;
-import smtp.Mail;
 import smtp.SmtpClient;
-import smtp.ISmtpConfig.NotificationMode;
-import util.StringTools;
-
 
 /** performs the notification for a launch */
-// TODO add checks to send only email when status change since last run or new errors
 public class LaunchNotification {
 
 	private enum Property { STATUS, ERRORS };
 	
+	private Cache cache;
 	private SmtpClient client;
 	private LaunchAgent launch;
-	private Cache cache;
 	
 	public LaunchNotification(
-			SmtpClient client, Cache cache, LaunchAgent launch
+			Cache cache, SmtpClient client, LaunchAgent launch
 	){
+		this.cache = cache;
 		this.client = client;
 		this.launch = launch;
-		this.cache = cache;
 	}
 
 	public void performNotification() throws Exception {
-		
-		if(isNotificationEnabled()){
-			if(isNotificationRequired()){
-				Mail mail = createMail();
-				Artifact artifact = new Artifact("Notification", mail.getHtml(), "html");
-				try{
-					client.send(mail, launch.getLogger());
-				}catch(Exception e){
-					artifact.status = Status.ERROR;
-					throw e;
-				}finally{				
-					launch.getArtifacts().add(artifact);
-				}
-			}else{
-				launch.getLogger().debug(Module.SMTP, "Notification NOT required");
-			}
-		}else{
-			launch.getLogger().debug(Module.SMTP, "Notification NOT enabled");
-		}
-		setLastStatus();
-		setErrorsHash();
-	}
 
-	private boolean isNotificationEnabled(){
-		return client.isReady() && (isNotifyAdmins() || isNotifyCommitters());
-	}
-	
-	private boolean isNotifyAdmins() {
-		return 
-			(client.getConfig().getNotificationMode() == NotificationMode.ADMINSTRATORS &&
-			launch.getConfig().getNotificationMode() == NotificationMode.ADMINSTRATORS) 
-			||
-			(client.getConfig().getNotificationMode() == NotificationMode.COMMITTER &&
-			launch.getConfig().getNotificationMode() == NotificationMode.ADMINSTRATORS) ;
-	}
-	
-	private boolean isNotifyCommitters() {
-		return 
-			client.getConfig().getNotificationMode() == NotificationMode.COMMITTER &&
-			launch.getConfig().getNotificationMode() == NotificationMode.COMMITTER;
-	}
-	
-	private boolean isNotificationRequired() {
-		return isStatusChanged() || isErrorsChanged();
+		ArrayList<Artifact> artifacts = new ArrayList<Artifact>();
+		
+		if(isStatusChanged()){
+			launch.getLogger().log(Module.SMTP, "Status-Notification required");
+			StatusNotification notification = new StatusNotification(client, launch);
+			Artifact artifact = notification.performNotification();
+			artifacts.add(artifact);
+			setLastStatusProperty();
+		}
+		
+		if(isErrorChanged()){
+			if(isErrorPresent()){
+				launch.getLogger().log(Module.SMTP, "Error-Notification required");
+				ErrorNotification notification = new ErrorNotification(client, launch);
+				Artifact artifact = notification.performNotification();
+				artifacts.add(artifact);
+			}
+			setErrorHashProperty();
+		}
+		
+		if(artifacts.size() > 0){
+			Artifact artifact = new Artifact("Notification");
+			artifact.childs = artifacts;
+			launch.getArtifacts().add(artifact);
+		}
 	}
 
 	private boolean isStatusChanged() {
 		
-		Status last = getLastStatus();
+		Status last = getLastStatusProperty();
 		Status current = launch.getStatusManager().getStatus();
 		return (last == null) || (last != current);
 	}
 	
-	private void setLastStatus(){
+	private void setLastStatusProperty(){
+		
 		cache.addProperty(
 				launch.getConfig().getId(), Property.STATUS.toString(), launch.getStatusManager().getStatus().toString()
 		);
 	}
 	
-	private Status getLastStatus(){
+	private Status getLastStatusProperty(){
+		
 		String value = cache.getProperty(
 				launch.getConfig().getId(), Property.STATUS.toString()
 		);
@@ -110,93 +84,42 @@ public class LaunchNotification {
 		}
 	}
 	
-	private boolean isErrorsChanged() {
-		
-		long last = getErrorsHash();
-		long current = computeErrorsHash();
-		return (last == -1) || (last != current);
+	private boolean isErrorPresent() {
+		return launch.getNotificationErrors().size() > 0;
 	}
 	
-	private void setErrorsHash(){
+	private boolean isErrorChanged() {
+		
+		Long last = getErrorHashProperty();
+		long current = computeErrorHash();
+		return (last == null) || (last.longValue() != current);
+	}
+	
+	private void setErrorHashProperty(){
+		
 		cache.addProperty(
-				launch.getConfig().getId(), Property.ERRORS.toString(), ""+computeErrorsHash()
+				launch.getConfig().getId(), Property.ERRORS.toString(), ""+computeErrorHash()
 		);
 	}
-
-	private long computeErrorsHash() {
-		long hash = 0;
-		for(Error error : launch.getNotifyingErrors()){
-			hash += error.getHash();
-		}
-		return hash;
-	}
 	
-	private long getErrorsHash(){
+	private Long getErrorHashProperty(){
+
 		String value = cache.getProperty(
 				launch.getConfig().getId(), Property.ERRORS.toString()
 		);
 		if(value != null){
-			return (new Long(value)).longValue();
+			return new Long(value);
 		}else{
-			return -1;
+			return null;
 		}
-	}
-
-	private Mail createMail() {
-		
-		Mail mail = new Mail(Constants.APP_NAME+" [ "+launch.getConfig().getName()+" ]");
-		mail.from = client.getConfig().getSmtpAddress();
-		
-		ArrayList<String> admins = getAdminAdresses();
-		ArrayList<String> committers = getComitterAddresses();
-		
-		if(isNotifyAdmins()){
-			mail.to = admins;
-		}
-		else if(isNotifyCommitters()){
-			if(committers.size() > 0){
-				mail.to = committers;
-				mail.cc = admins;
-			}else{
-				mail.to = admins;
-			}
-		}
-		
-		mail.content = getMailContent();
-		
-		return mail;
-	}
-
-	private String getMailContent() {
-		// TODO Auto-generated method stub
-		return "";
 	}
 	
-	private ArrayList<String> getAdminAdresses() {
+	private long computeErrorHash() {
 		
-		ArrayList<String> admins = new ArrayList<String>();
-		for(String addr : client.getConfig().getAdministrators()){
-			StringTools.addUnique(admins, addr);
+		long hash = 0;
+		for(Error error : launch.getNotificationErrors()){
+			hash += error.getHash();
 		}
-		for(String addr : launch.getConfig().getAdministrators()){
-			StringTools.addUnique(admins, addr);
-		}
-		Collections.sort(admins);
-		return admins;
-	}
-	
-	private ArrayList<String> getComitterAddresses() {
-		
-		ArrayList<String> committers = new ArrayList<String>();
-		for(IRepositoryOperation operation : launch.getRepositoryOperations()){
-				HistoryInfo history = operation.getHistory();
-				for(CommitInfo commit : history.commits){
-					if(!committers.contains(commit.author)){
-						committers.add(commit.author);
-					}
-				}
-		}
-		Collections.sort(committers);
-		return committers;
+		return hash;
 	}
 }

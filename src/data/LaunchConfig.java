@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import smtp.SmtpClient;
-import smtp.ISmtpConfig.NotificationMode;
 import util.DateTools;
 import util.StringTools;
 
@@ -71,12 +70,12 @@ public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitialize
 		));
 		optionContainer.getOptions().add(new Option(
 				GROUPS.NOTIFICATION.toString(),
-				OPTIONS.NOTIFICATION.toString(), "The launch's notification-mode",
-				Type.TEXT_LIST, StringTools.enum2strings(NotificationMode.class), NotificationMode.DISABLED.toString()
+				OPTIONS.NOTIFICATION.toString(), "Perform eMail-notifications",
+				Type.BOOLEAN, false
 		));
 		optionContainer.getOptions().add(new Option(
 				GROUPS.NOTIFICATION.toString(),
-				OPTIONS.ADMINISTRATORS.toString(), "email-list of launch admins (comma seperated)", 
+				OPTIONS.ADMINISTRATORS.toString(), "List of administrator eMails (comma seperated)", 
 				Type.TEXT, ""
 		));
 		optionContainer.getOptions().add(new Option(
@@ -124,8 +123,8 @@ public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitialize
 		return DateTools.min2millis(optionContainer.getOption(OPTIONS.TIMEOUT.toString()).getIntegerValue());
 	}
 	
-	public NotificationMode getNotificationMode(){
-		return NotificationMode.valueOf(optionContainer.getOption(OPTIONS.NOTIFICATION.toString()).getStringValue());
+	public boolean isNotification(){
+		return optionContainer.getOption(OPTIONS.NOTIFICATION.toString()).getBooleanValue();
 	}
 	
 	public ArrayList<String> getAdministrators() {

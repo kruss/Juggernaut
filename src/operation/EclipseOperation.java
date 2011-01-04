@@ -91,7 +91,7 @@ public class EclipseOperation extends AbstractOperation {
 				statusManager.setStatus(Status.ERROR);
 			}
 			if(!task.getOutput().isEmpty()){
-				artifacts.add(new Artifact("Eclipse", task.getOutput()));
+				artifacts.add(new Artifact("Eclipse", task.getOutput(), "txt"));
 			}
 			//TODO evaluate results from cdt-builder
 		}

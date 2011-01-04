@@ -4,9 +4,7 @@ import java.util.ArrayList;
 
 public interface ISmtpConfig {
 
-	public enum NotificationMode { DISABLED, ADMINSTRATORS, COMMITTER }
-
-	public NotificationMode getNotificationMode();
+	public boolean isNotification();
 	
 	public String getSmtpServer();
 	

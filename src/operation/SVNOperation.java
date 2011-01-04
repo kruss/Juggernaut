@@ -94,7 +94,7 @@ public class SVNOperation extends AbstractOperation implements IRepositoryOperat
 		setLastRevisionCache(currentRevision);
 		setRevisionProperty(currentRevision);
 
-		Artifact checkoutArtifact = new Artifact("Checkout", checkout.output);
+		Artifact checkoutArtifact = new Artifact("Checkout", checkout.output, "txt");
 		checkoutArtifact.description = "Revision: "+checkout.revision;
 		artifacts.add(checkoutArtifact);
 	}
@@ -107,7 +107,7 @@ public class SVNOperation extends AbstractOperation implements IRepositoryOperat
 			
 			history = client.getHistory(getUrlProperty(), startRevision, endRevision);
 			
-			Artifact commitArtifact = new Artifact("Commits", history.output);
+			Artifact commitArtifact = new Artifact("Commits", history.output, "txt");
 			commitArtifact.description = "Intervall: "+history.revision1+" - "+history.revision2;
 			artifacts.add(commitArtifact);
 		}

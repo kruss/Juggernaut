@@ -16,24 +16,22 @@ public class Artifact {
 	public String name;
 	public String description;
 	private String content;
-	private String mimetype;
+	private String contentType;
 	private File file;
 	public Status status;
 	
 	public ArrayList<Artifact> childs;
 	
-	public Artifact(String name, String content){
+	public Artifact(String name){
 		
 		init(name);
-		this.content = content;
-		this.mimetype = "txt";
 	}
 	
-	public Artifact(String name, String content, String mimetype){
+	public Artifact(String name, String content, String contentType){
 		
 		init(name);
 		this.content = content;
-		this.mimetype = mimetype;
+		this.contentType = contentType;
 	}
 	
 	public Artifact(String name, File file){
@@ -57,10 +55,14 @@ public class Artifact {
 		if(content != null){
 			String path = 
 				folder.getAbsolutePath()+File.separator+
-				UUID.randomUUID().toString()+"."+mimetype;
+				UUID.randomUUID().toString()+"."+contentType;
 			FileTools.writeFile(path, content, false);
 			file = new File(path);
 			content = null;
+		}
+		
+		for(Artifact child : childs){
+			child.finish(folder);
 		}
 	}
 	
@@ -76,11 +78,11 @@ public class Artifact {
 		}else{
 			html.append("<b>"+name+"</b>");
 		}
-		if(status != null){
-			html.append(" ("+StatusManager.getStatusHtml(status)+")");
-		}
 		if(description != null){
 			html.append(" - "+description);
+		}
+		if(status != null){
+			html.append(" - "+StatusManager.getStatusHtml(status));
 		}
 		return html.toString();
 	}

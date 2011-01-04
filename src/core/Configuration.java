@@ -81,7 +81,7 @@ implements
 		optionContainer.getOptions().add(new Option(
 				GROUPS.GENERAL.toString(),
 				OPTIONS.SCHEDULER.toString(), "Run the launch scheduler",
-				Type.BOOLEAN, false
+				Type.BOOLEAN, true
 		));
 		optionContainer.getOptions().add(new Option(
 				GROUPS.GENERAL.toString(),
@@ -100,12 +100,12 @@ implements
 		));
 		optionContainer.getOptions().add(new Option(
 				GROUPS.NOTIFICATION.toString(),
-				OPTIONS.NOTIFICATION.toString(), "The application's notification-mode",
-				Type.TEXT_LIST, StringTools.enum2strings(NotificationMode.class), NotificationMode.DISABLED.toString()
+				OPTIONS.NOTIFICATION.toString(), "Perform eMail-notifications",
+				Type.BOOLEAN, false
 		));
 		optionContainer.getOptions().add(new Option(
 				GROUPS.NOTIFICATION.toString(),
-				OPTIONS.ADMINISTRATORS.toString(), "email-list of application admins (comma seperated)", 
+				OPTIONS.ADMINISTRATORS.toString(), "List of administrator eMails (comma seperated)", 
 				Type.TEXT, ""
 		));
 		optionContainer.getOptions().add(new Option(
@@ -181,8 +181,8 @@ implements
 	}
 	
 	@Override
-	public NotificationMode getNotificationMode(){
-		return NotificationMode.valueOf(optionContainer.getOption(OPTIONS.NOTIFICATION.toString()).getStringValue());
+	public boolean isNotification(){
+		return optionContainer.getOption(OPTIONS.NOTIFICATION.toString()).getBooleanValue();
 	}
 	
 	@Override

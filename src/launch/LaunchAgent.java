@@ -81,7 +81,7 @@ public class LaunchAgent extends LifecycleObject {
 			}
 		}
 		
-		launchNotification = new LaunchNotification(smtpClient, cache, this);
+		launchNotification = new LaunchNotification(cache, smtpClient, this);
 		
 		launchHistory = new LaunchHistory(this, fileManager);
 		for(AbstractOperation operation : operations){
@@ -117,7 +117,7 @@ public class LaunchAgent extends LifecycleObject {
 		logger.setLogFile(new File(launchHistory.logfile), 0);
 		logger.info(Module.COMMON, "Launch ["+launchConfig.getName()+"]");
 		artifacts.add(new Artifact("Logfile", logger.getLogFile()));
-		debugProperties(propertyContainer.getProperties(launchConfig.getId()));
+		printProperties(propertyContainer.getProperties(launchConfig.getId()));
 		
 		// setup launch-folder
 		File folder = new File(getFolder());
@@ -170,7 +170,7 @@ public class LaunchAgent extends LifecycleObject {
 				operation.getIndex()+"/"+launchConfig.getOperationConfigs().size()+
 				" Operation ["+operation.getConfig().getName()+"]"
 		);
-		debugProperties(propertyContainer.getProperties(operation.getConfig().getId()));
+		printProperties(propertyContainer.getProperties(operation.getConfig().getId()));
 		if(!aboard){
 			operation.syncRun(0, 0);
 			propertyContainer.addProperties(
@@ -186,9 +186,11 @@ public class LaunchAgent extends LifecycleObject {
 	@Override
 	protected void finish() {
 
+		logger.info(Module.COMMON, "Output");
+		
 		for(AbstractOperation operation : operations){
 			if(StatusManager.isError(operation.getStatusManager().getStatus())){
-				statusManager.addError(launchConfig.getId(), "Launch did not succeed");
+				statusManager.addError(launchConfig.getId(), "Not all Operations succeeded");
 				break;
 			}
 		}
@@ -221,11 +223,12 @@ public class LaunchAgent extends LifecycleObject {
 			}
 		}
 		
-		logger.info(Module.COMMON, "Launch: "+statusManager.getStatus().toString());
+		logger.info(Module.COMMON, statusManager.getStatus().toString());
 		logger.clearListeners();
 	}
 	
-	private void debugProperties(HashMap<String, String> properties) {
+	// TODO move somehow
+	private void printProperties(HashMap<String, String> properties) {
 		
 		StringBuilder info = new StringBuilder();
 		ArrayList<String> keys = PropertyContainer.getKeys(properties);
@@ -246,11 +249,11 @@ public class LaunchAgent extends LifecycleObject {
 		return list;
 	}
 	
-	public ArrayList<Error> getNotifyingErrors(){
+	public ArrayList<Error> getNotificationErrors(){
 		
 		ArrayList<Error> errors = new ArrayList<Error>();
 		for(AbstractOperation operation : operations){
-			if(operation.getConfig().isNotifying()){
+			if(operation.getConfig().isNotification()){
 				errors.addAll(operation.getStatusManager().getErrors());
 			}
 		}

@@ -51,7 +51,7 @@ public class CommandOperation extends AbstractOperation {
 				statusManager.setStatus(Status.ERROR);
 			}
 			if(!task.getOutput().isEmpty()){
-				artifacts.add(new Artifact("Command", task.getOutput()));
+				artifacts.add(new Artifact("Command", task.getOutput(), "txt"));
 			}
 		}
 	}
