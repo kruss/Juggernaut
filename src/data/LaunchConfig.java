@@ -1,5 +1,7 @@
 package data;
 
+import http.IHttpServer;
+
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -184,8 +186,9 @@ public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitialize
 			FileManager fileManager, 
 			TaskManager taskManager, 
 			ISmtpClient smtpClient,
+			IHttpServer httpServer,
 			String trigger)
 	{
-		return new LaunchAgent(configuration, cache, history, fileManager, taskManager, smtpClient, this, trigger);
+		return new LaunchAgent(configuration, cache, history, fileManager, taskManager, smtpClient, httpServer, this, trigger);
 	}
 }

@@ -1,8 +1,12 @@
 package launch;
 
+import html.HistoryPage;
+import html.HtmlLink;
+import html.HtmlList;
+import http.IHttpServer;
+
 import java.util.ArrayList;
 import java.util.Collections;
-
 import data.Artifact;
 
 import operation.IRepositoryOperation;
@@ -14,15 +18,20 @@ import repository.IRepositoryClient.HistoryInfo;
 import smtp.Mail;
 import smtp.ISmtpClient;
 import util.StringTools;
+import util.SystemTools;
 
 public abstract class AbstractNotification {
 
 	protected ISmtpClient client;
+	protected IHttpServer server;
 	protected LaunchAgent launch;
 	
-	public AbstractNotification(ISmtpClient client, LaunchAgent launch){
+	public AbstractNotification(
+			ISmtpClient client, IHttpServer server, LaunchAgent launch
+	){
 		
 		this.client = client;
+		this.server = server;
 		this.launch = launch;
 	}
 	
@@ -87,5 +96,39 @@ public abstract class AbstractNotification {
 		}
 		Collections.sort(committers);
 		return committers;
+	}
+	
+	protected String getUserInfo() {
+		
+		String message = launch.getConfig().getSmtpMessage();
+		if(!message.isEmpty()){
+			StringBuilder html = new StringBuilder();
+			html.append("<h2>Info</u2>\n");
+			html.append("<p>\n");
+			html.append(message.replaceAll("\\n", "<br>"));
+			html.append("</p>\n");
+			return html.toString();
+		}else{
+			return "";
+		}
+	}
+	
+	protected String getLinkInfo() {
+		
+		if(server.isRunning()){
+			try{
+				String url = 
+					"http://"+SystemTools.getHostName()+":"+server.getPort()+
+					"/"+launch.getStatusManager().getStart().getTime()+"/"+HistoryPage.OUTPUT_FILE;
+				HtmlLink link = new HtmlLink(url, url);
+				link.setExtern(true);
+				HtmlList list = new HtmlList("Ressources");
+				list.add("Output", link.getHtml());
+				return list.getHtml();
+			}catch(Exception e){
+				launch.getLogger().error(Module.HTTP, e);
+			}
+		}
+		return "";
 	}
 }

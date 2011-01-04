@@ -52,7 +52,6 @@ public class LaunchHistory extends AbstractHistory {
 	
 	public void finish() throws Exception {
 		
-		// operations must be finished first
 		for(OperationHistory entry : operations){
 			entry.finish();
 		}

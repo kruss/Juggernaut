@@ -1,5 +1,7 @@
 package launch;
 
+import http.IHttpServer;
+
 import java.util.ArrayList;
 
 import core.Cache;
@@ -19,13 +21,15 @@ public class LaunchNotification {
 	
 	private Cache cache;
 	private ISmtpClient client;
+	protected IHttpServer server;
 	private LaunchAgent launch;
 	
 	public LaunchNotification(
-			Cache cache, ISmtpClient client, LaunchAgent launch
+			Cache cache, ISmtpClient client, IHttpServer server, LaunchAgent launch
 	){
 		this.cache = cache;
 		this.client = client;
+		this.server = server;
 		this.launch = launch;
 	}
 
@@ -35,7 +39,7 @@ public class LaunchNotification {
 		
 		if(isStatusChanged()){
 			launch.getLogger().log(Module.SMTP, "Status-Notification required");
-			StatusNotification notification = new StatusNotification(client, launch);
+			StatusNotification notification = new StatusNotification(client, server, launch);
 			Artifact artifact = notification.performNotification();
 			artifacts.add(artifact);
 			setLastStatusProperty();
@@ -44,7 +48,7 @@ public class LaunchNotification {
 		if(isErrorChanged()){
 			if(isErrorPresent()){
 				launch.getLogger().log(Module.SMTP, "Error-Notification required");
-				ErrorNotification notification = new ErrorNotification(client, launch);
+				ErrorNotification notification = new ErrorNotification(client, server, launch);
 				Artifact artifact = notification.performNotification();
 				artifacts.add(artifact);
 			}

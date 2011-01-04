@@ -1,5 +1,7 @@
 package ui;
 
+import http.IHttpServer;
+
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -43,6 +45,7 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangedLis
 	private FileManager fileManager;
 	private TaskManager taskManager;
 	private ISmtpClient smtpClient;
+	private IHttpServer httpServer;
 	private LaunchManager launchManager;
 	
 	private ArrayList<IChangedListener> listeners;
@@ -67,6 +70,7 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangedLis
 			FileManager fileManager,
 			TaskManager taskManager,
 			ISmtpClient smtpClient,
+			IHttpServer httpServer,
 			LaunchManager launchManager,
 			Registry registry)
 	{
@@ -76,6 +80,7 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangedLis
 		this.fileManager = fileManager;
 		this.taskManager = taskManager;
 		this.smtpClient = smtpClient;
+		this.httpServer = httpServer;
 		this.launchManager = launchManager;
 		listeners = new ArrayList<IChangedListener>();
 		
@@ -287,7 +292,7 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangedLis
 				try{
 					LaunchConfig config = configuration.getLaunchConfigs().get(index);
 					LaunchAgent launch = config.createLaunch(
-							configuration, cache, history, fileManager, taskManager, smtpClient, AbstractTrigger.USER_TRIGGER
+							configuration, cache, history, fileManager, taskManager, smtpClient, httpServer, AbstractTrigger.USER_TRIGGER
 					);
 					LaunchStatus status = launchManager.runLaunch(launch);
 					if(!status.launched){

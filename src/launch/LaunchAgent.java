@@ -1,5 +1,7 @@
 package launch;
 
+import http.IHttpServer;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -43,6 +45,8 @@ public class LaunchAgent extends LifecycleObject {
 	private Logger logger;
 	private boolean aboard;
 	
+	public LaunchHistory getHistory(){ return launchHistory; }
+	
 	public LaunchAgent(
 			Configuration configuration, 
 			Cache cache,
@@ -50,6 +54,7 @@ public class LaunchAgent extends LifecycleObject {
 			FileManager fileManager, 
 			TaskManager taskManager, 
 			ISmtpClient smtpClient,
+			IHttpServer httpServer,
 			LaunchConfig launchConfig,
 			String trigger)
 	{
@@ -81,7 +86,7 @@ public class LaunchAgent extends LifecycleObject {
 			}
 		}
 		
-		launchNotification = new LaunchNotification(cache, smtpClient, this);
+		launchNotification = new LaunchNotification(cache, smtpClient, httpServer, this);
 		
 		launchHistory = new LaunchHistory(this, fileManager);
 		for(AbstractOperation operation : operations){

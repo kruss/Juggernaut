@@ -1,13 +1,17 @@
 package launch;
 
+import http.IHttpServer;
+
 import java.util.ArrayList;
 
 import smtp.ISmtpClient;
 
 public class ErrorNotification extends AbstractNotification {
 
-	public ErrorNotification(ISmtpClient client, LaunchAgent launch) {
-		super(client, launch);
+	public ErrorNotification(
+			ISmtpClient client, IHttpServer server, LaunchAgent launch
+	) {
+		super(client, server, launch);
 	}
 	
 	@Override
@@ -27,6 +31,12 @@ public class ErrorNotification extends AbstractNotification {
 
 	@Override
 	protected String getContent() {
-		return "";
+
+		StringBuilder html = new StringBuilder();
+		html.append("<h1>Launch ["+launch.getConfig().getName()+"]</h1>\n");
+		// TODO show errors / legacy errors / commits
+		html.append(getUserInfo());
+		html.append(getLinkInfo());
+		return html.toString();
 	}
 }

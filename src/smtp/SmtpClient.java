@@ -58,12 +58,12 @@ public class SmtpClient implements ISystemComponent, ISmtpClient {
 
 	private synchronized void sendMail(Mail mail, ILogger logger) throws Exception {
 		
-		logger.log(Module.SMTP, "Sending '"+mail.subject+"' to "+mail.to.size()+", cc "+mail.cc.size());
+		logger.log(Module.SMTP, 
+				"Sending '"+mail.subject+"' to "+mail.to.size()+", cc "+mail.cc.size()+" via "+config.getSmtpServer()
+		);
 		
-		Properties properties = new Properties(); 
-		properties.put("mail.smtp.host", config.getSmtpServer());
-		
-		Session session = Session.getDefaultInstance(properties);
+		Session session = Session.getDefaultInstance(new Properties());
+		session.getProperties().setProperty("mail.smtp.host", config.getSmtpServer());
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream(); 
 		session.setDebugOut(new PrintStream(buffer, true));
 		session.setDebug(true);
@@ -83,7 +83,7 @@ public class SmtpClient implements ISystemComponent, ISmtpClient {
 			throw e;
 		}finally{
 			String output = buffer.toString("UTF8").replaceAll("\\r\\n", "\n");
-			logger.debug(Module.SMTP, "Output:\n"+output);
+			logger.debug(Module.SMTP, "\n"+output);
 		}
 	}
 

@@ -133,6 +133,12 @@ public class Application extends AbstractSystem {
 			smtpClient = new SmtpClient(
 					persistence.configuration);
 			add(smtpClient);
+			httpServer = new HttpServer(
+					Constants.HTTP_PORT, 
+					core.fileManager, 
+					core.taskManager, 
+					core.logger);
+			add(httpServer);
 			launchManager = new LaunchManager(
 					persistence.configuration);
 			add(launchManager);
@@ -143,15 +149,10 @@ public class Application extends AbstractSystem {
 					core.fileManager, 
 					core.taskManager,
 					smtpClient,
+					httpServer,
 					launchManager, 
 					core.logger);
 			add(scheduleManager);
-			httpServer = new HttpServer(
-					Constants.HTTP_PORT, 
-					core.fileManager, 
-					core.taskManager, 
-					core.logger);
-			add(httpServer);
 			super.init();
 		}
 	}
@@ -188,6 +189,7 @@ public class Application extends AbstractSystem {
 					core.fileManager, 
 					core.taskManager, 
 					runtime.smtpClient,
+					runtime.httpServer,
 					runtime.launchManager, 
 					runtime.registry);
 			add(configPanel);

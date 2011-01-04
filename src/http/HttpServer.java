@@ -23,9 +23,9 @@ import util.Task;
 import logger.Logger;
 import logger.ILogConfig.Module;
 
-// TODO refactor
+// TODO refactor more
 @SuppressWarnings({ "deprecation", "unchecked" })
-public class HttpServer extends Task implements ISystemComponent {
+public class HttpServer extends Task implements ISystemComponent, IHttpServer {
 
 	private int myTcpPort;
 	private File myRootDir;
@@ -34,7 +34,11 @@ public class HttpServer extends Task implements ISystemComponent {
 	private Logger logger;
 	private boolean running;
 	
+	@Override
 	public boolean isRunning(){ return running; }
+	
+	@Override
+	public int getPort(){ return myTcpPort; }
 	
 	public HttpServer(int port, FileManager fileManager, TaskManager taskManager, Logger logger)
 	{

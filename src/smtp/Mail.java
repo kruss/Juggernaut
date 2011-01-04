@@ -59,9 +59,7 @@ public class Mail {
 		}
 		html.append("</ul>\n");
 		html.append("<hr>\n");
-		html.append("<p>");
-		html.append(content.replaceAll("\\n", "<br>"));
-		html.append("</p>");
+		html.append(content);
 		html.append("<hr>\n");
 		html.append("</body></html>\n");
 		return html.toString();

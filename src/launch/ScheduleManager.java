@@ -1,5 +1,7 @@
 package launch;
 
+import http.IHttpServer;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -32,6 +34,7 @@ public class ScheduleManager implements ISystemComponent {
 	private FileManager fileManager;
 	private TaskManager taskManager;
 	private ISmtpClient smtpClient;
+	private IHttpServer httpServer;
 	private LaunchManager launchManager;
 	private Logger logger;
 	private SchedulerTask scheduler;
@@ -58,6 +61,7 @@ public class ScheduleManager implements ISystemComponent {
 			FileManager fileManager,
 			TaskManager taskManager,
 			ISmtpClient smtpClient,
+			IHttpServer httpServer,
 			LaunchManager launchManager, 
 			Logger logger
 	){
@@ -68,6 +72,7 @@ public class ScheduleManager implements ISystemComponent {
 		this.fileManager = fileManager;
 		this.taskManager = taskManager;
 		this.smtpClient = smtpClient;
+		this.httpServer = httpServer;
 		this.launchManager = launchManager;
 		this.logger = logger;
 		scheduler = null;
@@ -144,7 +149,7 @@ public class ScheduleManager implements ISystemComponent {
 				if(!launched)
 				{
 					LaunchAgent launch = launchConfig.createLaunch(
-							configuration, cache, history, fileManager, taskManager, smtpClient, triggerStatus.message
+							configuration, cache, history, fileManager, taskManager, smtpClient, httpServer, triggerStatus.message
 					);
 					LaunchStatus launchStatus = launchManager.runLaunch(launch);
 					if(launchStatus.launched){
