@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import smtp.SmtpClient;
 import smtp.ISmtpConfig.NotificationMode;
+import util.DateTools;
 import util.StringTools;
 
 import launch.LaunchAgent;
@@ -120,7 +121,7 @@ public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitialize
 	
 	/** the timout in millis */
 	public long getTimeout() {
-		return StringTools.min2millis(optionContainer.getOption(OPTIONS.TIMEOUT.toString()).getIntegerValue());
+		return DateTools.min2millis(optionContainer.getOption(OPTIONS.TIMEOUT.toString()).getIntegerValue());
 	}
 	
 	public NotificationMode getNotificationMode(){

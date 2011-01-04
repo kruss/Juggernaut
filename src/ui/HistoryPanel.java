@@ -30,9 +30,9 @@ import core.History;
 import core.ISystemComponent;
 import core.History.HistoryInfo;
 
+import util.DateTools;
 import util.FileTools;
 import util.IChangedListener;
-import util.StringTools;
 import util.UiTools;
 
 public class HistoryPanel extends JPanel implements ISystemComponent, IChangedListener {
@@ -183,9 +183,9 @@ public class HistoryPanel extends JPanel implements ISystemComponent, IChangedLi
 				Object[] rowData = {
 					entry.name,
 					entry.trigger,
-					entry.start != null ? StringTools.getTextDate(entry.start) : "",
+					entry.start != null ? DateTools.getTextDate(entry.start) : "",
 					(entry.start != null && entry.end != null) ? 
-							StringTools.getTimeDiff(entry.start, entry.end)+ " '" : "",
+							DateTools.getTimeDiff(entry.start, entry.end)+ " '" : "",
 					entry.status.toString()
 				};
 				tableModel.addRow(rowData);
@@ -285,7 +285,7 @@ public class HistoryPanel extends JPanel implements ISystemComponent, IChangedLi
 		HistoryInfo entry = getSelectedHistory();
 		if(
 				entry != null && 
-				UiTools.confirmDialog("Delete history ["+entry.name+" ("+StringTools.getTextDate(entry.start)+")"+"] ?")
+				UiTools.confirmDialog("Delete history ["+entry.name+" ("+DateTools.getTextDate(entry.start)+")"+"] ?")
 		){
 			history.delete(entry.historyId);
 			refreshUI(null);

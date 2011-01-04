@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import data.Error;
-import util.StringTools;
+import util.DateTools;
 
 import launch.ILifecycleListener.Lifecycle;
 
@@ -83,13 +83,13 @@ public class StatusManager {
 		HashMap<String, String> map = new HashMap<String, String>();
 		map.put("Status", status.toString());
 		if(start != null){
-			map.put("Start", StringTools.getTextDate(start));
+			map.put("Start", DateTools.getTextDate(start));
 		}
 		if(end != null){
-			map.put("End", StringTools.getTextDate(end));
+			map.put("End", DateTools.getTextDate(end));
 		}
 		if(start != null &&end != null){
-			map.put("Time", StringTools.getTimeDiff(start, end)+" min");
+			map.put("Time", DateTools.getTimeDiff(start, end)+" min");
 		}
 		return map;
 	}

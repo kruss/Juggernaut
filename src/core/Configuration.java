@@ -12,6 +12,7 @@ import logger.ILogConfig;
 import logger.Logger;
 
 import smtp.ISmtpConfig;
+import util.DateTools;
 import util.FileTools;
 import util.IChangedListener;
 import util.StringTools;
@@ -161,7 +162,7 @@ implements
 	
 	/** the scheduler-interval in millis */
 	public long getSchedulerIntervall(){ 
-		return StringTools.min2millis(optionContainer.getOption(OPTIONS.SCHEDULER_INTERVAL.toString()).getIntegerValue());
+		return DateTools.min2millis(optionContainer.getOption(OPTIONS.SCHEDULER_INTERVAL.toString()).getIntegerValue());
 	}
 	
 	/** maximum number of parallel agents started by scheduled */

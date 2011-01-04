@@ -4,7 +4,7 @@ import logger.Logger;
 import core.Cache;
 import core.Configuration;
 import core.TaskManager;
-import util.StringTools;
+import util.DateTools;
 import data.AbstractTrigger;
 import data.AbstractTriggerConfig;
 import data.Option;
@@ -49,9 +49,9 @@ public class IntervallTriggerConfig extends AbstractTriggerConfig {
 	public long getIntervall(){
 		
 		return
-			StringTools.day2millis(optionContainer.getOption(OPTIONS.DAYS.toString()).getIntegerValue()) +
-			StringTools.hour2millis(optionContainer.getOption(OPTIONS.HOURS.toString()).getIntegerValue()) +
-			StringTools.min2millis(optionContainer.getOption(OPTIONS.MINUTES.toString()).getIntegerValue());
+			DateTools.day2millis(optionContainer.getOption(OPTIONS.DAYS.toString()).getIntegerValue()) +
+			DateTools.hour2millis(optionContainer.getOption(OPTIONS.HOURS.toString()).getIntegerValue()) +
+			DateTools.min2millis(optionContainer.getOption(OPTIONS.MINUTES.toString()).getIntegerValue());
 	}
 	
 	@Override

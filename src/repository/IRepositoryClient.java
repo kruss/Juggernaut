@@ -3,7 +3,7 @@ package repository;
 import java.util.ArrayList;
 import java.util.Date;
 
-import util.StringTools;
+import util.DateTools;
 
 public interface IRepositoryClient {
 
@@ -19,7 +19,7 @@ public interface IRepositoryClient {
 		public String output;
 		
 		public String toString(){
-			return "Revision: "+revision+" ("+StringTools.getTextDate(date)+")";
+			return "Revision: "+revision+" ("+DateTools.getTextDate(date)+")";
 		}
 	}
 
@@ -63,7 +63,7 @@ public interface IRepositoryClient {
 		public String author;
 		
 		public String toString(){
-			return "("+revision+") "+author+" - "+StringTools.getTextDate(date);
+			return "("+revision+") "+author+" - "+DateTools.getTextDate(date);
 		}
 	}
 	

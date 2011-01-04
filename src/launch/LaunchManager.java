@@ -8,8 +8,8 @@ import launch.StatusManager.Status;
 import logger.ILogProvider;
 
 import ui.IStatusClient;
+import util.DateTools;
 import util.IChangedListener;
-import util.StringTools;
 import core.Configuration;
 import core.ISystemComponent;
 import data.AbstractTrigger;
@@ -106,7 +106,7 @@ public class LaunchManager implements ISystemComponent, ILifecycleListener {
 	public void lifecycleChanged(LifecycleObject object, Lifecycle lifecycle) {
 		
 		LaunchAgent agent = (LaunchAgent)object;
-		String date = StringTools.getTextDate(new Date());
+		String date = DateTools.getTextDate(new Date());
 		if(lifecycle == Lifecycle.START){
 			setStatus("Launch ["+agent.getConfig().getName()+"] started at "+date);
 		}

@@ -3,7 +3,7 @@ package operation;
 import core.Cache;
 import core.Configuration;
 import core.TaskManager;
-import util.StringTools;
+import util.DateTools;
 import util.SystemTools;
 import launch.LaunchAgent;
 import launch.StatusManager.Status;
@@ -23,7 +23,7 @@ public class SampleOperation extends AbstractOperation {
 	@Override
 	public String getDescription() {
 		return 
-			"Idle: "+StringTools.millis2sec(config.getIdleTime())+" sec" +
+			"Idle: "+DateTools.millis2sec(config.getIdleTime())+" sec" +
 			(config.isThrowError() ? " / Throwing: error" : "") +
 			(config.isThrowException() ? " / Throwing: exception" : "") + 
 			(config.isThrowError() && config.isThrowException() ? " / Throwing: error & exception" : "");
@@ -41,12 +41,12 @@ public class SampleOperation extends AbstractOperation {
 			throw new Exception("Sample Exception");
 		}
 		
-		long work = StringTools.millis2sec(config.getIdleTime());
+		long work = DateTools.millis2sec(config.getIdleTime());
 		if(work > 0){
 			logger.log(Module.COMMON, "doing some work...");
 			for(long i=1; i<=work; i++){
 				logger.debug(Module.COMMON, "work ("+i+"/"+work+")");
-				SystemTools.sleep(StringTools.sec2millis(1));
+				SystemTools.sleep(DateTools.sec2millis(1));
 			}
 		}
 		logger.log(Module.COMMON, "done.");

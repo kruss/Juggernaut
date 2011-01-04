@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import launch.StatusManager;
 import data.Error;
-import util.StringTools;
+import util.DateTools;
 import data.AbstractHistory;
 import data.Artifact;
 
@@ -27,10 +27,10 @@ public abstract class AbstractHistoryPage extends AbstractHtmlPage {
 			list.add("Description", history.description);
 		}
 		if(history.start != null){
-			list.add("Start", StringTools.getTextDate(history.start));
+			list.add("Start", DateTools.getTextDate(history.start));
 		}
 		if(history.start != null && history.end != null){
-			list.add("Time", StringTools.getTimeDiff(history.start, history.end)+" '");
+			list.add("Time", DateTools.getTimeDiff(history.start, history.end)+" '");
 		}
 		return list.getHtml();
 	}

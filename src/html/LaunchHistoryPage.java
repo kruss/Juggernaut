@@ -3,7 +3,7 @@ package html;
 import java.io.File;
 
 import launch.StatusManager;
-import util.StringTools;
+import util.DateTools;
 import data.LaunchHistory;
 import data.OperationHistory;
 
@@ -41,11 +41,11 @@ public class LaunchHistoryPage extends AbstractHistoryPage {
 				table.addContentCell("<b>"+link.getHtml()+"</b>");
 				table.addContentCell(operation.description);
 				table.addContentCell(
-						operation.start != null ? StringTools.getTextDate(operation.start) : ""
+						operation.start != null ? DateTools.getTextDate(operation.start) : ""
 				);
 				table.addContentCell(
 						(operation.start != null && operation.end != null) ? 
-								StringTools.getTimeDiff(operation.start, operation.end)+ " '" : ""
+								DateTools.getTimeDiff(operation.start, operation.end)+ " '" : ""
 				);
 				table.addContentCell(StatusManager.getStatusHtml(operation.status));
 			}

@@ -20,8 +20,8 @@ import data.LaunchHistory;
 import data.LaunchConfig;
 import data.OperationHistory;
 import smtp.SmtpClient;
+import util.DateTools;
 import util.FileTools;
-import util.StringTools;
 import util.SystemTools;
 import launch.StatusManager.Status;
 import data.Error;
@@ -67,7 +67,7 @@ public class LaunchAgent extends LifecycleObject {
 		propertyContainer.addProperty(launchConfig.getId(), "Folder", getFolder());
 		propertyContainer.addProperty(launchConfig.getId(), "Trigger", trigger);
 		propertyContainer.addProperty(launchConfig.getId(), "Clean", ""+launchConfig.isClean());
-		propertyContainer.addProperty(launchConfig.getId(), "Timeout", StringTools.millis2min(launchConfig.getTimeout())+" min");
+		propertyContainer.addProperty(launchConfig.getId(), "Timeout", DateTools.millis2min(launchConfig.getTimeout())+" min");
 		
 		operations = new ArrayList<AbstractOperation>();
 		for(AbstractOperationConfig operationConfig : launchConfig.getOperationConfigs()){

@@ -29,8 +29,8 @@ import launch.LaunchManager.LaunchInfo;
 import logger.ILogProvider;
 import logger.Logger;
 
+import util.DateTools;
 import util.IChangedListener;
-import util.StringTools;
 import util.UiTools;
 
 public class SchedulerPanel extends JPanel implements ISystemComponent, IChangedListener {
@@ -179,7 +179,7 @@ public class SchedulerPanel extends JPanel implements ISystemComponent, IChanged
 			Object[] rowData = {
 				launch.name,
 				launch.trigger,
-				launch.start != null ? StringTools.getTextDate(launch.start) : "",
+				launch.start != null ? DateTools.getTextDate(launch.start) : "",
 				launch.progress+" %",
 				launch.status.toString()
 			};
@@ -191,7 +191,7 @@ public class SchedulerPanel extends JPanel implements ISystemComponent, IChanged
 	private void setSchedulerUpdate() {
 		Date updated = scheduleManager.getUpdated();
 		String info = updated != null ? 
-				"Scheduler: "+StringTools.getTextDate(updated) : "Scheduler: idle";
+				"Scheduler: "+DateTools.getTextDate(updated) : "Scheduler: idle";
 		launchPanel.setToolTipText(info);
 		launchTable.setToolTipText(info);
 	}

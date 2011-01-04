@@ -7,6 +7,7 @@ import java.util.Date;
 import logger.ILogConfig.Level;
 import logger.ILogConfig.Module;
 
+import util.DateTools;
 import util.FileTools;
 import util.StringTools;
 
@@ -123,7 +124,7 @@ public class Logger implements ILogger, ILogProvider {
     private synchronized void createLog(Module module, Level level, String text, Type type) {
 
     	if(isLogging(module, level)){
-	    	String time = "["+StringTools.getTextDate(new Date())+"] ";
+	    	String time = "["+DateTools.getTextDate(new Date())+"] ";
 	    	String info = (module != Module.COMMON) ? "("+module.toString()+") " : "";
 	    	String log;
 	    	

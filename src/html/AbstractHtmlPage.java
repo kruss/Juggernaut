@@ -5,8 +5,8 @@ import java.util.Date;
 
 import core.Constants;
 
+import util.DateTools;
 import util.FileTools;
-import util.StringTools;
 
 public abstract class AbstractHtmlPage {
 
@@ -63,7 +63,7 @@ public abstract class AbstractHtmlPage {
 		StringBuilder html = new StringBuilder();
 		html.append("</p>");
 		html.append("<hr><i class='small'>\n");
-		html.append(Constants.APP_FULL_NAME+" - "+StringTools.getTextDate((new Date())));
+		html.append(Constants.APP_FULL_NAME+" - "+DateTools.getTextDate((new Date())));
 		html.append("</i><hr></body>\n");
 		return html.toString();
 	}

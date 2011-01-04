@@ -19,8 +19,8 @@ import launch.LaunchManager;
 import logger.Logger;
 import logger.ILogConfig.Module;
 
+import util.DateTools;
 import util.IChangedListener;
-import util.StringTools;
 
 import core.Configuration;
 import core.Constants;
@@ -106,7 +106,7 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 		UIManager.setLookAndFeel(styles[Constants.APP_STYLE].getClassName()); 
 		SwingUtilities.updateComponentTreeUI(this);
 		
-		setStatus(Constants.APP_NAME+" started at "+StringTools.getTextDate(new Date()));
+		setStatus(Constants.APP_NAME+" started at "+DateTools.getTextDate(new Date()));
 		setHeap(heapManager.getHeapStatus());
 		setVisible(true);
 	}

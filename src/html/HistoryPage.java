@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 import launch.StatusManager;
 
-import util.StringTools;
+import util.DateTools;
 
 import core.Constants;
 import core.History;
@@ -44,11 +44,11 @@ public class HistoryPage extends AbstractHtmlPage {
 				table.addContentCell("<b>"+link.getHtml()+"</b>");
 				table.addContentCell(entry.trigger);
 				table.addContentCell(
-						entry.start != null ? StringTools.getTextDate(entry.start) : ""
+						entry.start != null ? DateTools.getTextDate(entry.start) : ""
 				);
 				table.addContentCell(
 						(entry.start != null && entry.end != null) ? 
-						StringTools.getTimeDiff(entry.start, entry.end)+ " '" : ""
+								DateTools.getTimeDiff(entry.start, entry.end)+ " '" : ""
 				);
 				table.addContentCell(StatusManager.getStatusHtml(entry.status));
 			}

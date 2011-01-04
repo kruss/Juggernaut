@@ -3,7 +3,7 @@ package operation;
 import core.Cache;
 import core.Configuration;
 import core.TaskManager;
-import util.StringTools;
+import util.DateTools;
 import launch.LaunchAgent;
 import data.AbstractOperation;
 import data.AbstractOperationConfig;
@@ -55,7 +55,7 @@ public class SampleOperationConfig extends AbstractOperationConfig {
 	
 	/** the idel-time in millis */
 	public long getIdleTime(){
-		return StringTools.sec2millis(optionContainer.getOption(OPTIONS.IDLE.toString()).getIntegerValue());
+		return DateTools.sec2millis(optionContainer.getOption(OPTIONS.IDLE.toString()).getIntegerValue());
 	}
 	
 	@Override

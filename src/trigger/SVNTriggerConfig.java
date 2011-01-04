@@ -6,7 +6,7 @@ import core.Configuration;
 import core.TaskManager;
 import repository.SVNClient;
 import ui.OptionEditor;
-import util.StringTools;
+import util.DateTools;
 import data.AbstractTrigger;
 import data.AbstractTriggerConfig;
 import data.Option;
@@ -60,7 +60,7 @@ public class SVNTriggerConfig extends AbstractTriggerConfig {
 	
 	/** the delay in millis */
 	public long getDelay(){
-		return StringTools.min2millis(optionContainer.getOption(OPTIONS.DELAY.toString()).getIntegerValue());
+		return DateTools.min2millis(optionContainer.getOption(OPTIONS.DELAY.toString()).getIntegerValue());
 	}
 	
 	@Override
