@@ -129,7 +129,6 @@ public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitialize
 	
 	public ArrayList<String> getAdministrators() {
 		
-		ArrayList<String> list = new ArrayList<String>();
 		String value = optionContainer.getOption(OPTIONS.ADMINISTRATORS.toString()).getStringValue();
 		return StringTools.split(value, ", ");
 	}

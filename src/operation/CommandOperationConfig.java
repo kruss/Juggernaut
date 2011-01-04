@@ -64,19 +64,8 @@ public class CommandOperationConfig extends AbstractOperationConfig {
 	
 	public String getArguments(){ 
 		
-		StringBuilder arguments = new StringBuilder();
 		String value = optionContainer.getOption(OPTIONS.ARGUMENTS.toString()).getStringValue();
-		String[] strings = value.split("\\n");
-		for(String string : strings){
-			String trim = string.trim();
-			if(!trim.isEmpty() && !trim.startsWith("//")){
-				if(arguments.length() > 0){ 
-					arguments.append(" "); 
-				}
-				arguments.append(trim);
-			}
-		}
-		return arguments.toString();
+		return StringTools.join(StringTools.split(value, "\\n", "//"), " ");
 	}
 	
 	public ArrayList<String> getOutputs(){ 

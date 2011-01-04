@@ -108,11 +108,12 @@ public class StringTools {
 		return hour2millis(day * 24);
 	}
 
-
+	/** get stack-trace of an exception */
 	public static String trace(Exception e){
 		return trace(e, MAX_EXCEPTION_TRACE);
 	}
 	
+	/** get stack-trace of an exception using a given depth */
 	public static String trace(Exception e, int depth){
 
 		StringBuilder trace = new StringBuilder();
@@ -130,6 +131,7 @@ public class StringTools {
 		return trace.toString();
 	}
 	
+	/** check if a key-event was actual a modifying one */
 	public static boolean isModifyingKey(KeyEvent e) {
 
 		return 
@@ -138,12 +140,13 @@ public class StringTools {
 		( e.isControlDown() && KeyEvent.VK_X == e.getKeyCode() ); 
 	}
 	
-	public static String join(ArrayList<String> list, String delim){
+	/** join a string-list using a separator */
+	public static String join(ArrayList<String> list, String sep){
 		
 		StringBuilder join = new StringBuilder();
 		for(int i=0; i<list.size(); i++){
 			if(i < list.size()-1){
-				join.append(list.get(i)+delim);
+				join.append(list.get(i)+sep);
 			}else{
 				join.append(list.get(i));
 			}
@@ -151,6 +154,7 @@ public class StringTools {
 		return join.toString();
 	}
 	
+	/** split a string by a delimiter */
 	public static ArrayList<String> split(String value, String delim){
 		
 		ArrayList<String> list = new ArrayList<String>();
@@ -164,6 +168,21 @@ public class StringTools {
 		return list;
 	}
 	
+	/** split a string by a delimiter using a exclude prefix */
+	public static ArrayList<String> split(String value, String delim, String exclude){
+		
+		ArrayList<String> list = new ArrayList<String>();
+		String[] strings = value.split(delim);
+		for(String string : strings){
+			String trim = string.trim();
+			if(!trim.isEmpty() && !trim.startsWith(exclude)){
+				list.add(string);
+			}
+		}
+		return list;
+	}
+	
+	/** get string representation of an enumeration */
 	public static <T extends Enum<T>> ArrayList<String> enum2strings(Class<T> clazz) {      
 		try{         
 			ArrayList<String> list = new ArrayList<String>();                
@@ -176,9 +195,10 @@ public class StringTools {
 		} 
 	}
 
+	/** add item to list if not already contained */
 	public static void addUnique(ArrayList<String> list, String item) {
 		if(!list.contains(item)){
 			list.add(item);
 		}
-	} 
+	}
 }

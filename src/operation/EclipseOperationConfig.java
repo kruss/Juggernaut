@@ -60,16 +60,8 @@ public class EclipseOperationConfig extends AbstractOperationConfig {
 	
 	public ArrayList<String> getBuildPattern(){ 
 		
-		ArrayList<String> list = new ArrayList<String>();
 		String value = optionContainer.getOption(OPTIONS.BUILD.toString()).getStringValue();
-		String[] strings = value.split("\\n");
-		for(String string : strings){
-			String trim = string.trim();
-			if(!trim.isEmpty() && !trim.startsWith("//")){
-				list.add(string);
-			}
-		}
-		return list;
+		return StringTools.split(value, "\\n", "//");
 	}
 	
 	public ArrayList<String> getExcludePattern(){ 
