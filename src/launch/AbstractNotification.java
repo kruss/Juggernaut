@@ -103,7 +103,7 @@ public abstract class AbstractNotification {
 		String message = launch.getConfig().getSmtpMessage();
 		if(!message.isEmpty()){
 			StringBuilder html = new StringBuilder();
-			html.append("<h2>Info</h2>\n");
+			html.append("<h3>Info</h3>\n");
 			html.append("<p>\n");
 			html.append(message.replaceAll("\\n", "<br>"));
 			html.append("</p>\n");
