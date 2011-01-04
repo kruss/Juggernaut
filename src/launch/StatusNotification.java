@@ -2,11 +2,11 @@ package launch;
 
 import java.util.ArrayList;
 
-import smtp.SmtpClient;
+import smtp.ISmtpClient;
 
 public class StatusNotification extends AbstractNotification {
 
-	public StatusNotification(SmtpClient client, LaunchAgent launch) {
+	public StatusNotification(ISmtpClient client, LaunchAgent launch) {
 		super(client, launch);
 	}
 	

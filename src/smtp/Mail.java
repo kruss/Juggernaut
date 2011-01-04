@@ -38,10 +38,7 @@ public class Mail {
 			this.send = null;
 		}
 	}
-	
-	public boolean isSend() {
-		return send != null;
-	}
+	public boolean isSend(){ return send != null; }
 
 	public String getHtml() {
 		
@@ -50,7 +47,7 @@ public class Mail {
 		html.append(AbstractHtmlPage.getCSS());
 		html.append("</head><body>\n");
 		html.append("<hr>\n");
-		html.append("<h1>'"+subject+"'</h1>\n");
+		html.append("<h1>SMTP-Mail: '"+subject+"'</h1>\n");
 		html.append("<ul>\n");
 		html.append(" <li><b>From</b>: "+from+"</li>\n");
 		html.append(" <li><b>To</b>: "+StringTools.join(to, "; ")+"</li>\n");
@@ -62,7 +59,9 @@ public class Mail {
 		}
 		html.append("</ul>\n");
 		html.append("<hr>\n");
-		html.append(content);
+		html.append("<p>");
+		html.append(content.replaceAll("\\n", "<br>"));
+		html.append("</p>");
 		html.append("<hr>\n");
 		html.append("</body></html>\n");
 		return html.toString();

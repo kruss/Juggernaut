@@ -12,21 +12,21 @@ import logger.ILogConfig.Module;
 import repository.IRepositoryClient.CommitInfo;
 import repository.IRepositoryClient.HistoryInfo;
 import smtp.Mail;
-import smtp.SmtpClient;
+import smtp.ISmtpClient;
 import util.StringTools;
 
 public abstract class AbstractNotification {
 
-	protected SmtpClient client;
+	protected ISmtpClient client;
 	protected LaunchAgent launch;
 	
-	public AbstractNotification(SmtpClient client, LaunchAgent launch){
+	public AbstractNotification(ISmtpClient client, LaunchAgent launch){
 		
 		this.client = client;
 		this.launch = launch;
 	}
 	
-	public Artifact performNotification() throws Exception {
+	public Artifact performNotification() {
 		
 		Mail mail = new Mail(getSubject());
 		mail.from = client.getConfig().getSmtpAddress();
@@ -34,14 +34,21 @@ public abstract class AbstractNotification {
 		mail.cc = getCcAdresses();
 		mail.content = getContent();
 		
-		Artifact artifact = new Artifact(mail.subject, mail.getHtml(), "htm");
+		Status status = null;
 		if(isNotification()){
-			client.send(mail, launch.getLogger());
-			artifact.status = mail.isSend() ? Status.SUCCEED : Status.ERROR;
+			try{ 
+				client.send(mail, launch.getLogger());
+			}catch(Exception e){
+				launch.getLogger().error(Module.SMTP, e);
+				status = Status.ERROR;
+			}
 		}else{
 			launch.getLogger().debug(Module.SMTP, "Notification canceled");
-			artifact.status = Status.CANCEL;
+			status = Status.CANCEL;
 		}
+		
+		Artifact artifact = new Artifact(mail.subject, mail.getHtml(), "htm");
+		artifact.status = status;
 		return artifact;
 	}
 	

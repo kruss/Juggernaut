@@ -10,7 +10,7 @@ import logger.ILogConfig.Module;
 
 import data.Artifact;
 
-import smtp.SmtpClient;
+import smtp.ISmtpClient;
 
 /** performs the notification for a launch */
 public class LaunchNotification {
@@ -18,11 +18,11 @@ public class LaunchNotification {
 	private enum Property { STATUS, ERRORS };
 	
 	private Cache cache;
-	private SmtpClient client;
+	private ISmtpClient client;
 	private LaunchAgent launch;
 	
 	public LaunchNotification(
-			Cache cache, SmtpClient client, LaunchAgent launch
+			Cache cache, ISmtpClient client, LaunchAgent launch
 	){
 		this.cache = cache;
 		this.client = client;

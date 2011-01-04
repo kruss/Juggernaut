@@ -3,7 +3,7 @@ package data;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import smtp.SmtpClient;
+import smtp.ISmtpClient;
 import util.DateTools;
 import util.StringTools;
 
@@ -183,7 +183,7 @@ public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitialize
 			History history, 
 			FileManager fileManager, 
 			TaskManager taskManager, 
-			SmtpClient smtpClient,
+			ISmtpClient smtpClient,
 			String trigger)
 	{
 		return new LaunchAgent(configuration, cache, history, fileManager, taskManager, smtpClient, this, trigger);

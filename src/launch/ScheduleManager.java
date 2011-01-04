@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 
-import smtp.SmtpClient;
+import smtp.ISmtpClient;
 import util.IChangedListener;
 import util.Task;
 
@@ -31,7 +31,7 @@ public class ScheduleManager implements ISystemComponent {
 	private History history;
 	private FileManager fileManager;
 	private TaskManager taskManager;
-	private SmtpClient smtpClient;
+	private ISmtpClient smtpClient;
 	private LaunchManager launchManager;
 	private Logger logger;
 	private SchedulerTask scheduler;
@@ -57,7 +57,7 @@ public class ScheduleManager implements ISystemComponent {
 			History history,
 			FileManager fileManager,
 			TaskManager taskManager,
-			SmtpClient smtpClient,
+			ISmtpClient smtpClient,
 			LaunchManager launchManager, 
 			Logger logger
 	){

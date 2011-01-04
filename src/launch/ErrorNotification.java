@@ -2,11 +2,11 @@ package launch;
 
 import java.util.ArrayList;
 
-import smtp.SmtpClient;
+import smtp.ISmtpClient;
 
 public class ErrorNotification extends AbstractNotification {
 
-	public ErrorNotification(SmtpClient client, LaunchAgent launch) {
+	public ErrorNotification(ISmtpClient client, LaunchAgent launch) {
 		super(client, launch);
 	}
 	

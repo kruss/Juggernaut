@@ -19,7 +19,7 @@ import launch.LaunchAgent;
 import launch.LaunchManager;
 import launch.LaunchManager.LaunchStatus;
 
-import smtp.SmtpClient;
+import smtp.ISmtpClient;
 import util.IChangedListener;
 import util.UiTools;
 
@@ -42,7 +42,7 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangedLis
 	private History history;
 	private FileManager fileManager;
 	private TaskManager taskManager;
-	private SmtpClient smtpClient;
+	private ISmtpClient smtpClient;
 	private LaunchManager launchManager;
 	
 	private ArrayList<IChangedListener> listeners;
@@ -66,7 +66,7 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangedLis
 			History history,
 			FileManager fileManager,
 			TaskManager taskManager,
-			SmtpClient smtpClient,
+			ISmtpClient smtpClient,
 			LaunchManager launchManager,
 			Registry registry)
 	{

@@ -19,7 +19,7 @@ import data.Artifact;
 import data.LaunchHistory;
 import data.LaunchConfig;
 import data.OperationHistory;
-import smtp.SmtpClient;
+import smtp.ISmtpClient;
 import util.DateTools;
 import util.FileTools;
 import util.SystemTools;
@@ -49,7 +49,7 @@ public class LaunchAgent extends LifecycleObject {
 			History history, 
 			FileManager fileManager, 
 			TaskManager taskManager, 
-			SmtpClient smtpClient,
+			ISmtpClient smtpClient,
 			LaunchConfig launchConfig,
 			String trigger)
 	{
