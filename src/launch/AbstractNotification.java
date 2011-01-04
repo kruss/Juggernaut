@@ -7,6 +7,8 @@ import http.IHttpServer;
 
 import java.util.ArrayList;
 import java.util.Collections;
+
+import core.Constants;
 import data.Artifact;
 
 import operation.IRepositoryOperation;
@@ -103,7 +105,7 @@ public abstract class AbstractNotification {
 		String message = launch.getConfig().getSmtpMessage();
 		if(!message.isEmpty()){
 			StringBuilder html = new StringBuilder();
-			html.append("<h2>Info</u2>\n");
+			html.append("<h2>Info</h2>\n");
 			html.append("<p>\n");
 			html.append(message.replaceAll("\\n", "<br>"));
 			html.append("</p>\n");
@@ -122,8 +124,8 @@ public abstract class AbstractNotification {
 					"/"+launch.getStatusManager().getStart().getTime()+"/"+HistoryPage.OUTPUT_FILE;
 				HtmlLink link = new HtmlLink(url, url);
 				link.setExtern(true);
-				HtmlList list = new HtmlList("Ressources");
-				list.add("Output", link.getHtml());
+				HtmlList list = new HtmlList("Output");
+				list.add(Constants.APP_NAME, link.getHtml());
 				return list.getHtml();
 			}catch(Exception e){
 				launch.getLogger().error(Module.HTTP, e);
