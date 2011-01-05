@@ -81,10 +81,10 @@ public class SVNOperation extends AbstractOperation implements IRepositoryOperat
 	@Override
 	protected void execute() throws Exception {
 		
-		String url = getUrlProperty();
+		url = getUrlProperty();
 		String revision = getRevisionProperty();
-		
 		svnCheckout(url, revision);
+		
 		try{
 			svnHistory();
 		}catch(Exception e){
@@ -95,8 +95,7 @@ public class SVNOperation extends AbstractOperation implements IRepositoryOperat
 	}
 	
 	private void svnCheckout(String url, String revision) throws Exception {
-		
-		this.url = url;
+
 		lastRevision = getLastRevisionCache();
 		
 		CheckoutInfo checkout = client.checkout(url, revision, parent.getFolder());

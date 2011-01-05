@@ -329,9 +329,11 @@ public class Notification {
 		ArrayList<String> committers = new ArrayList<String>();
 		for(IRepositoryOperation operation : launch.getRepositoryOperations()){
 				HistoryInfo history = operation.getHistory();
-				for(CommitInfo commit : history.commits){
-					if(!committers.contains(commit.author)){
-						committers.add(commit.author);
+				if(history != null){
+					for(CommitInfo commit : history.commits){
+						if(!committers.contains(commit.author)){
+							committers.add(commit.author);
+						}
 					}
 				}
 		}

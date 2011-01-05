@@ -4,6 +4,8 @@ TASKS
 # auto-reload for index-page
 # filter for index-page
 
+# add generic operation Error if status is on error and other error was  collected from output bevore !
+
 BUGS
 ----
 
