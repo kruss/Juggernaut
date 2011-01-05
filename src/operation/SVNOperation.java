@@ -22,10 +22,13 @@ public class SVNOperation extends AbstractOperation implements IRepositoryOperat
 	private SVNClient client;
 	private SVNOperationConfig config;
 	
+	public String url;
 	public String lastRevision;
 	public String currentRevision;
 	public HistoryInfo history;		
 	
+	@Override
+	public String getUrl(){ return url; }
 	@Override
 	public String getRevision(){ return currentRevision; }
 	@Override
@@ -33,8 +36,14 @@ public class SVNOperation extends AbstractOperation implements IRepositoryOperat
 	
 	public SVNOperation(Configuration configuration, Cache cache, TaskManager taskManager, LaunchAgent parent, SVNOperationConfig config) {
 		super(configuration, cache, taskManager, parent, config);
+		
 		this.config = config;
 		client = new SVNClient(taskManager,parent.getLogger());
+		
+		url = null;
+		lastRevision = null;
+		currentRevision = null;
+		history = null;
 	}
 	
 	@Override
@@ -87,8 +96,9 @@ public class SVNOperation extends AbstractOperation implements IRepositoryOperat
 	
 	private void svnCheckout(String url, String revision) throws Exception {
 		
+		this.url = url;
 		lastRevision = getLastRevisionCache();
-
+		
 		CheckoutInfo checkout = client.checkout(url, revision, parent.getFolder());
 		currentRevision = checkout.revision;
 		setLastRevisionCache(currentRevision);

@@ -83,4 +83,13 @@ public class LaunchHistory extends AbstractHistory {
 		}
 		return null;
 	}
+	
+	public ArrayList<Error> getErrors(){
+		
+		ArrayList<Error> errors = new ArrayList<Error>();
+		for(OperationHistory operation : operations){
+				errors.addAll(operation.errors);
+		}
+		return errors;
+	}
 }

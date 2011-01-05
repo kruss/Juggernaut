@@ -26,11 +26,11 @@ import util.DateTools;
 import util.FileTools;
 import util.SystemTools;
 import launch.StatusManager.Status;
-import data.Error;
 
 import logger.Logger;
 import logger.Logger.Mode;
 import logger.ILogConfig.Module;
+import data.Error;
 
 public class LaunchAgent extends LifecycleObject {
 
@@ -193,14 +193,6 @@ public class LaunchAgent extends LifecycleObject {
 
 		logger.info(Module.COMMON, "Output");
 		
-		// final status
-		for(AbstractOperation operation : operations){
-			if(StatusManager.isError(operation.getStatusManager().getStatus())){
-				statusManager.addError(launchConfig.getId(), "Not all Operations succeeded");
-				break;
-			}
-		}
-		
 		// update properties
 		propertyContainer.addProperties(
 				launchConfig.getId(), 
@@ -208,12 +200,10 @@ public class LaunchAgent extends LifecycleObject {
 		);
 		
 		// perform notification
-		if(statusManager.getStatus() != Status.CANCEL){
-			try{ 
-				launchNotification.performNotification();
-			}catch(Exception e){
-				logger.error(Module.SMTP, e);
-			}
+		try{ 
+			launchNotification.performNotification();
+		}catch(Exception e){
+			logger.error(Module.SMTP, e);
 		}
 		
 		// add to history
@@ -262,13 +252,11 @@ public class LaunchAgent extends LifecycleObject {
 		return list;
 	}
 	
-	public ArrayList<Error> getNotificationErrors(){
+	public ArrayList<Error> getErrors(){
 		
 		ArrayList<Error> errors = new ArrayList<Error>();
 		for(AbstractOperation operation : operations){
-			if(operation.getConfig().isNotification()){
-				errors.addAll(operation.getStatusManager().getErrors());
-			}
+				errors.addAll(operation.getErrors());
 		}
 		return errors;
 	}

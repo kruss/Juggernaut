@@ -11,7 +11,6 @@ import util.FileTools;
 
 import launch.LifecycleObject;
 import launch.StatusManager.Status;
-import data.Error;
 
 public abstract class AbstractHistory {
 
@@ -27,14 +26,12 @@ public abstract class AbstractHistory {
 	public Status status;
 	public String folder;
 	public ArrayList<Artifact> artifacts;
-	public ArrayList<Error> errors;
 	
 	public AbstractHistory(LifecycleObject object){
 		
 		this.object = object;
 		historyId = UUID.randomUUID().toString();
 		artifacts = new ArrayList<Artifact>();
-		errors = new ArrayList<Error>();
 	}
 	
 	public void init() throws Exception {
@@ -49,7 +46,6 @@ public abstract class AbstractHistory {
 		for(Artifact artifact : artifacts){
 			artifact.finish(new File(folder));
 		}
-		errors = object.getStatusManager().getErrors();
 		createHtml();
 	}
 

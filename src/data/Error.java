@@ -7,14 +7,14 @@ public class Error {
 	
 	public Error(String id, String message){
 		this.id = id;
-		this.message = message;
+		this.message = message;	
 	}
 	
 	public String getHtml() {
-		return "<font color='red'>"+message+"</font>";
+		return "<font color='red'>"+message+"</font>";	
 	}
 	
 	public long getHash(){
-		return (id+message).hashCode();
+		return (id+message).hashCode();	
 	}
 }

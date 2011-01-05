@@ -2,6 +2,7 @@ package data;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import core.Cache;
 import core.Configuration;
@@ -11,10 +12,11 @@ import util.FileTools;
 
 import launch.LifecycleObject;
 import launch.LaunchAgent;
-import launch.StatusManager;
+import launch.StatusManager.Status;
 
 import logger.Logger;
 import logger.ILogConfig.Module;
+import data.Error;
 
 public abstract class AbstractOperation extends LifecycleObject {
 
@@ -24,6 +26,7 @@ public abstract class AbstractOperation extends LifecycleObject {
 	protected TaskManager taskManager;
 	protected Logger logger;
 	protected AbstractOperationConfig config;
+	protected ArrayList<Error> errors;
 	
 	public LaunchAgent getParent(){ return parent; }
 	public AbstractOperationConfig getConfig(){ return config; }
@@ -43,10 +46,17 @@ public abstract class AbstractOperation extends LifecycleObject {
 		this.taskManager = taskManager;
 		logger = parent.getLogger();
 		this.config = config.clone();
+		errors = new ArrayList<Error>();
 		
 		parent.getPropertyContainer().addProperties(
 				config.getId(), config.getOptionContainer().getProperties()
 		);
+	}
+	
+	public ArrayList<Error> getErrors(){ return errors; }
+	public void addError(String message){
+		errors.add(new Error(config.getId(), message));
+		statusManager.setStatus(Status.ERROR);
 	}
 	
 	/** returns the 1-based index of this operation within the launch */
@@ -80,12 +90,7 @@ public abstract class AbstractOperation extends LifecycleObject {
 	protected void init() throws Exception {}
 	
 	@Override
-	protected void finish() {
-		
-		if(StatusManager.isError(statusManager.getStatus())){
-			statusManager.addError(config.getId(), "Operation did not succeed");
-		}
-	}
+	protected void finish() {}
 	
 	/** copy a relative output-folder to history */
 	public void collectOuttput(String outputFolder) {

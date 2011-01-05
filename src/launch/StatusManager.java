@@ -1,9 +1,7 @@
 package launch;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import data.Error;
 import util.DateTools;
 
 import launch.ILifecycleListener.Lifecycle;
@@ -20,7 +18,6 @@ public class StatusManager {
 	private int progressMax;
 	private Date start;
 	private Date end;
-	private ArrayList<Error> errors;
 	
 	public StatusManager(LifecycleObject parent){
 		
@@ -30,7 +27,6 @@ public class StatusManager {
 		progressMax = 0;
 		start = null;
 		end = null;
-		errors = new ArrayList<Error>();
 	}
 	
 	public long getHash(){
@@ -76,12 +72,6 @@ public class StatusManager {
 	}
 	public Date getEnd(){ return end; }
 	
-	public ArrayList<Error> getErrors(){ return errors; }
-	public void addError(String id, String message){
-		errors.add(new Error(id, message));
-		setStatus(Status.ERROR);
-	}
-	
 	public HashMap<String, String> getProperties(){
 		
 		HashMap<String, String> map = new HashMap<String, String>();
@@ -115,11 +105,6 @@ public class StatusManager {
 		}else{
 			return -1;
 		}
-	}
-	
-	public static boolean isError(Status status) {
-		return 
-		status != Status.SUCCEED && status != Status.CANCEL;
 	}
 	
 	public static String getStatusHtml(Status status) {

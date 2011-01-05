@@ -6,7 +6,6 @@ import core.TaskManager;
 import util.DateTools;
 import util.SystemTools;
 import launch.LaunchAgent;
-import launch.StatusManager.Status;
 
 import logger.ILogConfig.Module;
 import data.AbstractOperation;
@@ -34,7 +33,7 @@ public class SampleOperation extends AbstractOperation {
 		
 		if(config.isThrowError()){
 			logger.log(Module.COMMON, "throwing error...");
-			statusManager.setStatus(Status.ERROR);
+			addError("Sample Error");
 		}
 		if(config.isThrowException()){
 			logger.log(Module.COMMON, "throwing exception...");

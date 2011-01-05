@@ -23,7 +23,6 @@ public class LaunchHistoryPage extends AbstractHistoryPage {
 		html.append(getGeneralHtml());
 		html.append(getOperationsHtml());
 		html.append(getArtifactHtml());
-		html.append(getErrorHtml());
 		return html.toString();
 	}
 	
@@ -54,5 +53,4 @@ public class LaunchHistoryPage extends AbstractHistoryPage {
 			return "<i>empty</i>";
 		}
 	}
-
 }

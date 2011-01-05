@@ -7,5 +7,5 @@ public interface ISmtpConfig {
 	public boolean isNotification();
 	public String getSmtpServer();
 	public String getSmtpAddress();
-	public ArrayList<String> getAdministrators();
+	public ArrayList<String> getAdministratorAddresses();
 }

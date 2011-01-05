@@ -1,10 +1,10 @@
 package html;
 
 import data.OperationHistory;
+import data.Error;
 
 public class OperationHistoryPage extends AbstractHistoryPage {
 	
-	@SuppressWarnings("unused")
 	private OperationHistory history;
 	
 	public OperationHistoryPage(String name, String path, HtmlLink parent, OperationHistory history) {
@@ -20,5 +20,19 @@ public class OperationHistoryPage extends AbstractHistoryPage {
 		html.append(getArtifactHtml());
 		html.append(getErrorHtml());
 		return html.toString();
+	}
+	
+	protected String getErrorHtml(){
+		
+		if(history.errors.size() > 0){
+			HtmlList list = new HtmlList("Errors");
+			list.setType(HtmlList.Type.OL);
+			for(Error error : history.errors){
+				list.add(null, error.getHtml());
+			}
+			return list.getHtml();
+		}else{
+			return "";
+		}
 	}
 }

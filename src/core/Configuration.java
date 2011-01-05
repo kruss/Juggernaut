@@ -196,7 +196,7 @@ implements
 	}
 	
 	@Override
-	public ArrayList<String> getAdministrators() {
+	public ArrayList<String> getAdministratorAddresses() {
 		
 		String value = optionContainer.getOption(OPTIONS.ADMINISTRATORS.toString()).getStringValue();
 		return StringTools.split(value, ", ");

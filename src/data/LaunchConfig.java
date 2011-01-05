@@ -33,7 +33,7 @@ public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitialize
 	}
 	
 	public enum OPTIONS {
-		ACTIVE, DESCRIPTION, CLEAN, TIMEOUT, NOTIFICATION, ADMINISTRATORS, MESSAGE
+		ACTIVE, DESCRIPTION, CLEAN, TIMEOUT, NOTIFICATION, ADMINISTRATORS, COMMITTERS, MESSAGE
 	}
 	
 	private String id;
@@ -79,6 +79,11 @@ public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitialize
 				GROUPS.NOTIFICATION.toString(),
 				OPTIONS.ADMINISTRATORS.toString(), "List of administrator eMails (comma seperated)", 
 				Type.TEXT, ""
+		));
+		optionContainer.getOptions().add(new Option(
+				GROUPS.NOTIFICATION.toString(),
+				OPTIONS.COMMITTERS.toString(), "Threshold for committer notification (0 = no committer)", 
+				Type.INTEGER, 0, 0, 15
 		));
 		optionContainer.getOptions().add(new Option(
 				GROUPS.NOTIFICATION.toString(),
@@ -129,10 +134,14 @@ public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitialize
 		return optionContainer.getOption(OPTIONS.NOTIFICATION.toString()).getBooleanValue();
 	}
 	
-	public ArrayList<String> getAdministrators() {
+	public ArrayList<String> getAdministratorAddresses() {
 		
 		String value = optionContainer.getOption(OPTIONS.ADMINISTRATORS.toString()).getStringValue();
 		return StringTools.split(value, ", ");
+	}
+	
+	public int getCommitterThreshold() {
+		return optionContainer.getOption(OPTIONS.COMMITTERS.toString()).getIntegerValue();
 	}
 	
 	public String getSmtpMessage() {

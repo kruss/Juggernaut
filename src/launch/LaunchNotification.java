@@ -2,12 +2,11 @@ package launch;
 
 import http.IHttpServer;
 
-import java.util.ArrayList;
-
 import core.Cache;
 import core.History;
 import data.AbstractOperation;
 import data.Error;
+import launch.StatusManager.Status;
 import logger.ILogConfig.Module;
 
 import data.Artifact;
@@ -37,30 +36,19 @@ public class LaunchNotification {
 
 	public void performNotification() throws Exception {
 
-		ArrayList<Artifact> artifacts = new ArrayList<Artifact>();
-		
-		if(isStatusHashChanged()){
-			launch.getLogger().log(Module.SMTP, "Status-Notification required");
-			StatusNotification notification = new StatusNotification(history, smtpClient, httpServer, launch);
-			Artifact artifact = notification.performNotification();
-			artifacts.add(artifact);
-			setStatusHashProperty();
-		}
-		
-		if(isErrorHashChanged()){
-			if(isErrorPresent()){
-				launch.getLogger().log(Module.SMTP, "Error-Notification required");
-				ErrorNotification notification = new ErrorNotification(history, smtpClient, httpServer, launch);
+		if(launch.getStatusManager().getStatus() != Status.CANCEL){
+			if(isStatusHashChanged() || isErrorHashChanged()){
+				launch.getLogger().log(Module.SMTP, "Notification required");
+				
+				Notification notification = new Notification(history, smtpClient, httpServer, launch);
 				Artifact artifact = notification.performNotification();
-				artifacts.add(artifact);
+				launch.getArtifacts().add(artifact);
+				
+				setStatusHashProperty();
+				setErrorHashProperty();
+			}else{
+				launch.getLogger().debug(Module.SMTP, "Notification NOT required");
 			}
-			setErrorHashProperty();
-		}
-		
-		if(artifacts.size() > 0){
-			Artifact artifact = new Artifact("Notification");
-			artifact.childs = artifacts;
-			launch.getArtifacts().add(artifact);
 		}
 	}
 
@@ -107,10 +95,6 @@ public class LaunchNotification {
 		return (last == null) || (last.longValue() != current.longValue());
 	}
 	
-	private boolean isErrorPresent() {
-		return launch.getNotificationErrors().size() > 0;
-	}
-	
 	private void setErrorHashProperty(){
 		
 		cache.addProperty(
@@ -133,7 +117,7 @@ public class LaunchNotification {
 	private Long computeErrorHash() {
 		
 		long hash = 0;
-		for(Error error : launch.getNotificationErrors()){
+		for(Error error : launch.getErrors()){
 			hash += error.getHash();
 		}
 		return new Long(hash);

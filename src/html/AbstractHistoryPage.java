@@ -3,7 +3,6 @@ package html;
 import java.util.ArrayList;
 
 import launch.StatusManager;
-import data.Error;
 import util.DateTools;
 import data.AbstractHistory;
 import data.Artifact;
@@ -65,19 +64,5 @@ public abstract class AbstractHistoryPage extends AbstractHtmlPage {
 		}
 		html.append("</ul>\n");
 		return html.toString();
-	}
-	
-	protected String getErrorHtml(){
-		
-		if(history.errors.size() > 0){
-			HtmlList list = new HtmlList("Errors");
-			list.setType(HtmlList.Type.OL);
-			for(Error error : history.errors){
-				list.add(null, error.getHtml());
-			}
-			return list.getHtml();
-		}else{
-			return "";
-		}
 	}
 }
