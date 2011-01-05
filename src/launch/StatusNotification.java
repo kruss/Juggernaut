@@ -7,7 +7,12 @@ import http.IHttpServer;
 import java.util.ArrayList;
 import java.util.Date;
 
+import launch.StatusManager.Status;
+
+import core.History;
+
 import data.AbstractOperation;
+import data.OperationHistory;
 
 import smtp.ISmtpClient;
 import util.DateTools;
@@ -15,14 +20,14 @@ import util.DateTools;
 public class StatusNotification extends AbstractNotification {
 
 	public StatusNotification(
-			ISmtpClient client, IHttpServer server, LaunchAgent launch
+			History history, ISmtpClient client, IHttpServer server, LaunchAgent launch
 	) {
-		super(client, server, launch);
+		super(history, client, server, launch);
 	}
 	
 	@Override
 	protected String getSubject() {
-		return "Launch ["+launch.getConfig().getName()+"] - Status";
+		return "Launch ["+launch.getConfig().getName()+"] - "+launch.getStatusManager().getStatus().toString();
 	}
 	
 	@Override
@@ -40,26 +45,30 @@ public class StatusNotification extends AbstractNotification {
 		
 		StringBuilder html = new StringBuilder();
 		html.append("<h1>Launch ["+launch.getConfig().getName()+"]</h1>\n");
-		// TODO show status-transitions
-		html.append(getStatusHtml());
+		html.append(getGeneralHtml());
 		html.append(getOperationsHtml());
-		html.append(getUserInfo());
-		html.append(getLinkInfo());
+		html.append(getUserHtml());
+		html.append(getLinkHtml());
 		return html.toString();
 	}
 	
-	// TODO use the launch-history for mail-contents
-	private String getStatusHtml() {
+	private String getGeneralHtml() {
 		
-		HtmlList list = new HtmlList("Status");
-		list.add("Status", StatusManager.getStatusHtml(launch.getStatusManager().getStatus()));
-		String trigger = launch.getTrigger();
-		if(!trigger.isEmpty()){
-			list.add("Trigger", trigger);
+		HtmlList list = new HtmlList("Info");
+		Status current = launch.getStatusManager().getStatus();
+		Status last = launchHistory != null ? launchHistory.status : null;
+		if(last != null && last != current){
+			list.add("Status", StatusManager.getStatusHtml(last)+" -> "+StatusManager.getStatusHtml(current));
+		}else{
+			list.add("Status", StatusManager.getStatusHtml(current));
 		}
 		String description = launch.getConfig().getDescription();
 		if(!description.isEmpty()){
 			list.add("Description", description);
+		}
+		String trigger = launch.getTrigger();
+		if(!trigger.isEmpty()){
+			list.add("Trigger", trigger);
 		}
 		Date start = launch.getStatusManager().getStart();
 		if(start != null){
@@ -72,29 +81,28 @@ public class StatusNotification extends AbstractNotification {
 		return list.getHtml();
 	}
 	
-	// TODO use the launch-history for mail-contents
 	private String getOperationsHtml() {
 		
 		if(launch.getOperations().size() > 0){
 			HtmlTable table = new HtmlTable("Operations");
 			table.addHeaderCell("Operation", 150);
 			table.addHeaderCell("Description", 250);
-			table.addHeaderCell("Start", 100);
-			table.addHeaderCell("Time", 75);
 			table.addHeaderCell("Status", 100);
 			for(AbstractOperation operation : launch.getOperations()){
 				table.addContentCell("<b>"+operation.getConfig().getName()+"</b>");
-				table.addContentCell(operation.getDescription());
-				Date start = operation.getStatusManager().getStart();
-				table.addContentCell(
-						start != null ? DateTools.getTextDate(start) : ""
-				);
-				Date end = operation.getStatusManager().getStart();
-				table.addContentCell(
-						(start != null && end != null) ? 
-								DateTools.getTimeDiff(start, end)+ " '" : ""
-				);
-				table.addContentCell(StatusManager.getStatusHtml(operation.getStatusManager().getStatus()));
+				table.addContentCell(operation.getConfig().getDescription());
+				Status current = operation.getStatusManager().getStatus();
+				OperationHistory operationHistory = launchHistory != null ? launchHistory.getOperation(operation.getConfig().getId()) : null;
+				Status last = operationHistory != null ? operationHistory.status : null;
+				if(last != null && last != current){
+					table.addContentCell(
+							StatusManager.getStatusHtml(last)+" -> "+StatusManager.getStatusHtml(current)
+					);
+				}else{
+					table.addContentCell(
+							StatusManager.getStatusHtml(current)
+					);
+				}
 			}
 			return table.getHtml();
 		}else{

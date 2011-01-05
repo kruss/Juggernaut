@@ -7,7 +7,10 @@ import http.IHttpServer;
 
 import java.util.ArrayList;
 import java.util.Collections;
+
+import core.History;
 import data.Artifact;
+import data.LaunchHistory;
 
 import operation.IRepositoryOperation;
 
@@ -22,23 +25,26 @@ import util.SystemTools;
 
 public abstract class AbstractNotification {
 
-	protected ISmtpClient client;
-	protected IHttpServer server;
+	protected History history;
+	protected ISmtpClient smtpClient;
+	protected IHttpServer httpServer;
 	protected LaunchAgent launch;
+	protected LaunchHistory launchHistory;
 	
 	public AbstractNotification(
-			ISmtpClient client, IHttpServer server, LaunchAgent launch
+			History history, ISmtpClient smtpClient, IHttpServer httpServer, LaunchAgent launch
 	){
-		
-		this.client = client;
-		this.server = server;
+		this.history = history;
+		this.smtpClient = smtpClient;
+		this.httpServer = httpServer;
 		this.launch = launch;
+		this.launchHistory = history.getLatest(launch.getConfig().getId());
 	}
 	
 	public Artifact performNotification() {
 		
 		Mail mail = new Mail(getSubject());
-		mail.from = client.getConfig().getSmtpAddress();
+		mail.from = smtpClient.getConfig().getSmtpAddress();
 		mail.to = getToAdresses();
 		mail.cc = getCcAdresses();
 		mail.content = getContent();
@@ -46,7 +52,7 @@ public abstract class AbstractNotification {
 		Status status = null;
 		if(isNotification()){
 			try{ 
-				client.send(mail, launch.getLogger());
+				smtpClient.send(mail, launch.getLogger());
 			}catch(Exception e){
 				launch.getLogger().error(Module.SMTP, e);
 				status = Status.ERROR;
@@ -62,7 +68,7 @@ public abstract class AbstractNotification {
 	}
 	
 	private boolean isNotification(){
-		return client.getConfig().isNotification() && launch.getConfig().isNotification();
+		return smtpClient.getConfig().isNotification() && launch.getConfig().isNotification();
 	}
 
 	protected abstract String getSubject();
@@ -73,7 +79,7 @@ public abstract class AbstractNotification {
 	protected ArrayList<String> getAdministratorAdresses() {
 		
 		ArrayList<String> admins = new ArrayList<String>();
-		for(String addr : client.getConfig().getAdministrators()){
+		for(String addr : smtpClient.getConfig().getAdministrators()){
 			StringTools.addUnique(admins, addr);
 		}
 		for(String addr : launch.getConfig().getAdministrators()){
@@ -98,12 +104,12 @@ public abstract class AbstractNotification {
 		return committers;
 	}
 	
-	protected String getUserInfo() {
+	protected String getUserHtml() {
 		
 		String message = launch.getConfig().getSmtpMessage();
 		if(!message.isEmpty()){
 			StringBuilder html = new StringBuilder();
-			html.append("<h3>Info</h3>\n");
+			html.append("<h3>Message</h3>\n");
 			html.append("<p>\n");
 			html.append(message.replaceAll("\\n", "<br>"));
 			html.append("</p>\n");
@@ -113,12 +119,12 @@ public abstract class AbstractNotification {
 		}
 	}
 	
-	protected String getLinkInfo() {
+	protected String getLinkHtml() {
 		
-		if(server.isRunning()){
+		if(httpServer.isRunning()){
 			try{
 				String url = 
-					"http://"+SystemTools.getHostName()+":"+server.getPort()+
+					"http://"+SystemTools.getHostName()+":"+httpServer.getPort()+
 					"/"+launch.getStatusManager().getStart().getTime()+"/"+HistoryPage.OUTPUT_FILE;
 				HtmlLink link = new HtmlLink(url, url);
 				link.setExtern(true);

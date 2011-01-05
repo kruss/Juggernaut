@@ -180,6 +180,31 @@ public class History implements ISystemComponent {
 		}
 	}
 	
+	/** get the latest entry of specified id */
+	public synchronized LaunchHistory getLatest(String id) {
+		
+		for(LaunchHistory entry : entries){
+			if(entry.id.equals(id)){
+				return entry;
+			}
+		}
+		return null;
+	}
+	
+	/** get the previous entry of specified one */
+	public synchronized LaunchHistory getPrevious(LaunchHistory entry) {
+
+		int index = entries.indexOf(entry);
+		if(index != -1){
+			for(int i = index+1; i<entries.size(); i++){
+				if(entries.get(i).id.equals(entry.id)){
+					return entries.get(i);
+				}
+			}
+		}
+		return null;
+	}
+	
 	public class HistoryInfo {
 		
 		public String historyId;

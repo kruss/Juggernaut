@@ -74,4 +74,13 @@ public class LaunchHistory extends AbstractHistory {
 	public String getIndexPath() {
 		return folder+File.separator+LaunchHistoryPage.OUTPUT_FILE;
 	}
+
+	public OperationHistory getOperation(String id) {
+		for(OperationHistory operation : operations){
+			if(operation.id.equals(id)){
+				return operation;
+			}
+		}
+		return null;
+	}
 }

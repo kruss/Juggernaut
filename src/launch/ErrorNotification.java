@@ -4,19 +4,21 @@ import http.IHttpServer;
 
 import java.util.ArrayList;
 
+import core.History;
+
 import smtp.ISmtpClient;
 
 public class ErrorNotification extends AbstractNotification {
 
 	public ErrorNotification(
-			ISmtpClient client, IHttpServer server, LaunchAgent launch
+			History history, ISmtpClient client, IHttpServer server, LaunchAgent launch
 	) {
-		super(client, server, launch);
+		super(history, client, server, launch);
 	}
 	
 	@Override
 	protected String getSubject() {
-		return "Launch ["+launch.getConfig().getName()+"] - Error(s)";
+		return "Launch ["+launch.getConfig().getName()+"] - "+launch.getNotificationErrors().size()+" Error(s)";
 	}
 	
 	@Override
@@ -35,8 +37,8 @@ public class ErrorNotification extends AbstractNotification {
 		StringBuilder html = new StringBuilder();
 		html.append("<h1>Launch ["+launch.getConfig().getName()+"]</h1>\n");
 		// TODO show errors / legacy errors / commits
-		html.append(getUserInfo());
-		html.append(getLinkInfo());
+		html.append(getUserHtml());
+		html.append(getLinkHtml());
 		return html.toString();
 	}
 }

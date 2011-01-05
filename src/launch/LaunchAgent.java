@@ -86,7 +86,7 @@ public class LaunchAgent extends LifecycleObject {
 			}
 		}
 		
-		launchNotification = new LaunchNotification(cache, smtpClient, httpServer, this);
+		launchNotification = new LaunchNotification(history, cache, smtpClient, httpServer, this);
 		
 		launchHistory = new LaunchHistory(this, fileManager);
 		for(AbstractOperation operation : operations){
@@ -193,6 +193,7 @@ public class LaunchAgent extends LifecycleObject {
 
 		logger.info(Module.COMMON, "Output");
 		
+		// final status
 		for(AbstractOperation operation : operations){
 			if(StatusManager.isError(operation.getStatusManager().getStatus())){
 				statusManager.addError(launchConfig.getId(), "Not all Operations succeeded");
@@ -200,24 +201,30 @@ public class LaunchAgent extends LifecycleObject {
 			}
 		}
 		
+		// update properties
 		propertyContainer.addProperties(
 				launchConfig.getId(), 
 				statusManager.getProperties()
 		);
 		
-		try{ 
-			launchNotification.performNotification();
-		}catch(Exception e){
-			logger.error(Module.SMTP, e);
+		// perform notification
+		if(statusManager.getStatus() != Status.CANCEL){
+			try{ 
+				launchNotification.performNotification();
+			}catch(Exception e){
+				logger.error(Module.SMTP, e);
+			}
 		}
 		
+		// add to history
 		try{ 
-			launchHistory.finish();
-			history.add(launchHistory); 
+			launchHistory.finish(); 
+			history.add(launchHistory);
 		}catch(Exception e){
 			logger.error(Module.COMMON, e);
 		}
 		
+		// open browser
 		if(trigger == AbstractTrigger.USER_TRIGGER){
 			try{
 				String path = launchHistory.getIndexPath();
@@ -228,6 +235,7 @@ public class LaunchAgent extends LifecycleObject {
 			}
 		}
 		
+		// close logging
 		logger.info(Module.COMMON, statusManager.getStatus().toString());
 		logger.clearListeners();
 	}

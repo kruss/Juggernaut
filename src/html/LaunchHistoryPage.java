@@ -20,7 +20,7 @@ public class LaunchHistoryPage extends AbstractHistoryPage {
 	public String getBody() {
 		
 		StringBuilder html = new StringBuilder();
-		html.append(getStatusHtml());
+		html.append(getGeneralHtml());
 		html.append(getOperationsHtml());
 		html.append(getArtifactHtml());
 		html.append(getErrorHtml());

@@ -7,6 +7,7 @@ import data.Error;
 import util.DateTools;
 import data.AbstractHistory;
 import data.Artifact;
+import data.LaunchHistory;
 
 public abstract class AbstractHistoryPage extends AbstractHtmlPage {
 
@@ -19,12 +20,17 @@ public abstract class AbstractHistoryPage extends AbstractHtmlPage {
 		this.history = history;
 	}
 
-	protected String getStatusHtml() {
+	protected String getGeneralHtml() {
 		
-		HtmlList list = new HtmlList("Status");
+		HtmlList list = new HtmlList("Info");
 		list.add("Status", StatusManager.getStatusHtml(history.status));
 		if(!history.description.isEmpty()){
 			list.add("Description", history.description);
+		}
+		if(history instanceof LaunchHistory){
+			if(!((LaunchHistory)history).trigger.isEmpty()){
+				list.add("Trigger", ((LaunchHistory)history).trigger);
+			}
 		}
 		if(history.start != null){
 			list.add("Start", DateTools.getTextDate(history.start));

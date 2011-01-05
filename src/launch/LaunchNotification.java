@@ -5,6 +5,7 @@ import http.IHttpServer;
 import java.util.ArrayList;
 
 import core.Cache;
+import core.History;
 import data.AbstractOperation;
 import data.Error;
 import logger.ILogConfig.Module;
@@ -18,17 +19,19 @@ public class LaunchNotification {
 
 	private enum Property { STATUS_HASH, ERROR_HASH };
 	
+	private History history;
 	private Cache cache;
-	private ISmtpClient client;
-	protected IHttpServer server;
+	private ISmtpClient smtpClient;
+	private IHttpServer httpServer;
 	private LaunchAgent launch;
 	
 	public LaunchNotification(
-			Cache cache, ISmtpClient client, IHttpServer server, LaunchAgent launch
+			History history, Cache cache, ISmtpClient smtpClient, IHttpServer httpServer, LaunchAgent launch
 	){
+		this.history = history;
 		this.cache = cache;
-		this.client = client;
-		this.server = server;
+		this.smtpClient = smtpClient;
+		this.httpServer = httpServer;
 		this.launch = launch;
 	}
 
@@ -38,7 +41,7 @@ public class LaunchNotification {
 		
 		if(isStatusHashChanged()){
 			launch.getLogger().log(Module.SMTP, "Status-Notification required");
-			StatusNotification notification = new StatusNotification(client, server, launch);
+			StatusNotification notification = new StatusNotification(history, smtpClient, httpServer, launch);
 			Artifact artifact = notification.performNotification();
 			artifacts.add(artifact);
 			setStatusHashProperty();
@@ -47,7 +50,7 @@ public class LaunchNotification {
 		if(isErrorHashChanged()){
 			if(isErrorPresent()){
 				launch.getLogger().log(Module.SMTP, "Error-Notification required");
-				ErrorNotification notification = new ErrorNotification(client, server, launch);
+				ErrorNotification notification = new ErrorNotification(history, smtpClient, httpServer, launch);
 				Artifact artifact = notification.performNotification();
 				artifacts.add(artifact);
 			}
@@ -64,14 +67,14 @@ public class LaunchNotification {
 	private boolean isStatusHashChanged() {
 		
 		Long last = getStatusHashProperty();
-		long current = computeStatusHash();
-		return (last == null) || (last.longValue() != current);
+		Long current = computeStatusHash();
+		return (last == null) || (last.longValue() != current.longValue());
 	}
 	
 	private void setStatusHashProperty(){
 		
 		cache.addProperty(
-				launch.getConfig().getId(), Property.STATUS_HASH.toString(), ""+computeStatusHash()
+				launch.getConfig().getId(), Property.STATUS_HASH.toString(), ""+computeStatusHash().longValue()
 		);
 	}
 	
@@ -87,21 +90,21 @@ public class LaunchNotification {
 		}
 	}
 	
-	private long computeStatusHash() {
+	private Long computeStatusHash() {
 		
 		long hash = 0;
 		hash += launch.getStatusManager().getHash();
 		for(AbstractOperation operation : launch.getOperations()){
 			hash += operation.getStatusManager().getHash();
 		}
-		return hash;
+		return new Long(hash);
 	}
 	
 	private boolean isErrorHashChanged() {
 		
 		Long last = getErrorHashProperty();
-		long current = computeErrorHash();
-		return (last == null) || (last.longValue() != current);
+		Long current = computeErrorHash().longValue();
+		return (last == null) || (last.longValue() != current.longValue());
 	}
 	
 	private boolean isErrorPresent() {
@@ -111,7 +114,7 @@ public class LaunchNotification {
 	private void setErrorHashProperty(){
 		
 		cache.addProperty(
-				launch.getConfig().getId(), Property.ERROR_HASH.toString(), ""+computeErrorHash()
+				launch.getConfig().getId(), Property.ERROR_HASH.toString(), ""+computeErrorHash().longValue()
 		);
 	}
 	
@@ -127,12 +130,12 @@ public class LaunchNotification {
 		}
 	}
 	
-	private long computeErrorHash() {
+	private Long computeErrorHash() {
 		
 		long hash = 0;
 		for(Error error : launch.getNotificationErrors()){
 			hash += error.getHash();
 		}
-		return hash;
+		return new Long(hash);
 	}
 }
