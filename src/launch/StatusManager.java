@@ -14,7 +14,7 @@ public class StatusManager {
 		UNDEFINED, PROCESSING, SUCCEED, ERROR, FAILURE, CANCEL
 	}
 	
-	private LifecycleObject lifecycleObject;
+	private LifecycleObject parent;
 	private Status status;
 	private int progress;
 	private int progressMax;
@@ -22,9 +22,9 @@ public class StatusManager {
 	private Date end;
 	private ArrayList<Error> errors;
 	
-	public StatusManager(LifecycleObject lifecycleObject){
+	public StatusManager(LifecycleObject parent){
 		
-		this.lifecycleObject = lifecycleObject;
+		this.parent = parent;
 		status = Status.UNDEFINED;
 		progress = 0;
 		progressMax = 0;
@@ -33,12 +33,16 @@ public class StatusManager {
 		errors = new ArrayList<Error>();
 	}
 	
+	public long getHash(){
+		return (parent.getId()+status.toString()).hashCode();
+	}
+	
 	public Status getStatus(){ return status; }
 	public void setStatus(Status status){
 		
 		if(getStatusValue(this.status) < getStatusValue(status)){
 			this.status = status;
-			lifecycleObject.notifyListeners(Lifecycle.PROCESSING);
+			parent.notifyListeners(Lifecycle.PROCESSING);
 		}
 	}
 	
@@ -47,7 +51,7 @@ public class StatusManager {
 		
 		if(progress > 0 && (this.progress + progress) <= progressMax){
 			this.progress += progress; 
-			lifecycleObject.notifyListeners(Lifecycle.PROCESSING);
+			parent.notifyListeners(Lifecycle.PROCESSING);
 		}
 	}
 	public int getProgress(){ 
