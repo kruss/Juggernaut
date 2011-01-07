@@ -21,12 +21,12 @@ import java.util.StringTokenizer;
 public class HttpSession implements Runnable
 {
 	private HttpServer server;
-	private Socket mySocket;
+	private Socket socket;
 	
-	public HttpSession( HttpServer server, Socket s )
+	public HttpSession(HttpServer server, Socket socket)
 	{
 		this.server = server;
-		mySocket = s;
+		this.socket = socket;
 		Thread t = new Thread( this );
 		t.setDaemon( true );
 		t.start();
@@ -36,7 +36,7 @@ public class HttpSession implements Runnable
 	{
 		try
 		{
-			InputStream is = mySocket.getInputStream();
+			InputStream is = socket.getInputStream();
 			if ( is == null) return;
 			BufferedReader in = new BufferedReader( new InputStreamReader( is ));
 
@@ -133,7 +133,7 @@ public class HttpSession implements Runnable
 	 * Decodes the percent encoding scheme. <br/>
 	 * For example: "an+example%20string" -> "an example string"
 	 */
-	private String decodePercent( String str ) throws InterruptedException
+	private String decodePercent(String str) throws InterruptedException
 	{
 		try
 		{
@@ -208,7 +208,7 @@ public class HttpSession implements Runnable
 			if ( status == null )
 				throw new Error( "sendResponse(): Status can't be null." );
 
-			OutputStream out = mySocket.getOutputStream();
+			OutputStream out = socket.getOutputStream();
 			PrintWriter pw = new PrintWriter( out );
 			pw.print("HTTP/1.0 " + status + " \r\n");
 
@@ -251,7 +251,7 @@ public class HttpSession implements Runnable
 		catch( IOException ioe )
 		{
 			// Couldn't write? No can do.
-			try { mySocket.close(); } catch( Throwable t ) {}
+			try { socket.close(); } catch( Throwable t ) {}
 		}
 	}
 };

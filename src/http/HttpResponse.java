@@ -16,23 +16,23 @@ public class HttpResponse
 		this.status = HttpServer.HTTP_OK;
 	}
 
-	public HttpResponse( String status, String mimeType, InputStream data )
+	public HttpResponse(String status, String mimeType, InputStream data)
 	{
 		this.status = status;
 		this.mimeType = mimeType;
 		this.data = data;
 	}
 
-	public HttpResponse( String status, String mimeType, String txt )
+	public HttpResponse(String status, String mimeType, String txt)
 	{
 		this.status = status;
 		this.mimeType = mimeType;
-		this.data = new ByteArrayInputStream( txt.getBytes());
+		this.data = new ByteArrayInputStream(txt.getBytes());
 	}
 
-	public void addHeader( String name, String value )
+	public void addHeader(String name, String value)
 	{
-		header.put( name, value );
+		header.put(name, value);
 	}
 
 	public String status;

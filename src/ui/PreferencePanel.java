@@ -1,5 +1,7 @@
 package ui;
 
+import http.IHttpServer;
+
 import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -7,6 +9,7 @@ import javax.swing.JScrollPane;
 import launch.ScheduleManager;
 
 import util.IChangedListener;
+import util.UiTools;
 
 import core.Configuration;
 import core.History;
@@ -18,6 +21,7 @@ public class PreferencePanel extends JPanel implements ISystemComponent, IChange
 
 	private Configuration configuration;
 	private ScheduleManager scheduleManager;
+	private IHttpServer httpServer;
 	private History history;
 	
 	private OptionEditor optionEditor;
@@ -25,10 +29,12 @@ public class PreferencePanel extends JPanel implements ISystemComponent, IChange
 	public PreferencePanel(
 			Configuration configuration,
 			ScheduleManager scheduleManager,
+			IHttpServer httpServer,
 			History history)
 	{
 		this.configuration = configuration;
 		this.scheduleManager = scheduleManager;
+		this.httpServer = httpServer;
 		this.history = history;
 		
 		optionEditor = new OptionEditor();
@@ -68,6 +74,16 @@ public class PreferencePanel extends JPanel implements ISystemComponent, IChange
 			scheduleManager.startScheduler(0);
 		}else{
 			scheduleManager.stopScheduler();
+		}
+		
+		try{
+			if(configuration.isHttpServer()){
+				httpServer.startServer();
+			}else{
+				httpServer.stopServer();
+			}
+		}catch(Exception e){
+			UiTools.errorDialog(e);
 		}
 		
 		history.createIndex();

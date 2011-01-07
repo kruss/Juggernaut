@@ -134,7 +134,7 @@ public class Application extends AbstractSystem {
 					persistence.configuration);
 			add(smtpClient);
 			httpServer = new HttpServer(
-					Constants.HTTP_PORT, 
+					persistence.configuration, 
 					core.fileManager, 
 					core.taskManager, 
 					core.logger);
@@ -205,6 +205,7 @@ public class Application extends AbstractSystem {
 			preferencePanel = new PreferencePanel(
 					persistence.configuration, 
 					runtime.scheduleManager, 
+					runtime.httpServer,
 					persistence.history);
 			add(preferencePanel);
 			window = new Window(

@@ -17,98 +17,87 @@ import core.FileManager;
 import core.ISystemComponent;
 import core.TaskManager;
 
-import util.Task;
-
-
 import logger.Logger;
 import logger.ILogConfig.Module;
 
-// TODO refactor more
 @SuppressWarnings({ "deprecation", "unchecked" })
-public class HttpServer extends Task implements ISystemComponent, IHttpServer {
+public class HttpServer implements ISystemComponent, IHttpServer {
 
-	private int myTcpPort;
-	private File myRootDir;
-	private ServerSocket myServerSocket;
-	private Thread myThread; 
+	private IHttpConfig config;
+	private File root;
+	private ServerSocket serverSocket;
+	private Thread serverThread; 
 	private Logger logger;
 	private boolean running;
 	
 	@Override
-	public boolean isRunning(){ return running; }
+	public IHttpConfig getConfig(){ return config; }
 	
 	@Override
-	public int getPort(){ return myTcpPort; }
+	public boolean isRunning(){ return running; }
 	
-	public HttpServer(int port, FileManager fileManager, TaskManager taskManager, Logger logger)
+	public HttpServer(IHttpConfig config, FileManager fileManager, TaskManager taskManager, Logger logger)
 	{
-		super("HttpServer", taskManager);
+		this.config = config;
 		this.logger = logger;
-		myTcpPort = port; // TODO from configuration
-		myRootDir = fileManager.getHistoryFolder();
+		root = fileManager.getHistoryFolder();
 		running = false;
 	}
 	
 	@Override
 	public void init() throws Exception {
-		asyncRun(1000, 0);
+		if(config.isHttpServer()){
+			startServer();
+		}
+	}
+	
+	@Override
+	public void shutdown() throws Exception {
+		stopServer();
+	}
+	
+	@Override
+	public void startServer() throws Exception {
+		if(!running){
+			startHttpServer();
+		}
 	}
 
 	@Override
-	public void shutdown() throws Exception {
-		syncKill();
-	}
-	
-	@Override
-	protected void runTask() {
-		try{
-			startServer();
-		}catch(Exception e){
-			logger.error(Module.HTTP, e);
+	public void stopServer() throws Exception {
+		if(running){
+			stopHttpServer();
 		}
 	}
 	
-	@Override
-	public void asyncKill(){
+	private void startHttpServer() throws Exception {
 		
-		stopServer();
-		super.asyncKill();
-	}
-	
-	private void startServer() throws Exception {
-		
-		logger.log(Module.HTTP, "Startup HTTP - Port: "+myTcpPort);
-		myServerSocket = new ServerSocket( myTcpPort );
+		int port = config.getHttpPort();
+		logger.log(Module.HTTP, "Startup HTTP - Port: "+port);
+		serverSocket = new ServerSocket(port);
 		final HttpServer instance = this;
 		running = true;
-		myThread = new Thread( new Runnable()
-			{
-				public void run()
-				{
-					while( running ){
-						try{
-							new HttpSession( instance, myServerSocket.accept());
-						}catch(IOException e){
-							logger.debug(Module.HTTP, e.getMessage());
-						}
+		serverThread = new Thread(new Runnable(){
+			public void run(){
+				while(running){
+					try{
+						new HttpSession( instance, serverSocket.accept());
+					}catch(IOException e){
+						logger.debug(Module.HTTP, e.getMessage());
 					}
 				}
-			});
-		myThread.setDaemon( true );
-		myThread.start();
+			}
+		});
+		serverThread.setDaemon(true);
+		serverThread.start();
 	}
 	
-	private void stopServer()
-	{
+	private void stopHttpServer() throws Exception {
+		
 		logger.log(Module.HTTP, "Shutdown HTTP");
 		running = false;
-		try
-		{ 
-			myServerSocket.close();
-			myThread.join();
-		}
-		catch ( IOException ioe ) {}
-		catch ( InterruptedException e ) {}
+		serverSocket.close();
+		serverThread.join();
 	}
 	
 	/**
@@ -120,9 +109,9 @@ public class HttpServer extends Task implements ISystemComponent, IHttpServer {
 	 * @parm header	Header entries, percent decoded
 	 * @return HTTP response, see class Response for details
 	 */
-	public HttpResponse serve( String uri, String method, Properties header, Properties parms )
+	public HttpResponse serve(String uri, String method, Properties header, Properties parms)
 	{
-		logger.log(Module.HTTP, method + " '" + uri + "' " );
+		logger.log(Module.HTTP, method+" '"+uri+"' ");
 
 		Enumeration e = header.propertyNames();
 		while ( e.hasMoreElements())
@@ -139,7 +128,7 @@ public class HttpServer extends Task implements ISystemComponent, IHttpServer {
 								parms.getProperty( value ) + "'" );
 		}
 
-		return serveFile( uri, header, myRootDir, true );
+		return serveFile( uri, header, root, true );
 	}
 
 	/**

@@ -264,10 +264,10 @@ public class Notification {
 	
 	private String getLinkHtml() {
 		
-		if(httpServer.isRunning()){
+		if(httpServer.getConfig().isHttpServer()){
 			try{
 				String url = 
-					"http://"+SystemTools.getHostName()+":"+httpServer.getPort()+
+					"http://"+SystemTools.getHostName()+":"+httpServer.getConfig().getHttpPort()+
 					"/"+launch.getStatusManager().getStart().getTime()+"/"+HistoryPage.OUTPUT_FILE;
 				HtmlLink link = new HtmlLink(url, url);
 				link.setExtern(true);

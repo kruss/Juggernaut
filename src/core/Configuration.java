@@ -1,5 +1,7 @@
 package core;
 
+import http.IHttpConfig;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -36,7 +38,8 @@ implements
 	ISystemComponent, 
 	IOptionInitializer, 
 	ILogConfig,
-	ISmtpConfig
+	ISmtpConfig,
+	IHttpConfig
 {
 
 	public static Configuration create(FileManager fileManager, TaskManager taskManager, Logger logger) throws Exception {
@@ -50,12 +53,13 @@ implements
 	}
 	
 	public enum GROUPS {
-		GENERAL, NOTIFICATION, LOGGING
+		GENERAL, NOTIFICATION, WEBSERVER, LOGGING
 	}
 	
 	public enum OPTIONS {
 		SCHEDULER, SCHEDULER_INTERVAL, MAXIMUM_AGENTS, MAXIMUM_HISTORY,
-		NOTIFICATION, ADMINISTRATORS, SMTP_SERVER, SMTP_ADDRESS, LOGGING
+		NOTIFICATION, ADMINISTRATORS, SMTP_SERVER, SMTP_ADDRESS, 
+		HTTP_SERVER, HTTP_PORT, LOGGING
 	}
 	
 	public enum State { CLEAN, DIRTY }
@@ -118,6 +122,16 @@ implements
 				OPTIONS.SMTP_ADDRESS.toString(), "The SMTP-Address for notifications", 
 				Type.TEXT_SMALL, "SMTP@"+Constants.APP_NAME
 		));
+		optionContainer.getOptions().add(new Option(
+				GROUPS.WEBSERVER.toString(),
+				OPTIONS.HTTP_SERVER.toString(), "Run the HTTP-Server",
+				Type.BOOLEAN, true
+		));
+		optionContainer.getOptions().add(new Option(
+				GROUPS.WEBSERVER.toString(),
+				OPTIONS.HTTP_PORT.toString(), "The HTTP-Server port", 
+				Type.INTEGER, 80, 1, 1024
+		));
 		for(Module module : Module.values()){
 			optionContainer.getOptions().add(new Option(
 					GROUPS.LOGGING.toString(),
@@ -176,11 +190,6 @@ implements
 	}
 	
 	@Override
-	public Level getLogLevel(Module module){
-		return Level.valueOf(optionContainer.getOption(module.toString()+"_"+OPTIONS.LOGGING).getStringValue());
-	}
-	
-	@Override
 	public boolean isNotification(){
 		return optionContainer.getOption(OPTIONS.NOTIFICATION.toString()).getBooleanValue();
 	}
@@ -193,6 +202,21 @@ implements
 	@Override
 	public String getSmtpAddress() {
 		return optionContainer.getOption(OPTIONS.SMTP_ADDRESS.toString()).getStringValue();
+	}
+	
+	@Override
+	public boolean isHttpServer(){
+		return optionContainer.getOption(OPTIONS.HTTP_SERVER.toString()).getBooleanValue();
+	}
+	
+	@Override
+	public int getHttpPort(){ 
+		return optionContainer.getOption(OPTIONS.HTTP_PORT.toString()).getIntegerValue(); 
+	}
+	
+	@Override
+	public Level getLogLevel(Module module){
+		return Level.valueOf(optionContainer.getOption(module.toString()+"_"+OPTIONS.LOGGING).getStringValue());
 	}
 	
 	@Override
