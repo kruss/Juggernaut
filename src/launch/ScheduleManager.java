@@ -100,6 +100,10 @@ public class ScheduleManager implements ISystemComponent {
 		stopScheduler();
 	}
 	
+	public boolean isRunning(){
+		return scheduler != null;
+	}
+	
 	/** run cyclic scheduler */
 	public void startScheduler(long delay){ 
 		if(scheduler == null){

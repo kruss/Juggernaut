@@ -1,8 +1,5 @@
 package core;
 
-import java.util.ArrayList;
-
-import util.IChangedListener;
 import util.Task;
 
 
@@ -15,74 +12,28 @@ public class HeapManager implements ISystemComponent {
 	private TaskManager taskManager;
 	private Logger logger;
 	private Runtime runtime;
-	private HeapStatus heap;
-	private HeapStatusUpdater updater;
-	private ArrayList<IChangedListener> listeners;
 	
 	public HeapManager(TaskManager taskManager, Logger logger){
 		
 		this.taskManager = taskManager;
 		this.logger = logger;
 		runtime = Runtime.getRuntime();
-		heap = new HeapStatus();
-		listeners = new ArrayList<IChangedListener>();
-	}
-	
-	public void addListener(IChangedListener listener){ listeners.add(listener); }
-	
-	public void notifyListeners(){
-		for(IChangedListener listener : listeners){
-			listener.changed(this);
-		}
 	}
 	
 	@Override
-	public void init() throws Exception {
-		if(updater == null){
-			updater = new HeapStatusUpdater();
-			updater.asyncRun(0, 0);
-		}
-	}
+	public void init() throws Exception {}
 	
 	@Override
-	public void shutdown() throws Exception {
-		if(updater != null){
-			updater.syncKill();
-			updater = null;
-		}
-	}
+	public void shutdown() throws Exception {}
 
 	public HeapStatus getHeapStatus(){
-		synchronized(heap){
-			return new HeapStatus(heap);
-		}
-	}
-	
-	private void setHeapStatus(HeapStatus status){
-		synchronized(heap){
-			heap = new HeapStatus(status);
-		}
-		notifyListeners();
-	}
-	
-	private class HeapStatusUpdater extends Task {
-
-		public static final long CYCLE = 30 * 1000; // 30 sec
-
-		public HeapStatusUpdater() {
-			super("HeapStatus", taskManager);
-			setCycle(CYCLE);
-		}
-
-		@Override
-		protected void runTask() {
-			HeapStatus status = new HeapStatus();
-			status.usedMemory = (runtime.totalMemory() - runtime.freeMemory());
-			status.freeMemory = runtime.freeMemory();
-			status.totalMemory = runtime.totalMemory();
-			status.maxMemory = runtime.maxMemory();
-			setHeapStatus(status);
-		}
+		
+		HeapStatus status = new HeapStatus();
+		status.usedMemory = (runtime.totalMemory() - runtime.freeMemory());
+		status.freeMemory = runtime.freeMemory();
+		status.totalMemory = runtime.totalMemory();
+		status.maxMemory = runtime.maxMemory();
+		return status;
 	}
 	
 	public class HeapStatus {

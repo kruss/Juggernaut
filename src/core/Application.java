@@ -209,10 +209,13 @@ public class Application extends AbstractSystem {
 					persistence.history);
 			add(preferencePanel);
 			window = new Window(
+					core.logger, 
+					core.taskManager, 
+					core.heapManager, 
 					persistence.configuration, 
 					runtime.launchManager, 
-					core.heapManager, 
-					core.logger, 
+					runtime.scheduleManager,
+					runtime.httpServer,
 					projectMenu, 
 					toolsMenu, 
 					configPanel, 

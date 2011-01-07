@@ -1,9 +1,12 @@
 package ui;
 
+import http.IHttpServer;
+
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
 import java.util.Date;
 
 import javax.swing.JFrame;
@@ -15,36 +18,48 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import launch.LaunchManager;
+import launch.ScheduleManager;
 
 import logger.Logger;
 import logger.ILogConfig.Module;
 
 import util.DateTools;
 import util.IChangedListener;
+import util.StringTools;
+import util.Task;
 
 import core.Configuration;
 import core.Constants;
 import core.HeapManager;
 import core.ISystemComponent;
+import core.TaskManager;
 import core.HeapManager.HeapStatus;
 
 public class Window extends JFrame implements ISystemComponent, IStatusClient, IChangedListener {
 
 	private static final long serialVersionUID = 1L;
 	
-	private Configuration configuration;
-	private HeapManager heapManager;
 	private Logger logger;
+	private TaskManager taskManager;
+	private HeapManager heapManager;
+	private Configuration configuration;
+	private ScheduleManager scheduleManager;
+	private IHttpServer httpServer;
 	private ProjectMenu projectMenu;
 	
 	private JLabel statusLabel;
-	private JLabel heapLabel;
+	private JLabel infoLabel;
+	
+	private InfoUpdater updater;
 	
 	public Window(
+			Logger logger,
+			TaskManager taskManager,
+			HeapManager heapManager,
 			Configuration configuration,
 			LaunchManager launchManager,
-			HeapManager heapManager,
-			Logger logger,
+			ScheduleManager scheduleManager,
+			IHttpServer httpServer,
 			ProjectMenu projectMenu,
 			ToolsMenu toolsMenu,
 			ConfigPanel configPanel,
@@ -52,9 +67,12 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 			HistoryPanel historyPanel,
 			PreferencePanel preferencePanel)
 	{
-		this.configuration = configuration;
-		this.heapManager = heapManager;
 		this.logger = logger;
+		this.taskManager = taskManager;
+		this.heapManager = heapManager;
+		this.configuration = configuration;
+		this.scheduleManager = scheduleManager;
+		this.httpServer = httpServer;
 		this.projectMenu = projectMenu;
 		
 		JMenuBar menuBar = new JMenuBar();
@@ -71,12 +89,12 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 		
 		statusLabel = new JLabel();
 		statusLabel.setEnabled(false);
-		heapLabel = new JLabel();
-		heapLabel.setEnabled(false);
+		infoLabel = new JLabel();
+		infoLabel.setEnabled(false);
 		
 		JPanel infoPanel = new JPanel(new BorderLayout());
 		infoPanel.add(statusLabel, BorderLayout.CENTER);
-		infoPanel.add(heapLabel, BorderLayout.EAST);
+		infoPanel.add(infoLabel, BorderLayout.EAST);
 		
 		Container pane = getContentPane();
 		pane.add(centerPanel, BorderLayout.CENTER);
@@ -88,8 +106,9 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 		setTitle(Constants.APP_FULL_NAME);
 		
 		configuration.addListener(this);
-		heapManager.addListener(this);
 		launchManager.addClient(this);
+		
+		updater = null;
 	}
 	
 	@Override
@@ -107,17 +126,27 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 		SwingUtilities.updateComponentTreeUI(this);
 		
 		setStatus(Constants.APP_NAME+" started at "+DateTools.getTextDate(new Date()));
-		setHeap(heapManager.getHeapStatus());
+		setInfo("");
 		setVisible(true);
+		
+		if(updater == null){
+			updater = new InfoUpdater();
+			updater.asyncRun(0, 0);
+		}
 	}
 	
 	@Override
 	public void shutdown() throws Exception {
+		
+		if(updater != null){
+			updater.syncKill();
+			updater = null;
+		}
+		
 		dispose();
 	}
 	
 	public void setStatus(String text){
-		
 		statusLabel.setText(text);
 		logger.log(Module.COMMON, text);
 	}
@@ -127,11 +156,8 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 		setStatus(text);
 	}
 	
-	public void setHeap(HeapStatus status){
-		
-		long MB = 1024 * 1024;
-		String info = Math.round(status.usedMemory / MB)+" / "+Math.round(status.maxMemory / MB)+" MB";
-		heapLabel.setText(info);
+	public void setInfo(String text){
+		infoLabel.setText(text);
 	}
 
 	@Override
@@ -144,8 +170,40 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 			}else if(state == Configuration.State.DIRTY){
 				setTitle(Constants.APP_FULL_NAME+" *");
 			}
-		}else if(object == heapManager){
-			setHeap(heapManager.getHeapStatus());
+		}
+	}
+	
+	private class InfoUpdater extends Task {
+
+		public static final long CYCLE = 3 * 1000; // 3 sec
+
+		public InfoUpdater() {
+			super("InfoUpdater", taskManager);
+			setCycle(CYCLE);
+		}
+
+		@Override
+		protected void runTask() {
+			
+			ArrayList<String> infos = new ArrayList<String>();
+			infos.add(getSchedulerInfo());
+			infos.add(getWebserverInfo());
+			infos.add(getHeapInfo());
+			setInfo(StringTools.join(infos, " | "));
+		}
+		
+		public String getSchedulerInfo(){
+			return "Scheduler "+(scheduleManager.isRunning() ? "ON" : "OFF");
+		}
+		
+		public String getWebserverInfo(){
+			return "Webserver "+(httpServer.isRunning() ? "ON" : "OFF");
+		}
+		
+		public String getHeapInfo(){
+			HeapStatus heap = heapManager.getHeapStatus();
+			long MB = 1024 * 1024;
+			return "HEAP ("+Math.round(heap.usedMemory / MB)+" / "+Math.round(heap.maxMemory / MB)+" MB)";
 		}
 	}
 }
