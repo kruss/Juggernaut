@@ -46,7 +46,7 @@ public class HttpServer implements ISystemComponent, IHttpServer {
 	
 	@Override
 	public void init() throws Exception {
-		if(config.isHttpServer()){
+		if(config.isWebserver()){
 			startServer();
 		}
 	}

@@ -53,13 +53,13 @@ implements
 	}
 	
 	public enum GROUPS {
-		GENERAL, NOTIFICATION, WEBSERVER, LOGGING
+		GENERAL, NOTIFICATION, LOGGING
 	}
 	
 	public enum OPTIONS {
-		SCHEDULER, SCHEDULER_INTERVAL, MAXIMUM_AGENTS, MAXIMUM_HISTORY,
+		SCHEDULER, SCHEDULER_INTERVAL, MAXIMUM_AGENTS, MAXIMUM_HISTORY, WEBSERVER, HTTP_PORT, WINDOWS_UNLOCKER, 
 		NOTIFICATION, ADMINISTRATORS, SMTP_SERVER, SMTP_ADDRESS, 
-		HTTP_SERVER, HTTP_PORT, LOGGING
+		LOGGING
 	}
 	
 	public enum State { CLEAN, DIRTY }
@@ -103,6 +103,21 @@ implements
 				Type.INTEGER, 1000, 0, 1000
 		));
 		optionContainer.getOptions().add(new Option(
+				GROUPS.GENERAL.toString(),
+				OPTIONS.WEBSERVER.toString(), "Run the Web-Server",
+				Type.BOOLEAN, true
+		));
+		optionContainer.getOptions().add(new Option(
+				GROUPS.GENERAL.toString(),
+				OPTIONS.HTTP_PORT.toString(), "The HTTP-Server port", 
+				Type.INTEGER, 80, 1, 1024
+		));
+		optionContainer.getOptions().add(new Option(
+				GROUPS.GENERAL.toString(),
+				OPTIONS.WINDOWS_UNLOCKER.toString(), "Unlocker Command to free locked Ressource on Windows", 
+				Type.TEXT, ""
+		));
+		optionContainer.getOptions().add(new Option(
 				GROUPS.NOTIFICATION.toString(),
 				OPTIONS.NOTIFICATION.toString(), "Perform eMail-notifications",
 				Type.BOOLEAN, false
@@ -121,16 +136,6 @@ implements
 				GROUPS.NOTIFICATION.toString(),
 				OPTIONS.SMTP_ADDRESS.toString(), "The SMTP-Address for notifications", 
 				Type.TEXT_SMALL, "SMTP@"+Constants.APP_NAME
-		));
-		optionContainer.getOptions().add(new Option(
-				GROUPS.WEBSERVER.toString(),
-				OPTIONS.HTTP_SERVER.toString(), "Run the HTTP-Server",
-				Type.BOOLEAN, true
-		));
-		optionContainer.getOptions().add(new Option(
-				GROUPS.WEBSERVER.toString(),
-				OPTIONS.HTTP_PORT.toString(), "The HTTP-Server port", 
-				Type.INTEGER, 80, 1, 1024
 		));
 		for(Module module : Module.values()){
 			optionContainer.getOptions().add(new Option(
@@ -190,6 +195,21 @@ implements
 	}
 	
 	@Override
+	public boolean isWebserver(){
+		return optionContainer.getOption(OPTIONS.WEBSERVER.toString()).getBooleanValue();
+	}
+	
+	@Override
+	public int getHttpPort(){ 
+		return optionContainer.getOption(OPTIONS.HTTP_PORT.toString()).getIntegerValue(); 
+	}
+	
+	/** external unlocker for locked ressources on windows */
+	public String getWindowsUnlocker(){
+		return optionContainer.getOption(OPTIONS.WINDOWS_UNLOCKER.toString()).getStringValue();
+	}
+	
+	@Override
 	public boolean isNotification(){
 		return optionContainer.getOption(OPTIONS.NOTIFICATION.toString()).getBooleanValue();
 	}
@@ -202,16 +222,6 @@ implements
 	@Override
 	public String getSmtpAddress() {
 		return optionContainer.getOption(OPTIONS.SMTP_ADDRESS.toString()).getStringValue();
-	}
-	
-	@Override
-	public boolean isHttpServer(){
-		return optionContainer.getOption(OPTIONS.HTTP_SERVER.toString()).getBooleanValue();
-	}
-	
-	@Override
-	public int getHttpPort(){ 
-		return optionContainer.getOption(OPTIONS.HTTP_PORT.toString()).getIntegerValue(); 
 	}
 	
 	@Override

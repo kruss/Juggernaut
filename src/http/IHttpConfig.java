@@ -2,6 +2,6 @@ package http;
 
 public interface IHttpConfig {
 
-	public boolean isHttpServer();
+	public boolean isWebserver();
 	public int getHttpPort();
 }

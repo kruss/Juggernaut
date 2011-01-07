@@ -77,7 +77,7 @@ public class PreferencePanel extends JPanel implements ISystemComponent, IChange
 		}
 		
 		try{
-			if(configuration.isHttpServer()){
+			if(configuration.isWebserver()){
 				httpServer.startServer();
 			}else{
 				httpServer.stopServer();
