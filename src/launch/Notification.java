@@ -4,7 +4,6 @@ import html.HistoryPage;
 import html.HtmlLink;
 import html.HtmlList;
 import html.HtmlTable;
-import html.HtmlList.Type;
 import http.IHttpServer;
 
 import java.util.ArrayList;
@@ -34,18 +33,22 @@ import data.Error;
 
 public class Notification {
 
+	private static final int MAX_HISTORY = 3;
+	
+	private History history;
 	private ISmtpClient smtpClient;
 	private IHttpServer httpServer;
 	private LaunchAgent launch;
-	private LaunchHistory launchHistory;
+	private LaunchHistory previous;
 	
 	public Notification(
 			History history, ISmtpClient smtpClient, IHttpServer httpServer, LaunchAgent launch
 	){
+		this.history = history;
 		this.smtpClient = smtpClient;
 		this.httpServer = httpServer;
 		this.launch = launch;
-		this.launchHistory = history.getLatest(launch.getConfig().getId());
+		this.previous = history.getLatest(launch.getConfig().getId());
 	}
 	
 	public Artifact performNotification() {
@@ -69,21 +72,9 @@ public class Notification {
 			status = Status.CANCEL;
 		}
 		
-		Artifact artifact = new Artifact(mail.subject, mail.getHtml(), "htm");
+		Artifact artifact = new Artifact(getClass().getSimpleName(), mail.getHtml(), "htm");
 		artifact.status = status;
 		return artifact;
-	}
-	
-	private boolean isNotification(){
-		return smtpClient.getConfig().isNotification() && launch.getConfig().isNotification();
-	}
-	
-	private boolean isCommitterNotification(){
-		
-		int committers = getComitterAddresses().size();
-		int threshold = launch.getConfig().getCommitterThreshold();
-		return 
-			committers > 0 && threshold >= committers && launch.getStatusManager().getStatus() != Status.FAILURE;
 	}
 	
 	private String getSubject() {
@@ -107,30 +98,13 @@ public class Notification {
 		
 		StringBuilder html = new StringBuilder();
 		html.append("<h1>Launch ["+launch.getConfig().getName()+"]</h1>\n");
-		html.append(getWarningsHtml());
 		html.append(getGeneralHtml());
 		html.append(getOperationsHtml());
-		html.append(getCommitterHtml());
 		html.append(getErrorHtml());
+		html.append(getCommitterHtml());
+		html.append(getHistoryHtml());
 		html.append(getUserHtml());
 		html.append(getLinkHtml());
-		return html.toString();
-	}
-	
-	private String getWarningsHtml() {
-		
-		StringBuilder html = new StringBuilder();
-		int committers = getComitterAddresses().size();
-		int threshold = launch.getConfig().getCommitterThreshold();
-		if(committers > 0 && threshold > 0 && !isCommitterNotification()){
-			html.append("<p><b><font color=blue>\n");
-			html.append(
-					"!!! Committers NOT being notified due "+(
-							threshold < committers ? "Threshold reached" : "invalid Status")+
-					" !!!\n"
-			);
-			html.append("</font></b></p>\n");
-		}
 		return html.toString();
 	}
 
@@ -138,27 +112,23 @@ public class Notification {
 		
 		HtmlList list = new HtmlList("Info");
 		Status currentStatus = launch.getStatusManager().getStatus();
-		Status lastStatus = launchHistory != null ? launchHistory.status : null;
+		Status lastStatus = previous != null ? previous.status : null;
 		if(lastStatus != null && lastStatus != currentStatus){
-			list.add("Status", StatusManager.getStatusHtml(lastStatus)+" -> "+StatusManager.getStatusHtml(currentStatus));
+			list.addEntry("Status", StatusManager.getStatusHtml(lastStatus)+" -> "+StatusManager.getStatusHtml(currentStatus));
 		}else{
-			list.add("Status", StatusManager.getStatusHtml(currentStatus));
+			list.addEntry("Status", StatusManager.getStatusHtml(currentStatus));
 		}
 		String description = launch.getConfig().getDescription();
 		if(!description.isEmpty()){
-			list.add("Description", description);
+			list.addEntry("Description", description);
 		}
 		String trigger = launch.getTrigger();
 		if(!trigger.isEmpty()){
-			list.add("Trigger", trigger);
+			list.addEntry("Trigger", trigger);
 		}
-		Date currentStart = launch.getStatusManager().getStart();
-		if(currentStart != null){
-			list.add("Date", DateTools.getTextDate(currentStart));
-		}
-		Date lastStart = launchHistory != null ? launchHistory.start : null;
-		if(lastStart != null){
-			list.add("Last", "<i>"+DateTools.getTextDate(lastStart)+"</i>");
+		Date start = launch.getStatusManager().getStart();
+		if(start != null){
+			list.addEntry("Date", DateTools.getTextDate(start));
 		}
 		return list.getHtml();
 	}
@@ -171,10 +141,10 @@ public class Notification {
 			table.addHeaderCell("Description", 250);
 			table.addHeaderCell("Status", 100);
 			for(AbstractOperation operation : launch.getOperations()){
-				table.addContentCell("<b>"+operation.getConfig().getName()+"</b>");
-				table.addContentCell(operation.getConfig().getDescription());
+				table.addContentCell(operation.getIndex()+".) <b>"+operation.getConfig().getName()+"</b>");
+				table.addContentCell(operation.getDescription());
 				Status currentStatus = operation.getStatusManager().getStatus();
-				OperationHistory operationHistory = launchHistory != null ? launchHistory.getOperation(operation.getConfig().getId()) : null;
+				OperationHistory operationHistory = previous != null ? previous.getOperation(operation.getConfig().getId()) : null;
 				Status lastStatus = operationHistory != null ? operationHistory.status : null;
 				if(lastStatus != null && lastStatus != currentStatus){
 					table.addContentCell(
@@ -192,48 +162,24 @@ public class Notification {
 		}
 	}
 	
-	private String getCommitterHtml() {
-		
-		ArrayList<IRepositoryOperation> repositories = launch.getRepositoryOperations();
-		if(repositories.size() > 0){
-			HtmlList list = new HtmlList("Commits");
-			for(IRepositoryOperation repository : repositories){
-				String url = repository.getUrl();
-				HistoryInfo info = repository.getHistory();
-				StringBuilder commits = new StringBuilder();
-				for(CommitInfo commit : info.commits){
-					commits.append("<li>"+commit.toString()+"</li>\n");
-				}
-				list.add(
-						url+" ("+info.revision1+" - "+info.revision2+")", 
-						"<ul>"+commits.toString()+"</ul>"
-				);
-			}
-			return list.getHtml();
-		}
-		return "";
-	}
-	
 	private String getErrorHtml() {
 		
 		StringBuilder html = new StringBuilder();
 		
 		ArrayList<Error> newErrors = getNewErrors();
 		if(newErrors.size() > 0){
-			HtmlList list = new HtmlList("New Errors");
-			list.setType(Type.OL);
+			HtmlList list = new HtmlList("Errors (new)");
 			for(Error error : newErrors){
-				list.add(null, error.getHtml());
+				list.addEntry(error.origin, error.getHtml());
 			}
 			html.append(list.getHtml());
 		}
 		
 		ArrayList<Error> oldErrors = getOldErrors();
 		if(oldErrors.size() > 0){
-			HtmlList list = new HtmlList("Old Errors");
-			list.setType(Type.OL);
+			HtmlList list = new HtmlList("Errors (old)");
 			for(Error error : oldErrors){
-				list.add(null, error.getHtml());
+				list.addEntry(error.origin, error.getHtml());
 			}
 			html.append(list.getHtml());
 		}
@@ -242,41 +188,65 @@ public class Notification {
 	}
 
 	private ArrayList<Error> getNewErrors() {
-		if(launchHistory != null){
-			return delta(launch.getErrors(), launchHistory.getErrors());
+		if(previous != null){
+			return Error.getDelta(launch.getErrors(), previous.getErrors());
 		}else{
 			return launch.getErrors();
 		}
 	}
 
-
 	private ArrayList<Error> getOldErrors() {
-		if(launchHistory != null){
-			return delta(launchHistory.getErrors(), launch.getErrors());
+		if(previous != null){
+			return Error.getMatch(launch.getErrors(), previous.getErrors());
 		}else{
 			return new ArrayList<Error>();
 		}
 	}
 	
-	/** return only items which are in list1 but not in list2 */
-	private ArrayList<Error> delta(ArrayList<Error> list1, ArrayList<Error> list2) {
+	private String getCommitterHtml() {
 		
-		ArrayList<Error> delta = new ArrayList<Error>();
-		for(Error error1 : list1){
-			boolean found = false;
-			for(Error error2 : list2){
-				if(error1.getHash() == error2.getHash()){
-					found = true;
-					break;
+		ArrayList<IRepositoryOperation> repositories = launch.getRepositoryOperations();
+		if(isCommitter()){
+			HtmlList list = new HtmlList("Commits");
+			if(!isCommitterNotification()){
+				list.setDescription("<font color=blue>!!! Committer NOT being notified !!!</font>");
+			}
+			for(IRepositoryOperation repository : repositories){
+				HistoryInfo history = repository.getHistory();
+				if(history != null){
+					HtmlList commits = new HtmlList(null);
+					for(CommitInfo commit : history.commits){
+						commits.addEntry(null, commit.toString());
+					}
+					String revision1 = history.revision1;
+					String revision2 = history.revision2;
+					list.addEntry(
+							repository.getUrl()+" ("+(revision1.equals(revision2) ? revision2 : revision1+" - "+revision2)+")", 
+							commits.getHtml()
+					);
 				}
 			}
-			if(!found){
-				delta.add(error1);
-			}
+			return list.getHtml();
+		}else{			
+			return "";
 		}
-		return delta;
 	}
 
+	private String getHistoryHtml() {
+		
+		if(previous != null){
+			HtmlList list = new HtmlList("History");
+			LaunchHistory entry = previous;
+			while(entry != null && list.getSize() < MAX_HISTORY){
+				list.addEntry(DateTools.getTextDate(entry.start), StatusManager.getStatusHtml(entry.status));
+				entry = history.getPrevious(entry);
+			}
+			return list.getHtml();
+		}else{			
+			return "";
+		}
+	}
+	
 	private String getUserHtml() {
 		
 		String message = launch.getConfig().getSmtpMessage();
@@ -302,13 +272,41 @@ public class Notification {
 				HtmlLink link = new HtmlLink(url, url);
 				link.setExtern(true);
 				HtmlList list = new HtmlList("Output");
-				list.add("Logfile", link.getHtml());
+				list.addEntry("Logfile", link.getHtml());
 				return list.getHtml();
 			}catch(Exception e){
 				launch.getLogger().error(Module.HTTP, e);
+				return "";
 			}
+		}else{
+			return "";
 		}
-		return "";
+	}
+	
+	private boolean isNotification(){
+		return smtpClient.getConfig().isNotification() && launch.getConfig().isNotification();
+	}
+	
+	private boolean isCommitterNotification(){	
+		return isCommitter() && isCommitterThresholdValid() && isCommitterStatusValid();
+	}
+	
+	private boolean isCommitter(){
+		return getComitterAddresses().size() > 0;
+	}
+	
+	private boolean isCommitterThresholdValid(){
+		
+		int threshold = launch.getConfig().getCommitterThreshold();
+		int committers = getComitterAddresses().size();
+		return threshold >= committers;
+	}
+	
+	private boolean isCommitterStatusValid(){
+		
+		Status currentStatus = launch.getStatusManager().getStatus();
+		Status lastStatus = previous != null ? previous.status : null;
+		return currentStatus != Status.FAILURE && (lastStatus == null || lastStatus != Status.FAILURE);
 	}
 	
 	private ArrayList<String> getAdministratorAdresses() {
@@ -327,8 +325,8 @@ public class Notification {
 	private ArrayList<String> getComitterAddresses() {
 		
 		ArrayList<String> committers = new ArrayList<String>();
-		for(IRepositoryOperation operation : launch.getRepositoryOperations()){
-				HistoryInfo history = operation.getHistory();
+		for(IRepositoryOperation repository : launch.getRepositoryOperations()){
+				HistoryInfo history = repository.getHistory();
 				if(history != null){
 					for(CommitInfo commit : history.commits){
 						if(!committers.contains(commit.author)){

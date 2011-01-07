@@ -58,11 +58,10 @@ public class CommandOperation extends AbstractOperation {
 	
 	@Override
 	protected void finish() {
-		super.finish();
-		
 		ArrayList<String> outputs = config.getOutputs();
 		for(String output : outputs){
 			collectOuttput(output);
 		}
+		super.finish();
 	}
 }

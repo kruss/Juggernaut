@@ -28,7 +28,7 @@ public class OperationHistoryPage extends AbstractHistoryPage {
 			HtmlList list = new HtmlList("Errors");
 			list.setType(HtmlList.Type.OL);
 			for(Error error : history.errors){
-				list.add(null, error.getHtml());
+				list.addEntry(null, error.getHtml());
 			}
 			return list.getHtml();
 		}else{

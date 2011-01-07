@@ -5,14 +5,18 @@ import java.util.ArrayList;
 public class HtmlTable {
 
 	private String name;
+	private String description;
 	private ArrayList<HeaderCell> headers;
 	private ArrayList<ContentCell> cells;
 	
 	public HtmlTable(String name){
 		this.name = name;
+		description = null;
 		headers = new ArrayList<HeaderCell>();
 		cells = new ArrayList<ContentCell>();
 	}
+	
+	public void setDescription(String description){ this.description = description; }
 	
 	public void addHeaderCell(String name, int width){
 		
@@ -31,6 +35,9 @@ public class HtmlTable {
 		StringBuilder html = new StringBuilder();
 		if(name!=null){
 			html.append("<h3>"+name+"</h3>\n");
+		}
+		if(description!=null){
+			html.append("<p>"+description+"</p>\n");
 		}
 		html.append("<table cellspacing=0 cellpadding=3 border=1>\n");
 		html.append("<tr>\n");

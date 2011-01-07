@@ -55,7 +55,7 @@ public abstract class AbstractOperation extends LifecycleObject {
 	
 	public ArrayList<Error> getErrors(){ return errors; }
 	public void addError(String message){
-		errors.add(new Error(config.getId(), message));
+		errors.add(new Error(this, message));
 		statusManager.setStatus(Status.ERROR);
 	}
 	
@@ -72,8 +72,12 @@ public abstract class AbstractOperation extends LifecycleObject {
 		return index;
 	}
 
-	public String getDescription() {
-		return "Index: "+getIndex();
+	/** provides the runtime description */
+	public abstract String getDescription();
+	
+	/** provides name +index within launch as identifier */
+	public String getIdentifier() {
+		return config.getName()+"["+getIndex()+"]";
 	}
 	
 	public void setParent(LaunchAgent parent){ this.parent = parent; }
@@ -90,7 +94,15 @@ public abstract class AbstractOperation extends LifecycleObject {
 	protected void init() throws Exception {}
 	
 	@Override
-	protected void finish() {}
+	protected void finish() {
+		
+		Status status = statusManager.getStatus();
+		if(status != Status.SUCCEED && status != Status.CANCEL){
+			if(errors.size() == 0){
+				addError("Operation did not succeed");
+			}
+		}
+	}
 	
 	/** copy a relative output-folder to history */
 	public void collectOuttput(String outputFolder) {

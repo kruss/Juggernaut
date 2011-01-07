@@ -15,6 +15,7 @@ public class OperationHistory extends AbstractHistory {
 	private transient AbstractOperation operation;
 	private transient FileManager fileManager;
 	
+	public int index;
 	public ArrayList<Error> errors;
 	
 	public OperationHistory(AbstractOperation operation, FileManager fileManager){
@@ -25,6 +26,7 @@ public class OperationHistory extends AbstractHistory {
 		
 		id = operation.getConfig().getId();
 		name = operation.getConfig().getName();
+		index = operation.getIndex();
 		errors = new ArrayList<Error>();
 	}
 	

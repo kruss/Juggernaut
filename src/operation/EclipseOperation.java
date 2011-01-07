@@ -98,9 +98,8 @@ public class EclipseOperation extends AbstractOperation {
 	}
 	
 	@Override
-	protected void finish() {
-		super.finish();
-		
+	protected void finish() {		
 		collectOuttput(".build");
+		super.finish();
 	}
 }

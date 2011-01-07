@@ -22,20 +22,20 @@ public abstract class AbstractHistoryPage extends AbstractHtmlPage {
 	protected String getGeneralHtml() {
 		
 		HtmlList list = new HtmlList("Info");
-		list.add("Status", StatusManager.getStatusHtml(history.status));
+		list.addEntry("Status", StatusManager.getStatusHtml(history.status));
 		if(!history.description.isEmpty()){
-			list.add("Description", history.description);
+			list.addEntry("Description", history.description);
 		}
 		if(history instanceof LaunchHistory){
 			if(!((LaunchHistory)history).trigger.isEmpty()){
-				list.add("Trigger", ((LaunchHistory)history).trigger);
+				list.addEntry("Trigger", ((LaunchHistory)history).trigger);
 			}
 		}
 		if(history.start != null){
-			list.add("Start", DateTools.getTextDate(history.start));
+			list.addEntry("Start", DateTools.getTextDate(history.start));
 		}
 		if(history.start != null && history.end != null){
-			list.add("Time", DateTools.getTimeDiff(history.start, history.end)+" '");
+			list.addEntry("Time", DateTools.getTimeDiff(history.start, history.end)+" '");
 		}
 		return list.getHtml();
 	}

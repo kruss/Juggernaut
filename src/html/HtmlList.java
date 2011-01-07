@@ -7,18 +7,22 @@ public class HtmlList {
 	public enum Type { UL, OL }
 	
 	private String name;
+	private String description;
 	private ArrayList<ListEntry> entries;
 	private Type type;
 	
 	public HtmlList(String name){
 		this.name = name;
+		description = null;
 		entries = new ArrayList<ListEntry>();
 		type = Type.UL;
 	}
 	
+	public void setDescription(String description){ this.description = description; }
 	public void setType(Type type){ this.type = type; }
+	public int getSize(){ return entries.size(); }
 	
-	public void add(String name, String content){
+	public void addEntry(String name, String content){
 		
 		ListEntry entry = new ListEntry(name, content);
 		entries.add(entry);
@@ -29,6 +33,9 @@ public class HtmlList {
 		StringBuilder html = new StringBuilder();
 		if(name!=null){
 			html.append("<h3>"+name+"</h3>\n");
+		}
+		if(description!=null){
+			html.append("<p>"+description+"</p>\n");
 		}
 		html.append("<"+type.toString()+">\n");
 		for(ListEntry entry : entries){

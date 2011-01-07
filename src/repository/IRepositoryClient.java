@@ -63,7 +63,7 @@ public interface IRepositoryClient {
 		public String author;
 		
 		public String toString(){
-			return "("+revision+") "+author+" - "+DateTools.getTextDate(date);
+			return "Revision "+revision+" - "+author+" ("+DateTools.getTextDate(date)+")";
 		}
 	}
 	

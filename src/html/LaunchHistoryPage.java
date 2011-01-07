@@ -37,7 +37,7 @@ public class LaunchHistoryPage extends AbstractHistoryPage {
 			table.addHeaderCell("Status", 100);
 			for(OperationHistory operation : history.operations){
 				HtmlLink link = new HtmlLink(operation.name, operation.id+File.separator+OUTPUT_FILE);
-				table.addContentCell("<b>"+link.getHtml()+"</b>");
+				table.addContentCell(operation.index+".) <b>"+link.getHtml()+"</b>");
 				table.addContentCell(operation.description);
 				table.addContentCell(
 						operation.start != null ? DateTools.getTextDate(operation.start) : ""
