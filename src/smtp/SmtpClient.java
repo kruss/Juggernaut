@@ -39,7 +39,7 @@ public class SmtpClient implements ISystemComponent, ISmtpClient {
 	
 	@Override
 	public boolean isReady() {
-		return config.isNotification() && !config.getSmtpServer().isEmpty();
+		return !config.getSmtpServer().isEmpty();
 	}
 	
 	@Override

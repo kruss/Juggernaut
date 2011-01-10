@@ -100,6 +100,8 @@ public class SVNOperation extends AbstractOperation implements IRepositoryOperat
 		
 		CheckoutInfo checkout = client.checkout(url, revision, parent.getFolder());
 		currentRevision = checkout.revision;
+		logger.log(Module.COMMAND, "Checkout Revision: "+currentRevision);
+
 		setLastRevisionCache(currentRevision);
 		setRevisionProperty(currentRevision);
 
@@ -115,6 +117,7 @@ public class SVNOperation extends AbstractOperation implements IRepositoryOperat
 			String endRevision = currentRevision;
 			
 			history = client.getHistory(getUrlProperty(), startRevision, endRevision);
+			logger.log(Module.COMMAND, "Repository Commits: "+history.commits.size());
 			
 			Artifact commitArtifact = new Artifact("Commits", history.output, "txt");
 			commitArtifact.description = "Intervall: "+history.revision1+" - "+history.revision2;

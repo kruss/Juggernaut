@@ -36,10 +36,16 @@ public class LaunchNotification {
 
 	public void performNotification() throws Exception {
 
-		if(launch.getStatusManager().getStatus() != Status.CANCEL){
-			if(isStatusHashChanged() || isErrorHashChanged()){
-				launch.getLogger().log(Module.SMTP, "Notification required");
-				
+		if(isStatusValid()){
+			boolean statusChanged = isStatusHashChanged();
+			if(statusChanged){
+				launch.getLogger().log(Module.SMTP, "Notification required (Status)");
+			}
+			boolean errorChanged = isErrorHashChanged();
+			if(errorChanged){
+				launch.getLogger().log(Module.SMTP, "Notification required (Errors)");
+			}
+			if(statusChanged || errorChanged){
 				Notification notification = new Notification(history, smtpClient, httpServer, launch);
 				Artifact artifact = notification.performNotification();
 				launch.getArtifacts().add(artifact);
@@ -50,6 +56,10 @@ public class LaunchNotification {
 				launch.getLogger().debug(Module.SMTP, "Notification NOT required");
 			}
 		}
+	}
+
+	private boolean isStatusValid() {
+		return launch.getStatusManager().getStatus() != Status.CANCEL;
 	}
 
 	private boolean isStatusHashChanged() {

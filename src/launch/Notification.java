@@ -60,7 +60,7 @@ public class Notification {
 		mail.content = getContent();
 		Status status = null;
 		
-		if(isNotification()){
+		if(isNotificationEnabled()){
 			try{ 
 				smtpClient.send(mail, launch.getLogger());
 			}catch(Exception e){
@@ -68,7 +68,7 @@ public class Notification {
 				status = Status.ERROR;
 			}
 		}else{
-			launch.getLogger().debug(Module.SMTP, "Notification canceled");
+			launch.getLogger().debug(Module.SMTP, "Notification NOT enabled");
 			status = Status.CANCEL;
 		}
 		
@@ -87,7 +87,7 @@ public class Notification {
 	
 	private ArrayList<String> getCcAdresses() {
 		
-		if(isCommitterNotification()){
+		if(isCommitterNotificationRequired()){
 			return getComitterAddresses();
 		}else{
 			return new ArrayList<String>();
@@ -206,9 +206,9 @@ public class Notification {
 	private String getCommitterHtml() {
 		
 		ArrayList<IRepositoryOperation> repositories = launch.getRepositoryOperations();
-		if(isCommitter()){
+		if(hasCommitter()){
 			HtmlList list = new HtmlList("Commits");
-			if(!isCommitterNotification()){
+			if(!isCommitterNotificationRequired()){
 				list.setDescription("<font color=blue>!!! Committer NOT being notified !!!</font>");
 			}
 			for(IRepositoryOperation repository : repositories){
@@ -283,15 +283,15 @@ public class Notification {
 		}
 	}
 	
-	private boolean isNotification(){
+	private boolean isNotificationEnabled(){
 		return smtpClient.getConfig().isNotification() && launch.getConfig().isNotification();
 	}
 	
-	private boolean isCommitterNotification(){	
-		return isCommitter() && isCommitterThresholdValid() && isCommitterStatusValid();
+	private boolean isCommitterNotificationRequired(){	
+		return hasCommitter() && isCommitterThresholdValid() && isCommitterStatusValid();
 	}
 	
-	private boolean isCommitter(){
+	private boolean hasCommitter(){
 		return getComitterAddresses().size() > 0;
 	}
 	

@@ -55,7 +55,7 @@ public class Mail {
 		if(isSend()){
 			html.append(" <li><b>Send</b>: "+DateTools.getTextDate(send)+"</li>\n");
 		}else{
-			html.append(" <li><b>Send</b>: -</li>\n");
+			html.append(" <li><b><font color=red>NOT SEND</font></b></li>\n");
 		}
 		html.append("</ul>\n");
 		html.append("<hr>\n");
