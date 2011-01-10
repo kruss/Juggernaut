@@ -10,13 +10,15 @@ import java.util.ArrayList;
 import javax.swing.JMenuItem;
 import javax.swing.JTextField;
 
-import logger.ILogConfig;
+import logger.LogConfig;
 import logger.Logger;
+import logger.ILogConfig.Module;
 
 import smtp.ISmtpConfig;
 import util.DateTools;
 import util.FileTools;
 import util.IChangeListener;
+import util.IChangeable;
 import util.StringTools;
 
 import com.thoughtworks.xstream.XStream;
@@ -37,9 +39,10 @@ public class Configuration
 implements 
 	ISystemComponent, 
 	IOptionInitializer, 
-	ILogConfig,
 	ISmtpConfig,
-	IHttpConfig
+	IHttpConfig,
+	IChangeable, 
+	IChangeListener
 {
 
 	public static Configuration create(FileManager fileManager, TaskManager taskManager, Logger logger) throws Exception {
@@ -53,13 +56,13 @@ implements
 	}
 	
 	public enum GROUPS {
-		GENERAL, NOTIFICATION, LOGGING, EXTRA
+		GENERAL, NOTIFICATION, EXTRA
 	}
 	
 	public enum OPTIONS {
 		SCHEDULER, SCHEDULER_INTERVAL, MAXIMUM_AGENTS, MAXIMUM_HISTORY, SERVER, HTTP_PORT, 
 		NOTIFICATION, ADMINISTRATORS, SMTP_SERVER, SMTP_ADDRESS, 
-		LOGGING, UNLOCKER
+		UNLOCKER
 	}
 	
 	public enum State { CLEAN, DIRTY }
@@ -71,6 +74,7 @@ implements
 	private String version;
 	private OptionContainer optionContainer;
 	private ArrayList<LaunchConfig> launchConfigs;
+	private LogConfig logConfig;
 	private transient ArrayList<IChangeListener> listeners;
 	private transient String path;
 	private transient boolean dirty;
@@ -132,13 +136,6 @@ implements
 				OPTIONS.SMTP_ADDRESS.toString(), "The SMTP-Address for notifications", 
 				Type.TEXT_SMALL, "SMTP@"+Constants.APP_NAME
 		));
-		for(Module module : Module.values()){
-			optionContainer.getOptions().add(new Option(
-					GROUPS.LOGGING.toString(),
-					module.toString()+"_"+OPTIONS.LOGGING, "Log-Level for "+module.toString()+" module",
-					Type.TEXT_LIST, StringTools.enum2strings(Level.class), Level.NORMAL.toString()
-			));
-		}
 		optionContainer.getOptions().add(new Option(
 				GROUPS.EXTRA.toString(),
 				OPTIONS.UNLOCKER.toString(), "Command to free locked ressources", 
@@ -146,6 +143,7 @@ implements
 		));
 		
 		launchConfigs = new ArrayList<LaunchConfig>();
+		logConfig = new LogConfig();
 		listeners = new ArrayList<IChangeListener>();
 		this.path = path;
 		dirty = true;
@@ -154,7 +152,7 @@ implements
 	@Override
 	public void init() throws Exception {
 		save();
-		logger.setConfig(this);
+		logger.setConfig(logConfig);
 	}
 
 	@Override
@@ -220,11 +218,6 @@ implements
 	}
 	
 	@Override
-	public Level getLogLevel(Module module){
-		return Level.valueOf(optionContainer.getOption(module.toString()+"_"+OPTIONS.LOGGING).getStringValue());
-	}
-	
-	@Override
 	public ArrayList<String> getAdministratorAddresses() {
 		
 		String value = optionContainer.getOption(OPTIONS.ADMINISTRATORS.toString()).getStringValue();
@@ -236,24 +229,31 @@ implements
 		return optionContainer.getOption(OPTIONS.UNLOCKER.toString()).getStringValue();
 	}
 	
+	@Override
 	public void addListener(IChangeListener listener){ listeners.add(listener); }
-	
+	@Override
+	public void removeListener(IChangeListener listener){ listeners.remove(listener); }
+	@Override
 	public void notifyListeners(){
-		for(IChangeListener listener : listeners){
-			listener.changed(this);
-		}
+		for(IChangeListener listener : listeners){ listener.changed(this); }
 	}
 	
 	public OptionContainer getOptionContainer(){ return optionContainer; }
 	public ArrayList<LaunchConfig> getLaunchConfigs(){ return launchConfigs; }
+	public LogConfig getLogConfig() { return logConfig; }
 	public String getPath(){ return path; }
 	
 	public void setDirty(boolean dirty){ this.dirty = dirty; }
 	
 	public boolean isDirty(){ 
-		if(dirty){ return true; }
-		for(LaunchConfig launchConfig : launchConfigs){
-			if(launchConfig.isDirty()){ return true; }
+		if(dirty){ 
+			return true; 
+		}else if(logConfig.isDirty()){
+			return true;
+		}else{
+			for(LaunchConfig launchConfig : launchConfigs){
+				if(launchConfig.isDirty()){ return true; }
+			}
 		}
 		return false;
 	}
@@ -279,6 +279,7 @@ implements
 			}
 		}
 		configuration.dirty = false;
+		configuration.logConfig.setDirty(false);
 		return configuration;
 	}
 	
@@ -292,6 +293,7 @@ implements
 			for(LaunchConfig launchConfig : launchConfigs){
 				launchConfig.setDirty(false);
 			}
+			logConfig.setDirty(false);
 			dirty = false;
 			notifyListeners();
 		}
@@ -327,6 +329,17 @@ implements
 				html.append("</ol>");
 			}
 		}
+		html.append("<hr>");
+		html.append("<h2>Logging</h2>");
+		html.append(logConfig.getOptionContainer().toHtml());
 		return html.toString();
+	}
+	
+	@Override
+	public void changed(Object object) {
+		
+		if(object instanceof LogConfig){
+			notifyListeners();
+		}
 	}
 }

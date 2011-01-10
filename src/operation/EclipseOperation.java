@@ -55,7 +55,7 @@ public class EclipseOperation extends AbstractOperation {
 		ArrayList<String> arguments = new ArrayList<String>();
 		arguments.add("-data \""+parent.getFolder()+"\"");
 		arguments.add("-cdt.builder");
-		if(configuration.getLogLevel(Module.COMMAND) == Level.DEBUG){
+		if(configuration.getLogConfig().getLogLevel(Module.COMMAND) == Level.DEBUG){
 			arguments.add("-cdt.verbose");
 		}
 		arguments.add("-cdt.import");

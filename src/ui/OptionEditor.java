@@ -45,14 +45,18 @@ public class OptionEditor extends JPanel {
 
 	private ArrayList<IChangeListener> listeners;
 	private OptionContainer container;
+	private boolean groups;
 	
 	public OptionEditor(){
 		
 		listeners = new ArrayList<IChangeListener>();
 		container = null;
+		groups = true;
 		
 		setLayout(new BorderLayout());
 	}
+	
+	public void setGroups(boolean groups){ this.groups = groups; }
 	
 	public void setOptionContainer(OptionContainer container, IOptionInitializer initializer) {
 		
@@ -72,7 +76,9 @@ public class OptionEditor extends JPanel {
 					}
 					groupPanel = new JPanel();
 					groupPanel.setLayout(new BoxLayout(groupPanel, BoxLayout.Y_AXIS));
-					groupPanel.setBorder(BorderFactory.createTitledBorder(groupName));
+					if(groups){
+						groupPanel.setBorder(BorderFactory.createTitledBorder(groupName));
+					}
 				}
 				JPanel panel = createPanel(option);
 				option.parent = panel;

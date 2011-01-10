@@ -120,11 +120,13 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 	
 	private void checkSchedules() {
 		
-		logger.debug(Module.COMMON, "Checking schedules");
 		ArrayList<LaunchConfig> launchConfigs = getRandomizedLaunches();
+		logger.log(Module.COMMON, "Checking schedules ("+launchConfigs.size()+")");
 		for(LaunchConfig launchConfig : launchConfigs){
 			if(launchManager.isReady()){
-				checkSchedules(launchConfig);
+				if(!checkSchedules(launchConfig)){
+					logger.log(Module.COMMON, "Launch ["+launchConfig.getName()+"] idle");
+				}
 			}else{
 				break;
 			}
@@ -145,7 +147,7 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 		}
 	}
 	
-	private void checkSchedules(LaunchConfig launchConfig) {
+	private boolean checkSchedules(LaunchConfig launchConfig) {
 		
 		boolean launched = false;
 		for(AbstractTriggerConfig triggerConfig : launchConfig.getTriggerConfigs()){
@@ -163,14 +165,14 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 					if(launchStatus.launched){
 						logger.log(
 								Module.COMMON, 
-								"Launch ["+launchConfig.getName()+"] triggered: "+triggerStatus.message
+								"Launch ["+launchConfig.getName()+"] trigger: "+triggerStatus.message
 						);
 						trigger.wasTriggered(true);
 						launched = true;
 					}else{
 						logger.log(
 								Module.COMMON, 
-								"Launch ["+launchConfig.getName()+"] aborded: "+launchStatus.message
+								"Launch ["+launchConfig.getName()+"] blocked: "+launchStatus.message
 						);
 						trigger.wasTriggered(false); // actual launched
 						break;
@@ -185,6 +187,7 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 				);
 			}
 		}
+		return launched;
 	}
 	
 	private ArrayList<LaunchConfig> getRandomizedLaunches(){

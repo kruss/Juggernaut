@@ -209,7 +209,7 @@ public class Application extends AbstractSystem {
 					runtime.scheduleManager, 
 					runtime.httpServer);
 			add(preferencePanel);
-			loggerPanel = new LoggerPanel(core.logger);
+			loggerPanel = new LoggerPanel(persistence.configuration, core.logger);
 			add(loggerPanel);
 			window = new Window(
 					core.logger, 

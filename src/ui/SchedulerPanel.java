@@ -42,7 +42,7 @@ public class SchedulerPanel extends JPanel implements ISystemComponent, IChangeL
 	private JScrollPane launchPanel;
 	private JTable launchTable;
 	private DefaultTableModel tableModel;
-	private LoggingConsole console;
+	private LoggingConsole logingConsole;
 	private JButton triggerScheduler;
 	private JButton stopLaunch;
 	
@@ -115,12 +115,12 @@ public class SchedulerPanel extends JPanel implements ISystemComponent, IChangeL
 		topPanel.add(launchPanel, BorderLayout.CENTER);
 		topPanel.add(buttonPanel, BorderLayout.EAST);
 		
-		console = new LoggingConsole();
+		logingConsole = new LoggingConsole();
 		
 		JSplitPane centerPanel = new JSplitPane(
 				JSplitPane.VERTICAL_SPLIT,
 				topPanel, 
-				console);
+				logingConsole);
 		centerPanel.setDividerLocation(200);
 		
 		setLayout(new BorderLayout());
@@ -208,16 +208,16 @@ public class SchedulerPanel extends JPanel implements ISystemComponent, IChangeL
 		if(selected != null){
 			stopLaunch.setEnabled(true);
 			ILogProvider provider = launchManager.getLoggingProvider(selected.id); 
-			if(provider != console.getProvider()){
-				console.deregister();
-				console.clearConsole();
-				console.initConsole(provider.getBuffer());
-				provider.addListener(console);
+			if(provider != logingConsole.getProvider()){
+				logingConsole.deregister();
+				logingConsole.clearConsole();
+				logingConsole.initConsole(provider.getBuffer());
+				provider.addListener(logingConsole);
 			}
 		}else{
 			stopLaunch.setEnabled(false);
-			console.deregister();
-			console.clearConsole();
+			logingConsole.deregister();
+			logingConsole.clearConsole();
 		}		
 	}
 
