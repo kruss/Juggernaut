@@ -8,6 +8,7 @@ import java.util.Date;
 
 import smtp.ISmtpClient;
 import util.IChangeListener;
+import util.IChangeable;
 import util.Task;
 
 import core.Cache;
@@ -26,7 +27,7 @@ import logger.Logger;
 import logger.ILogConfig.Module;
 
 /** checks the configured launches for triggers to be fired */
-public class ScheduleManager implements ISystemComponent {
+public class ScheduleManager implements ISystemComponent, IChangeable {
 
 	private Configuration configuration;
 	private Cache cache;
@@ -40,19 +41,6 @@ public class ScheduleManager implements ISystemComponent {
 	private SchedulerTask scheduler;
 	private Date updated;
 	private ArrayList<IChangeListener> listeners;
-
-	public void setUpdated(Date updated){
-		synchronized(this){
-			this.updated = updated;
-		}
-		notifyListeners();
-	}
-	
-	public Date getUpdated(){ 
-		synchronized(this){
-			return updated;
-		}
-	}
 	
 	public ScheduleManager(
 			Configuration configuration,
@@ -80,14 +68,6 @@ public class ScheduleManager implements ISystemComponent {
 		listeners = new ArrayList<IChangeListener>();
 	}
 	
-	public void addListener(IChangeListener listener){ listeners.add(listener); }
-	
-	public void notifyListeners(){
-		for(IChangeListener listener : listeners){
-			listener.changed(this);
-		}
-	}
-	
 	@Override
 	public void init() throws Exception {
 		if(configuration.isScheduler()){
@@ -100,8 +80,17 @@ public class ScheduleManager implements ISystemComponent {
 		stopScheduler();
 	}
 	
+	@Override
+	public void addListener(IChangeListener listener){ listeners.add(listener); }
+	@Override
+	public void removeListener(IChangeListener listener){ listeners.remove(listener); }
+	@Override
+	public void notifyListeners(){
+		for(IChangeListener listener : listeners){ listener.changed(this); }
+	}
+	
 	public boolean isRunning(){
-		return scheduler != null;
+			return scheduler != null;
 	}
 	
 	/** run cyclic scheduler */
@@ -109,6 +98,7 @@ public class ScheduleManager implements ISystemComponent {
 		if(scheduler == null){
 			scheduler = new SchedulerTask(true);
 			scheduler.asyncRun(delay, SchedulerTask.TIMEOUT); 
+			notifyListeners();
 		}
 	}
 	
@@ -117,6 +107,7 @@ public class ScheduleManager implements ISystemComponent {
 		if(scheduler != null){
 			scheduler.syncKill();
 			scheduler = null;
+			notifyListeners();
 		}
 	}
 	
@@ -127,7 +118,7 @@ public class ScheduleManager implements ISystemComponent {
 		scheduler.asyncRun(delay, SchedulerTask.TIMEOUT);
 	}
 	
-	public synchronized void checkSchedules() {
+	private void checkSchedules() {
 		
 		logger.debug(Module.COMMON, "Checking schedules");
 		ArrayList<LaunchConfig> launchConfigs = getRandomizedLaunches();
@@ -139,6 +130,19 @@ public class ScheduleManager implements ISystemComponent {
 			}
 		}
 		setUpdated(new Date());
+	}
+	
+	public void setUpdated(Date updated){
+		synchronized(this){
+			this.updated = updated;
+		}
+		notifyListeners();
+	}
+	
+	public Date getUpdated(){ 
+		synchronized(this){
+			return updated;
+		}
 	}
 	
 	private void checkSchedules(LaunchConfig launchConfig) {

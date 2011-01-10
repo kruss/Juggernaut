@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.ServerSocket;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Locale;
@@ -13,15 +14,16 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 
+import util.IChangeListener;
+
 import core.FileManager;
-import core.ISystemComponent;
 import core.TaskManager;
 
 import logger.Logger;
 import logger.ILogConfig.Module;
 
 @SuppressWarnings({ "deprecation", "unchecked" })
-public class HttpServer implements ISystemComponent, IHttpServer {
+public class HttpServer implements IHttpServer {
 
 	private IHttpConfig config;
 	private File root;
@@ -29,6 +31,7 @@ public class HttpServer implements ISystemComponent, IHttpServer {
 	private Thread serverThread; 
 	private Logger logger;
 	private boolean running;
+	private ArrayList<IChangeListener> listeners;
 	
 	@Override
 	public IHttpConfig getConfig(){ return config; }
@@ -42,6 +45,7 @@ public class HttpServer implements ISystemComponent, IHttpServer {
 		this.logger = logger;
 		root = fileManager.getHistoryFolder();
 		running = false;
+		listeners = new ArrayList<IChangeListener>();
 	}
 	
 	@Override
@@ -57,9 +61,19 @@ public class HttpServer implements ISystemComponent, IHttpServer {
 	}
 	
 	@Override
+	public void addListener(IChangeListener listener){ listeners.add(listener); }
+	@Override
+	public void removeListener(IChangeListener listener){ listeners.remove(listener); }
+	@Override
+	public void notifyListeners(){
+		for(IChangeListener listener : listeners){ listener.changed(this); }
+	}
+	
+	@Override
 	public void startServer() throws Exception {
 		if(!running){
 			startHttpServer();
+			notifyListeners();
 		}
 	}
 
@@ -67,6 +81,7 @@ public class HttpServer implements ISystemComponent, IHttpServer {
 	public void stopServer() throws Exception {
 		if(running){
 			stopHttpServer();
+			notifyListeners();
 		}
 	}
 	

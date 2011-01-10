@@ -26,7 +26,6 @@ import logger.ILogConfig.Module;
 import util.DateTools;
 import util.IChangeListener;
 import util.StringTools;
-import util.Task;
 
 import core.Configuration;
 import core.Constants;
@@ -50,8 +49,6 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 	
 	private JLabel statusLabel;
 	private JLabel infoLabel;
-	
-	private InfoUpdater updater;
 	
 	public Window(
 			Logger logger,
@@ -107,9 +104,11 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 		setTitle(Constants.APP_FULL_NAME);
 		
 		configuration.addListener(this);
+		scheduleManager.addListener(this);
+		httpServer.addListener(this);
+		taskManager.addListener(this);
+		heapManager.addListener(this);
 		launchManager.addClient(this);
-		
-		updater = null;
 	}
 	
 	@Override
@@ -127,23 +126,12 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 		SwingUtilities.updateComponentTreeUI(this);
 		
 		setStatus(Constants.APP_NAME+" started at "+DateTools.getTextDate(new Date()));
-		setInfo("");
+		setInfo();
 		setVisible(true);
-		
-		if(updater == null){
-			updater = new InfoUpdater();
-			updater.asyncRun(0, 0);
-		}
 	}
 	
 	@Override
 	public void shutdown() throws Exception {
-		
-		if(updater != null){
-			updater.syncKill();
-			updater = null;
-		}
-		
 		dispose();
 	}
 	
@@ -155,10 +143,6 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 	@Override
 	public void status(String text) {
 		setStatus(text);
-	}
-	
-	public void setInfo(String text){
-		infoLabel.setText(text);
 	}
 
 	@Override
@@ -172,45 +156,22 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 				setTitle(Constants.APP_FULL_NAME+" *");
 			}
 		}
+		
+		if(object == scheduleManager || object == httpServer || object == taskManager || object == heapManager){
+			setInfo();
+		}
 	}
 	
-	private class InfoUpdater extends Task {
-
-		public static final long CYCLE = 3 * 1000; // 3 sec
-
-		public InfoUpdater() {
-			super("InfoUpdater", taskManager);
-			setCycle(CYCLE);
-		}
-
-		@Override
-		protected void runTask() {
-			
-			ArrayList<String> infos = new ArrayList<String>();
-			infos.add(getSchedulerInfo());
-			infos.add(getHttpServerInfo());
-			infos.add(getTaskInfo());
-			infos.add(getHeapInfo());
-			setInfo(StringTools.join(infos, " | "));
-		}
+	private synchronized void setInfo() {
 		
-		public String getSchedulerInfo(){
-			return "Scheduler "+(scheduleManager.isRunning() ? "ON" : "OFF");
-		}
-		
-		public String getHttpServerInfo(){
-			return "Server "+(httpServer.isRunning() ? "ON" : "OFF");
-		}
-		
-		public String getTaskInfo(){
-			ArrayList<TaskInfo> infos = taskManager.getInfo();
-			return "Tasks ("+infos.size()+")";
-		}
-		
-		public String getHeapInfo(){
-			HeapStatus heap = heapManager.getHeapStatus();
-			long MB = 1024 * 1024;
-			return "HEAP ("+Math.round(heap.usedMemory / MB)+" / "+Math.round(heap.maxMemory / MB)+" MB)";
-		}
+		ArrayList<String> infos = new ArrayList<String>();
+		infos.add("Scheduler "+(scheduleManager.isRunning() ? "ON" : "OFF"));
+		infos.add("Server "+(httpServer.isRunning() ? "ON" : "OFF"));
+		ArrayList<TaskInfo> tasks = taskManager.getInfo();
+		infos.add("Tasks "+tasks.size());
+		HeapStatus heap = heapManager.getHeapStatus();
+		long MB = 1024 * 1024;
+		infos.add("HEAP "+Math.round(heap.usedMemory / MB)+" / "+Math.round(heap.maxMemory / MB)+" MB");
+		infoLabel.setText(StringTools.join(infos, " | "));
 	}
 }

@@ -1,6 +1,9 @@
 package http;
 
-public interface IHttpServer {
+import util.IChangeable;
+import core.ISystemComponent;
+
+public interface IHttpServer extends ISystemComponent, IChangeable {
 
 	public IHttpConfig getConfig();
 	

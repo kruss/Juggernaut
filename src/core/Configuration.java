@@ -84,8 +84,8 @@ implements
 		optionContainer.setDescription("The application preferences");
 		optionContainer.getOptions().add(new Option(
 				GROUPS.GENERAL.toString(),
-				OPTIONS.SCHEDULER.toString(), "Run the launch scheduler",
-				Type.BOOLEAN, true
+				OPTIONS.SCHEDULER.toString(), "Run the scheduler",
+				Type.BOOLEAN, false
 		));
 		optionContainer.getOptions().add(new Option(
 				GROUPS.GENERAL.toString(),
@@ -105,7 +105,7 @@ implements
 		optionContainer.getOptions().add(new Option(
 				GROUPS.GENERAL.toString(),
 				OPTIONS.SERVER.toString(), "Run the HTTP-Server",
-				Type.BOOLEAN, true
+				Type.BOOLEAN, false
 		));
 		optionContainer.getOptions().add(new Option(
 				GROUPS.GENERAL.toString(),
