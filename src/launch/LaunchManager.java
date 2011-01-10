@@ -51,7 +51,8 @@ public class LaunchManager implements ISystemComponent, ILifecycleListener {
 	
 	@Override
 	public void shutdown() throws Exception {
-		for(LaunchAgent agent : agents){
+		for(int i=agents.size()-1; i>=0; i--){
+			LaunchAgent agent = agents.get(i);
 			agent.syncKill();
 		}
 	}

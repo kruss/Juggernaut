@@ -17,6 +17,7 @@ import logger.ILogConfig.Module;
 import util.IChangeListener;
 import util.UiTools;
 
+import core.AbstractSystem;
 import core.Configuration;
 import core.Constants;
 import core.Application;
@@ -116,7 +117,9 @@ public class ProjectMenu extends JMenu implements ISystemComponent, IChangeListe
 					try{
 						application.shutdown();
 					}catch(Exception e){
-						UiTools.errorDialog(e);
+						if(e != AbstractSystem.ABOARDING){
+							UiTools.errorDialog(e);
+						}
 						System.exit(Constants.PROCESS_NOK);
 					}
 					System.exit(Constants.PROCESS_OK);

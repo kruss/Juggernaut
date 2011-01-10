@@ -178,6 +178,7 @@ public class Application extends AbstractSystem {
 			add(projectMenu);
 			toolsMenu = new ToolsMenu(
 					persistence.configuration, 
+					core.taskManager,
 					core.fileManager, 
 					core.heapManager);
 			add(toolsMenu);
