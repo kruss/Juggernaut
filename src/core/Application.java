@@ -6,6 +6,7 @@ import launch.ScheduleManager;
 import smtp.SmtpClient;
 import ui.ConfigPanel;
 import ui.HistoryPanel;
+import ui.LoggerPanel;
 import ui.PreferencePanel;
 import ui.ProjectMenu;
 import ui.SchedulerPanel;
@@ -165,6 +166,7 @@ public class Application extends AbstractSystem {
 		public SchedulerPanel schedulerPanel;
 		public HistoryPanel historyPanel;
 		public PreferencePanel preferencePanel;
+		public LoggerPanel loggerPanel;
 		public Window window;
 		
 		@Override
@@ -207,6 +209,8 @@ public class Application extends AbstractSystem {
 					runtime.scheduleManager, 
 					runtime.httpServer);
 			add(preferencePanel);
+			loggerPanel = new LoggerPanel(core.logger);
+			add(loggerPanel);
 			window = new Window(
 					core.logger, 
 					core.taskManager, 
@@ -220,6 +224,7 @@ public class Application extends AbstractSystem {
 					configPanel, 
 					schedulerPanel, 
 					historyPanel, 
+					loggerPanel,
 					preferencePanel);
 			add(window);
 			super.init();

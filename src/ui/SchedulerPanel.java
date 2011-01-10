@@ -15,7 +15,6 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
@@ -43,9 +42,7 @@ public class SchedulerPanel extends JPanel implements ISystemComponent, IChangeL
 	private JScrollPane launchPanel;
 	private JTable launchTable;
 	private DefaultTableModel tableModel;
-	private JTabbedPane loggingPanel;
-	private LoggingConsole applicationConsole;
-	private LoggingConsole launchConsole;
+	private LoggingConsole console;
 	private JButton triggerScheduler;
 	private JButton stopLaunch;
 	
@@ -118,18 +115,13 @@ public class SchedulerPanel extends JPanel implements ISystemComponent, IChangeL
 		topPanel.add(launchPanel, BorderLayout.CENTER);
 		topPanel.add(buttonPanel, BorderLayout.EAST);
 		
-		applicationConsole = new LoggingConsole();
-		launchConsole = new LoggingConsole();
-		
-		loggingPanel = new JTabbedPane(JTabbedPane.TOP);
-		loggingPanel.add("Application", applicationConsole);
-		loggingPanel.add("Launch", launchConsole);
+		console = new LoggingConsole();
 		
 		JSplitPane centerPanel = new JSplitPane(
 				JSplitPane.VERTICAL_SPLIT,
 				topPanel, 
-				loggingPanel);
-		centerPanel.setDividerLocation(150);
+				console);
+		centerPanel.setDividerLocation(200);
 		
 		setLayout(new BorderLayout());
 		add(centerPanel, BorderLayout.CENTER);
@@ -152,7 +144,6 @@ public class SchedulerPanel extends JPanel implements ISystemComponent, IChangeL
 		
 		launchManager.addListener(this);
 		scheduleManager.addListener(this);
-		logger.addListener(applicationConsole);
 	}
 	
 	@Override
@@ -217,17 +208,16 @@ public class SchedulerPanel extends JPanel implements ISystemComponent, IChangeL
 		if(selected != null){
 			stopLaunch.setEnabled(true);
 			ILogProvider provider = launchManager.getLoggingProvider(selected.id); 
-			if(provider != launchConsole.getProvider()){
-				launchConsole.deregister();
-				launchConsole.clearConsole();
-				launchConsole.initConsole(provider.getBuffer());
-				provider.addListener(launchConsole);
-				loggingPanel.setSelectedIndex(1);
+			if(provider != console.getProvider()){
+				console.deregister();
+				console.clearConsole();
+				console.initConsole(provider.getBuffer());
+				provider.addListener(console);
 			}
 		}else{
 			stopLaunch.setEnabled(false);
-			launchConsole.deregister();
-			launchConsole.clearConsole();
+			console.deregister();
+			console.clearConsole();
 		}		
 	}
 

@@ -133,7 +133,7 @@ public class HistoryPanel extends JPanel implements ISystemComponent, IChangeLis
 				JSplitPane.VERTICAL_SPLIT,
 				topPanel, 
 				new JScrollPane(historyOutput));
-		centerPanel.setDividerLocation(150);
+		centerPanel.setDividerLocation(200);
 		
 		setLayout(new BorderLayout());
 		add(centerPanel, BorderLayout.CENTER);
