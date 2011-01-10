@@ -16,7 +16,7 @@ import logger.Logger;
 import smtp.ISmtpConfig;
 import util.DateTools;
 import util.FileTools;
-import util.IChangedListener;
+import util.IChangeListener;
 import util.StringTools;
 
 import com.thoughtworks.xstream.XStream;
@@ -57,7 +57,7 @@ implements
 	}
 	
 	public enum OPTIONS {
-		SCHEDULER, SCHEDULER_INTERVAL, MAXIMUM_AGENTS, MAXIMUM_HISTORY, WEBSERVER, HTTP_PORT, 
+		SCHEDULER, SCHEDULER_INTERVAL, MAXIMUM_AGENTS, MAXIMUM_HISTORY, SERVER, HTTP_PORT, 
 		NOTIFICATION, ADMINISTRATORS, SMTP_SERVER, SMTP_ADDRESS, 
 		LOGGING, UNLOCKER
 	}
@@ -71,7 +71,7 @@ implements
 	private String version;
 	private OptionContainer optionContainer;
 	private ArrayList<LaunchConfig> launchConfigs;
-	private transient ArrayList<IChangedListener> listeners;
+	private transient ArrayList<IChangeListener> listeners;
 	private transient String path;
 	private transient boolean dirty;
 
@@ -104,7 +104,7 @@ implements
 		));
 		optionContainer.getOptions().add(new Option(
 				GROUPS.GENERAL.toString(),
-				OPTIONS.WEBSERVER.toString(), "Run the Web-Server",
+				OPTIONS.SERVER.toString(), "Run the HTTP-Server",
 				Type.BOOLEAN, true
 		));
 		optionContainer.getOptions().add(new Option(
@@ -146,7 +146,7 @@ implements
 		));
 		
 		launchConfigs = new ArrayList<LaunchConfig>();
-		listeners = new ArrayList<IChangedListener>();
+		listeners = new ArrayList<IChangeListener>();
 		this.path = path;
 		dirty = true;
 	}
@@ -195,8 +195,8 @@ implements
 	}
 	
 	@Override
-	public boolean isWebserver(){
-		return optionContainer.getOption(OPTIONS.WEBSERVER.toString()).getBooleanValue();
+	public boolean isHttpServer(){
+		return optionContainer.getOption(OPTIONS.SERVER.toString()).getBooleanValue();
 	}
 	
 	@Override
@@ -236,10 +236,10 @@ implements
 		return optionContainer.getOption(OPTIONS.UNLOCKER.toString()).getStringValue();
 	}
 	
-	public void addListener(IChangedListener listener){ listeners.add(listener); }
+	public void addListener(IChangeListener listener){ listeners.add(listener); }
 	
 	public void notifyListeners(){
-		for(IChangedListener listener : listeners){
+		for(IChangeListener listener : listeners){
 			listener.changed(this);
 		}
 	}
@@ -267,7 +267,7 @@ implements
 		String xml = FileTools.readFile(path);
 		Configuration configuration = (Configuration)xstream.fromXML(xml);
 		configuration.logger = logger;
-		configuration.listeners = new ArrayList<IChangedListener>();
+		configuration.listeners = new ArrayList<IChangeListener>();
 		configuration.path = path;
 		for(LaunchConfig launchConfig : configuration.launchConfigs){
 			launchConfig.setDirty(false);

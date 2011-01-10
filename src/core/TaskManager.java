@@ -6,23 +6,26 @@ import java.util.ArrayList;
 import logger.Logger;
 import logger.ILogConfig.Module;
 
+import util.IChangeable;
+import util.IChangeListener;
 import util.Task;
 
 /**
  * The task-manager provides timeout control for tasks.
  */
-public class TaskManager implements ISystemComponent {
+public class TaskManager implements ISystemComponent, IChangeable {
 
-	
 	private Logger logger;
-	private TaskManagerTask timeout;
-	private ArrayList<Task> tasks;
+	private TimeoutTask timeout;
+	private ArrayList<RegisteredTask> entries;
+	private ArrayList<IChangeListener> listeners;
 	
 	public TaskManager(Logger logger){
 		
 		this.logger = logger;
-		timeout = new TaskManagerTask(this);
-		tasks = new ArrayList<Task>();
+		timeout = new TimeoutTask(this);
+		entries = new ArrayList<RegisteredTask>();
+		listeners = new ArrayList<IChangeListener>();
 	}
 	
 	@Override
@@ -35,58 +38,119 @@ public class TaskManager implements ISystemComponent {
 	public void shutdown() throws Exception {
 
 		timeout.syncKill();
-		synchronized(tasks){
-			for(int i=tasks.size()-1; i>=0; i--){
-				Task task = tasks.get(i);
-				if(task != null){
-					task.syncKill();
-				}
+		synchronized(entries){
+			for(int i=entries.size()-1; i>=0; i--){
+				RegisteredTask entry = entries.get(i);
+				entry.task.syncKill();
+				entries.remove(entry);
 			}
-		}
-		tasks.clear();
-	}
-	
-	/** register a task for timeout control */
-	public void register(Task task) {
-		
-		synchronized(tasks){
-			tasks.add(task);
-		}
-	}
-
-	/** deregister a task for timeout control */
-	public void deregister(Task task) {
-		
-		synchronized(tasks){
-			tasks.remove(task);
 		}
 	}
 	
-	/** check for timeouts in registered tasks */
-	private void checkTimeouts() {
-		
-		synchronized(tasks){
-			for(int i=tasks.size()-1; i>=0; i--){
-				Task task = tasks.get(i);
-				if(task != null && task.isExpired()){
-						tasks.remove(task);
-						logger.log(Module.TASK, "Task Timeout ["+task.getName()+"]");
-						task.asyncKill();
-				}
-			}
-		}
+	@Override
+	public void addListener(IChangeListener listener){ listeners.add(listener); }
+	@Override
+	public void removeListener(IChangeListener listener){ listeners.remove(listener); }
+	@Override
+	public void notifyListeners(){
+		for(IChangeListener listener : listeners){ listener.changed(this); }
 	}
 	
 	public void debug(String text) {
 		logger.debug(Module.TASK, text);
 	}
 	
-	private class TaskManagerTask extends Task {
+	/** register a task for timeout control */
+	public void register(Task task) {
+		
+		synchronized(entries){
+			RegisteredTask entry = new RegisteredTask(task);
+			entries.add(entry);
+			notifyListeners();
+		}
+	}
+	
+	/** set state for a registered task */
+	public void status(Task task, boolean running) {
+		
+		synchronized(entries){
+			for(RegisteredTask entry : entries){
+				if(entry.task == task){
+					entry.running = running;
+					notifyListeners();
+					break;
+				}
+			}
+		}
+	}
 
+	/** deregister a task for timeout control */
+	public void deregister(Task task) {
+		
+		synchronized(entries){
+			for(int i=entries.size()-1; i>=0; i--){
+				RegisteredTask entry = entries.get(i);
+				if(entry.task == task){
+					entries.remove(entry);
+					notifyListeners();
+					break;
+				}
+			}
+		}
+	}
+	
+	/** check for timeouts in registered tasks */
+	private void checkTimeouts() {
+		
+		synchronized(entries){
+			for(int i=entries.size()-1; i>=0; i--){
+				RegisteredTask entry = entries.get(i);
+				if(entry.task.isExpired()){
+						logger.log(Module.TASK, "Task Timeout ["+entry.task.getName()+"]");
+						entry.task.asyncKill();
+						entries.remove(entry);
+						notifyListeners();
+				}
+			}
+		}
+	}
+	
+	public ArrayList<TaskInfo> getInfo(){
+		
+		ArrayList<TaskInfo> info = new ArrayList<TaskInfo>();
+		synchronized(entries){
+			for(RegisteredTask entry : entries){
+				info.add(new TaskInfo(entry));
+			}
+		}
+		return info;
+	}
+	
+	private class RegisteredTask {
+		public Task task;
+		public boolean running;
+		
+		public RegisteredTask(Task task){
+			this.task = task;
+			running = false;
+		}
+	}
+	
+	public class TaskInfo {
+		public String name;
+		public boolean running;
+		
+		public TaskInfo(RegisteredTask entry){
+			name = entry.task.getName();
+			running = entry.running;
+		}
+	}
+	
+	private class TimeoutTask extends Task {
 		public static final long CYCLE = 15 * 1000; // 15 sec
 		
-		public TaskManagerTask(TaskManager taskManager) {
-			super("TaskManager", taskManager);
+		public TimeoutTask(TaskManager taskManager) {
+			super("Timeout", taskManager);
 			setCycle(CYCLE);
 		}
 

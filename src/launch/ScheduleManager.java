@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.Date;
 
 import smtp.ISmtpClient;
-import util.IChangedListener;
+import util.IChangeListener;
 import util.Task;
 
 import core.Cache;
@@ -39,7 +39,7 @@ public class ScheduleManager implements ISystemComponent {
 	private Logger logger;
 	private SchedulerTask scheduler;
 	private Date updated;
-	private ArrayList<IChangedListener> listeners;
+	private ArrayList<IChangeListener> listeners;
 
 	public void setUpdated(Date updated){
 		synchronized(this){
@@ -77,13 +77,13 @@ public class ScheduleManager implements ISystemComponent {
 		this.logger = logger;
 		scheduler = null;
 		updated = null;
-		listeners = new ArrayList<IChangedListener>();
+		listeners = new ArrayList<IChangeListener>();
 	}
 	
-	public void addListener(IChangedListener listener){ listeners.add(listener); }
+	public void addListener(IChangeListener listener){ listeners.add(listener); }
 	
 	public void notifyListeners(){
-		for(IChangedListener listener : listeners){
+		for(IChangeListener listener : listeners){
 			listener.changed(this);
 		}
 	}

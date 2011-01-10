@@ -18,14 +18,14 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import util.IChangedListener;
+import util.IChangeListener;
 import util.UiTools;
 import core.Configuration;
 import core.Registry;
 import data.AbstractTriggerConfig;
 import data.LaunchConfig;
 
-public class TriggerConfigPanel extends JPanel implements IChangedListener {
+public class TriggerConfigPanel extends JPanel implements IChangeListener {
 
 	private static final long serialVersionUID = 1L;
 

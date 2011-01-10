@@ -30,10 +30,10 @@ import logger.ILogProvider;
 import logger.Logger;
 
 import util.DateTools;
-import util.IChangedListener;
+import util.IChangeListener;
 import util.UiTools;
 
-public class SchedulerPanel extends JPanel implements ISystemComponent, IChangedListener {
+public class SchedulerPanel extends JPanel implements ISystemComponent, IChangeListener {
 
 	private static final long serialVersionUID = 1L;
 

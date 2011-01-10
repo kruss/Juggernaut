@@ -14,7 +14,7 @@ import launch.LaunchManager;
 import logger.Logger;
 import logger.ILogConfig.Module;
 
-import util.IChangedListener;
+import util.IChangeListener;
 import util.UiTools;
 
 import core.Configuration;
@@ -22,7 +22,7 @@ import core.Constants;
 import core.Application;
 import core.ISystemComponent;
 
-public class ProjectMenu extends JMenu implements ISystemComponent, IChangedListener {
+public class ProjectMenu extends JMenu implements ISystemComponent, IChangeListener {
 
 	private static final long serialVersionUID = 1L;
 

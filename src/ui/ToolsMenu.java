@@ -9,7 +9,7 @@ import java.io.File;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-import util.IChangedListener;
+import util.IChangeListener;
 import util.SystemTools;
 import util.UiTools;
 
@@ -20,7 +20,7 @@ import core.FileManager;
 import core.HeapManager;
 import core.ISystemComponent;
 
-public class ToolsMenu extends JMenu implements ISystemComponent, IChangedListener {
+public class ToolsMenu extends JMenu implements ISystemComponent, IChangeListener {
 
 	private static final long serialVersionUID = 1L;
 

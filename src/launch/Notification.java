@@ -264,7 +264,7 @@ public class Notification {
 	
 	private String getLinkHtml() {
 		
-		if(httpServer.getConfig().isWebserver()){
+		if(httpServer.getConfig().isHttpServer()){
 			try{
 				String url = 
 					"http://"+SystemTools.getHostName()+":"+httpServer.getConfig().getHttpPort()+

@@ -32,10 +32,10 @@ import core.History.HistoryInfo;
 
 import util.DateTools;
 import util.FileTools;
-import util.IChangedListener;
+import util.IChangeListener;
 import util.UiTools;
 
-public class HistoryPanel extends JPanel implements ISystemComponent, IChangedListener {
+public class HistoryPanel extends JPanel implements ISystemComponent, IChangeListener {
 
 	private static final long serialVersionUID = 1L;
 

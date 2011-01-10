@@ -12,7 +12,7 @@ import logger.Logger;
 import logger.ILogConfig.Module;
 
 import util.FileTools;
-import util.IChangedListener;
+import util.IChangeListener;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
@@ -43,7 +43,7 @@ public class History implements ISystemComponent {
 	@SuppressWarnings("unused")
 	private String version;
 	private ArrayList<LaunchHistory> entries;
-	private transient ArrayList<IChangedListener> listeners;
+	private transient ArrayList<IChangeListener> listeners;
 	private transient String path;
 	private transient boolean dirty;
 
@@ -55,7 +55,7 @@ public class History implements ISystemComponent {
 		
 		version = Constants.APP_VERSION;
 		entries = new ArrayList<LaunchHistory>();
-		listeners = new ArrayList<IChangedListener>();
+		listeners = new ArrayList<IChangeListener>();
 		this.path = path;
 		dirty = true;
 	}
@@ -68,10 +68,10 @@ public class History implements ISystemComponent {
 	@Override
 	public void shutdown() throws Exception {}
 
-	public void addListener(IChangedListener listener){ listeners.add(listener); }
+	public void addListener(IChangeListener listener){ listeners.add(listener); }
 	
 	public void notifyListeners(){
-		for(IChangedListener listener : listeners){
+		for(IChangeListener listener : listeners){
 			listener.changed(this);
 		}
 	}
@@ -91,7 +91,7 @@ public class History implements ISystemComponent {
 		history.configuration = configuration;
 		history.fileManager = fileManager;
 		history.logger = logger;
-		history.listeners = new ArrayList<IChangedListener>();
+		history.listeners = new ArrayList<IChangeListener>();
 		history.path = path;
 		history.dirty = false;
 		return history;

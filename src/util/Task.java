@@ -40,6 +40,9 @@ public abstract class Task extends Thread {
 	public void run(){
 		
 		taskManager.debug("Start ["+getName()+"]");
+		if(taskManager != null){
+			taskManager.register(this);
+		}
 		try{
 			Thread.sleep(delay);
 			if(isCyclic()){
@@ -51,6 +54,9 @@ public abstract class Task extends Thread {
 			taskManager.debug("Interrupt ["+getName()+"]");
 		}finally{
 			taskManager.debug("Stopp ["+getName()+"]");
+			if(taskManager != null){
+				taskManager.deregister(this);
+			}
 		}
 	}
 
@@ -67,14 +73,14 @@ public abstract class Task extends Thread {
 		
 		start = new Date();
 		if(taskManager != null){
-			taskManager.register(this);
+			taskManager.status(this, true);
 		}
 		try{
 			taskManager.debug("Run ["+getName()+"]");
 			runTask();
 		}finally{
 			if(taskManager != null){
-				taskManager.deregister(this);
+				taskManager.status(this, false);
 			}
 			start = null;
 		}

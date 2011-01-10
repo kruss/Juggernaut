@@ -22,7 +22,7 @@ import launch.LaunchManager;
 import launch.LaunchManager.LaunchStatus;
 
 import smtp.ISmtpClient;
-import util.IChangedListener;
+import util.IChangeListener;
 import util.UiTools;
 
 import core.Cache;
@@ -35,7 +35,7 @@ import core.TaskManager;
 import data.AbstractTrigger;
 import data.LaunchConfig;
 
-public class ConfigPanel extends JPanel implements ISystemComponent, IChangedListener {
+public class ConfigPanel extends JPanel implements ISystemComponent, IChangeListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -48,7 +48,7 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangedLis
 	private IHttpServer httpServer;
 	private LaunchManager launchManager;
 	
-	private ArrayList<IChangedListener> listeners;
+	private ArrayList<IChangeListener> listeners;
 	private JComboBox launchCombo;
 	private SelectionListener selectionListener;
 	private JButton addLaunch;
@@ -82,7 +82,7 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangedLis
 		this.smtpClient = smtpClient;
 		this.httpServer = httpServer;
 		this.launchManager = launchManager;
-		listeners = new ArrayList<IChangedListener>();
+		listeners = new ArrayList<IChangeListener>();
 		
 		launchCombo = new JComboBox();
 		launchCombo.setToolTipText("Configured Launches");
@@ -147,10 +147,10 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangedLis
 	@Override
 	public void shutdown() throws Exception {}
 	
-	public void addListener(IChangedListener listener){ listeners.add(listener); }
+	public void addListener(IChangeListener listener){ listeners.add(listener); }
 	
 	public void notifyListeners(){
-		for(IChangedListener listener : listeners){
+		for(IChangeListener listener : listeners){
 			listener.changed(this);
 		}
 	}

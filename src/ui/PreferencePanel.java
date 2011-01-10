@@ -8,14 +8,14 @@ import javax.swing.JScrollPane;
 
 import launch.ScheduleManager;
 
-import util.IChangedListener;
+import util.IChangeListener;
 import util.UiTools;
 
 import core.Configuration;
 import core.History;
 import core.ISystemComponent;
 
-public class PreferencePanel extends JPanel implements ISystemComponent, IChangedListener {
+public class PreferencePanel extends JPanel implements ISystemComponent, IChangeListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -77,7 +77,7 @@ public class PreferencePanel extends JPanel implements ISystemComponent, IChange
 		}
 		
 		try{
-			if(configuration.isWebserver()){
+			if(configuration.isHttpServer()){
 				httpServer.startServer();
 			}else{
 				httpServer.stopServer();

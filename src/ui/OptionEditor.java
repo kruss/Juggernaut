@@ -36,19 +36,19 @@ import data.Option;
 import data.OptionContainer;
 
 
-import util.IChangedListener;
+import util.IChangeListener;
 import util.StringTools;
 
 public class OptionEditor extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	private ArrayList<IChangedListener> listeners;
+	private ArrayList<IChangeListener> listeners;
 	private OptionContainer container;
 	
 	public OptionEditor(){
 		
-		listeners = new ArrayList<IChangedListener>();
+		listeners = new ArrayList<IChangeListener>();
 		container = null;
 		
 		setLayout(new BorderLayout());
@@ -92,10 +92,10 @@ public class OptionEditor extends JPanel {
 		}
 	}
 
-	public void addListener(IChangedListener listener){ listeners.add(listener); }
+	public void addListener(IChangeListener listener){ listeners.add(listener); }
 	
 	public void notifyListeners(){
-		for(IChangedListener listener : listeners){
+		for(IChangeListener listener : listeners){
 			listener.changed(this);
 		}
 	}

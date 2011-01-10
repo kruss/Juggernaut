@@ -9,7 +9,7 @@ import logger.ILogProvider;
 
 import ui.IStatusClient;
 import util.DateTools;
-import util.IChangedListener;
+import util.IChangeListener;
 import core.Configuration;
 import core.ISystemComponent;
 import data.AbstractTrigger;
@@ -19,21 +19,21 @@ public class LaunchManager implements ISystemComponent, ILifecycleListener {
 
 	private Configuration configuration;
 	private ArrayList<LaunchAgent> agents;
-	private ArrayList<IChangedListener> listeners;
+	private ArrayList<IChangeListener> listeners;
 	private ArrayList<IStatusClient> clients;
 	
 	public LaunchManager(Configuration configuration){
 		
 		this.configuration = configuration;
 		agents = new ArrayList<LaunchAgent>();
-		listeners = new ArrayList<IChangedListener>();
+		listeners = new ArrayList<IChangeListener>();
 		clients = new ArrayList<IStatusClient>();
 	}
 	
-	public void addListener(IChangedListener listener){ listeners.add(listener); }
+	public void addListener(IChangeListener listener){ listeners.add(listener); }
 	
 	public void notifyListeners(){
-		for(IChangedListener listener : listeners){
+		for(IChangeListener listener : listeners){
 			listener.changed(this);
 		}
 	}

@@ -5,12 +5,12 @@ import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import util.IChangedListener;
+import util.IChangeListener;
 
 import core.Configuration;
 import data.LaunchConfig;
 
-public class LaunchConfigPanel extends JPanel implements IChangedListener {
+public class LaunchConfigPanel extends JPanel implements IChangeListener {
 
 	private static final long serialVersionUID = 1L;
 

@@ -24,7 +24,7 @@ import logger.Logger;
 import logger.ILogConfig.Module;
 
 import util.DateTools;
-import util.IChangedListener;
+import util.IChangeListener;
 import util.StringTools;
 import util.Task;
 
@@ -34,8 +34,9 @@ import core.HeapManager;
 import core.ISystemComponent;
 import core.TaskManager;
 import core.HeapManager.HeapStatus;
+import core.TaskManager.TaskInfo;
 
-public class Window extends JFrame implements ISystemComponent, IStatusClient, IChangedListener {
+public class Window extends JFrame implements ISystemComponent, IStatusClient, IChangeListener {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -187,7 +188,8 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 			
 			ArrayList<String> infos = new ArrayList<String>();
 			infos.add(getSchedulerInfo());
-			infos.add(getWebserverInfo());
+			infos.add(getHttpServerInfo());
+			infos.add(getTaskInfo());
 			infos.add(getHeapInfo());
 			setInfo(StringTools.join(infos, " | "));
 		}
@@ -196,8 +198,13 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 			return "Scheduler "+(scheduleManager.isRunning() ? "ON" : "OFF");
 		}
 		
-		public String getWebserverInfo(){
-			return "Webserver "+(httpServer.isRunning() ? "ON" : "OFF");
+		public String getHttpServerInfo(){
+			return "Server "+(httpServer.isRunning() ? "ON" : "OFF");
+		}
+		
+		public String getTaskInfo(){
+			ArrayList<TaskInfo> infos = taskManager.getInfo();
+			return "Tasks ("+infos.size()+")";
 		}
 		
 		public String getHeapInfo(){
