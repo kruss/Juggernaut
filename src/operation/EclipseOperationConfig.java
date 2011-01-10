@@ -19,7 +19,7 @@ public class EclipseOperationConfig extends AbstractOperationConfig {
 	public static final String OPERATION_NAME = "Eclipse";
 
 	public enum OPTIONS {
-		ECLIPSE, BUILD, EXCLUDE, CLEAN
+		ECLIPSE, BUILD, EXCLUDE, CLEAN, TOLERANT
 	}
 	
 	public EclipseOperationConfig(){
@@ -43,6 +43,11 @@ public class EclipseOperationConfig extends AbstractOperationConfig {
 				GROUPS.SETTINGS.toString(),
 				OPTIONS.CLEAN.toString(), "Perform a clean build", 
 				Type.BOOLEAN, true
+		));
+		optionContainer.getOptions().add(new Option(
+				GROUPS.SETTINGS.toString(),
+				OPTIONS.TOLERANT.toString(), "Build in non-strict mode", 
+				Type.BOOLEAN, false
 		));
 	}
 	
@@ -72,6 +77,10 @@ public class EclipseOperationConfig extends AbstractOperationConfig {
 	
 	public boolean isCleanBuild(){ 
 		return optionContainer.getOption(OPTIONS.CLEAN.toString()).getBooleanValue(); 
+	}
+	
+	public boolean isTolerantBuild(){ 
+		return optionContainer.getOption(OPTIONS.TOLERANT.toString()).getBooleanValue(); 
 	}
 	
 	@Override

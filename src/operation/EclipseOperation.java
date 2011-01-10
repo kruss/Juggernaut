@@ -55,12 +55,12 @@ public class EclipseOperation extends AbstractOperation {
 		ArrayList<String> arguments = new ArrayList<String>();
 		arguments.add("-data \""+parent.getFolder()+"\"");
 		arguments.add("-cdt.builder");
-		if(configuration.getLogConfig().getLogLevel(Module.COMMAND) == Level.DEBUG){
-			arguments.add("-cdt.verbose");
-		}
 		arguments.add("-cdt.import");
 		if(config.isCleanBuild()){
 			arguments.add("-cdt.clean");
+		}
+		if(config.isTolerantBuild()){
+			arguments.add("-cdt.tolerant");
 		}
 		for(String pattern : config.getBuildPattern()){
 			int index = pattern.indexOf("|");
@@ -73,6 +73,9 @@ public class EclipseOperation extends AbstractOperation {
 			if(index > 0 && index < pattern.length()-1){
 				arguments.add("-cdt.exclude \""+pattern+"\"");
 			}
+		}
+		if(configuration.getLogConfig().getLogLevel(Module.COMMAND) == Level.DEBUG){
+			arguments.add("-cdt.verbose");
 		}
 		
 		CommandTask task = new CommandTask(
