@@ -111,7 +111,7 @@ public class HttpServer implements ISystemComponent, IHttpServer {
 	 */
 	public HttpResponse serve(String uri, String method, Properties header, Properties parms)
 	{
-		logger.log(Module.HTTP, method+" '"+uri+"' ");
+		logger.debug(Module.HTTP, method+" '"+uri+"' ");
 
 		Enumeration e = header.propertyNames();
 		while ( e.hasMoreElements())

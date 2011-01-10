@@ -45,7 +45,6 @@ public class Application extends AbstractSystem {
 		add(runtime);
 		ui = new UISystem();
 		add(ui);
-
 		super.init();
 	}
 

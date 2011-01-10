@@ -34,7 +34,7 @@ public class ConnectionTest extends Task {
 		try{
 			RevisionInfo info = client.getInfo(url);
 			status = Status.SUCCEED;
-			message = "Url: "+url+"\nRevision: "+info.toString();
+			message = url+"\n"+info.toString();
 		}catch(Exception e){
 			status = Status.FAILURE;
 			message = (e.getMessage() != null) ? e.getMessage() : e.getClass().getSimpleName();

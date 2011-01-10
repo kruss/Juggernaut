@@ -53,13 +53,13 @@ implements
 	}
 	
 	public enum GROUPS {
-		GENERAL, NOTIFICATION, LOGGING
+		GENERAL, NOTIFICATION, LOGGING, EXTRA
 	}
 	
 	public enum OPTIONS {
-		SCHEDULER, SCHEDULER_INTERVAL, MAXIMUM_AGENTS, MAXIMUM_HISTORY, WEBSERVER, HTTP_PORT, WINDOWS_UNLOCKER, 
+		SCHEDULER, SCHEDULER_INTERVAL, MAXIMUM_AGENTS, MAXIMUM_HISTORY, WEBSERVER, HTTP_PORT, 
 		NOTIFICATION, ADMINISTRATORS, SMTP_SERVER, SMTP_ADDRESS, 
-		LOGGING
+		LOGGING, UNLOCKER
 	}
 	
 	public enum State { CLEAN, DIRTY }
@@ -113,11 +113,6 @@ implements
 				Type.INTEGER, 80, 1, 1024
 		));
 		optionContainer.getOptions().add(new Option(
-				GROUPS.GENERAL.toString(),
-				OPTIONS.WINDOWS_UNLOCKER.toString(), "Unlocker Command to free locked Ressource on Windows", 
-				Type.TEXT, ""
-		));
-		optionContainer.getOptions().add(new Option(
 				GROUPS.NOTIFICATION.toString(),
 				OPTIONS.NOTIFICATION.toString(), "Perform eMail-notifications",
 				Type.BOOLEAN, false
@@ -144,6 +139,11 @@ implements
 					Type.TEXT_LIST, StringTools.enum2strings(Level.class), Level.NORMAL.toString()
 			));
 		}
+		optionContainer.getOptions().add(new Option(
+				GROUPS.EXTRA.toString(),
+				OPTIONS.UNLOCKER.toString(), "Command to free locked ressources", 
+				Type.TEXT, ""
+		));
 		
 		launchConfigs = new ArrayList<LaunchConfig>();
 		listeners = new ArrayList<IChangedListener>();
@@ -204,11 +204,6 @@ implements
 		return optionContainer.getOption(OPTIONS.HTTP_PORT.toString()).getIntegerValue(); 
 	}
 	
-	/** external unlocker for locked ressources on windows */
-	public String getWindowsUnlocker(){
-		return optionContainer.getOption(OPTIONS.WINDOWS_UNLOCKER.toString()).getStringValue();
-	}
-	
 	@Override
 	public boolean isNotification(){
 		return optionContainer.getOption(OPTIONS.NOTIFICATION.toString()).getBooleanValue();
@@ -234,6 +229,11 @@ implements
 		
 		String value = optionContainer.getOption(OPTIONS.ADMINISTRATORS.toString()).getStringValue();
 		return StringTools.split(value, ", ");
+	}
+	
+	/** external unlocker for locked ressources */
+	public String getUnlocker(){
+		return optionContainer.getOption(OPTIONS.UNLOCKER.toString()).getStringValue();
 	}
 	
 	public void addListener(IChangedListener listener){ listeners.add(listener); }

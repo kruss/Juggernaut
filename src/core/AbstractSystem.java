@@ -2,8 +2,12 @@ package core;
 
 import java.util.ArrayList;
 
+import util.UiTools;
+
 public class AbstractSystem implements ISystemComponent {
 
+	public static final Exception ABOARDING = new Exception("aboarding");
+	
 	private ArrayList<ISystemComponent> components;
 	private boolean init;
 	
@@ -28,8 +32,20 @@ public class AbstractSystem implements ISystemComponent {
 		
 		for(int i=0; i<components.size(); i++){
 			ISystemComponent component = components.get(i);
-			out("INIT: "+(getClass().getSimpleName())+"::"+component.getClass().getSimpleName());
-			component.init();
+			String name = (getClass().getSimpleName())+"::"+component.getClass().getSimpleName();
+			print("INIT: "+name);
+			try{
+				component.init();
+			}catch(Exception e){
+				if(e != ABOARDING){
+					error(e);
+					if(!UiTools.confirmDialog(name+" Error on INIT!\nContinue anyway ?", e)){
+						throw ABOARDING;
+					}
+				}else{
+					throw e;
+				}
+			}
 		}
 		init = true;
 	}
@@ -40,12 +56,27 @@ public class AbstractSystem implements ISystemComponent {
 		init = false;
 		for(int i=components.size()-1; i>=0; i--){
 			ISystemComponent component = components.get(i);
-			out("SHUTDOWN: "+(getClass().getSimpleName())+"::"+component.getClass().getSimpleName());
-			component.shutdown();
+			String name = (getClass().getSimpleName())+"::"+component.getClass().getSimpleName();
+			print("SHUTDOWN: "+name);
+			try{
+				component.shutdown();
+			}catch(Exception e){
+				if(e != ABOARDING){
+					error(e);
+					UiTools.errorDialog(name+" Error on SHUTDOWN!", e);
+					throw ABOARDING;
+				}else{
+					throw e;
+				}
+			}
 		}
 	}
 	
-	private void out(String text){
+	private void print(String text){
 		System.out.println(text);
+	}
+	
+	private void error(Exception e) {
+		e.printStackTrace();
 	}
 }
