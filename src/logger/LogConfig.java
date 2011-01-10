@@ -15,10 +15,6 @@ public class LogConfig implements ILogConfig, IOptionInitializer {
 	public enum GROUPS {
 		LOGGING
 	}
-	
-	public enum OPTIONS { 
-		LOGGING
-	}
 
 	private OptionContainer optionContainer;
 	private transient boolean dirty;
