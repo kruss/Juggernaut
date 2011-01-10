@@ -39,7 +39,7 @@ public class HeapManager implements ISystemComponent, IChangeable {
 	@Override
 	public void shutdown() throws Exception {
 		if (updater != null) {
-			updater.syncKill();
+			updater.syncKill(1000);
 			updater = null;
 		}
 	}

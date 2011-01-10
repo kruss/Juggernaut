@@ -12,7 +12,6 @@ import util.IChangeListener;
 import util.UiTools;
 
 import core.Configuration;
-import core.History;
 import core.ISystemComponent;
 
 public class PreferencePanel extends JPanel implements ISystemComponent, IChangeListener {
@@ -22,20 +21,17 @@ public class PreferencePanel extends JPanel implements ISystemComponent, IChange
 	private Configuration configuration;
 	private ScheduleManager scheduleManager;
 	private IHttpServer httpServer;
-	private History history;
 	
 	private OptionEditor optionEditor;
 	
 	public PreferencePanel(
 			Configuration configuration,
 			ScheduleManager scheduleManager,
-			IHttpServer httpServer,
-			History history)
+			IHttpServer httpServer)
 	{
 		this.configuration = configuration;
 		this.scheduleManager = scheduleManager;
 		this.httpServer = httpServer;
-		this.history = history;
 		
 		optionEditor = new OptionEditor();
 		
@@ -70,10 +66,14 @@ public class PreferencePanel extends JPanel implements ISystemComponent, IChange
 	
 	private void applyChanges(Configuration configuration) {
 		
-		if(configuration.isScheduler()){
-			scheduleManager.startScheduler(0);
-		}else{
-			scheduleManager.stopScheduler();
+		try{
+			if(configuration.isScheduler()){
+				scheduleManager.startScheduler(0);
+			}else{
+				scheduleManager.stopScheduler();
+			}
+		}catch(Exception e){
+			UiTools.errorDialog(e);
 		}
 		
 		try{
@@ -85,7 +85,5 @@ public class PreferencePanel extends JPanel implements ISystemComponent, IChange
 		}catch(Exception e){
 			UiTools.errorDialog(e);
 		}
-		
-		history.createIndex();
 	}
 }

@@ -37,11 +37,11 @@ public class TaskManager implements ISystemComponent, IChangeable {
 	@Override
 	public void shutdown() throws Exception {
 
-		timeout.syncKill();
+		timeout.syncKill(1000);
 		synchronized(entries){
 			for(int i=entries.size()-1; i>=0; i--){
 				RegisteredTask entry = entries.get(i);
-				entry.task.syncKill();
+				entry.task.syncKill(1000);
 				entries.remove(entry);
 			}
 		}
@@ -58,6 +58,10 @@ public class TaskManager implements ISystemComponent, IChangeable {
 	
 	public void debug(String text) {
 		logger.debug(Module.TASK, text);
+	}
+	
+	public void error(Exception e) {
+		logger.error(Module.TASK, e);
 	}
 	
 	/** register a task for timeout control */
@@ -107,7 +111,7 @@ public class TaskManager implements ISystemComponent, IChangeable {
 				RegisteredTask entry = entries.get(i);
 				if(entry.task.isExpired()){
 						logger.log(Module.TASK, "Task Timeout ["+entry.task.getName()+"]");
-						entry.task.asyncKill();
+						entry.task.asyncKill(1000);
 						entries.remove(entry);
 						notifyListeners();
 				}

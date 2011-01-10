@@ -39,7 +39,7 @@ public abstract class Task extends Thread {
 	
 	public void run(){
 		
-		taskManager.debug("Start ["+getName()+"]");
+		taskManager.debug("Start\t["+getName()+"]");
 		if(taskManager != null){
 			taskManager.register(this);
 		}
@@ -51,9 +51,9 @@ public abstract class Task extends Thread {
 				runSingleTask();
 			}
 		}catch(InterruptedException e){ 
-			taskManager.debug("Interrupt ["+getName()+"]");
+			taskManager.debug("Interrupt\t["+getName()+"]");
 		}finally{
-			taskManager.debug("Stopp ["+getName()+"]");
+			taskManager.debug("Stopp\t["+getName()+"]");
 			if(taskManager != null){
 				taskManager.deregister(this);
 			}
@@ -64,7 +64,7 @@ public abstract class Task extends Thread {
 		
 		while(isCyclic() && !isInterrupted()){
 			runSingleTask();
-			taskManager.debug("Idle ["+getName()+"]");
+			taskManager.debug("Idle\t["+getName()+"]");
 			Thread.sleep(cycle);
 		}
 	}
@@ -76,7 +76,7 @@ public abstract class Task extends Thread {
 			taskManager.status(this, true);
 		}
 		try{
-			taskManager.debug("Run ["+getName()+"]");
+			taskManager.debug("Run\t["+getName()+"]");
 			runTask();
 		}finally{
 			if(taskManager != null){
@@ -88,12 +88,6 @@ public abstract class Task extends Thread {
 	
 	protected abstract void runTask();
 	
-	public void syncRun(long delay, long timeout) throws InterruptedException {
-		
-		asyncRun(delay, timeout);
-		join();
-	}
-	
 	public void asyncRun(long delay, long timeout){
 		
 		this.delay = delay;
@@ -101,18 +95,35 @@ public abstract class Task extends Thread {
 		start();
 	}
 	
-	public void syncKill(){
+	public void syncRun(long delay, long timeout) throws InterruptedException {
 		
-		asyncKill();
-		while(isAlive()){ 
-			SystemTools.sleep(50);
-		}
+		asyncRun(delay, timeout);
+		join();
 	}
 	
-	public void asyncKill(){
+	@SuppressWarnings("deprecation")
+	public void asyncKill(final long timeout){
 		
-		if(isAlive()){
-			interrupt();
-		}
+		Thread thread = new Thread(new Runnable(){
+			@Override
+			public void run() {
+				try{
+					if(isAlive()){ interrupt(); }
+					if(timeout > 0){
+						Thread.sleep(timeout);
+						if(isAlive()){ stop(); }
+					}
+				}catch(Exception e){
+					taskManager.error(e);
+				}
+			}
+		});
+		thread.start();
+	}
+	
+	public void syncKill(long timeout) throws InterruptedException {
+		
+		asyncKill(timeout);
+		join();
 	}
 }

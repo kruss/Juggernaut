@@ -53,54 +53,66 @@ public class LaunchManager implements ISystemComponent, ILifecycleListener {
 	public void shutdown() throws Exception {
 		for(int i=agents.size()-1; i>=0; i--){
 			LaunchAgent agent = agents.get(i);
-			agent.syncKill();
+			agent.syncKill(agent.getOperations().size() * 1000);
 		}
 	}
 	
-	public synchronized LaunchStatus runLaunch(LaunchAgent launch) {
+	public LaunchStatus runLaunch(LaunchAgent launch) {
 		
-		if(isReady() || launch.getTrigger().equals(AbstractTrigger.USER_TRIGGER)){
-			if(!isRunning(launch.getConfig().getId())){
-				agents.add(launch);
-				launch.addListener(this);
-				launch.asyncRun(0, launch.getConfig().getTimeout());
-				return new LaunchStatus("Launch started", true);
+		synchronized(agents){
+			if(isReady() || launch.getTrigger().equals(AbstractTrigger.USER_TRIGGER)){
+				if(!isRunning(launch.getConfig().getId())){
+					agents.add(launch);
+					launch.addListener(this);
+					launch.asyncRun(0, launch.getConfig().getTimeout());
+					return new LaunchStatus("Launch started", true);
+				}else{
+					return new LaunchStatus("Already running", false);
+				}
 			}else{
-				return new LaunchStatus("Already running", false);
+				return new LaunchStatus("Maximum tasks", false);
 			}
-		}else{
-			return new LaunchStatus("Maximum tasks", false);
 		}
 	}
 	
 	public void stopLaunch(String id) {
 		
-		LaunchAgent agent = getAgent(id);
-		if(agent != null){ agent.asyncKill(); }
+		LaunchAgent agent = getLaunch(id);
+		if(agent != null){ 
+			agent.asyncKill(agent.getOperations().size() * 1000); 
+		}
 	}
 	
-	public synchronized boolean isBusy() {
-		return agents.size() > 0;
-	}
-	
-	public synchronized boolean isReady() {
-		return agents.size() < configuration.getMaximumAgents();
-	}
-	
-	private synchronized boolean isRunning(String id) {
+	public boolean isBusy() {
 		
-		LaunchAgent agent = getAgent(id);
+		synchronized(agents){
+			return agents.size() > 0;
+		}
+	}
+	
+	public boolean isReady() {
+		
+		synchronized(agents){
+			return agents.size() < configuration.getMaximumAgents();
+		}
+	}
+	
+	private boolean isRunning(String id) {
+		
+		LaunchAgent agent = getLaunch(id);
 		return agent != null;
 	}
 	
-	private synchronized LaunchAgent getAgent(String id) {
+	private LaunchAgent getLaunch(String id) {
 		
-		for(LaunchAgent agent : agents){
-			if(agent.getConfig().getId().equals(id)){
-				return agent;
+		synchronized(agents){
+			for(LaunchAgent agent : agents){
+				if(agent.getConfig().getId().equals(id)){
+					return agent;
+				}
 			}
+			return null;
 		}
-		return null;
 	}
 
 	@Override
@@ -113,7 +125,9 @@ public class LaunchManager implements ISystemComponent, ILifecycleListener {
 		}
 		if(lifecycle == Lifecycle.FINISH){
 			setStatus("Launch ["+agent.getConfig().getName()+"] finished at "+date);
-			agents.remove(agent);
+			synchronized(agents){
+				agents.remove(agent);
+			}
 		}
 		notifyListeners();
 	}
@@ -155,17 +169,19 @@ public class LaunchManager implements ISystemComponent, ILifecycleListener {
 	
 	public ArrayList<LaunchInfo> getLaunchInfo(){
 		
-		ArrayList<LaunchInfo> infos = new ArrayList<LaunchInfo>();
-		for(LaunchAgent agent : agents){
-			infos.add(new LaunchInfo(agent));
+		synchronized(agents){
+			ArrayList<LaunchInfo> infos = new ArrayList<LaunchInfo>();
+			for(LaunchAgent agent : agents){
+				infos.add(new LaunchInfo(agent));
+			}
+			Collections.sort(infos);
+			return infos;
 		}
-		Collections.sort(infos);
-		return infos;
 	}
 	
 	public ILogProvider getLoggingProvider(String id){
 		
-		LaunchAgent agent = getAgent(id);
+		LaunchAgent agent = getLaunch(id);
 		if(agent != null){
 			return agent.getLogger();
 		}else{

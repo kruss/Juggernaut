@@ -111,7 +111,7 @@ public class StatusManager {
 
 		String color = "black";
 		if(status == Status.UNDEFINED){
-			color = "yellow";
+			color = "orange";
 		}else if(status == Status.SUCCEED){
 			color = "green";
 		}else if(status == Status.ERROR){

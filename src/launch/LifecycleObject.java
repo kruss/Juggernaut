@@ -65,7 +65,7 @@ public abstract class LifecycleObject extends Task {
 		}finally{
 			statusManager.setEnd(new Date());
 			finish();
+			notifyListeners(Lifecycle.FINISH);
 		}
-		notifyListeners(Lifecycle.FINISH);
 	}
 }

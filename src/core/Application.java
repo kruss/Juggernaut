@@ -205,8 +205,7 @@ public class Application extends AbstractSystem {
 			preferencePanel = new PreferencePanel(
 					persistence.configuration, 
 					runtime.scheduleManager, 
-					runtime.httpServer,
-					persistence.history);
+					runtime.httpServer);
 			add(preferencePanel);
 			window = new Window(
 					core.logger, 

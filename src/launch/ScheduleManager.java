@@ -94,7 +94,7 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 	}
 	
 	/** run cyclic scheduler */
-	public void startScheduler(long delay){ 
+	public void startScheduler(long delay) throws Exception { 
 		if(scheduler == null){
 			scheduler = new SchedulerTask(true);
 			scheduler.asyncRun(delay, SchedulerTask.TIMEOUT); 
@@ -103,9 +103,9 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 	}
 	
 	/** stop cyclic scheduler */
-	public void stopScheduler(){ 
+	public void stopScheduler() throws Exception { 
 		if(scheduler != null){
-			scheduler.syncKill();
+			scheduler.syncKill(1000);
 			scheduler = null;
 			notifyListeners();
 		}

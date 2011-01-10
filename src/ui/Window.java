@@ -8,6 +8,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -162,7 +163,7 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 		}
 	}
 	
-	private synchronized void setInfo() {
+	private void setInfo() {
 		
 		ArrayList<String> infos = new ArrayList<String>();
 		infos.add("Scheduler "+(scheduleManager.isRunning() ? "ON" : "OFF"));

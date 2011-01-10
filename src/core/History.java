@@ -139,8 +139,8 @@ public class History implements ISystemComponent {
 		createIndex();
 	}
 
-	/** recreate the main index-page */
-	public void createIndex(){
+	/** creates the main index-page */
+	private void createIndex(){
 		
 		HistoryPage page = new HistoryPage(this, getIndexPath());
 		try{

@@ -15,6 +15,7 @@ import java.util.StringTokenizer;
 import java.util.TimeZone;
 
 import util.IChangeListener;
+import util.Task;
 
 import core.FileManager;
 import core.TaskManager;
@@ -26,25 +27,29 @@ import logger.ILogConfig.Module;
 public class HttpServer implements IHttpServer {
 
 	private IHttpConfig config;
+	private TaskManager taskManager;
 	private File root;
 	private ServerSocket serverSocket;
-	private Thread serverThread; 
+	private ServerThread serverThread; 
 	private Logger logger;
-	private boolean running;
 	private ArrayList<IChangeListener> listeners;
 	
 	@Override
 	public IHttpConfig getConfig(){ return config; }
 	
 	@Override
-	public boolean isRunning(){ return running; }
+	public boolean isRunning(){ return serverThread != null; }
 	
-	public HttpServer(IHttpConfig config, FileManager fileManager, TaskManager taskManager, Logger logger)
-	{
+	public HttpServer(
+			IHttpConfig config, 
+			FileManager fileManager, 
+			TaskManager taskManager, 
+			Logger logger
+	){
 		this.config = config;
 		this.logger = logger;
+		this.taskManager = taskManager;
 		root = fileManager.getHistoryFolder();
-		running = false;
 		listeners = new ArrayList<IChangeListener>();
 	}
 	
@@ -71,7 +76,7 @@ public class HttpServer implements IHttpServer {
 	
 	@Override
 	public void startServer() throws Exception {
-		if(!running){
+		if(serverThread == null){
 			startHttpServer();
 			notifyListeners();
 		}
@@ -79,7 +84,7 @@ public class HttpServer implements IHttpServer {
 
 	@Override
 	public void stopServer() throws Exception {
-		if(running){
+		if(serverThread != null){
 			stopHttpServer();
 			notifyListeners();
 		}
@@ -91,28 +96,36 @@ public class HttpServer implements IHttpServer {
 		logger.log(Module.HTTP, "Startup HTTP - Port: "+port);
 		serverSocket = new ServerSocket(port);
 		final HttpServer instance = this;
-		running = true;
-		serverThread = new Thread(new Runnable(){
-			public void run(){
-				while(running){
-					try{
-						new HttpSession( instance, serverSocket.accept());
-					}catch(IOException e){
-						logger.debug(Module.HTTP, e.getMessage());
-					}
-				}
-			}
-		});
-		serverThread.setDaemon(true);
-		serverThread.start();
+		serverThread = new ServerThread(instance);
+		serverThread.asyncRun(0, 0);
 	}
 	
 	private void stopHttpServer() throws Exception {
 		
 		logger.log(Module.HTTP, "Shutdown HTTP");
-		running = false;
 		serverSocket.close();
-		serverThread.join();
+		serverThread.syncKill(1000);
+		serverThread = null;
+	}
+	
+	private class ServerThread extends Task {
+
+		private HttpServer server;
+		
+		public ServerThread(HttpServer server) {
+			super("ServerThread", taskManager);
+			
+			this.server = server;
+			setCycle(100);
+		}
+		
+		protected void runTask() {
+			try{
+				new HttpSession(server, serverSocket.accept());
+			}catch(IOException e){
+				logger.debug(Module.HTTP, e.getMessage());
+			}
+		}
 	}
 	
 	/**
