@@ -170,10 +170,10 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 		infos.add("Scheduler "+(scheduleManager.isRunning() ? "ON" : "OFF"));
 		infos.add("Server "+(httpServer.isRunning() ? "ON" : "OFF"));
 		ArrayList<TaskInfo> tasks = taskManager.getInfo();
-		infos.add("Tasks "+tasks.size());
+		infos.add("Task "+tasks.size());
 		HeapStatus heap = heapManager.getHeapStatus();
 		long MB = 1024 * 1024;
-		infos.add("HEAP "+Math.round(heap.usedMemory / MB)+" / "+Math.round(heap.maxMemory / MB)+" MB");
+		infos.add("Heap "+Math.round(heap.usedMemory / MB)+"/"+Math.round(heap.maxMemory / MB));
 		infoLabel.setText(StringTools.join(infos, " | "));
 	}
 }
