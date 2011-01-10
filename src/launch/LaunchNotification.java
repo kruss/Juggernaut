@@ -39,11 +39,11 @@ public class LaunchNotification {
 		if(isStatusValid()){
 			boolean statusChanged = isStatusHashChanged();
 			if(statusChanged){
-				launch.getLogger().log(Module.SMTP, "Notification required (Status)");
+				launch.getLogger().log(Module.SMTP, "Notification required for Status");
 			}
 			boolean errorChanged = isErrorHashChanged();
 			if(errorChanged){
-				launch.getLogger().log(Module.SMTP, "Notification required (Errors)");
+				launch.getLogger().log(Module.SMTP, "Notification required for Errors");
 			}
 			if(statusChanged || errorChanged){
 				Notification notification = new Notification(history, smtpClient, httpServer, launch);
