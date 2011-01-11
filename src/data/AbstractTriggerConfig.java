@@ -55,6 +55,7 @@ public abstract class AbstractTriggerConfig implements IOptionInitializer {
 	@Override
 	public void initOptions(OptionContainer container) {}
 	
+	public void setId(String id){ this.id = id; }
 	public String getId(){ return id; }
 	
 	public OptionContainer getOptionContainer(){ return optionContainer; }

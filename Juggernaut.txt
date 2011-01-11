@@ -1,0 +1,17 @@
+
+	>>> JUGGERNAUT (0.1) <<<
+
+[11.01.2011 17:39:54] Juggernaut started at 11.01.2011 17:39:54
+[11.01.2011 17:40:00] delete: C:\Projekte\Juggernaut.git\Juggernaut\data\build\e86e21a5-7c11-4507-9b96-03a65c7eb2b7
+[11.01.2011 17:40:54] Checking schedules (4)
+[11.01.2011 17:40:54] Launch [sample2] trigger: Intervall initial run
+[11.01.2011 17:40:54] Launch [sample2] started at 11.01.2011 17:40:54
+[11.01.2011 17:40:54] Launch [sample] trigger: Intervall initial run
+[11.01.2011 17:40:54] Launch [sample] started at 11.01.2011 17:40:54
+[11.01.2011 17:40:54] (COMMAND) command: svn info svn://10.40.38.84:3690/cppdemo/trunk
+[11.01.2011 17:40:54] Launch [cppdemo] idle
+[11.01.2011 17:40:54] Launch [sample3] trigger: Intervall initial run
+[11.01.2011 17:40:54] Launch [sample3] started at 11.01.2011 17:40:54
+[11.01.2011 17:41:04] Launch [sample2] finished at 11.01.2011 17:41:04
+[11.01.2011 17:41:04] Launch [sample] finished at 11.01.2011 17:41:04
+[11.01.2011 17:41:04] Launch [sample3] finished at 11.01.2011 17:41:04

@@ -194,6 +194,12 @@ public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitialize
 		config.id = UUID.randomUUID().toString();
 		config.name = this.getName()+" (Copy)";
 		config.dirty = true;
+		for(AbstractOperationConfig operatioConfig : operations){
+			operatioConfig.setId(UUID.randomUUID().toString());
+		}
+		for(AbstractTriggerConfig triggerConfig : triggers){
+			triggerConfig.setId(UUID.randomUUID().toString());
+		}
 		return config;
 	}
 	
