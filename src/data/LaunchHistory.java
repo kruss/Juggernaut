@@ -39,9 +39,7 @@ public class LaunchHistory extends AbstractHistory {
 	public void init() throws Exception {
 		
 		start = launch.getStatusManager().getStart();
-		folder = 
-			fileManager.getHistoryFolderPath()+
-			File.separator+start.getTime();
+		folder = fileManager.getLaunchHistoryFolderPath(start);
 		logfile = folder+File.separator+Logger.OUTPUT_FILE;
 		
 		super.init();

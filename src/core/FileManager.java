@@ -2,6 +2,7 @@ package core;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 
 
 import logger.Logger;
@@ -80,6 +81,12 @@ public class FileManager implements ISystemComponent {
 	}
 	public File getLaunchFolder(String id){
 		return new File(getLaunchFolderPath(id));
+	}
+	public String getLaunchHistoryFolderPath(Date date) {
+		return getHistoryFolderPath()+File.separator+date.getTime();
+	}
+	public File getLaunchHistoryFolder(Date date){
+		return new File(getLaunchHistoryFolderPath(date));
 	}
 	
 	public boolean hasUnlocker() {

@@ -1,5 +1,7 @@
 package ui;
 
+import html.LaunchHistoryPage;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -33,6 +35,7 @@ import core.History.HistoryInfo;
 import util.DateTools;
 import util.FileTools;
 import util.IChangeListener;
+import util.SystemTools;
 import util.UiTools;
 
 public class HistoryPanel extends JPanel implements ISystemComponent, IChangeListener {
@@ -48,6 +51,8 @@ public class HistoryPanel extends JPanel implements ISystemComponent, IChangeLis
 	private JTextArea historyOutput;
 	private JButton emptyHistory;
 	private JButton deleteHistory;
+	private JButton historyFolder;
+	private JButton historyFile;
 	private JButton filterHistory;
 	
 	private ArrayList<HistoryInfo> entries;
@@ -104,12 +109,18 @@ public class HistoryPanel extends JPanel implements ISystemComponent, IChangeLis
 		emptyHistory.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){ emptyHistory(); }
 		});
-		
 		deleteHistory = new JButton(" Delete ");
 		deleteHistory.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){ deleteHistory(); }
 		});
-		
+		historyFolder = new JButton(" Folder ");
+		historyFolder.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){ historyFolder(); }
+		});
+		historyFile = new JButton(" File ");
+		historyFile.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){ historyFile(); }
+		});
 		filterHistory = new JButton(" Filter ");
 		filterHistory.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){ filterHistory(); }
@@ -119,6 +130,8 @@ public class HistoryPanel extends JPanel implements ISystemComponent, IChangeLis
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
 		buttonPanel.add(emptyHistory);
 		buttonPanel.add(deleteHistory);
+		buttonPanel.add(historyFolder);
+		buttonPanel.add(historyFile);
 		buttonPanel.add(filterHistory);
 		
 		historyPanel = new JScrollPane(historyTable);
@@ -204,7 +217,7 @@ public class HistoryPanel extends JPanel implements ISystemComponent, IChangeLis
 	private boolean matchesFilter(HistoryInfo entry) {
 		
 		if(!filter.isEmpty()){
-			if(!entry.name.toLowerCase().startsWith(filter.toLowerCase())){
+			if(!entry.name.toLowerCase().equals(filter.toLowerCase())){
 				return false;
 			}
 		}
@@ -246,9 +259,28 @@ public class HistoryPanel extends JPanel implements ISystemComponent, IChangeLis
 				historyOutput.setText("");
 			}
 			deleteHistory.setEnabled(true);
+			File folder = new File(entry.folder);
+			if(folder.isDirectory()){
+				historyFolder.setEnabled(true);
+			}else{
+				historyFolder.setEnabled(false);
+			}
+			File file = new File(getHistoryIndexPath(entry));
+			if(file.isFile()){
+				historyFile.setEnabled(true);
+			}else{
+				historyFile.setEnabled(false);
+			}
 		}else{
 			historyOutput.setText("");
 			deleteHistory.setEnabled(false);
+			historyFolder.setEnabled(false);
+			historyFile.setEnabled(false);
+		}
+		if(entries.size() > 0){
+			emptyHistory.setEnabled(true);
+		}else{
+			emptyHistory.setEnabled(false);
 		}
 	}
 	
@@ -290,6 +322,44 @@ public class HistoryPanel extends JPanel implements ISystemComponent, IChangeLis
 			history.delete(entry.historyId);
 			refreshUI(null);
 		}
+	}
+	
+	public void historyFolder(){
+		
+		HistoryInfo entry = getSelectedHistory();
+		if(entry != null){
+			File folder = new File(entry.folder);
+			if(folder.isDirectory()){
+				try{
+					String path = folder.getAbsolutePath();
+					logger.debug(Module.COMMON, "open: "+path);
+					SystemTools.openBrowser(path);
+				}catch(Exception e){
+					UiTools.errorDialog(e);
+				}
+			}
+		}
+	}
+	
+	public void historyFile(){
+		
+		HistoryInfo entry = getSelectedHistory();
+		if(entry != null){
+			File file = new File(getHistoryIndexPath(entry));
+			if(file.isFile()){
+				try{
+					String path = file.getAbsolutePath();
+					logger.debug(Module.COMMON, "open: "+path);
+					SystemTools.openBrowser(path);
+				}catch(Exception e){
+					UiTools.errorDialog(e);
+				}
+			}
+		}
+	}
+
+	private String getHistoryIndexPath(HistoryInfo entry) {
+		return entry.folder+File.separator+LaunchHistoryPage.OUTPUT_FILE;
 	}
 	
 	public void filterHistory(){

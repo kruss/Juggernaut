@@ -7,6 +7,7 @@ import html.OperationHistoryPage;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 
 import core.FileManager;
 
@@ -32,10 +33,8 @@ public class OperationHistory extends AbstractHistory {
 	
 	public void init() throws Exception {	
 		
-		folder = 
-			fileManager.getHistoryFolderPath()+
-			File.separator+operation.getParent().getStatusManager().getStart().getTime()+
-			File.separator+id;
+		Date start = operation.getParent().getStatusManager().getStart();
+		folder = fileManager.getLaunchHistoryFolderPath(start)+File.separator+id;
 		super.init();
 	}
 	
