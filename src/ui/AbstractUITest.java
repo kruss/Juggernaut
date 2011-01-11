@@ -8,15 +8,10 @@ import data.IOptionDelegate;
 
 public abstract class AbstractUITest implements IOptionDelegate {
 	
-	protected static final Exception CANCEL = new Exception("canceled");
-	
 	protected Logger logger;
-	protected Status status;
 	
 	public AbstractUITest(Logger logger){
-		
 		this.logger = logger;
-		status = Status.UNDEFINED;
 	}
 
 	@Override
@@ -26,23 +21,19 @@ public abstract class AbstractUITest implements IOptionDelegate {
 	public void perform(String content) {
 
 		logger.log(Module.COMMON, getClass().getSimpleName()+(!content.isEmpty() ? " ("+content+")" : ""));
-		String message = "";
+		TestStatus result = null;
 		try{
-			message = performTest(content);
-			status = Status.SUCCEED;
+			result = performTest(content);
 		}catch(Exception e){
-			if(e == CANCEL){
-				message = e.getMessage();
-				status = Status.CANCEL;
-			}else{
-				message = e.getClass().getSimpleName()+": "+e.getMessage();
-				status = Status.ERROR;
-				logger.error(Module.COMMON, e);
-			}
+			result = new TestStatus(Status.ERROR, e.getClass().getSimpleName()+": "+e.getMessage());
+			logger.error(Module.COMMON, e);
 		}finally{
-			String info = getClass().getSimpleName()+" - "+status.toString()+"\n\n"+message;
-			if(status != Status.CANCEL){
-				if(status == Status.SUCCEED){
+			String info = 
+				getClass().getSimpleName()+" - "+
+				result.status.toString()+"\n\n"+
+				result.message;
+			if(result.status != Status.CANCEL){
+				if(result.status == Status.SUCCEED){
 					UiTools.infoDialog(info);
 				}else{
 					UiTools.errorDialog(info);
@@ -51,6 +42,17 @@ public abstract class AbstractUITest implements IOptionDelegate {
 		}
 	}
 
-	/** perform test returning a feedback on success or throwing exception */
-	protected abstract String performTest(String content) throws Exception;
+	protected abstract TestStatus performTest(String content) throws Exception;
+	
+	protected class TestStatus {
+		
+		public Status status;
+		public String message;
+		
+		public TestStatus(Status status, String message){
+			
+			this.status = status;
+			this.message = message;
+		}
+	}
 }

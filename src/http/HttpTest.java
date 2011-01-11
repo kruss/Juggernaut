@@ -2,6 +2,7 @@ package http;
 
 import ui.AbstractUITest;
 import util.SystemTools;
+import launch.StatusManager.Status;
 import logger.Logger;
 
 public class HttpTest extends AbstractUITest {
@@ -17,18 +18,17 @@ public class HttpTest extends AbstractUITest {
 	public String getName(){ return "Test"; }
 	
 	@Override
-	protected String performTest(String content) throws Exception {
+	protected TestStatus performTest(String port) throws Exception {
 	
 		if(config.isHttpServer()){
 			
 			String host = SystemTools.getHostName();
-			int port = new Integer(content).intValue();
 			String url = "http://"+host+":"+port;
 			
-			SystemTools.openBrowser(url);
-			return "Browser: "+url;
+			SystemTools.openBrowser(url);		
+			return new TestStatus(Status.SUCCEED, "Browser: "+url);
 		}else{
-			throw CANCEL;
+			return new TestStatus(Status.ERROR, "HTTP OFF");
 		}
 	}
 }

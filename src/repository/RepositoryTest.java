@@ -15,15 +15,13 @@ public class RepositoryTest extends AbstractUITest {
 	}
 
 	@Override
-	protected String performTest(String content) throws Exception {
+	protected TestStatus performTest(String url) throws Exception {
 		
-		String url = content;
-		if(url.isEmpty()){
-			throw new Exception("Missing URL");
+		if(!url.isEmpty()){			
+			RevisionInfo info = client.getInfo(url);
+			return new TestStatus(Status.SUCCEED, info.toString());
+		}else{
+			return new TestStatus(Status.ERROR, "Missing URL");
 		}
-		
-		RevisionInfo info = client.getInfo(url);
-		status = Status.SUCCEED;
-		return info.toString();
 	}
 }

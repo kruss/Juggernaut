@@ -1,6 +1,7 @@
 package smtp;
 
 import core.Constants;
+import launch.StatusManager.Status;
 import logger.Logger;
 import ui.AbstractUITest;
 import util.UiTools;
@@ -15,22 +16,25 @@ public class SmtpTest extends AbstractUITest {
 	}
 
 	@Override
-	protected String performTest(String content) throws Exception {
+	protected TestStatus performTest(String server) throws Exception {
 		
 		if(client.isReady()){
+			
 			String address = UiTools.inputDialog("Send Test-Mail:", "");
 			if(address != null && !address.isEmpty()){
+				
 				Mail mail = new Mail("Test");
 				mail.from = client.getConfig().getSmtpAddress();
 				mail.to.add(address);
 				mail.content = "Send by "+Constants.APP_NAME+"!";
+				
 				client.send(mail, logger);
-				return "Mail send to: "+address;
+				return new TestStatus(Status.SUCCEED, "Mail send to: "+address);
 			}else{
-				throw CANCEL;
+				return new TestStatus(Status.CANCEL, "cancelded");
 			}
 		}else{
-			throw new Exception("Client not ready");
+			return new TestStatus(Status.ERROR, "Client not ready");
 		}
 	}
 }
