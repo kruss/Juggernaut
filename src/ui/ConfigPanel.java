@@ -58,7 +58,7 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 	private JComboBox launchCombo;
 	private SelectionListener selectionListener;
 	private JButton addLaunch;
-	private JButton removeLaunch;
+	private JButton deleteLaunch;
 	private JButton renameLaunch;
 	private JButton cloneLaunch;
 	private JButton launchFolder;
@@ -102,9 +102,9 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 		addLaunch.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){ addLaunch(); }
 		});
-		removeLaunch = new JButton(" Remove ");
-		removeLaunch.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){ removeLaunch(); }
+		deleteLaunch = new JButton(" Delete ");
+		deleteLaunch.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){ deleteLaunch(); }
 		});
 		renameLaunch = new JButton(" Rename ");
 		renameLaunch.addActionListener(new ActionListener(){
@@ -126,7 +126,7 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 		buttonPanel.add(addLaunch); 
-		buttonPanel.add(removeLaunch); 
+		buttonPanel.add(deleteLaunch); 
 		buttonPanel.add(renameLaunch);
 		buttonPanel.add(cloneLaunch);
 		buttonPanel.add(launchFolder);
@@ -207,10 +207,10 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 			LaunchConfig launchConfig = configuration.getLaunchConfigs().get(index);
 			
 			if(!launchManager.isRunning(launchConfig.getId())){
-				removeLaunch.setEnabled(true);
+				deleteLaunch.setEnabled(true);
 				
 			}else{
-				removeLaunch.setEnabled(false);
+				deleteLaunch.setEnabled(false);
 			}
 			renameLaunch.setEnabled(true);
 			cloneLaunch.setEnabled(true);
@@ -227,7 +227,7 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 			}
 			tabPanel.setEnabled(true);
 		}else{
-			removeLaunch.setEnabled(false);
+			deleteLaunch.setEnabled(false);
 			renameLaunch.setEnabled(false);
 			cloneLaunch.setEnabled(false);
 			launchFolder.setEnabled(false);
@@ -292,10 +292,10 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 		}
 	}
 	
-	private void removeLaunch(){
+	private void deleteLaunch(){
 		
 		int index = launchCombo.getSelectedIndex();
-		if(index >= 0 && UiTools.confirmDialog("Remove Launch ?")){
+		if(index >= 0 && UiTools.confirmDialog("Delete Launch ?")){
 			
 			LaunchConfig config = configuration.getLaunchConfigs().get(index);
 			File folder = fileManager.getLaunchFolder(config.getId());

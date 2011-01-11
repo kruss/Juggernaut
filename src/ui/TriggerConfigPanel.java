@@ -39,7 +39,7 @@ public class TriggerConfigPanel extends JPanel implements IChangeListener {
 	private JComboBox triggerCombo;
 	private JList triggerList;
 	private JButton addTrigger;
-	private JButton removeTrigger;
+	private JButton deleteTrigger;
 	private JButton moveTriggerUp;
 	private JButton moveTriggerDown;
 	private AbstractTriggerConfig currentConfig;
@@ -69,9 +69,9 @@ public class TriggerConfigPanel extends JPanel implements IChangeListener {
 		addTrigger.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){ addTrigger(); }
 		});
-		removeTrigger = new JButton(" Remove ");
-		removeTrigger.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){ removeTrigger(); }
+		deleteTrigger = new JButton(" Remove ");
+		deleteTrigger.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){ deleteTrigger(); }
 		});
 		moveTriggerUp = new JButton(" Up ");
 		moveTriggerUp.addActionListener(new ActionListener(){
@@ -85,7 +85,7 @@ public class TriggerConfigPanel extends JPanel implements IChangeListener {
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 		buttonPanel.add(addTrigger); 
-		buttonPanel.add(removeTrigger); 
+		buttonPanel.add(deleteTrigger); 
 		buttonPanel.add(moveTriggerUp); 
 		buttonPanel.add(moveTriggerDown);
 		
@@ -177,9 +177,9 @@ public class TriggerConfigPanel extends JPanel implements IChangeListener {
 		int listIndex = triggerList.getSelectedIndex();
 		int listSize = triggerList.getModel().getSize();
 		if(listIndex >= 0){
-			removeTrigger.setEnabled(true);
+			deleteTrigger.setEnabled(true);
 		}else{
-			removeTrigger.setEnabled(false);
+			deleteTrigger.setEnabled(false);
 		}
 		if(listIndex >=1){
 			moveTriggerUp.setEnabled(true);
@@ -249,10 +249,10 @@ public class TriggerConfigPanel extends JPanel implements IChangeListener {
 		}
 	}
 	
-	private void removeTrigger(){
+	private void deleteTrigger(){
 		
 		int listIndex = triggerList.getSelectedIndex();
-		if(listIndex >= 0 && UiTools.confirmDialog("Remove Trigger ?")){
+		if(listIndex >= 0 && UiTools.confirmDialog("Delete Trigger ?")){
 			LaunchConfig launchConfig = parent.getCurrentConfig();
 			launchConfig.getTriggerConfigs().remove(listIndex);
 			launchConfig.setDirty(true);

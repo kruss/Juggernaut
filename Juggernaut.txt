@@ -1,7 +1,0 @@
-
-	>>> JUGGERNAUT (0.1) <<<
-
-[11.01.2011 16:10:47] Juggernaut started at 11.01.2011 16:10:47
-[11.01.2011 16:11:04] delete: C:\Projekte\Juggernaut.git\Juggernaut\data\build\9b645ec7-6250-414a-b424-a2a0b1d045cf
-[11.01.2011 16:11:21] Launch [cppdemo] started at 11.01.2011 16:11:21
-[11.01.2011 16:12:01] Launch [cppdemo] finished at 11.01.2011 16:12:01

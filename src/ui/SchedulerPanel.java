@@ -251,7 +251,7 @@ public class SchedulerPanel extends JPanel implements ISystemComponent, IChangeL
 	public void stopLaunch(){
 		
 		LaunchInfo selected = getSelectedLaunch();
-		if(selected != null && UiTools.confirmDialog("Stop launch ["+selected.name+"]?")){
+		if(selected != null && UiTools.confirmDialog("Stop launch [ "+selected.name+" ]?")){
 			launchManager.stopLaunch(selected.id);
 		}
 	}

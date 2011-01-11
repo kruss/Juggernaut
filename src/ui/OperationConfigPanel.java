@@ -41,7 +41,7 @@ public class OperationConfigPanel extends JPanel implements IChangeListener {
 	private JComboBox operationCombo;
 	private JList operationList;
 	private JButton addOperation;
-	private JButton removeOperation;
+	private JButton deleteOperation;
 	private JButton moveOperationUp;
 	private JButton moveOperationDown;
 	private AbstractOperationConfig currentConfig;
@@ -71,9 +71,9 @@ public class OperationConfigPanel extends JPanel implements IChangeListener {
 		addOperation.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){ addOperation(); }
 		});
-		removeOperation = new JButton(" Remove ");
-		removeOperation.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){ removeOperation(); }
+		deleteOperation = new JButton(" Delete ");
+		deleteOperation.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){ deleteOperation(); }
 		});
 		moveOperationUp = new JButton(" Up ");
 		moveOperationUp.addActionListener(new ActionListener(){
@@ -87,7 +87,7 @@ public class OperationConfigPanel extends JPanel implements IChangeListener {
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 		buttonPanel.add(addOperation); 
-		buttonPanel.add(removeOperation); 
+		buttonPanel.add(deleteOperation); 
 		buttonPanel.add(moveOperationUp); 
 		buttonPanel.add(moveOperationDown);
 		
@@ -179,9 +179,9 @@ public class OperationConfigPanel extends JPanel implements IChangeListener {
 		int listIndex = operationList.getSelectedIndex();
 		int listSize = operationList.getModel().getSize();
 		if(listIndex >= 0){
-			removeOperation.setEnabled(true);
+			deleteOperation.setEnabled(true);
 		}else{
-			removeOperation.setEnabled(false);
+			deleteOperation.setEnabled(false);
 		}
 		if(listIndex >=1){
 			moveOperationUp.setEnabled(true);
@@ -251,10 +251,10 @@ public class OperationConfigPanel extends JPanel implements IChangeListener {
 		}
 	}
 	
-	private void removeOperation(){
+	private void deleteOperation(){
 		
 		int listIndex = operationList.getSelectedIndex();
-		if(listIndex >= 0 && UiTools.confirmDialog("Remove Operation ?")){
+		if(listIndex >= 0 && UiTools.confirmDialog("Delete Operation ?")){
 			LaunchConfig launchConfig = parent.getCurrentConfig();
 			launchConfig.getOperationConfigs().remove(listIndex);
 			launchConfig.setDirty(true);

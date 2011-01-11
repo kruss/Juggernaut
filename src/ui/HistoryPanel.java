@@ -46,7 +46,7 @@ public class HistoryPanel extends JPanel implements ISystemComponent, IChangeLis
 	private JTable historyTable;
 	private DefaultTableModel tableModel;
 	private JTextArea historyOutput;
-	private JButton deleteAllHistory;
+	private JButton emptyHistory;
 	private JButton deleteHistory;
 	private JButton filterHistory;
 	
@@ -100,9 +100,9 @@ public class HistoryPanel extends JPanel implements ISystemComponent, IChangeLis
 		columnModel.getColumn(4).setMinWidth(150);
 			columnModel.getColumn(4).setMaxWidth(150);
 		
-		deleteAllHistory = new JButton(" Clear ");
-		deleteAllHistory.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){ deleteAllHistory(); }
+		emptyHistory = new JButton(" Empty ");
+		emptyHistory.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){ emptyHistory(); }
 		});
 		
 		deleteHistory = new JButton(" Delete ");
@@ -117,7 +117,7 @@ public class HistoryPanel extends JPanel implements ISystemComponent, IChangeLis
 		
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
-		buttonPanel.add(deleteAllHistory);
+		buttonPanel.add(emptyHistory);
 		buttonPanel.add(deleteHistory);
 		buttonPanel.add(filterHistory);
 		
@@ -272,9 +272,9 @@ public class HistoryPanel extends JPanel implements ISystemComponent, IChangeLis
 		return selected;
 	}
 	
-	public void deleteAllHistory(){
+	public void emptyHistory(){
 		
-		if(UiTools.confirmDialog("Delete all history ?")){
+		if(UiTools.confirmDialog("Empty history ?\n\n!!! Complete history will be deleted !!!")){
 			history.clear();
 			refreshUI(null);
 		}
@@ -285,7 +285,7 @@ public class HistoryPanel extends JPanel implements ISystemComponent, IChangeLis
 		HistoryInfo entry = getSelectedHistory();
 		if(
 				entry != null && 
-				UiTools.confirmDialog("Delete history ["+entry.name+" ("+DateTools.getTextDate(entry.start)+")"+"] ?")
+				UiTools.confirmDialog("Delete history [ "+DateTools.getTextDate(entry.start)+" ] ?")
 		){
 			history.delete(entry.historyId);
 			refreshUI(null);
