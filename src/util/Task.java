@@ -6,16 +6,17 @@ import core.TaskManager;
 
 public abstract class Task extends Thread {
 
-	private TaskManager taskManager;
 	private long delay;
 	private long cycle;
 	private long timeout;
 	private Date start;
 
+	private TaskManager taskManager;
+
 	public Task(String name, TaskManager taskManager){
-		
 		super(name);
 		this.taskManager = taskManager;
+		
 		delay = 0;
 		cycle = 0;
 		timeout = 0;

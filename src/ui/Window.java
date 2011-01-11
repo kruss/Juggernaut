@@ -14,8 +14,6 @@ import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 
 import launch.LaunchManager;
 import launch.ScheduleManager;
@@ -26,6 +24,7 @@ import logger.ILogConfig.Module;
 import util.DateTools;
 import util.IChangeListener;
 import util.StringTools;
+import util.UiTools;
 
 import core.Configuration;
 import core.Constants;
@@ -123,9 +122,7 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 			}
 		});
 		
-		UIManager.LookAndFeelInfo styles[] = UIManager.getInstalledLookAndFeels();
-		UIManager.setLookAndFeel(styles[Constants.APP_STYLE].getClassName()); 
-		SwingUtilities.updateComponentTreeUI(this);
+		UiTools.setLookAndFeel(this, Constants.APP_STYLE);
 		
 		setStatus(Constants.APP_NAME+" started at "+DateTools.getTextDate(new Date()));
 		setInfo();

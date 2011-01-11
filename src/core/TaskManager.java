@@ -92,8 +92,7 @@ public class TaskManager implements ISystemComponent, IChangeable {
 	public void deregister(Task task) {
 		
 		synchronized(entries){
-			for(int i=entries.size()-1; i>=0; i--){
-				RegisteredTask entry = entries.get(i);
+			for(RegisteredTask entry : entries){
 				if(entry.task == task){
 					entries.remove(entry);
 					notifyListeners();
@@ -110,11 +109,24 @@ public class TaskManager implements ISystemComponent, IChangeable {
 			for(int i=entries.size()-1; i>=0; i--){
 				RegisteredTask entry = entries.get(i);
 				if(entry.task.isExpired()){
-						logger.log(Module.TASK, "Task Timeout ["+entry.task.getName()+"]");
+						logger.log(Module.TASK, "Timeout\t["+entry.task.getName()+"]");
 						entry.task.asyncKill(1000);
 						entries.remove(entry);
 						notifyListeners();
 				}
+			}
+		}
+	}
+	
+	public void kill(long id) {
+		
+		for(RegisteredTask entry : entries){
+			if(entry.task.getId() == id){
+				logger.log(Module.TASK, "Killing\t["+entry.task.getName()+"]");
+				entry.task.asyncKill(1000);
+				entries.remove(entry);
+				notifyListeners();
+				break;
 			}
 		}
 	}
@@ -141,10 +153,12 @@ public class TaskManager implements ISystemComponent, IChangeable {
 	}
 	
 	public class TaskInfo {
+		public long id;
 		public String name;
 		public boolean running;
 		
 		public TaskInfo(RegisteredTask entry){
+			id = entry.task.getId();
 			name = entry.task.getName();
 			running = entry.running;
 		}

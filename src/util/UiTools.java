@@ -1,10 +1,13 @@
 package util;
 
+import java.awt.Component;
 import java.awt.event.KeyEvent;
 import java.io.File;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
 import core.Constants;
 
@@ -95,5 +98,17 @@ public class UiTools {
 		( KeyEvent.CHAR_UNDEFINED != e.getKeyChar() && !e.isControlDown() && !e.isMetaDown() ) || 
 		( e.isControlDown() && KeyEvent.VK_V == e.getKeyCode() ) ||
 		( e.isControlDown() && KeyEvent.VK_X == e.getKeyCode() ); 
+	}
+	
+	public static boolean setLookAndFeel(Component component, int style){
+		
+		try{
+			UIManager.LookAndFeelInfo styles[] = UIManager.getInstalledLookAndFeels();
+			UIManager.setLookAndFeel(styles[style].getClassName()); 
+			SwingUtilities.updateComponentTreeUI(component);
+		}catch(Exception e){
+			return false;
+		}
+		return true;
 	}
 }
