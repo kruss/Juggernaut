@@ -201,11 +201,6 @@ public class HistoryPanel extends JPanel implements ISystemComponent, IChangeLis
 		String info = "History: "+tableModel.getRowCount()+"/"+entries.size()+" items";
 		historyPanel.setToolTipText(info);
 		historyTable.setToolTipText(info);
-		if(filter.isEmpty()){
-			filterHistory.setForeground(emptyHistory.getForeground()); // get correct color for enabled state
-		}else{
-			filterHistory.setForeground(Color.RED);
-		}
 	}
 
 	private boolean matchesFilter(HistoryInfo entry) {
@@ -272,8 +267,14 @@ public class HistoryPanel extends JPanel implements ISystemComponent, IChangeLis
 		}
 		if(entries.size() > 0){
 			filterHistory.setEnabled(true);
+			if(filter.isEmpty()){
+				filterHistory.setForeground(Color.BLACK);
+			}else{
+				filterHistory.setForeground(Color.RED);
+			}
 		}else{
 			filterHistory.setEnabled(false);
+			filterHistory.setForeground(Color.GRAY);
 		}
 	}
 	
