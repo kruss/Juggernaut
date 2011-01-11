@@ -1,34 +1,34 @@
 package http;
 
+import ui.AbstractUITest;
 import util.SystemTools;
 import logger.Logger;
-import logger.ILogConfig.Module;
-import data.IOptionDelegate;
 
-public class HttpTest implements IOptionDelegate {
-
-	private Logger logger;
+public class HttpTest extends AbstractUITest {
 	
-	public HttpTest(Logger logger) {
-		this.logger = logger;
+	private IHttpConfig config;
+	
+	public HttpTest(IHttpConfig config, Logger logger) {
+		super(logger);
+		this.config = config;
 	}
 
 	@Override
 	public String getName(){ return "Test"; }
-
+	
 	@Override
-	public void perform(String content) {
-		
-		try{
+	protected String performTest(String content) throws Exception {
+	
+		if(config.isHttpServer()){
+			
 			String host = SystemTools.getHostName();
 			int port = new Integer(content).intValue();
 			String url = "http://"+host+":"+port;
 			
-			logger.log(Module.COMMON, "open: "+url);
 			SystemTools.openBrowser(url);
-			
-		}catch(Exception e){
-			logger.error(Module.COMMON, e);
+			return "Browser: "+url;
+		}else{
+			throw CANCEL;
 		}
 	}
 }

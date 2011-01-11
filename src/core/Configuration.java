@@ -166,7 +166,7 @@ implements
 		
 		OptionEditor.setOptionDelegate(
 				container.getOption(OPTIONS.HTTP_PORT.toString()),
-				new HttpTest(logger)
+				new HttpTest(this, logger)
 		);
 		
 		OptionEditor.setOptionDelegate(

@@ -25,6 +25,7 @@ public abstract class AbstractUITest implements IOptionDelegate {
 	@Override
 	public void perform(String content) {
 
+		logger.log(Module.COMMON, getClass().getSimpleName()+(!content.isEmpty() ? " ("+content+")" : ""));
 		String message = "";
 		try{
 			message = performTest(content);
@@ -39,9 +40,7 @@ public abstract class AbstractUITest implements IOptionDelegate {
 				logger.error(Module.COMMON, e);
 			}
 		}finally{
-			String info = 
-				getClass().getSimpleName()+" - "+status.toString()+
-				(!content.isEmpty() ? "\n("+content+")" : "")+"\n\n"+message;
+			String info = getClass().getSimpleName()+" - "+status.toString()+"\n\n"+message;
 			if(status != Status.CANCEL){
 				if(status == Status.SUCCEED){
 					UiTools.infoDialog(info);
