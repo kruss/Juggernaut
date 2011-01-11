@@ -51,8 +51,7 @@ public class HistoryPanel extends JPanel implements ISystemComponent, IChangeLis
 	private JTextArea historyOutput;
 	private JButton emptyHistory;
 	private JButton deleteHistory;
-	private JButton historyFolder;
-	private JButton historyFile;
+	private JButton openHistory;
 	private JButton filterHistory;
 	
 	private ArrayList<HistoryInfo> entries;
@@ -113,13 +112,9 @@ public class HistoryPanel extends JPanel implements ISystemComponent, IChangeLis
 		deleteHistory.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){ deleteHistory(); }
 		});
-		historyFolder = new JButton(" Folder ");
-		historyFolder.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){ historyFolder(); }
-		});
-		historyFile = new JButton(" File ");
-		historyFile.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){ historyFile(); }
+		openHistory = new JButton(" Open ");
+		openHistory.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){ openHistory(); }
 		});
 		filterHistory = new JButton(" Filter ");
 		filterHistory.addActionListener(new ActionListener(){
@@ -130,8 +125,7 @@ public class HistoryPanel extends JPanel implements ISystemComponent, IChangeLis
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
 		buttonPanel.add(emptyHistory);
 		buttonPanel.add(deleteHistory);
-		buttonPanel.add(historyFolder);
-		buttonPanel.add(historyFile);
+		buttonPanel.add(openHistory);
 		buttonPanel.add(filterHistory);
 		
 		historyPanel = new JScrollPane(historyTable);
@@ -208,7 +202,7 @@ public class HistoryPanel extends JPanel implements ISystemComponent, IChangeLis
 		historyPanel.setToolTipText(info);
 		historyTable.setToolTipText(info);
 		if(filter.isEmpty()){
-			filterHistory.setForeground(Color.BLACK);
+			filterHistory.setForeground(emptyHistory.getForeground()); // get correct color for enabled state
 		}else{
 			filterHistory.setForeground(Color.RED);
 		}
@@ -259,28 +253,27 @@ public class HistoryPanel extends JPanel implements ISystemComponent, IChangeLis
 				historyOutput.setText("");
 			}
 			deleteHistory.setEnabled(true);
-			File folder = new File(entry.folder);
-			if(folder.isDirectory()){
-				historyFolder.setEnabled(true);
-			}else{
-				historyFolder.setEnabled(false);
-			}
 			File file = new File(getHistoryIndexPath(entry));
-			if(file.isFile()){
-				historyFile.setEnabled(true);
+			File folder = new File(entry.folder);
+			if(file.isFile() || folder.isDirectory()){
+				openHistory.setEnabled(true);
 			}else{
-				historyFile.setEnabled(false);
+				openHistory.setEnabled(false);
 			}
 		}else{
 			historyOutput.setText("");
 			deleteHistory.setEnabled(false);
-			historyFolder.setEnabled(false);
-			historyFile.setEnabled(false);
+			openHistory.setEnabled(false);
 		}
-		if(entries.size() > 0){
+		if(entries.size() > 0 && filter.isEmpty()){
 			emptyHistory.setEnabled(true);
 		}else{
 			emptyHistory.setEnabled(false);
+		}
+		if(entries.size() > 0){
+			filterHistory.setEnabled(true);
+		}else{
+			filterHistory.setEnabled(false);
 		}
 	}
 	
@@ -341,14 +334,20 @@ public class HistoryPanel extends JPanel implements ISystemComponent, IChangeLis
 		}
 	}
 	
-	public void historyFile(){
+	public void openHistory(){
 		
 		HistoryInfo entry = getSelectedHistory();
 		if(entry != null){
 			File file = new File(getHistoryIndexPath(entry));
+			File folder = new File(entry.folder);
+			String path = null;
 			if(file.isFile()){
+				path = file.getAbsolutePath();
+			}else if(folder.isDirectory()){
+				path = folder.getAbsolutePath();
+			}
+			if(path != null){
 				try{
-					String path = file.getAbsolutePath();
 					logger.debug(Module.COMMON, "open: "+path);
 					SystemTools.openBrowser(path);
 				}catch(Exception e){
