@@ -46,7 +46,7 @@ public class EclipseOperation extends AbstractOperation {
 			if(SystemTools.isWindowsOS()){
 				directory = eclipse.getParentFile().getAbsolutePath();
 			}else{
-				directory = parent.getFolder(); // TODO temp
+				directory = parent.getFolder(); // TODO make working on linux
 			}
 		}else{
 			throw new Exception("invalid path: "+eclipse.getAbsolutePath());

@@ -24,13 +24,7 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import core.TaskManager;
-
-import logger.Logger;
-
-import repository.ConnectionTest;
-import repository.IRepositoryClient;
-
+import data.IOptionDelegate;
 import data.IOptionInitializer;
 import data.Option;
 import data.OptionContainer;
@@ -278,24 +272,15 @@ public class OptionEditor extends JPanel {
 		panel.add(component, BorderLayout.WEST);
 		return panel;
 	}
-
-	// TODO should be a generic test-client
-	public static void addRepositoryTest(final Option option, final IRepositoryClient client, final TaskManager taskManager, final Logger logger) {
-
-		if(option.component instanceof JTextField){
-			JButton button = new JButton(" Test ");
-			button.addActionListener(new ActionListener(){
-				public void actionPerformed(ActionEvent e){ 
-					ConnectionTest tester = new ConnectionTest(
-							client, 
-							((JTextField)option.component).getText(),
-							taskManager,
-							logger
-					);
-					tester.asyncRun(0, ConnectionTest.TIMEOUT);
-				}
-			});
-			option.parent.add(button, BorderLayout.EAST);
-		}
+	
+	public static void setOptionDelegate(final Option option, final IOptionDelegate delegate){
+		
+		JButton button = new JButton(" "+delegate.getName()+" ");
+		button.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){ 
+				delegate.perform(option.getStringValue());
+			}
+		});
+		option.parent.add(button, BorderLayout.EAST);
 	}
 }

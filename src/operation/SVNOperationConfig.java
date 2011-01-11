@@ -5,6 +5,7 @@ import core.Cache;
 import core.Configuration;
 import core.TaskManager;
 
+import repository.RepositoryTest;
 import repository.SVNClient;
 import repository.IRepositoryClient.Revision;
 import ui.OptionEditor;
@@ -39,12 +40,12 @@ public class SVNOperationConfig extends AbstractOperationConfig {
 	
 	@Override
 	public void initOptions(OptionContainer container) {
-		
-		OptionEditor.addRepositoryTest(
+
+		OptionEditor.setOptionDelegate(
 				container.getOption(OPTIONS.URL.toString()),
-				new SVNClient(taskManager, logger),
-				taskManager,
-				logger
+				new RepositoryTest(
+					new SVNClient(taskManager, logger), logger
+				)
 		);
 	}
 	

@@ -9,9 +9,37 @@ TASKS
 BUGS
 ----
 
-String.hashCode() seems not to be stable for constant strings ;-(
+# String.hashCode() seems not to be stable for constant strings ;-(
+
+# on continous work-load:
+	[ArrayIndexOutOfBoundsException] 1 >= 1
+	java.util.Vector::removeElementAt (511)
+	javax.swing.table.DefaultTableModel::removeRow (446)
+	ui.SchedulerPanel::clearUI (163)
+	ui.SchedulerPanel::refreshUI (192)
+	ui.SchedulerPanel::changed (230)
+	launch.LaunchManager::notifyListeners (37)
+	launch.LaunchManager::lifecycleChanged (132)
+	launch.LifecycleObject::notifyListeners (39)
+	launch.StatusManager::addProgress (50)
+	launch.LaunchAgent::execute (173)
+	launch.LifecycleObject::runTask (56)
+	util.Task::runSingleTask (81)
+	util.Task::run (52)
+
 
 NOTES
 -----
 
 # serialized objects may contain absolute paths
+
+
+# demo of how to implement context-menu for option
+final Option smtpServer = container.getOption(OPTIONS.SMTP_SERVER.toString());
+JMenuItem testConnection = new JMenuItem("Test");
+testConnection.addActionListener(new ActionListener(){
+	public void actionPerformed(ActionEvent e){ 
+		System.out.println("test: "+((JTextField)smtpServer.component).getText());
+	}
+});
+smtpServer.addPopup(testConnection);

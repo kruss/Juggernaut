@@ -1,20 +1,19 @@
 package core;
 
+import http.HttpTest;
 import http.IHttpConfig;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
-
-import javax.swing.JMenuItem;
-import javax.swing.JTextField;
 
 import logger.LogConfig;
 import logger.Logger;
 import logger.ILogConfig.Module;
 
 import smtp.ISmtpConfig;
+import smtp.SmtpClient;
+import smtp.SmtpTest;
+import ui.OptionEditor;
 import util.DateTools;
 import util.FileTools;
 import util.IChangeListener;
@@ -165,15 +164,17 @@ implements
 	@Override
 	public void initOptions(OptionContainer container) {
 		
-		// TODO just a demo of how to implement context-menu for option !!!
-		final Option smtpServer = container.getOption(OPTIONS.SMTP_SERVER.toString());
-		JMenuItem testConnection = new JMenuItem("Test");
-		testConnection.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){ 
-				System.out.println("test: "+((JTextField)smtpServer.component).getText());
-			}
-		});
-		smtpServer.addPopup(testConnection);
+		OptionEditor.setOptionDelegate(
+				container.getOption(OPTIONS.HTTP_PORT.toString()),
+				new HttpTest(logger)
+		);
+		
+		OptionEditor.setOptionDelegate(
+				container.getOption(OPTIONS.SMTP_SERVER.toString()),
+				new SmtpTest(
+						new SmtpClient(this), logger
+				)
+		);
 	}
 	
 	/** answers if scheduler is active */

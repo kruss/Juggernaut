@@ -48,7 +48,10 @@ public class FileManager implements ISystemComponent {
 	
 	@Override
 	public void shutdown() throws Exception {
-		FileTools.deleteFolder(getTempFolderPath());
+		
+		if(getTempFolder().isDirectory()){
+			FileTools.deleteFolder(getTempFolderPath());
+		}
 	}
 	
 	public String getDataFolderPath(){
