@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -20,9 +21,12 @@ import javax.swing.JTabbedPane;
 import launch.LaunchAgent;
 import launch.LaunchManager;
 import launch.LaunchManager.LaunchStatus;
+import logger.Logger;
+import logger.ILogConfig.Module;
 
 import smtp.ISmtpClient;
 import util.IChangeListener;
+import util.SystemTools;
 import util.UiTools;
 
 import core.Cache;
@@ -39,6 +43,7 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 
 	private static final long serialVersionUID = 1L;
 
+	private Logger logger;
 	private Configuration configuration; 
 	private Cache cache;
 	private History history;
@@ -54,6 +59,8 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 	private JButton addLaunch;
 	private JButton removeLaunch;
 	private JButton renameLaunch;
+	private JButton cloneLaunch;
+	private JButton launchFolder;
 	private JButton triggerLaunch;
 	private JTabbedPane tabPanel;
 	private LaunchConfigPanel launchPanel;
@@ -72,7 +79,8 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 			ISmtpClient smtpClient,
 			IHttpServer httpServer,
 			LaunchManager launchManager,
-			Registry registry)
+			Registry registry,
+			Logger logger)
 	{
 		this.configuration = configuration;
 		this.cache = cache;
@@ -82,6 +90,7 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 		this.smtpClient = smtpClient;
 		this.httpServer = httpServer;
 		this.launchManager = launchManager;
+		this.logger = logger;
 		listeners = new ArrayList<IChangeListener>();
 		
 		launchCombo = new JComboBox();
@@ -100,6 +109,14 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 		renameLaunch.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){ renameLaunch(); }
 		});
+		cloneLaunch = new JButton(" Clone ");
+		cloneLaunch.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){ cloneLaunch(); }
+		});
+		launchFolder = new JButton(" Folder ");
+		launchFolder.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){ launchFolder(); }
+		});
 		triggerLaunch = new JButton(" Trigger ");
 		triggerLaunch.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){ triggerLaunch(); }
@@ -110,6 +127,8 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 		buttonPanel.add(addLaunch); 
 		buttonPanel.add(removeLaunch); 
 		buttonPanel.add(renameLaunch);
+		buttonPanel.add(cloneLaunch);
+		buttonPanel.add(launchFolder);
 		buttonPanel.add(triggerLaunch); 
 		
 		JPanel topPanel = new JPanel(new BorderLayout());
@@ -132,6 +151,7 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 		add(tabPanel, BorderLayout.CENTER);
 		
 		configuration.addListener(this);
+		launchManager.addListener(this);
 	}
 	
 	@Override
@@ -183,13 +203,18 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 		
 		int index = launchCombo.getSelectedIndex();
 		if(index >= 0){
+			LaunchConfig launchConfig = configuration.getLaunchConfigs().get(index);
 			
 			removeLaunch.setEnabled(true);
 			renameLaunch.setEnabled(true);
-			if(
-					configuration.getLaunchConfigs().size() > 0 &&
-					configuration.getLaunchConfigs().get(index).isReady()
-			){
+			cloneLaunch.setEnabled(true);
+			File folder = fileManager.getLaunchFolder(launchConfig.getId());
+			if(folder.isDirectory()){
+				launchFolder.setEnabled(true);
+			}else{
+				launchFolder.setEnabled(false);
+			}
+			if(launchConfig.isReady() && !launchManager.isRunning(launchConfig.getId())){
 				triggerLaunch.setEnabled(true);
 			}else{
 				triggerLaunch.setEnabled(false);
@@ -198,6 +223,8 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 		}else{
 			removeLaunch.setEnabled(false);
 			renameLaunch.setEnabled(false);
+			cloneLaunch.setEnabled(false);
+			launchFolder.setEnabled(false);
 			triggerLaunch.setEnabled(false);
 			tabPanel.setEnabled(false);
 		}		
@@ -241,6 +268,10 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 			launchCombo.repaint();
 			adjustButtons();
 		}
+		
+		if(object == launchManager){
+			adjustButtons();
+		}
 	}
 
 	private void addLaunch(){
@@ -250,8 +281,8 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 			LaunchConfig config = new LaunchConfig(name);
 			configuration.getLaunchConfigs().add(config);
 			Collections.sort(configuration.getLaunchConfigs());
-			configuration.notifyListeners();
 			refreshUI(config);
+			configuration.notifyListeners();
 		}
 	}
 	
@@ -262,8 +293,8 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 			// TODO remove build-folder if existent
 			configuration.getLaunchConfigs().remove(index);
 			configuration.setDirty(true);
-			configuration.notifyListeners();
 			refreshUI(null);
+			configuration.notifyListeners();
 		}
 	}
 	
@@ -277,9 +308,22 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 				config.setName(name);
 				config.setDirty(true);
 				Collections.sort(configuration.getLaunchConfigs());
-				configuration.notifyListeners();
 				refreshUI(config);
+				configuration.notifyListeners();
 			}
+		}
+	}
+	
+	private void cloneLaunch(){
+		
+		int index = launchCombo.getSelectedIndex();
+		if(index >= 0){
+			LaunchConfig config = configuration.getLaunchConfigs().get(index);
+			LaunchConfig clone = config.duplicate();
+			configuration.getLaunchConfigs().add(clone);
+			Collections.sort(configuration.getLaunchConfigs());
+			refreshUI(clone);
+			configuration.notifyListeners();
 		}
 	}
 	
@@ -287,8 +331,7 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 		
 		int index = launchCombo.getSelectedIndex();
 		if(index >= 0){
-			if(UiTools.confirmDialog("Trigger Launch"))
-			{
+			if(UiTools.confirmDialog("Trigger Launch")){
 				try{
 					LaunchConfig config = configuration.getLaunchConfigs().get(index);
 					LaunchAgent launch = config.createLaunch(
@@ -298,6 +341,24 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 					if(!status.launched){
 						UiTools.infoDialog(status.message);
 					}
+				}catch(Exception e){
+					UiTools.errorDialog(e);
+				}
+			}
+		}
+	}
+	
+	private void launchFolder(){
+		
+		int index = launchCombo.getSelectedIndex();
+		if(index >= 0){
+			LaunchConfig config = configuration.getLaunchConfigs().get(index);
+			File folder = fileManager.getLaunchFolder(config.getId());
+			if(folder.isDirectory()){
+				try{
+					String path = folder.getAbsolutePath();
+					logger.debug(Module.COMMON, "open: "+path);
+					SystemTools.openBrowser(path);
 				}catch(Exception e){
 					UiTools.errorDialog(e);
 				}

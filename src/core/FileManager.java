@@ -68,6 +68,13 @@ public class FileManager implements ISystemComponent {
 		return new File(getTempFolderPath());
 	}
 	
+	public String getLaunchFolderPath(String id) {
+		return getBuildFolderPath()+File.separator+id;
+	}
+	public File getLaunchFolder(String id){
+		return new File(getLaunchFolderPath(id));
+	}
+	
 	// TODO retry with unlocker for windows
 	public void delete(File file) throws Exception {
 		

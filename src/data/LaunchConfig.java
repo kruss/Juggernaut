@@ -188,6 +188,15 @@ public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitialize
 		return config;
 	}
 	
+	public LaunchConfig duplicate(){
+		
+		LaunchConfig config = this.clone();
+		config.id = UUID.randomUUID().toString();
+		config.name = this.getName()+" (Copy)";
+		config.dirty = true;
+		return config;
+	}
+	
 	public LaunchAgent createLaunch(
 			Configuration configuration, 
 			Cache cache,

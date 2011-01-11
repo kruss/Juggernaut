@@ -97,7 +97,7 @@ public class LaunchManager implements ISystemComponent, ILifecycleListener {
 		}
 	}
 	
-	private boolean isRunning(String id) {
+	public boolean isRunning(String id) {
 		
 		LaunchAgent agent = getLaunch(id);
 		return agent != null;

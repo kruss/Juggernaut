@@ -104,9 +104,7 @@ public class LaunchAgent extends LifecycleObject {
 	
 	@Override
 	public String getFolder() {
-		return 
-			fileManager.getBuildFolderPath()+
-			File.separator+launchConfig.getId();
+		return fileManager.getLaunchFolderPath(launchConfig.getId());
 	}
 
 	@Override

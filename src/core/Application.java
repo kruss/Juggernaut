@@ -193,7 +193,8 @@ public class Application extends AbstractSystem {
 					runtime.smtpClient,
 					runtime.httpServer,
 					runtime.launchManager, 
-					runtime.registry);
+					runtime.registry,
+					core.logger);
 			add(configPanel);
 			schedulerPanel = new SchedulerPanel(
 					runtime.launchManager, 
