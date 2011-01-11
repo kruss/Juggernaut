@@ -39,6 +39,7 @@ public class Configuration
 implements 
 	ISystemComponent, 
 	IOptionInitializer, 
+	IFileConfig,
 	ISmtpConfig,
 	IHttpConfig,
 	IChangeable, 
@@ -49,9 +50,9 @@ implements
 		
 		File file = new File(fileManager.getDataFolderPath()+File.separator+Configuration.OUTPUT_FILE);
 		if(file.isFile()){
-			return Configuration.load(taskManager, logger, file.getAbsolutePath());
+			return Configuration.load(fileManager, taskManager, logger, file.getAbsolutePath());
 		}else{
-			return new Configuration(logger, file.getAbsolutePath());
+			return new Configuration(fileManager, logger, file.getAbsolutePath());
 		}	
 	}
 	
@@ -68,6 +69,7 @@ implements
 	public enum State { CLEAN, DIRTY }
 	public static final String OUTPUT_FILE = "Configuration.xml";
 	
+	private transient FileManager fileManager;
 	private transient Logger logger;
 	
 	@SuppressWarnings("unused")
@@ -79,8 +81,9 @@ implements
 	private transient String path;
 	private transient boolean dirty;
 
-	public Configuration(Logger logger, String path){
+	public Configuration(FileManager fileManager, Logger logger, String path){
 		
+		this.fileManager = fileManager;
 		this.logger = logger;
 		
 		version = Constants.APP_VERSION;
@@ -153,6 +156,7 @@ implements
 	public void init() throws Exception {
 		save();
 		logger.setConfig(logConfig);
+		fileManager.setConfig(this);
 	}
 
 	@Override
@@ -161,7 +165,7 @@ implements
 	@Override
 	public void initOptions(OptionContainer container) {
 		
-		// TODO temp...
+		// TODO just a demo of how to implement context-menu for option !!!
 		final Option smtpServer = container.getOption(OPTIONS.SMTP_SERVER.toString());
 		JMenuItem testConnection = new JMenuItem("Test");
 		testConnection.addActionListener(new ActionListener(){
@@ -224,7 +228,7 @@ implements
 		return StringTools.split(value, ", ");
 	}
 	
-	/** external unlocker for locked ressources */
+	@Override
 	public String getUnlocker(){
 		return optionContainer.getOption(OPTIONS.UNLOCKER.toString()).getStringValue();
 	}
@@ -260,12 +264,15 @@ implements
 	
 	public State getState(){ return isDirty() ? State.DIRTY : State.CLEAN; }
 	
-	public static Configuration load(TaskManager taskManager, Logger logger, String path) throws Exception {
+	public static Configuration load(
+			FileManager fileManager, TaskManager taskManager, Logger logger, String path
+	) throws Exception {
 	
 		logger.debug(Module.COMMON, "load: "+path);
 		XStream xstream = new XStream(new DomDriver());
 		String xml = FileTools.readFile(path);
 		Configuration configuration = (Configuration)xstream.fromXML(xml);
+		configuration.fileManager = fileManager;
 		configuration.logger = logger;
 		configuration.listeners = new ArrayList<IChangeListener>();
 		configuration.path = path;

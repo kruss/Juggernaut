@@ -64,8 +64,8 @@ public class Application extends AbstractSystem {
 	private class CoreSystem extends AbstractSystem {
 		
 		public SystemLogger logger;
-		public FileManager fileManager;
 		public TaskManager taskManager;
+		public FileManager fileManager;
 		public HeapManager heapManager;
 		
 		@Override
@@ -73,11 +73,12 @@ public class Application extends AbstractSystem {
 			
 			logger = new SystemLogger();
 			add(logger);
-			fileManager = new FileManager(logger);
-			add(fileManager);
 			taskManager = new TaskManager(
 					logger);
 			add(taskManager);
+			fileManager = new FileManager(
+					taskManager);
+			add(fileManager);
 			heapManager = new HeapManager(
 					taskManager, 
 					logger);

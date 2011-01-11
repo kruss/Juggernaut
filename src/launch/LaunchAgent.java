@@ -124,9 +124,18 @@ public class LaunchAgent extends LifecycleObject {
 		
 		// setup launch-folder
 		File folder = new File(getFolder());
+		logger.log(Module.COMMON, "folder: "+folder.getAbsolutePath());
 		if(launchConfig.isClean() && folder.isDirectory()){
-			logger.log(Module.COMMON, "cleaning: "+folder.getAbsolutePath());
-			FileTools.deleteFolder(folder.getAbsolutePath());
+			try{
+				FileTools.deleteFolder(folder.getAbsolutePath());
+			}catch(Exception e){
+				if(fileManager.hasUnlocker()){
+					logger.log(Module.COMMON, "Unable to delete ("+e.getMessage()+") => Retry with unlocker");
+					fileManager.deleteWithUnlocker(folder, logger);
+				}else{
+					throw e;
+				}
+			}
 		}
 		if(!folder.isDirectory()){
 			FileTools.createFolder(folder.getAbsolutePath());

@@ -25,6 +25,7 @@ import logger.Logger;
 import logger.ILogConfig.Module;
 
 import smtp.ISmtpClient;
+import util.FileTools;
 import util.IChangeListener;
 import util.SystemTools;
 import util.UiTools;
@@ -205,7 +206,12 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 		if(index >= 0){
 			LaunchConfig launchConfig = configuration.getLaunchConfigs().get(index);
 			
-			removeLaunch.setEnabled(true);
+			if(!launchManager.isRunning(launchConfig.getId())){
+				removeLaunch.setEnabled(true);
+				
+			}else{
+				removeLaunch.setEnabled(false);
+			}
 			renameLaunch.setEnabled(true);
 			cloneLaunch.setEnabled(true);
 			File folder = fileManager.getLaunchFolder(launchConfig.getId());
@@ -290,12 +296,33 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 		
 		int index = launchCombo.getSelectedIndex();
 		if(index >= 0 && UiTools.confirmDialog("Remove Launch ?")){
-			// TODO remove build-folder if existent
+			
+			LaunchConfig config = configuration.getLaunchConfigs().get(index);
+			File folder = fileManager.getLaunchFolder(config.getId());
+			if(folder.isDirectory()){
+				removeLaunchFolder(folder.getAbsolutePath());
+			}
 			configuration.getLaunchConfigs().remove(index);
 			configuration.setDirty(true);
 			refreshUI(null);
 			configuration.notifyListeners();
 		}
+	}
+	
+	private void removeLaunchFolder(final String path){
+		
+		Thread thread = new Thread(new Runnable(){
+			@Override
+			public void run() {
+				try{
+					logger.log(Module.COMMON, "delete: "+path);
+					FileTools.deleteFolder(path);
+				}catch(Exception e){
+					UiTools.errorDialog(e);
+				}
+			}
+		});
+		thread.start();
 	}
 	
 	private void renameLaunch(){
