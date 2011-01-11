@@ -9,6 +9,7 @@ TASKS
 BUGS
 ----
 
+String.hashCode() seems not to be stable for constant strings ;-(
 
 NOTES
 -----

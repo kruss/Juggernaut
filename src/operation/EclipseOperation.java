@@ -52,14 +52,44 @@ public class EclipseOperation extends AbstractOperation {
 			throw new Exception("invalid path: "+eclipse.getAbsolutePath());
 		}
 		
+		ArrayList<String> arguments = getArguments();
+		CommandTask task = new CommandTask(
+				command, 
+				StringTools.join(arguments, " "),
+				directory, 
+				taskManager,
+				logger
+		);
+		
+		try{
+			task.syncRun(0, 0);
+		}finally{
+			if(task.hasSucceded()){
+				statusManager.setStatus(Status.SUCCEED);
+			}else{
+				statusManager.setStatus(Status.ERROR);
+			}
+			if(!task.getOutput().isEmpty()){
+				artifacts.add(new Artifact("Command", task.getOutput(), "txt"));
+			}
+			//TODO evaluate results from cdt-builder
+		}
+	}
+
+	private ArrayList<String> getArguments() {
+		
 		ArrayList<String> arguments = new ArrayList<String>();
+		// eclipse args
 		arguments.add("-data \""+parent.getFolder()+"\"");
+		arguments.add("-nosplash");
+		arguments.add("-showlocation");
+		// cdt-builder args
 		arguments.add("-cdt.builder");
 		arguments.add("-cdt.import");
 		if(config.isCleanBuild()){
 			arguments.add("-cdt.clean");
 		}
-		if(config.isTolerantBuild()){
+		if(!config.isStrictBuild()){
 			arguments.add("-cdt.tolerant");
 		}
 		for(String pattern : config.getBuildPattern()){
@@ -77,27 +107,10 @@ public class EclipseOperation extends AbstractOperation {
 		if(configuration.getLogConfig().getLogLevel(Module.COMMAND) == Level.DEBUG){
 			arguments.add("-cdt.verbose");
 		}
-		
-		CommandTask task = new CommandTask(
-				command, 
-				StringTools.join(arguments, " "),
-				directory, 
-				taskManager,
-				logger
-		);
-		try{
-			task.syncRun(0, 0);
-		}finally{
-			if(task.hasSucceded()){
-				statusManager.setStatus(Status.SUCCEED);
-			}else{
-				statusManager.setStatus(Status.ERROR);
-			}
-			if(!task.getOutput().isEmpty()){
-				artifacts.add(new Artifact("Eclipse", task.getOutput(), "txt"));
-			}
-			//TODO evaluate results from cdt-builder
-		}
+		// vm args
+		int heap = config.getHeapSize();
+		arguments.add("-vmargs -Xms"+heap+"M -Xmx"+heap+"M");
+		return arguments;
 	}
 	
 	@Override

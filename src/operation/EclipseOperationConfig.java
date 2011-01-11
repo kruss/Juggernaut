@@ -19,7 +19,7 @@ public class EclipseOperationConfig extends AbstractOperationConfig {
 	public static final String OPERATION_NAME = "Eclipse";
 
 	public enum OPTIONS {
-		ECLIPSE, BUILD, EXCLUDE, CLEAN, TOLERANT
+		ECLIPSE, BUILD, EXCLUDE, CLEAN, STRICT, HEAP
 	}
 	
 	public EclipseOperationConfig(){
@@ -46,8 +46,13 @@ public class EclipseOperationConfig extends AbstractOperationConfig {
 		));
 		optionContainer.getOptions().add(new Option(
 				GROUPS.SETTINGS.toString(),
-				OPTIONS.TOLERANT.toString(), "Build in non-strict mode", 
-				Type.BOOLEAN, false
+				OPTIONS.STRICT.toString(), "Build in strict mode", 
+				Type.BOOLEAN, true
+		));
+		optionContainer.getOptions().add(new Option(
+				GROUPS.SETTINGS.toString(),
+				OPTIONS.HEAP.toString(), "Set the HEAP size for the Eclipse VM (MB)", 
+				Type.INTEGER, 128, 64, 640
 		));
 	}
 	
@@ -79,8 +84,13 @@ public class EclipseOperationConfig extends AbstractOperationConfig {
 		return optionContainer.getOption(OPTIONS.CLEAN.toString()).getBooleanValue(); 
 	}
 	
-	public boolean isTolerantBuild(){ 
-		return optionContainer.getOption(OPTIONS.TOLERANT.toString()).getBooleanValue(); 
+	public boolean isStrictBuild(){ 
+		return optionContainer.getOption(OPTIONS.STRICT.toString()).getBooleanValue(); 
+	}
+	
+	/** get the HEAP size for the Eclipse VM (MB) */
+	public int getHeapSize(){
+		return optionContainer.getOption(OPTIONS.HEAP.toString()).getIntegerValue();
 	}
 	
 	@Override
