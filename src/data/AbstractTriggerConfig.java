@@ -40,7 +40,7 @@ public abstract class AbstractTriggerConfig implements IOptionInitializer {
 		
 		optionContainer = new OptionContainer();
 		optionContainer.setDescription(getDescription());
-		optionContainer.getOptions().add(new Option(
+		optionContainer.setOption(new Option(
 				GROUPS.GENERAL.toString(),
 				OPTIONS.ACTIVE.toString(), "The trigger's active state",
 				Type.BOOLEAN, true

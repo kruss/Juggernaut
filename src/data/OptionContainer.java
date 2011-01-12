@@ -6,37 +6,36 @@ import launch.PropertyContainer;
 
 import data.Option.Type;
 
-// TODO verify unique names within container
-
 /**
  * container for options of an item
  */
 public class OptionContainer {
 	
-	private String description;
 	private ArrayList<Option> options;
+	private String description;
 
 	public OptionContainer(){
 		
-		description = "";
 		options = new ArrayList<Option>();
+		description = "";
 	}
 	
 	public void setDescription(String description){ this.description = description; }
 	public String getDescription(){ return description; }
 	
-	public void setOptions(ArrayList<Option> options){ this.options = options; }
 	public ArrayList<Option> getOptions(){ return options; }
 	
-	public ArrayList<String> getOptionNames(){
+	public void setOption(Option option){
 		
-		ArrayList<String> names = new ArrayList<String>();
-		for(Option option : options){
-			names.add(option.getName());
+		if(!hasOption(option.getName())){
+			options.add(option);
 		}
-		return names;
 	}
 	
+	private boolean hasOption(String name) {
+		return getOption(name) != null;
+	}
+
 	public Option getOption(String name){
 	
 		for(Option option : options){

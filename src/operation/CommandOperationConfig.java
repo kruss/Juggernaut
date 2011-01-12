@@ -24,22 +24,22 @@ public class CommandOperationConfig extends AbstractOperationConfig {
 	
 	public CommandOperationConfig(){
 		
-		optionContainer.getOptions().add(new Option(
+		optionContainer.setOption(new Option(
 				GROUPS.SETTINGS.toString(),
 				OPTIONS.COMMAND.toString(), "The command to execute", 
 				Type.TEXT, ""
 		));
-		optionContainer.getOptions().add(new Option(
+		optionContainer.setOption(new Option(
 				GROUPS.SETTINGS.toString(),
 				OPTIONS.DIRECTORY.toString(), "The command's directory within the launch-folder", 
 				Type.TEXT, ""
 		));
-		optionContainer.getOptions().add(new Option(
+		optionContainer.setOption(new Option(
 				GROUPS.SETTINGS.toString(),
 				OPTIONS.ARGUMENTS.toString(), "The command's arguments (linewise, commented with '//')",
 				Type.TEXT_AREA, ""
 		));
-		optionContainer.getOptions().add(new Option(
+		optionContainer.setOption(new Option(
 				GROUPS.SETTINGS.toString(),
 				OPTIONS.OUTPUT.toString(), "List of output-directories to collect (comma seperated)", 
 				Type.TEXT, ""

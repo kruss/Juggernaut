@@ -88,57 +88,57 @@ implements
 		version = Constants.APP_VERSION;
 		optionContainer = new OptionContainer();
 		optionContainer.setDescription("The application preferences");
-		optionContainer.getOptions().add(new Option(
+		optionContainer.setOption(new Option(
 				GROUPS.GENERAL.toString(),
 				OPTIONS.SCHEDULER.toString(), "Run the scheduler",
 				Type.BOOLEAN, false
 		));
-		optionContainer.getOptions().add(new Option(
+		optionContainer.setOption(new Option(
 				GROUPS.GENERAL.toString(),
 				OPTIONS.SCHEDULER_INTERVAL.toString(), "The scheduler intervall in minutes", 
 				Type.INTEGER, 5, 1, 180
 		));
-		optionContainer.getOptions().add(new Option(
+		optionContainer.setOption(new Option(
 				GROUPS.GENERAL.toString(),
 				OPTIONS.MAXIMUM_AGENTS.toString(), "Maximum number of parallel launches", 
 				Type.INTEGER, 3, 1, 10
 		));
-		optionContainer.getOptions().add(new Option(
+		optionContainer.setOption(new Option(
 				GROUPS.GENERAL.toString(),
 				OPTIONS.MAXIMUM_HISTORY.toString(), "Maximum number of launches in history (0 = unlimited)", 
 				Type.INTEGER, 1000, 0, 1000
 		));
-		optionContainer.getOptions().add(new Option(
+		optionContainer.setOption(new Option(
 				GROUPS.GENERAL.toString(),
 				OPTIONS.SERVER.toString(), "Run the HTTP-Server",
 				Type.BOOLEAN, false
 		));
-		optionContainer.getOptions().add(new Option(
+		optionContainer.setOption(new Option(
 				GROUPS.GENERAL.toString(),
 				OPTIONS.HTTP_PORT.toString(), "The HTTP-Server port", 
 				Type.INTEGER, 80, 1, 1024
 		));
-		optionContainer.getOptions().add(new Option(
+		optionContainer.setOption(new Option(
 				GROUPS.NOTIFICATION.toString(),
 				OPTIONS.NOTIFICATION.toString(), "Perform eMail-notifications",
 				Type.BOOLEAN, false
 		));
-		optionContainer.getOptions().add(new Option(
+		optionContainer.setOption(new Option(
 				GROUPS.NOTIFICATION.toString(),
 				OPTIONS.ADMINISTRATORS.toString(), "List of administrator eMails (comma seperated)", 
 				Type.TEXT, ""
 		));
-		optionContainer.getOptions().add(new Option(
+		optionContainer.setOption(new Option(
 				GROUPS.NOTIFICATION.toString(),
 				OPTIONS.SMTP_SERVER.toString(), "The SMTP-Server for notifications", 
 				Type.TEXT_SMALL, ""
 		));
-		optionContainer.getOptions().add(new Option(
+		optionContainer.setOption(new Option(
 				GROUPS.NOTIFICATION.toString(),
 				OPTIONS.SMTP_ADDRESS.toString(), "The SMTP-Address for notifications", 
 				Type.TEXT_SMALL, "SMTP@"+Constants.APP_NAME
 		));
-		optionContainer.getOptions().add(new Option(
+		optionContainer.setOption(new Option(
 				GROUPS.EXTRA.toString(),
 				OPTIONS.UNLOCKER.toString(), "Command to free locked ressources", 
 				Type.TEXT, ""

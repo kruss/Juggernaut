@@ -20,17 +20,17 @@ public class SampleOperationConfig extends AbstractOperationConfig {
 	
 	public SampleOperationConfig(){
 		
-		optionContainer.getOptions().add(new Option(
+		optionContainer.setOption(new Option(
 				GROUPS.SETTINGS.toString(),
 				OPTIONS.ERROR.toString(), "Throw an error",
 				Type.BOOLEAN, false
 		));
-		optionContainer.getOptions().add(new Option(
+		optionContainer.setOption(new Option(
 				GROUPS.SETTINGS.toString(),
 				OPTIONS.EXCEPTION.toString(), "Throw an exception",
 				Type.BOOLEAN, false
 		));
-		optionContainer.getOptions().add(new Option(
+		optionContainer.setOption(new Option(
 				GROUPS.SETTINGS.toString(),
 				OPTIONS.IDLE.toString(), "Idle time in seconds", 
 				Type.INTEGER, 5, 0, 3600

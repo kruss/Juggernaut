@@ -39,12 +39,12 @@ public abstract class AbstractOperationConfig implements IOptionInitializer {
 		
 		optionContainer = new OptionContainer();
 		optionContainer.setDescription(getDescription());
-		optionContainer.getOptions().add(new Option(
+		optionContainer.setOption(new Option(
 				GROUPS.GENERAL.toString(),
 				OPTIONS.ACTIVE.toString(), "The operation's active state",
 				Type.BOOLEAN, true
 		));
-		optionContainer.getOptions().add(new Option(
+		optionContainer.setOption(new Option(
 				GROUPS.GENERAL.toString(),
 				OPTIONS.CRITICAL.toString(), "The operation will aboard the launch on errors",
 				Type.BOOLEAN, false

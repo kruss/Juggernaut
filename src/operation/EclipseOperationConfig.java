@@ -24,32 +24,32 @@ public class EclipseOperationConfig extends AbstractOperationConfig {
 	
 	public EclipseOperationConfig(){
 		
-		optionContainer.getOptions().add(new Option(
+		optionContainer.setOption(new Option(
 				GROUPS.SETTINGS.toString(),
 				OPTIONS.ECLIPSE.toString(), "The path to Eclipse", 
 				Type.TEXT, ""
 		));
-		optionContainer.getOptions().add(new Option(
+		optionContainer.setOption(new Option(
 				GROUPS.SETTINGS.toString(),
 				OPTIONS.BUILD.toString(), "[project|configuration] pattern to include in build (linewise, commented with '//')", 
 				Type.TEXT_AREA, ""
 		));
-		optionContainer.getOptions().add(new Option(
+		optionContainer.setOption(new Option(
 				GROUPS.SETTINGS.toString(),
 				OPTIONS.EXCLUDE.toString(), "[project|configuration] pattern to exclude from build (comma seperated)",
 				Type.TEXT, ""
 		));
-		optionContainer.getOptions().add(new Option(
+		optionContainer.setOption(new Option(
 				GROUPS.SETTINGS.toString(),
 				OPTIONS.CLEAN.toString(), "Perform a clean build", 
 				Type.BOOLEAN, true
 		));
-		optionContainer.getOptions().add(new Option(
+		optionContainer.setOption(new Option(
 				GROUPS.SETTINGS.toString(),
 				OPTIONS.STRICT.toString(), "Build in strict mode", 
 				Type.BOOLEAN, true
 		));
-		optionContainer.getOptions().add(new Option(
+		optionContainer.setOption(new Option(
 				GROUPS.SETTINGS.toString(),
 				OPTIONS.HEAP.toString(), "Set the HEAP size for the Eclipse VM (MB)", 
 				Type.INTEGER, 128, 64, 640

@@ -25,7 +25,7 @@ public class LogConfig implements ILogConfig, IOptionInitializer {
 		optionContainer.setDescription("The log-level preferences");
 
 		for(Module module : Module.values()){
-			optionContainer.getOptions().add(new Option(
+			optionContainer.setOption(new Option(
 					GROUPS.LOGGING.toString(),
 					module.toString(), "Set log-level for "+module.toString()+" module",
 					Type.TEXT_LIST, StringTools.enum2strings(Level.class), Level.NORMAL.toString()

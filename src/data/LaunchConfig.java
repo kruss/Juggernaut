@@ -50,42 +50,42 @@ public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitialize
 		
 		optionContainer = new OptionContainer();
 		optionContainer.setDescription("the configuration of the launch");
-		optionContainer.getOptions().add(new Option(
+		optionContainer.setOption(new Option(
 				GROUPS.GENERAL.toString(),
 				OPTIONS.ACTIVE.toString(), "The launch's active state",
 				Type.BOOLEAN, true
 		));
-		optionContainer.getOptions().add(new Option(
+		optionContainer.setOption(new Option(
 				GROUPS.GENERAL.toString(),
 				OPTIONS.DESCRIPTION.toString(), "The launch's description", 
 				Type.TEXT, ""
 		));
-		optionContainer.getOptions().add(new Option(
+		optionContainer.setOption(new Option(
 				GROUPS.GENERAL.toString(),
 				OPTIONS.CLEAN.toString(), "Clean launch-folder on start",
 				Type.BOOLEAN, true
 		));
-		optionContainer.getOptions().add(new Option(
+		optionContainer.setOption(new Option(
 				GROUPS.GENERAL.toString(),
 				OPTIONS.TIMEOUT.toString(), "Timeout in minutes (0 = no timeout)", 
 				Type.INTEGER, 0, 0, 300
 		));
-		optionContainer.getOptions().add(new Option(
+		optionContainer.setOption(new Option(
 				GROUPS.NOTIFICATION.toString(),
 				OPTIONS.NOTIFICATION.toString(), "Perform eMail-notifications",
 				Type.BOOLEAN, false
 		));
-		optionContainer.getOptions().add(new Option(
+		optionContainer.setOption(new Option(
 				GROUPS.NOTIFICATION.toString(),
 				OPTIONS.ADMINISTRATORS.toString(), "List of administrator eMails (comma seperated)", 
 				Type.TEXT, ""
 		));
-		optionContainer.getOptions().add(new Option(
+		optionContainer.setOption(new Option(
 				GROUPS.NOTIFICATION.toString(),
 				OPTIONS.COMMITTERS.toString(), "Threshold for committer notification (0 = no committer)", 
 				Type.INTEGER, 0, 0, 15
 		));
-		optionContainer.getOptions().add(new Option(
+		optionContainer.setOption(new Option(
 				GROUPS.NOTIFICATION.toString(),
 				OPTIONS.MESSAGE.toString(), "Optional notification message", 
 				Type.TEXT_AREA, ""

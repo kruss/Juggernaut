@@ -24,12 +24,12 @@ public class SVNTriggerConfig extends AbstractTriggerConfig {
 	
 	public SVNTriggerConfig(){
 		
-		optionContainer.getOptions().add(new Option(
+		optionContainer.setOption(new Option(
 				GROUPS.SETTINGS.toString(),
 				OPTIONS.URL.toString(), "SVN Repository Url", 
 				Type.TEXT, ""
 		));
-		optionContainer.getOptions().add(new Option(
+		optionContainer.setOption(new Option(
 				GROUPS.SETTINGS.toString(),
 				OPTIONS.DELAY.toString(), "Trigger delay in minutes", 
 				Type.INTEGER, 5, 0, 15
