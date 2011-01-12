@@ -16,7 +16,7 @@ import smtp.ISmtpClient;
 /** performs the notification for a launch */
 public class LaunchNotification {
 
-	private enum Property { STATUS_HASH, ERROR_HASH };
+	private enum PROPERTY { STATUS_HASH, ERROR_HASH };
 	
 	private History history;
 	private Cache cache;
@@ -71,15 +71,15 @@ public class LaunchNotification {
 	
 	private void setStatusHashProperty(){
 		
-		cache.addProperty(
-				launch.getConfig().getId(), Property.STATUS_HASH.toString(), ""+computeStatusHash().longValue()
+		cache.setProperty(
+				launch.getConfig().getId(), PROPERTY.STATUS_HASH.toString(), ""+computeStatusHash().longValue()
 		);
 	}
 	
 	private Long getStatusHashProperty(){
 		
 		String value = cache.getProperty(
-				launch.getConfig().getId(), Property.STATUS_HASH.toString()
+				launch.getConfig().getId(), PROPERTY.STATUS_HASH.toString()
 		);
 		if(value != null){
 			return new Long(value);
@@ -107,15 +107,15 @@ public class LaunchNotification {
 	
 	private void setErrorHashProperty(){
 		
-		cache.addProperty(
-				launch.getConfig().getId(), Property.ERROR_HASH.toString(), ""+computeErrorHash().longValue()
+		cache.setProperty(
+				launch.getConfig().getId(), PROPERTY.ERROR_HASH.toString(), ""+computeErrorHash().longValue()
 		);
 	}
 	
 	private Long getErrorHashProperty(){
 
 		String value = cache.getProperty(
-				launch.getConfig().getId(), Property.ERROR_HASH.toString()
+				launch.getConfig().getId(), PROPERTY.ERROR_HASH.toString()
 		);
 		if(value != null){
 			return new Long(value);

@@ -47,10 +47,6 @@ public abstract class AbstractOperation extends LifecycleObject {
 		logger = parent.getLogger();
 		this.config = config.clone();
 		errors = new ArrayList<Error>();
-		
-		parent.getPropertyContainer().addProperties(
-				config.getId(), config.getOptionContainer().getProperties()
-		);
 	}
 	
 	public ArrayList<Error> getErrors(){ return errors; }
@@ -91,7 +87,10 @@ public abstract class AbstractOperation extends LifecycleObject {
 	public Logger getLogger() { return logger; }
 	
 	@Override
-	protected void init() throws Exception {}
+	protected void init() throws Exception {
+		
+		logger.debug(Module.COMMON, "Settings:\n"+config.getOptionContainer().toString());
+	}
 	
 	@Override
 	protected void finish() {

@@ -8,8 +8,8 @@ import repository.IRepositoryClient.CheckoutInfo;
 import repository.IRepositoryClient.HistoryInfo;
 
 import launch.LaunchAgent;
-import launch.PropertyContainer;
 import launch.StatusManager.Status;
+import launch.Property;
 
 import logger.ILogConfig.Module;
 import data.AbstractOperation;
@@ -17,7 +17,7 @@ import data.Artifact;
 
 public class SVNOperation extends AbstractOperation implements IRepositoryOperation {
 
-	private enum Property { REVISION };
+	private enum PROPERTY { URL, REVISION };
 	
 	private SVNClient client;
 	private SVNOperationConfig config;
@@ -51,30 +51,29 @@ public class SVNOperation extends AbstractOperation implements IRepositoryOperat
 		return getUrlProperty() + (currentRevision != null ? " ("+currentRevision+")" : "");
 	}
 	
-	
-	private void setLastRevisionCache(String revision){
-		cache.addProperty(
-				config.getId(), Property.REVISION.toString(), revision
+	private void setLastRevisionProperty(String revision){
+		cache.setProperty(
+				config.getId(), PROPERTY.REVISION.toString(), revision
 		);
 	}
 	
-	private String getLastRevisionCache(){
+	private String getLastRevisionProperty(){
 		return cache.getProperty(
-				config.getId(), Property.REVISION.toString()
+				config.getId(), PROPERTY.REVISION.toString()
 		);
 	}
 
 	private String getUrlProperty() {
-		return PropertyContainer.expand(parent.getPropertyContainer(), config.getUrl());
+		return parent.getPropertyContainer().expand(config.getUrl());
 	}
 	
 	private String getRevisionProperty() {
-		return PropertyContainer.expand(parent.getPropertyContainer(), config.getRevision());
+		return parent.getPropertyContainer().expand(config.getRevision());
 	}
 	
 	private void setRevisionProperty(String revision) {
-		parent.getPropertyContainer().addProperty(
-				config.getId(), Property.REVISION.toString(), revision
+		parent.getPropertyContainer().setProperty(
+				new Property(config.getId(), PROPERTY.REVISION.toString(), revision)
 		);
 	}
 	
@@ -96,13 +95,13 @@ public class SVNOperation extends AbstractOperation implements IRepositoryOperat
 	
 	private void svnCheckout(String url, String revision) throws Exception {
 
-		lastRevision = getLastRevisionCache();
+		lastRevision = getLastRevisionProperty();
 		
 		CheckoutInfo checkout = client.checkout(url, revision, parent.getFolder());
 		currentRevision = checkout.revision;
 		logger.log(Module.COMMAND, "Checkout with Revision: "+currentRevision);
 
-		setLastRevisionCache(currentRevision);
+		setLastRevisionProperty(currentRevision);
 		setRevisionProperty(currentRevision);
 
 		Artifact checkoutArtifact = new Artifact("Checkout", checkout.output, "txt");

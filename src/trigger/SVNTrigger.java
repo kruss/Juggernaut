@@ -18,7 +18,7 @@ import data.AbstractTrigger;
 
 public class SVNTrigger extends AbstractTrigger {
 
-	private enum Property { REVISION };
+	private enum PROPERTY { REVISION };
 	
 	private SVNClient client;
 	private SVNTriggerConfig config;
@@ -31,15 +31,15 @@ public class SVNTrigger extends AbstractTrigger {
 		client = new SVNClient(taskManager, logger);
 	}
 	
-	private void setLastRevisionCache(String revision){
-		cache.addProperty(
-				config.getId(), Property.REVISION.toString(), revision
+	private void setLastRevisionProperty(String revision){
+		cache.setProperty(
+				config.getId(), PROPERTY.REVISION.toString(), revision
 		);
 	}
 	
-	private String getLastRevisionCache(){
+	private String getLastRevisionProperty(){
 		return cache.getProperty(
-				config.getId(), Property.REVISION.toString()
+				config.getId(), PROPERTY.REVISION.toString()
 		);
 	}
 	
@@ -48,7 +48,7 @@ public class SVNTrigger extends AbstractTrigger {
 		
 		try{
 			info = client.getInfo(config.getUrl());
-			String lastRevision = getLastRevisionCache();
+			String lastRevision = getLastRevisionProperty();
 			Date currentDate = new Date();
 			
 			if(lastRevision == null){
@@ -84,7 +84,7 @@ public class SVNTrigger extends AbstractTrigger {
 	public void wasTriggered(boolean triggered) {
 		
 		if(triggered && info != null){
-			setLastRevisionCache(info.revision);
+			setLastRevisionProperty(info.revision);
 		}
 	}
 }

@@ -5,7 +5,6 @@ import http.IHttpServer;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import operation.IRepositoryOperation;
 
@@ -22,7 +21,6 @@ import data.LaunchHistory;
 import data.LaunchConfig;
 import data.OperationHistory;
 import smtp.ISmtpClient;
-import util.DateTools;
 import util.FileTools;
 import util.SystemTools;
 import launch.StatusManager.Status;
@@ -34,6 +32,8 @@ import data.Error;
 
 public class LaunchAgent extends LifecycleObject {
 
+	private enum PROPERTY { NAME, FOLDER, START }
+	
 	private History history;
 	private FileManager fileManager;
 	private LaunchConfig launchConfig;
@@ -68,21 +68,12 @@ public class LaunchAgent extends LifecycleObject {
 		logger.setConfig(configuration.getLogConfig());
 		
 		propertyContainer = new PropertyContainer();
-		propertyContainer.addProperty(launchConfig.getId(), "Name", launchConfig.getName());
-		propertyContainer.addProperty(launchConfig.getId(), "Folder", getFolder());
-		propertyContainer.addProperty(launchConfig.getId(), "Trigger", trigger);
-		propertyContainer.addProperty(launchConfig.getId(), "Clean", ""+launchConfig.isClean());
-		propertyContainer.addProperty(launchConfig.getId(), "Timeout", DateTools.millis2min(launchConfig.getTimeout())+" min");
 		
 		operations = new ArrayList<AbstractOperation>();
 		for(AbstractOperationConfig operationConfig : launchConfig.getOperationConfigs()){
 			if(operationConfig.isActive()){
 				AbstractOperation operation = operationConfig.createOperation(configuration, cache, taskManager, this);
 				operations.add(operation);
-				propertyContainer.addProperties(
-						operationConfig.getId(), 
-						operationConfig.getOptionContainer().getProperties()
-				);
 			}
 		}
 		
@@ -120,11 +111,10 @@ public class LaunchAgent extends LifecycleObject {
 		logger.setLogFile(new File(launchHistory.logfile), 0);
 		logger.info(Module.COMMON, "Launch ["+launchConfig.getName()+"]");
 		artifacts.add(new Artifact("Logfile", logger.getLogFile()));
-		printProperties(propertyContainer.getProperties(launchConfig.getId()));
 		
 		// setup launch-folder
 		File folder = new File(getFolder());
-		logger.log(Module.COMMON, "folder: "+folder.getAbsolutePath());
+		logger.log(Module.COMMON, "Folder: "+folder.getAbsolutePath());
 		if(launchConfig.isClean() && folder.isDirectory()){
 			try{
 				FileTools.deleteFolder(folder.getAbsolutePath());
@@ -140,6 +130,20 @@ public class LaunchAgent extends LifecycleObject {
 		if(!folder.isDirectory()){
 			FileTools.createFolder(folder.getAbsolutePath());
 		}
+		
+		// set properties
+		propertyContainer.setProperty(
+				new Property(launchConfig.getId(), PROPERTY.NAME.toString(), launchConfig.getName())
+		);
+		propertyContainer.setProperty(
+				new Property(launchConfig.getId(), PROPERTY.FOLDER.toString(), getFolder())
+		);
+		propertyContainer.setProperty(
+				new Property(launchConfig.getId(), PROPERTY.START.toString(), ""+statusManager.getStart().getTime())
+		);
+		
+		// debug config
+		logger.debug(Module.COMMON, "Settings:\n"+launchConfig.getOptionContainer().toString());
 	}
 	
 	@Override
@@ -182,13 +186,8 @@ public class LaunchAgent extends LifecycleObject {
 				operation.getIndex()+"/"+launchConfig.getOperationConfigs().size()+
 				" Operation ["+operation.getConfig().getName()+"]"
 		);
-		printProperties(propertyContainer.getProperties(operation.getConfig().getId()));
 		if(!aboard){
 			operation.syncRun(0, 0);
-			propertyContainer.addProperties(
-					operation.getConfig().getId(), 
-					operation.getStatusManager().getProperties()
-			);
 		}else{
 			operation.getStatusManager().setStatus(Status.CANCEL);
 		}
@@ -199,12 +198,6 @@ public class LaunchAgent extends LifecycleObject {
 	protected void finish() {
 
 		logger.info(Module.COMMON, "Output");
-		
-		// update properties
-		propertyContainer.addProperties(
-				launchConfig.getId(), 
-				statusManager.getProperties()
-		);
 		
 		// perform notification
 		try{ 
@@ -235,17 +228,6 @@ public class LaunchAgent extends LifecycleObject {
 		// close logging
 		logger.info(Module.COMMON, statusManager.getStatus().toString());
 		logger.clearListeners();
-	}
-	
-	// TODO move somehow
-	private void printProperties(HashMap<String, String> properties) {
-		
-		StringBuilder info = new StringBuilder();
-		ArrayList<String> keys = PropertyContainer.getKeys(properties);
-		for(String key : keys){
-			info.append("\t"+key+": "+properties.get(key)+"\n");
-		}
-		logger.debug(Module.COMMON, "Properties [\n"+info.toString()+"]");
 	}
 	
 	public ArrayList<IRepositoryOperation> getRepositoryOperations(){

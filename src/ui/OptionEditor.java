@@ -88,7 +88,7 @@ public class OptionEditor extends JPanel {
 				initializer.initOptions(container);
 			}
 		}else{
-			setToolTipText("");
+			setToolTipText(null);
 		}
 	}
 

@@ -1,8 +1,6 @@
 package launch;
 
 import java.util.Date;
-import java.util.HashMap;
-import util.DateTools;
 
 import launch.ILifecycleListener.Lifecycle;
 
@@ -71,22 +69,6 @@ public class StatusManager {
 		}
 	}
 	public Date getEnd(){ return end; }
-	
-	public HashMap<String, String> getProperties(){
-		
-		HashMap<String, String> map = new HashMap<String, String>();
-		map.put("Status", status.toString());
-		if(start != null){
-			map.put("Start", DateTools.getTextDate(start));
-		}
-		if(end != null){
-			map.put("End", DateTools.getTextDate(end));
-		}
-		if(start != null &&end != null){
-			map.put("Time", DateTools.getTimeDiff(start, end)+" min");
-		}
-		return map;
-	}
 
 	public static int getStatusValue(Status status){
 		

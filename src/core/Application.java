@@ -103,6 +103,7 @@ public class Application extends AbstractSystem {
 					core.logger);
 			add(configuration);
 			cache = Cache.create(
+					configuration,
 					core.fileManager, 
 					core.logger);
 			add(cache);

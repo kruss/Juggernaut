@@ -11,7 +11,6 @@ import util.CommandTask;
 import util.StringTools;
 import util.SystemTools;
 import launch.LaunchAgent;
-import launch.PropertyContainer;
 import launch.StatusManager.Status;
 
 import logger.ILogConfig.Level;
@@ -30,17 +29,18 @@ public class EclipseOperation extends AbstractOperation {
 	
 	@Override
 	public String getDescription() {
-		return PropertyContainer.expand(parent.getPropertyContainer(), config.getEclipsePath());
+		return parent.getPropertyContainer().expand(config.getEclipsePath());
 	}
 
 	@Override
 	protected void execute() throws Exception {
 		
 		File eclipse = new File(
-				PropertyContainer.expand(parent.getPropertyContainer(), config.getEclipsePath())
+				parent.getPropertyContainer().expand(config.getEclipsePath())
 		);
 		String command = null;
 		String directory = null;
+		
 		if(eclipse.isFile()){
 			command = eclipse.getName();
 			if(SystemTools.isWindowsOS()){

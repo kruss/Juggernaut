@@ -9,7 +9,6 @@ import core.TaskManager;
 
 import util.CommandTask;
 import launch.LaunchAgent;
-import launch.PropertyContainer;
 import launch.StatusManager.Status;
 import data.AbstractOperation;
 import data.Artifact;
@@ -25,15 +24,15 @@ public class CommandOperation extends AbstractOperation {
 
 	@Override
 	public String getDescription() {
-		return PropertyContainer.expand(parent.getPropertyContainer(), config.getCommand());
+		return parent.getPropertyContainer().expand(config.getCommand());
 	}
 	
 	@Override
 	protected void execute() throws Exception {
 		
-		String command = PropertyContainer.expand(parent.getPropertyContainer(), config.getCommand());
-		String arguments = PropertyContainer.expand(parent.getPropertyContainer(), config.getArguments());
-		String directory = PropertyContainer.expand(parent.getPropertyContainer(), config.getDirectory());
+		String command = parent.getPropertyContainer().expand(config.getCommand());
+		String arguments = parent.getPropertyContainer().expand(config.getArguments());
+		String directory = parent.getPropertyContainer().expand(config.getDirectory());
 		
 		CommandTask task = new CommandTask(
 				command, 

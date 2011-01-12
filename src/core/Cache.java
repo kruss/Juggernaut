@@ -3,6 +3,7 @@ package core;
 import java.io.File;
 
 import launch.PropertyContainer;
+import launch.Property;
 
 import logger.Logger;
 import logger.ILogConfig.Module;
@@ -16,32 +17,34 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
  */
 public class Cache implements ISystemComponent {
 
-	public static Cache create(FileManager fileManager, Logger logger) throws Exception {
+	public static Cache create(Configuration configuration, FileManager fileManager, Logger logger) throws Exception {
 		
 		File file = new File(fileManager.getDataFolderPath()+File.separator+Cache.OUTPUT_FILE);
 		if(file.isFile()){
-			return Cache.load(logger, file.getAbsolutePath());
+			return Cache.load(configuration, logger, file.getAbsolutePath());
 		}else{
-			return new Cache(logger, file.getAbsolutePath());
+			return new Cache(configuration, logger, file.getAbsolutePath());
 		}	
 	}
 	
 	public static final String OUTPUT_FILE = "Cache.xml";
 	
+	private transient Configuration configuration;
 	private transient Logger logger;
 	
 	@SuppressWarnings("unused")
 	private String version;
-	private PropertyContainer propertyContainer;
+	private PropertyContainer container;
 	private transient String path;
 	private transient boolean dirty;
 	
-	public Cache(Logger logger, String path){
+	public Cache(Configuration configuration, Logger logger, String path){
 		
+		this.configuration = configuration;
 		this.logger = logger;
 		
 		version = Constants.APP_VERSION;
-		propertyContainer = new PropertyContainer();
+		container = new PropertyContainer();
 		this.path = path;
 		dirty = true;
 	}
@@ -59,27 +62,38 @@ public class Cache implements ISystemComponent {
 	public void setDirty(boolean dirty){ this.dirty = dirty; }
 	public boolean isDirty(){ return dirty; }
 	
-	public synchronized void addProperty(String id, String name, String value){
+	public void setProperty(String id, String key, String value){
 		
-		propertyContainer.addProperty(id, name, value);
-		dirty = true;
-		try{ 
-			save(); 
-		}catch(Exception e){
-			logger.error(Module.COMMON, e);
+		synchronized(container){
+			container.setProperty(new Property(id, key, value));
+			dirty = true;
+			try{ 
+				save(); 
+			}catch(Exception e){
+				logger.error(Module.COMMON, e);
+			}
 		}
 	}
 	
-	public synchronized String getProperty(String id, String name){
-		return propertyContainer.getProperty(id, name);
+	public String getProperty(String id, String key){
+		
+		synchronized(container){
+			Property property = container.getProperty(id, key);
+			if(property != null){
+				return property.value;
+			}else{
+				return null;
+			}
+		}
 	}
 	
-	public static Cache load(Logger logger, String path) throws Exception {
+	public static Cache load(Configuration configuration, Logger logger, String path) throws Exception {
 		
 		logger.debug(Module.COMMON, "load: "+path);
 		XStream xstream = new XStream(new DomDriver());
 		String xml = FileTools.readFile(path);
 		Cache cache = (Cache)xstream.fromXML(xml);
+		cache.configuration = configuration;
 		cache.logger = logger;
 		cache.path = path;
 		cache.dirty = false;
@@ -98,6 +112,6 @@ public class Cache implements ISystemComponent {
 	}
 
 	public void cleanup() {
-		// TODO clean cache
+		logger.debug(Module.COMMON, "cleanup cache");
 	}
 }

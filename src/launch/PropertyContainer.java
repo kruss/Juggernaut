@@ -1,82 +1,76 @@
 package launch;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 
 public class PropertyContainer {
-
-	private static final String DELIM = "::";
 	
-	private HashMap<String, String> properties;
+	private ArrayList<Property> entries;
 	
 	public PropertyContainer() {
-		
-		properties = new HashMap<String, String>();
+		entries = new ArrayList<Property>();
 	}
-
-	public void addProperties(String id, HashMap<String, String> map){
+	
+	public void setProperty(Property property){
 		
-		ArrayList<String> names = getKeys(map);
-		for(String name : names){
-			addProperty(id, name, map.get(name));
+		Property entry = getProperty(property.id, property.key);
+		if(entry != null){
+			entry.value = property.value;
+		}else{
+			entries.add(property);
 		}
 	}
 	
-	public void addProperty(String id, String name, String value){
-		properties.put(getKey(id, name), value);
-	}
-	
-	public String getProperty(String id, String name){
-		return properties.get(getKey(id, name));
-	}
-	
-	public HashMap<String, String> getProperties(String id){
+	public Property getProperty(String id, String key){
 		
-		HashMap<String, String> map = new HashMap<String, String>();
-		ArrayList<String> keys = getKeys(properties);
-		for(String key : keys){
-			if(key.startsWith(id)){
-				map.put(getName(key), properties.get(key));
+		for(Property entry : entries){
+			if(entry.id.equals(id) && entry.key.equals(key)){
+				return entry;
 			}
 		}
-		return map;
-	}
-
-	private String getKey(String id, String name) {
-		return id+DELIM+name;
+		return null;
 	}
 	
-	private String getName(String key){
-		return key.substring(key.indexOf(DELIM)+DELIM.length(), key.length());
-	}
-	
-	public static ArrayList<String> getKeys(HashMap<String, String> map) {
-		String[] keys = map.keySet().toArray(new String[1]);
-		ArrayList<String> list = new ArrayList<String>();
-		for(String key : keys){
-			list.add(key);
+	public void setProperties(ArrayList<Property> properties){
+		
+		for(Property property : properties){
+			setProperty(property);
 		}
-		Collections.sort(list);
+	}
+	
+	public ArrayList<Property> getProperties(String id){
+		
+		ArrayList<Property> list = new ArrayList<Property>();
+		for(Property entry : entries){
+			if(entry.id.equals(id)){
+				list.add(entry);
+			}
+		}
 		return list;
 	}
 	
-	public static String expand(PropertyContainer container, String value) {
+	/** expand all properties within value of syntax {id@key} */
+	public String expand(String string) {
 		
+		int index = 0;
 		while(true){
-			int a = value.indexOf("{", 0);
-			int b = value.indexOf("}", a);
-			if(a!=-1 && b!=-1){
-				String key = value.substring(a+1, b);
-				String expand = container.properties.get(key);
-				if(expand == null){
-					expand = "?"+key+"?";
+			int left = string.indexOf("{", index);
+			int right = string.indexOf("}", left);
+			if(left != -1 && right != -1){
+				index = left+1;
+				int delim = string.indexOf("@", left);
+				if(delim != -1 && delim < right){
+					String id = string.substring(left+1, delim);
+					String name = string.substring(delim+1, right); 
+					
+					Property property = getProperty(id, name);
+					if(property != null){
+						string = string.substring(0, left)+property.value+string.substring(right+1, string.length());
+					}
 				}
-				value = value.substring(0, a)+expand+value.substring(b+1, value.length());
 			}else{
 				break;
 			}
 		}
-		return value;
+		return string;
 	}
 }

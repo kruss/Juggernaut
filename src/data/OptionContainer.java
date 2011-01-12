@@ -1,7 +1,6 @@
 package data;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import data.Option.Type;
 
@@ -45,16 +44,23 @@ public class OptionContainer {
 		}
 		return null;
 	}
-	
-	public HashMap<String, String> getProperties(){
-		
-		HashMap<String, String> map = new HashMap<String, String>();
-		for(Option option : options){
-			map.put(option.getName(), option.getStringValue());
-		}
-		return map;
-	}
 
+	public String toString() {
+		
+		StringBuilder text = new StringBuilder();
+		for(Option option : options){
+			if(!option.getStringValue().isEmpty()){	
+				String name = option.getGroup()+"::"+option.getName();
+				String value = 
+					(option.getType() == Type.TEXT_AREA) ?
+					option.getStringValue().replaceAll("\\n", "\\\\n") : 
+					option.getStringValue();
+				text.append(name+"=["+value+"]\n");
+			}
+		}
+		return text.toString();
+	}
+	
 	public String toHtml() {
 		
 		StringBuilder html = new StringBuilder();

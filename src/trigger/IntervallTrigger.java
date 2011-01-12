@@ -11,7 +11,7 @@ import data.AbstractTrigger;
 
 public class IntervallTrigger extends AbstractTrigger {
 
-	private enum Property { DATE };
+	private enum PROPERTY { DATE };
 	
 	private IntervallTriggerConfig config;
 	
@@ -22,15 +22,15 @@ public class IntervallTrigger extends AbstractTrigger {
 		this.config = config;
 	}
 	
-	private void setLastDate(Date date){
-		cache.addProperty(
-				config.getId(), Property.DATE.toString(), ""+date.getTime()
+	private void setLastDateProperty(Date date){
+		cache.setProperty(
+				config.getId(), PROPERTY.DATE.toString(), ""+date.getTime()
 		);
 	}
 	
-	private Date getLastDate(){
+	private Date getLastDateProperty(){
 		String value = cache.getProperty(
-				config.getId(), Property.DATE.toString()
+				config.getId(), PROPERTY.DATE.toString()
 		);
 		if(value != null){
 			return new Date(new Long(value).longValue());
@@ -42,7 +42,7 @@ public class IntervallTrigger extends AbstractTrigger {
 	@Override
 	public TriggerStatus isTriggered() {
 		
-		Date lastDate = getLastDate();
+		Date lastDate = getLastDateProperty();
 		newDate = new Date();
 		
 		if(lastDate == null){
@@ -64,7 +64,7 @@ public class IntervallTrigger extends AbstractTrigger {
 	public void wasTriggered(boolean triggered) {
 		
 		if(triggered && newDate != null){
-			setLastDate(newDate);
+			setLastDateProperty(newDate);
 		}
 	}
 }
