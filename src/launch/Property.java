@@ -1,6 +1,6 @@
 package launch;
 
-public class Property {
+public class Property implements Comparable<Property> {
 	
 	public String id; 
 	public String key; 
@@ -13,6 +13,15 @@ public class Property {
 	}
 
 	public String toString(){
-		return id+"@"+key+"="+value;
+		return getIdentifier()+"="+value;
+	}
+	
+	private String getIdentifier(){
+		return id+"@"+key;
+	}
+
+	@Override
+	public int compareTo(Property o) {
+		return getIdentifier().compareTo(o.getIdentifier());
 	}
 }

@@ -1,6 +1,7 @@
 package launch;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class PropertyContainer {
 	
@@ -17,6 +18,7 @@ public class PropertyContainer {
 			entry.value = property.value;
 		}else{
 			entries.add(property);
+			Collections.sort(entries);
 		}
 	}
 	
@@ -72,5 +74,19 @@ public class PropertyContainer {
 			}
 		}
 		return string;
+	}
+
+	/** remove entries which does not match given ids */
+	public boolean cleanup(ArrayList<String> validIds) {
+		
+		boolean cleanup = false;
+		for(int i=entries.size()-1; i>=0; i--){
+			Property entry = entries.get(i);
+			if(!validIds.contains(entry.id)){
+				entries.remove(entry);
+				cleanup = true;
+			}
+		}
+		return cleanup;
 	}
 }

@@ -1,6 +1,7 @@
 package core;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import launch.PropertyContainer;
 import launch.Property;
@@ -11,6 +12,10 @@ import util.FileTools;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
+
+import data.AbstractOperationConfig;
+import data.AbstractTriggerConfig;
+import data.LaunchConfig;
 
 /**
  * the cache of the application,- will be serialized
@@ -111,7 +116,35 @@ public class Cache implements ISystemComponent {
 		}
 	}
 
-	public void cleanup() {
-		logger.debug(Module.COMMON, "cleanup cache");
+	private void cleanup() throws Exception {
+		
+		synchronized(container){
+			if(container.cleanup(getValidIds())){
+				dirty = true;
+				save();
+			}
+		}
+	}
+
+	private ArrayList<String> getValidIds() {
+		
+		ArrayList<String> ids = new ArrayList<String>();
+		for(LaunchConfig config : configuration.getLaunchConfigs()){
+			ids.addAll(getLaunchIds(config));
+		}
+		return ids;
+	}
+	
+	private ArrayList<String> getLaunchIds(LaunchConfig config) {
+		
+		ArrayList<String> ids = new ArrayList<String>();
+		ids.add(config.getId());
+		for(AbstractOperationConfig operation : config.getOperationConfigs()){
+			ids.add(operation.getId());
+		}
+		for(AbstractTriggerConfig trigger : config.getTriggerConfigs()){
+			ids.add(trigger.getId());
+		}
+		return ids;
 	}
 }
