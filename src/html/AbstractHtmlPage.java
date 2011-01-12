@@ -10,6 +10,8 @@ import util.FileTools;
 
 public abstract class AbstractHtmlPage {
 
+	private static final int REFRESH = 60; // sec
+	
 	protected String name;
 	protected String path;
 	protected HtmlLink parent;
@@ -49,7 +51,7 @@ public abstract class AbstractHtmlPage {
 			html.append("<meta http-equiv=\"expires\" content=\"0\">\n");
 		}
 		if(refresh){
-			html.append("<meta http-equiv=\"refresh\" content=\"60\">\n");
+			html.append("<meta http-equiv=\"refresh\" content=\""+REFRESH+"\">\n");
 		}
 		html.append(getCSS());
 		html.append("</head><body>\n");
