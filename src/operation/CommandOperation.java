@@ -17,30 +17,35 @@ public class CommandOperation extends AbstractOperation {
 
 	private CommandOperationConfig config;
 	
-	public CommandOperation(Configuration configuration, Cache cache, TaskManager taskManager, LaunchAgent parent, CommandOperationConfig config) {
+	public CommandOperation(
+			Configuration configuration, 
+			Cache cache, 
+			TaskManager taskManager, 
+			LaunchAgent parent, 
+			CommandOperationConfig config)
+	{
 		super(configuration, cache, taskManager, parent, config);
-		this.config = config;
+		this.config = (CommandOperationConfig) super.config;
 	}
 
 	@Override
 	public String getDescription() {
-		return parent.getPropertyContainer().expand(config.getCommand());
+		return config.getCommand();
 	}
 	
 	@Override
 	protected void execute() throws Exception {
-		
-		String command = parent.getPropertyContainer().expand(config.getCommand());
-		String arguments = parent.getPropertyContainer().expand(config.getArguments());
-		String directory = parent.getPropertyContainer().expand(config.getDirectory());
-		
+		 
 		CommandTask task = new CommandTask(
-				command, 
-				arguments,
-				directory.isEmpty() ? parent.getFolder() : parent.getFolder()+File.separator+directory, 
+				config.getCommand(), 
+				config.getArguments(),
+				config.getDirectory().isEmpty() ? 
+						parent.getFolder() : 
+						parent.getFolder()+File.separator+config.getDirectory(), 
 				taskManager,
 				logger
 		);
+		
 		try{
 			task.syncRun(0, 0);
 		}finally{

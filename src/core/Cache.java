@@ -62,7 +62,7 @@ public class Cache implements ISystemComponent {
 	public void setDirty(boolean dirty){ this.dirty = dirty; }
 	public boolean isDirty(){ return dirty; }
 	
-	public void setProperty(String id, String key, String value){
+	public void setValue(String id, String key, String value){
 		
 		synchronized(container){
 			container.setProperty(new Property(id, key, value));
@@ -75,7 +75,7 @@ public class Cache implements ISystemComponent {
 		}
 	}
 	
-	public String getProperty(String id, String key){
+	public String getValue(String id, String key){
 		
 		synchronized(container){
 			Property property = container.getProperty(id, key);

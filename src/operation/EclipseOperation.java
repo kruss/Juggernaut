@@ -22,22 +22,26 @@ public class EclipseOperation extends AbstractOperation {
 
 	private EclipseOperationConfig config;
 	
-	public EclipseOperation(Configuration configuration, Cache cache, TaskManager taskManager, LaunchAgent parent, EclipseOperationConfig config) {
+	public EclipseOperation(
+			Configuration configuration, 
+			Cache cache, 
+			TaskManager taskManager, 
+			LaunchAgent parent, 
+			EclipseOperationConfig config)
+	{
 		super(configuration, cache, taskManager, parent, config);
-		this.config = config;
+		this.config = (EclipseOperationConfig) super.config;
 	}
 	
 	@Override
 	public String getDescription() {
-		return parent.getPropertyContainer().expand(config.getEclipsePath());
+		return config.getEclipsePath();
 	}
 
 	@Override
 	protected void execute() throws Exception {
 		
-		File eclipse = new File(
-				parent.getPropertyContainer().expand(config.getEclipsePath())
-		);
+		File eclipse = new File(config.getEclipsePath());
 		String command = null;
 		String directory = null;
 		

@@ -2,6 +2,8 @@ package data;
 
 import java.util.ArrayList;
 
+import launch.PropertyContainer;
+
 import data.Option.Type;
 
 // TODO verify unique names within container
@@ -43,6 +45,15 @@ public class OptionContainer {
 			}
 		}
 		return null;
+	}
+	
+	public void expand(PropertyContainer container){
+		
+		for(Option option : options){
+			String value = option.getStringValue();
+			String expand = container.expand(value);
+			option.setStringValue(expand);
+		}
 	}
 
 	public String toString() {

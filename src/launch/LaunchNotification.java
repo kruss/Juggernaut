@@ -50,8 +50,8 @@ public class LaunchNotification {
 				Artifact artifact = notification.performNotification();
 				launch.getArtifacts().add(artifact);
 				
-				setStatusHashProperty();
-				setErrorHashProperty();
+				setStatusHash();
+				setErrorHash();
 			}else{
 				launch.getLogger().debug(Module.SMTP, "Notification NOT required");
 			}
@@ -64,21 +64,21 @@ public class LaunchNotification {
 
 	private boolean isStatusHashChanged() {
 		
-		Long last = getStatusHashProperty();
+		Long last = getStatusHash();
 		Long current = computeStatusHash();
 		return (last == null) || (last.longValue() != current.longValue());
 	}
 	
-	private void setStatusHashProperty(){
+	private void setStatusHash(){
 		
-		cache.setProperty(
+		cache.setValue(
 				launch.getConfig().getId(), PROPERTY.STATUS_HASH.toString(), ""+computeStatusHash().longValue()
 		);
 	}
 	
-	private Long getStatusHashProperty(){
+	private Long getStatusHash(){
 		
-		String value = cache.getProperty(
+		String value = cache.getValue(
 				launch.getConfig().getId(), PROPERTY.STATUS_HASH.toString()
 		);
 		if(value != null){
@@ -100,21 +100,21 @@ public class LaunchNotification {
 	
 	private boolean isErrorHashChanged() {
 		
-		Long last = getErrorHashProperty();
+		Long last = getErrorHash();
 		Long current = computeErrorHash().longValue();
 		return (last == null) || (last.longValue() != current.longValue());
 	}
 	
-	private void setErrorHashProperty(){
+	private void setErrorHash(){
 		
-		cache.setProperty(
+		cache.setValue(
 				launch.getConfig().getId(), PROPERTY.ERROR_HASH.toString(), ""+computeErrorHash().longValue()
 		);
 	}
 	
-	private Long getErrorHashProperty(){
+	private Long getErrorHash(){
 
-		String value = cache.getProperty(
+		String value = cache.getValue(
 				launch.getConfig().getId(), PROPERTY.ERROR_HASH.toString()
 		);
 		if(value != null){

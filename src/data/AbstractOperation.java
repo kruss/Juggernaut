@@ -89,7 +89,10 @@ public abstract class AbstractOperation extends LifecycleObject {
 	@Override
 	protected void init() throws Exception {
 		
-		logger.debug(Module.COMMON, "Settings:\n"+config.getOptionContainer().toString());
+		// expand properties
+		config.getOptionContainer().expand(parent.getPropertyContainer());
+		// debug options
+		logger.debug(Module.COMMON, "Settings:\n"+config.getOptionContainer().toString());		
 	}
 	
 	@Override

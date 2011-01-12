@@ -22,25 +22,31 @@ public class SVNOperation extends AbstractOperation implements IRepositoryOperat
 	private SVNClient client;
 	private SVNOperationConfig config;
 	
-	public String url;
 	public String lastRevision;
 	public String currentRevision;
+	
 	public HistoryInfo history;		
 	
 	@Override
-	public String getUrl(){ return url; }
+	public String getUrl(){ return config.getUrl(); }
 	@Override
 	public String getRevision(){ return currentRevision; }
 	@Override
 	public HistoryInfo getHistory(){ return history; }
 	
-	public SVNOperation(Configuration configuration, Cache cache, TaskManager taskManager, LaunchAgent parent, SVNOperationConfig config) {
+	public SVNOperation(
+			Configuration configuration, 
+			Cache cache, 
+			TaskManager 
+			taskManager, 
+			LaunchAgent parent, 
+			SVNOperationConfig config)
+	{
 		super(configuration, cache, taskManager, parent, config);
+		this.config = (SVNOperationConfig) super.config;
 		
-		this.config = config;
 		client = new SVNClient(taskManager,parent.getLogger());
 		
-		url = null;
 		lastRevision = null;
 		currentRevision = null;
 		history = null;
@@ -48,30 +54,22 @@ public class SVNOperation extends AbstractOperation implements IRepositoryOperat
 	
 	@Override
 	public String getDescription() {
-		return getUrlProperty() + (currentRevision != null ? " ("+currentRevision+")" : "");
+		return config.getUrl() + (currentRevision != null ? " ("+currentRevision+")" : "");
 	}
 	
-	private void setLastRevisionProperty(String revision){
-		cache.setProperty(
+	private void setLastRevision(String revision){
+		cache.setValue(
 				config.getId(), PROPERTY.REVISION.toString(), revision
 		);
 	}
 	
-	private String getLastRevisionProperty(){
-		return cache.getProperty(
+	private String getLastRevision(){
+		return cache.getValue(
 				config.getId(), PROPERTY.REVISION.toString()
 		);
 	}
-
-	private String getUrlProperty() {
-		return parent.getPropertyContainer().expand(config.getUrl());
-	}
 	
-	private String getRevisionProperty() {
-		return parent.getPropertyContainer().expand(config.getRevision());
-	}
-	
-	private void setRevisionProperty(String revision) {
+	private void setCurrentRevision(String revision) {
 		parent.getPropertyContainer().setProperty(
 				new Property(config.getId(), PROPERTY.REVISION.toString(), revision)
 		);
@@ -80,10 +78,7 @@ public class SVNOperation extends AbstractOperation implements IRepositoryOperat
 	@Override
 	protected void execute() throws Exception {
 		
-		url = getUrlProperty();
-		String revision = getRevisionProperty();
-		svnCheckout(url, revision);
-		
+		svnCheckout(config.getUrl(), config.getRevision());
 		try{
 			svnHistory();
 		}catch(Exception e){
@@ -95,14 +90,14 @@ public class SVNOperation extends AbstractOperation implements IRepositoryOperat
 	
 	private void svnCheckout(String url, String revision) throws Exception {
 
-		lastRevision = getLastRevisionProperty();
+		lastRevision = getLastRevision();
 		
 		CheckoutInfo checkout = client.checkout(url, revision, parent.getFolder());
 		currentRevision = checkout.revision;
 		logger.log(Module.COMMAND, "Checkout with Revision: "+currentRevision);
 
-		setLastRevisionProperty(currentRevision);
-		setRevisionProperty(currentRevision);
+		setLastRevision(currentRevision);
+		setCurrentRevision(currentRevision);
 
 		Artifact checkoutArtifact = new Artifact("Checkout", checkout.output, "txt");
 		checkoutArtifact.description = "Revision: "+checkout.revision;
@@ -115,7 +110,7 @@ public class SVNOperation extends AbstractOperation implements IRepositoryOperat
 			String startRevision = client.getNextRevision(lastRevision);
 			String endRevision = currentRevision;
 			
-			history = client.getHistory(getUrlProperty(), startRevision, endRevision);
+			history = client.getHistory(config.getUrl(), startRevision, endRevision);
 			logger.log(Module.COMMAND, "History has "+history.commits.size()+" Committs");
 			
 			Artifact commitArtifact = new Artifact("Commits", history.output, "txt");

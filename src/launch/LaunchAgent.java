@@ -142,7 +142,7 @@ public class LaunchAgent extends LifecycleObject {
 				new Property(launchConfig.getId(), PROPERTY.START.toString(), ""+statusManager.getStart().getTime())
 		);
 		
-		// debug config
+		// debug options
 		logger.debug(Module.COMMON, "Settings:\n"+launchConfig.getOptionContainer().toString());
 	}
 	

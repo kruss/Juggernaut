@@ -13,6 +13,6 @@ public class Property {
 	}
 
 	public String toString(){
-		return id+":"+key+"="+value;
+		return id+"@"+key+"="+value;
 	}
 }

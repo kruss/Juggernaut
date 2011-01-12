@@ -16,7 +16,7 @@ public class SampleOperation extends AbstractOperation {
 	
 	public SampleOperation(Configuration configuration, Cache cache, TaskManager taskManager, LaunchAgent parent, SampleOperationConfig config) {
 		super(configuration, cache, taskManager, parent, config);
-		this.config = config;
+		this.config = (SampleOperationConfig) super.config;
 	}
 
 	@Override

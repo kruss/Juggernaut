@@ -19,17 +19,17 @@ public class IntervallTrigger extends AbstractTrigger {
 	
 	public IntervallTrigger(Configuration configuration, Cache cache, Logger logger, IntervallTriggerConfig config) {
 		super(configuration, cache, logger, config);
-		this.config = config;
+		this.config = (IntervallTriggerConfig) super.config;
 	}
 	
-	private void setLastDateProperty(Date date){
-		cache.setProperty(
+	private void setLastDate(Date date){
+		cache.setValue(
 				config.getId(), PROPERTY.DATE.toString(), ""+date.getTime()
 		);
 	}
 	
-	private Date getLastDateProperty(){
-		String value = cache.getProperty(
+	private Date getLastDate(){
+		String value = cache.getValue(
 				config.getId(), PROPERTY.DATE.toString()
 		);
 		if(value != null){
@@ -42,7 +42,7 @@ public class IntervallTrigger extends AbstractTrigger {
 	@Override
 	public TriggerStatus isTriggered() {
 		
-		Date lastDate = getLastDateProperty();
+		Date lastDate = getLastDate();
 		newDate = new Date();
 		
 		if(lastDate == null){
@@ -64,7 +64,7 @@ public class IntervallTrigger extends AbstractTrigger {
 	public void wasTriggered(boolean triggered) {
 		
 		if(triggered && newDate != null){
-			setLastDateProperty(newDate);
+			setLastDate(newDate);
 		}
 	}
 }

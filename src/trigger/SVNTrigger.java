@@ -27,18 +27,19 @@ public class SVNTrigger extends AbstractTrigger {
 	
 	public SVNTrigger(Configuration configuration, Cache cache, TaskManager taskManager, Logger logger, SVNTriggerConfig config) {
 		super(configuration, cache, logger, config);
-		this.config = config;
+		this.config = (SVNTriggerConfig) super.config;
+		
 		client = new SVNClient(taskManager, logger);
 	}
 	
-	private void setLastRevisionProperty(String revision){
-		cache.setProperty(
+	private void setLastRevision(String revision){
+		cache.setValue(
 				config.getId(), PROPERTY.REVISION.toString(), revision
 		);
 	}
 	
-	private String getLastRevisionProperty(){
-		return cache.getProperty(
+	private String getLastRevision(){
+		return cache.getValue(
 				config.getId(), PROPERTY.REVISION.toString()
 		);
 	}
@@ -48,7 +49,7 @@ public class SVNTrigger extends AbstractTrigger {
 		
 		try{
 			info = client.getInfo(config.getUrl());
-			String lastRevision = getLastRevisionProperty();
+			String lastRevision = getLastRevision();
 			Date currentDate = new Date();
 			
 			if(lastRevision == null){
@@ -84,7 +85,7 @@ public class SVNTrigger extends AbstractTrigger {
 	public void wasTriggered(boolean triggered) {
 		
 		if(triggered && info != null){
-			setLastRevisionProperty(info.revision);
+			setLastRevision(info.revision);
 		}
 	}
 }

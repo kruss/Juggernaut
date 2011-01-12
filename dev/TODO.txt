@@ -14,6 +14,8 @@ TASKS
 BUGS
 ----
 
+# UItest blocks UI if rg. SVN command blocks
+
 # String.hashCode() seems not to be stable for constant strings ;-(
 
 # on continous work-load:
