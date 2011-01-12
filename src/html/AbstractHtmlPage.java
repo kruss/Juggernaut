@@ -18,12 +18,18 @@ public abstract class AbstractHtmlPage {
 	public String getName(){ return name; }
 	public String getPath(){ return path; }
 	
+	protected boolean expires;
+	protected boolean refresh;
+	
 	public AbstractHtmlPage(String name, String path, HtmlLink parent){
 		
 		this.name = name;
 		this.path = path;
 		this.parent = parent;
 		childs = new ArrayList<AbstractHtmlPage>();
+		
+		expires = false;
+		refresh = false;
 	}
 	
 	public String getHtml(){
@@ -39,6 +45,12 @@ public abstract class AbstractHtmlPage {
 		
 		StringBuilder html = new StringBuilder();
 		html.append("<html><head><title>"+name+"</title>\n");
+		if(expires){
+			html.append("<meta http-equiv=\"expires\" content=\"0\">\n");
+		}
+		if(refresh){
+			html.append("<meta http-equiv=\"refresh\" content=\"60\">\n");
+		}
 		html.append(getCSS());
 		html.append("</head><body>\n");
 		if(parent != null){

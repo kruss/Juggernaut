@@ -19,7 +19,11 @@ public class HistoryPage extends AbstractHtmlPage {
 	
 	public HistoryPage(History history, String path) {
 		super(Constants.APP_NAME+" [ History ]", path, null);
+		
 		entries = history.getHistoryInfo();
+		
+		expires = true;
+		refresh = true;
 	}
 	
 	@Override
