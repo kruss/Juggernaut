@@ -143,7 +143,7 @@ public class OptionEditor extends JPanel {
 			public void keyTyped(KeyEvent e) {}
 		});
 		JPanel panel = new JPanel(new BorderLayout());
-		panel.add(new JLabel(option.getConvertedName()+":"), BorderLayout.NORTH);
+		panel.add(new JLabel(option.getUIName()+":"), BorderLayout.NORTH);
 		panel.add(component, BorderLayout.CENTER);
 		return panel;
 	}
@@ -170,7 +170,7 @@ public class OptionEditor extends JPanel {
 			public void keyTyped(KeyEvent e) {}
 		});
 		JPanel panel = new JPanel(new BorderLayout());
-		panel.add(new JLabel(option.getConvertedName()+":"), BorderLayout.NORTH);
+		panel.add(new JLabel(option.getUIName()+":"), BorderLayout.NORTH);
 		panel.add(component, BorderLayout.WEST);
 		return panel;
 	}
@@ -196,7 +196,7 @@ public class OptionEditor extends JPanel {
 			public void keyTyped(KeyEvent e) {}
 		});
 		JPanel panel = new JPanel(new BorderLayout());
-		panel.add(new JLabel(option.getConvertedName()+":"), BorderLayout.NORTH);
+		panel.add(new JLabel(option.getUIName()+":"), BorderLayout.NORTH);
 		panel.add(component, BorderLayout.CENTER);
 		return panel;
 	}
@@ -222,7 +222,7 @@ public class OptionEditor extends JPanel {
 			}
 		});
 		JPanel panel = new JPanel(new BorderLayout());
-		panel.add(new JLabel(option.getConvertedName()+":"), BorderLayout.NORTH);
+		panel.add(new JLabel(option.getUIName()+":"), BorderLayout.NORTH);
 		panel.add(component, BorderLayout.WEST);
 		return panel;
 	}
@@ -249,14 +249,14 @@ public class OptionEditor extends JPanel {
 			}
 		});
 		JPanel panel = new JPanel(new BorderLayout());
-		panel.add(new JLabel(option.getConvertedName()+":"), BorderLayout.NORTH);
+		panel.add(new JLabel(option.getUIName()+":"), BorderLayout.NORTH);
 		panel.add(component, BorderLayout.WEST);
 		return panel;
 	}
 	
 	private JPanel createCheckBoxPanel(final Option option) {
 
-		final JCheckBox component = new JCheckBox(option.getConvertedName());
+		final JCheckBox component = new JCheckBox(option.getUIName());
 		option.component = component;
 		component.setToolTipText(option.getDescription());
 		component.setSelected(option.getBooleanValue());

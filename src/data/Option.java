@@ -33,21 +33,6 @@ public class Option {
 	private String value;
 	private HashMap<String, String> properties;
 	
-	public void addPopup(JMenuItem item) {
-		
-		if(popup == null){
-			popup = new JPopupMenu();
-			component.addMouseListener(new MouseAdapter(){
-				public void mouseClicked(MouseEvent e){
-					if(e.getButton() == MouseEvent.BUTTON3){
-						popup.show(e.getComponent(), e.getX(), e.getY());
-					}
-				}
-			});
-		}
-		popup.add(item);
-	}
-	
 	public Option(String group, String name, String description, Type type, String value){
 		
 		init(group, name, description, type);
@@ -93,24 +78,6 @@ public class Option {
 		properties = new HashMap<String, String>();
 	}
 	
-	public String getConvertedName(){
-		String converted = "";
-		char[] chars = name.toLowerCase().replaceAll("_", " ").toCharArray();
-		boolean word = true;
-		for(char c : chars){
-			if(word){
-				converted += Character.toUpperCase(c);
-				word = false;
-			}else{
-				converted += c;
-			}
-			if(c == ' '){
-				word = true;
-			}
-		}
-		return converted;
-	}
-	
 	public String getGroup(){ return group; }
 	public String getName(){ return name; }
 	public String getDescription(){ return description; }
@@ -148,5 +115,39 @@ public class Option {
 
 	public String toString(){
 		return name+" ("+type+") = "+value;
+	}
+	
+	public String getUIName(){
+		
+		String converted = "";
+		char[] chars = name.toLowerCase().replaceAll("_", " ").toCharArray();
+		boolean word = true;
+		for(char c : chars){
+			if(word){
+				converted += Character.toUpperCase(c);
+				word = false;
+			}else{
+				converted += c;
+			}
+			if(c == ' '){
+				word = true;
+			}
+		}
+		return converted;
+	}
+	
+	public void addPopup(JMenuItem item) {
+		
+		if(popup == null){
+			popup = new JPopupMenu();
+			component.addMouseListener(new MouseAdapter(){
+				public void mouseClicked(MouseEvent e){
+					if(e.getButton() == MouseEvent.BUTTON3){
+						popup.show(e.getComponent(), e.getX(), e.getY());
+					}
+				}
+			});
+		}
+		popup.add(item);
 	}
 }
