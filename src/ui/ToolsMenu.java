@@ -5,15 +5,22 @@ import html.AbstractHtmlPage;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.Date;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
+import backup.BackupManager;
+
+import logger.Logger;
+
+import util.DateTools;
 import util.IChangeListener;
 import util.SystemTools;
 import util.UiTools;
 
 
+import core.Application;
 import core.Configuration;
 import core.Constants;
 import core.FileManager;
@@ -25,44 +32,64 @@ public class ToolsMenu extends JMenu implements ISystemComponent, IChangeListene
 
 	private static final long serialVersionUID = 1L;
 
+	private Application application; 
 	private Configuration configuration;
 	private FileManager fileManager;
 	private HeapManager heapManager;
 	
-	private JMenuItem exportConfig;
-	private JMenuItem garbageCollector;
+	private JMenuItem backupConfig;
+	private JMenuItem restoreConfig;
+	private JMenuItem printConfig;
+	private JMenuItem collectGarbage;
 	private JMenuItem taskMonitor;
+	private Logger logger;
 	
 	private TaskMonitor monitor;
 	
 	public ToolsMenu(
+			Application application,
 			Configuration configuration,
 			TaskManager taskManager,
 			FileManager fileManager,
-			HeapManager heapManager)
+			HeapManager heapManager,
+			Logger logger)
 	{
 		super("Tools");
 		
+		this.application = application;
 		this.configuration = configuration;
 		this.fileManager = fileManager;
 		this.heapManager = heapManager;
+		this.logger = logger;
 		
 		monitor = new TaskMonitor(taskManager);
 		
 		JMenu configMenu = new JMenu("Configuration");
 		add(configMenu);
 		
-		exportConfig = new JMenuItem("Export");
-		exportConfig.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){ exportConfiguration(); }
+		backupConfig = new JMenuItem("Backup");
+		backupConfig.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){ backupConfig(); }
 		});
-		configMenu.add(exportConfig);
+		configMenu.add(backupConfig);
 		
-		garbageCollector = new JMenuItem("Garbage Collector");
-		garbageCollector.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){ garbageCollector(); }
+		restoreConfig = new JMenuItem("Restore");
+		restoreConfig.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){ restoreConfig(); }
 		});
-		add(garbageCollector);
+		configMenu.add(restoreConfig);
+		
+		printConfig = new JMenuItem("Print");
+		printConfig.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){ printConfig(); }
+		});
+		configMenu.add(printConfig);
+		
+		collectGarbage = new JMenuItem("Garbage Collector");
+		collectGarbage.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){ collectGarbage(); }
+		});
+		add(collectGarbage);
 		
 		taskMonitor = new JMenuItem("Task Monitor");
 		taskMonitor.addActionListener(new ActionListener(){
@@ -83,11 +110,43 @@ public class ToolsMenu extends JMenu implements ISystemComponent, IChangeListene
 		monitor.shutdown();
 	}
 	
-	private void exportConfiguration(){
+	private void backupConfig(){
 		
 		String path = 
-			fileManager.getTempFolderPath()+
-			File.separator+"Configuration.htm";
+			fileManager.getDataFolderPath()+File.separator+
+			"Configuration_"+DateTools.getFileSystemDate(new Date())+".xml";
+		try{
+			BackupManager backup = new BackupManager(configuration, fileManager, logger);
+			backup.backup(path);
+			UiTools.infoDialog("Backup to:\n\n"+path);
+		}catch(Exception e){
+			UiTools.errorDialog(e);
+		}
+	}
+	
+	private void restoreConfig(){
+		
+		File file = UiTools.fileDialog("Configuration File", fileManager.getDataFolderPath());
+		if(file != null && UiTools.confirmDialog("Restore Configuration from:\n\n"+file.getAbsolutePath())){
+			String path = file.getAbsolutePath();
+			try{
+				BackupManager backup = new BackupManager(configuration, fileManager, logger);
+				Configuration restore = backup.restore(path);
+				restore.save();
+				configuration.setDirty(true);
+				application.revert();
+				UiTools.infoDialog("Restored from:\n\n"+path);
+			}catch(Exception e){
+				UiTools.errorDialog(e);
+			}
+		}
+	}
+	
+	private void printConfig(){
+		
+		String path = 
+			fileManager.getTempFolderPath()+File.separator+
+			"Configuration.htm";
 		ConfigPage page = new ConfigPage(path);
 		try{
 			page.create();
@@ -107,7 +166,7 @@ public class ToolsMenu extends JMenu implements ISystemComponent, IChangeListene
 		}
 	}
 	
-	private void garbageCollector(){
+	private void collectGarbage(){
 		heapManager.cleanup();
 	}
 	

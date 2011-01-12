@@ -181,10 +181,12 @@ public class Application extends AbstractSystem {
 					core.logger);
 			add(projectMenu);
 			toolsMenu = new ToolsMenu(
+					application,
 					persistence.configuration, 
 					core.taskManager,
 					core.fileManager, 
-					core.heapManager);
+					core.heapManager,
+					core.logger);
 			add(toolsMenu);
 			configPanel = new ConfigPanel(
 					persistence.configuration, 

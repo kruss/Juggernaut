@@ -81,18 +81,11 @@ public class ProjectMenu extends JMenu implements ISystemComponent, IChangeListe
 	
 	private void revert(){
 		
-		Thread thread = new Thread(new Runnable(){
-			@Override
-			public void run() {
-				try{
-					application.revert();
-				}catch(Exception e){
-					UiTools.errorDialog(e);
-					System.exit(Constants.PROCESS_NOK);
-				}
-			}
-		});
-		thread.start();
+		try{
+			application.revert();
+		}catch(Exception e){
+			UiTools.errorDialog(e);
+		}
 	}
 	
 	private void save(){
