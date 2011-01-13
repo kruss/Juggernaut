@@ -15,7 +15,7 @@ public class HttpTest extends AbstractUITest {
 	}
 
 	@Override
-	public String getName(){ return "Test"; }
+	public String getDelegateName(){ return "Test"; }
 	
 	@Override
 	protected TestStatus performTest(String port) throws Exception {

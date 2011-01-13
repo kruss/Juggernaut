@@ -46,13 +46,12 @@ public abstract class Task implements IChangeable {
 		for(IChangeListener listener : listeners){ listener.changed(this); }
 	}
 	
-	public long getTaskId() {return thread.getId();}
-	public String getTaskName(){ return thread.getName(); }
-	public String getTaskIdentifier(){ return thread.getName()+" <"+thread.getId()+">"; }
+	public long getThreadId() {return thread.getId();}
+	public String getThreadName(){ return thread.getName(); }
 	
 	private void setState(State state){
 		this.state = state;
-		taskManager.log(state.toString()+"\t"+getTaskIdentifier());
+		taskManager.log(state.toString()+"\t"+thread.getName()+" <"+thread.getId()+">");
 		notifyListeners();
 	}
 	public State getState(){ return state; }

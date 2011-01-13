@@ -39,9 +39,7 @@ public class SVNTriggerConfig extends AbstractTriggerConfig {
 		
 		OptionEditor.setOptionDelegate(
 				container.getOption(OPTIONS.URL.toString()),
-				new RepositoryTest(
-					new SVNClient(taskManager, logger), logger
-				)
+				new RepositoryTest(taskManager, new SVNClient(taskManager, logger), logger)
 		);
 	}
 	

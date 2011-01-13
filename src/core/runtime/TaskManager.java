@@ -99,7 +99,7 @@ public class TaskManager implements ISystemComponent, IChangeable, IChangeListen
 			for(int i=tasks.size()-1; i>=0; i--){
 				Task task = tasks.get(i);
 				if(task.isExpired()){
-						logger.log(Module.TASK, "Timeout dedected for Task ["+task.getTaskIdentifier()+"]");
+						logger.log(Module.TASK, "Timeout dedected for Task [ "+task.getThreadName()+" <"+task.getThreadId()+"> ]");
 						task.asyncStop(1000);
 						tasks.remove(task);
 						notifyListeners();
@@ -111,8 +111,8 @@ public class TaskManager implements ISystemComponent, IChangeable, IChangeListen
 	public void kill(long id) {
 		
 		for(Task task : tasks){
-			if(task.getTaskId() == id){
-				logger.log(Module.TASK, "Killing Task ["+task.getTaskIdentifier()+"]");
+			if(task.getThreadId() == id){
+				logger.log(Module.TASK, "Killing Task [ "+task.getThreadName()+" <"+task.getThreadId()+"> ]");
 				task.asyncStop(1000);
 				tasks.remove(task);
 				notifyListeners();
@@ -139,8 +139,8 @@ public class TaskManager implements ISystemComponent, IChangeable, IChangeListen
 		public State state;
 		
 		public TaskInfo(Task task){
-			id = task.getTaskId();
-			name = task.getTaskName();
+			id = task.getThreadId();
+			name = task.getThreadName();
 			state = task.getState();
 		}
 	}

@@ -2,6 +2,6 @@ package ui.option;
 
 public interface IOptionDelegate {
 
-	public String getName();
+	public String getDelegateName();
 	public void perform(String content);
 }

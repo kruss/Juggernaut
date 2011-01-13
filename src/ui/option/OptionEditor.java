@@ -271,7 +271,7 @@ public class OptionEditor extends JPanel {
 	
 	public static void setOptionDelegate(final Option option, final IOptionDelegate delegate){
 		
-		JButton button = new JButton(" "+delegate.getName()+" ");
+		JButton button = new JButton(" "+delegate.getDelegateName()+" ");
 		button.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){ 
 				delegate.perform(option.getStringValue());

@@ -52,11 +52,11 @@ implements
 	IChangeListener
 {
 
-	public static Configuration create(FileManager fileManager, TaskManager taskManager, Logger logger) throws Exception {
+	public static Configuration create(TaskManager taskManager, FileManager fileManager, Logger logger) throws Exception {
 		
 		File file = new File(fileManager.getDataFolderPath()+File.separator+Configuration.OUTPUT_FILE);
 		if(file.isFile()){
-			return Configuration.load(fileManager, taskManager, logger, file.getAbsolutePath());
+			return Configuration.load(taskManager, fileManager, logger, file.getAbsolutePath());
 		}else{
 			return new Configuration(fileManager, logger, file.getAbsolutePath());
 		}	
@@ -77,18 +77,21 @@ implements
 	
 	private transient FileManager fileManager;
 	private transient Logger logger;
+	private transient ArrayList<IChangeListener> listeners;
+	private transient String path;
+	private transient boolean dirty;
 	
 	@SuppressWarnings("unused")
 	private String version;
 	private OptionContainer optionContainer;
 	private ArrayList<LaunchConfig> launchConfigs;
 	private LogConfig logConfig;
-	private transient ArrayList<IChangeListener> listeners;
-	private transient String path;
-	private transient boolean dirty;
 
-	public Configuration(FileManager fileManager, Logger logger, String path){
-		
+	public Configuration( 
+			FileManager fileManager, 
+			Logger logger, 
+			String path)
+	{
 		this.fileManager = fileManager;
 		this.logger = logger;
 		
@@ -178,9 +181,7 @@ implements
 		
 		OptionEditor.setOptionDelegate(
 				container.getOption(OPTIONS.SMTP_SERVER.toString()),
-				new SmtpTest(
-						new SmtpClient(this), logger
-				)
+				new SmtpTest(new SmtpClient(this), logger)
 		);
 	}
 	
@@ -273,7 +274,7 @@ implements
 	public State getState(){ return isDirty() ? State.DIRTY : State.CLEAN; }
 	
 	public static Configuration load(
-			FileManager fileManager, TaskManager taskManager, Logger logger, String path
+			TaskManager taskManager, FileManager fileManager, Logger logger, String path
 	) throws Exception {
 	
 		logger.debug(Module.COMMON, "load: "+path);

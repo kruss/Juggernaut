@@ -15,21 +15,22 @@ public abstract class AbstractUITest implements IOptionDelegate {
 	}
 
 	@Override
-	public String getName(){ return "Test"; }
+	public String getDelegateName(){ return "Test"; }
 	
 	@Override
 	public void perform(String content) {
 
-		logger.log(Module.COMMON, getClass().getSimpleName()+(!content.isEmpty() ? " ("+content+")" : ""));
+		logger.log(Module.COMMON, getTestName()+(!content.isEmpty() ? " ("+content+")" : ""));
+		
 		TestStatus result = null;
 		try{
 			result = performTest(content);
 		}catch(Exception e){
-			result = new TestStatus(Status.ERROR, e.getClass().getSimpleName()+": "+e.getMessage());
+			result = new TestStatus(e);
 			logger.error(Module.COMMON, e);
 		}finally{
 			String info = 
-				getClass().getSimpleName()+" - "+
+				getTestName()+" - "+
 				result.status.toString()+"\n\n"+
 				result.message;
 			if(result.status != Status.CANCEL){
@@ -39,20 +40,29 @@ public abstract class AbstractUITest implements IOptionDelegate {
 					UiTools.errorDialog(info);
 				}
 			}
+			
+			logger.log(Module.COMMON, getTestName()+" finished");
 		}
 	}
 
+	protected String getTestName() {
+		return getClass().getSimpleName();
+	}
+	
 	protected abstract TestStatus performTest(String content) throws Exception;
 	
 	protected class TestStatus {
-		
 		public Status status;
 		public String message;
 		
 		public TestStatus(Status status, String message){
-			
 			this.status = status;
 			this.message = message;
+		}
+		
+		public TestStatus(Exception e){
+			status = Status.ERROR;
+			message = e.getClass().getSimpleName()+": "+e.getMessage();
 		}
 	}
 }

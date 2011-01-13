@@ -21,8 +21,6 @@ import core.runtime.FileManager;
 import core.runtime.logger.Logger;
 import core.runtime.logger.ILogConfig.Module;
 
-
-
 public class BackupManager {
 
 	private Configuration configuration;

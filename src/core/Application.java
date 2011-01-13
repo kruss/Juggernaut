@@ -121,8 +121,8 @@ public class Application extends AbstractSystem {
 		public void init() throws Exception {
 			
 			configuration = Configuration.create(
-					core.fileManager, 
 					core.taskManager,
+					core.fileManager, 
 					logging.logger);
 			add(configuration);
 			cache = Cache.create(
