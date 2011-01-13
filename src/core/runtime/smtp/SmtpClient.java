@@ -5,7 +5,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 
 import core.ISystemComponent;
-import core.runtime.logger.ILogger;
+import core.runtime.logger.Logger;
 import core.runtime.logger.ILogConfig.Module;
 
 import java.util.Properties;
@@ -43,7 +43,7 @@ public class SmtpClient implements ISystemComponent, ISmtpClient {
 	}
 	
 	@Override
-	public void send(Mail mail, ILogger logger) throws Exception {
+	public void send(Mail mail, Logger logger) throws Exception {
 		
 		if(isReady()){
 			if(mail.isValid()){
@@ -56,7 +56,7 @@ public class SmtpClient implements ISystemComponent, ISmtpClient {
 		}
 	}
 
-	private synchronized void sendMail(Mail mail, ILogger logger) throws Exception {
+	private synchronized void sendMail(Mail mail, Logger logger) throws Exception {
 		
 		logger.log(Module.SMTP, 
 				"Sending '"+mail.subject+"' to "+mail.to.size()+", cc "+mail.cc.size()+" via "+config.getSmtpServer()
