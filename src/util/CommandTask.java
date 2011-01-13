@@ -62,19 +62,18 @@ public class CommandTask extends Task {
 			);
 			CommandStreamer errorStream = new CommandStreamer(
 					this, "ERR", process.getErrorStream(), taskManager, logger
-			);            
-			outputStream.start();
-			errorStream.start(); 
+			);    
 			
+			outputStream.asyncRun(0, 0);
+			errorStream.asyncRun(0, 0);
 			try{
 				process.waitFor();
 				result = process.exitValue();
 			}catch(InterruptedException e){ 
 				process.destroy();	 // not destroying sub-processes on windows
-			}
-			
-			while(outputStream.isAlive() || errorStream.isAlive()){ 
-				SystemTools.sleep(50);
+			}finally{
+				outputStream.syncStop(1000);
+				errorStream.syncStop(1000);
 			}
 			
 		}catch(Exception e){

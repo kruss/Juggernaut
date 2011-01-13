@@ -41,6 +41,7 @@ public abstract class LifecycleObject extends Task {
 		}
 	}
 	
+	public abstract String getId();
 	public abstract String getFolder();
 	public abstract Logger getLogger();
 	

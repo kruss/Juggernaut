@@ -160,24 +160,15 @@ public class TaskMonitor extends JDialog implements ISystemComponent, IChangeLis
 	
 	private void initUI() {
 		
-		int running = 0;
-		int idle = 0;
 		for(TaskInfo task : tasks){
 			Object[] rowData = {
 				task.name,
 				task.id,
-				task.running ? "RUNNING" : "IDLE",
+				task.state.toString(),
 			};
 			tableModel.addRow(rowData);
-			if(task.running){
-				running++;
-			}else{
-				idle++;
-			}
 		}
-		
 		setTitle("Task-Monitor ("+tasks.size()+")");
-		taskTable.setToolTipText("Tasks ("+running+"/"+(running+idle)+" running)");
 	}
 
 	private void refreshUI(TaskInfo selected) {
@@ -233,7 +224,7 @@ public class TaskMonitor extends JDialog implements ISystemComponent, IChangeLis
 	private void killTask(){
 		
 		TaskInfo selected = getSelectedTask();
-		if(UiTools.confirmDialog("Kill [ "+selected.name+" ("+selected.id+") ] Task ?")){
+		if(UiTools.confirmDialog("Kill [ "+selected.name+" <"+selected.id+"> ] Task ?")){
 			taskManager.kill(selected.id);
 		}
 	}

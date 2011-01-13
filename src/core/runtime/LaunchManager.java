@@ -56,7 +56,7 @@ public class LaunchManager implements ISystemComponent, ILifecycleListener {
 	public void shutdown() throws Exception {
 		for(int i=agents.size()-1; i>=0; i--){
 			LaunchAgent agent = agents.get(i);
-			agent.syncKill(agent.getOperations().size() * 1000);
+			agent.syncStop(agent.getOperations().size() * 1000);
 		}
 	}
 	
@@ -82,7 +82,7 @@ public class LaunchManager implements ISystemComponent, ILifecycleListener {
 		
 		LaunchAgent agent = getLaunch(id);
 		if(agent != null){ 
-			agent.asyncKill(agent.getOperations().size() * 1000); 
+			agent.asyncStop(agent.getOperations().size() * 1000); 
 		}
 	}
 	

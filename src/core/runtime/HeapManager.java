@@ -41,7 +41,7 @@ public class HeapManager implements ISystemComponent, IChangeable {
 	@Override
 	public void shutdown() throws Exception {
 		if (updater != null) {
-			updater.syncKill(1000);
+			updater.syncStop(1000);
 			updater = null;
 		}
 	}
@@ -70,11 +70,11 @@ public class HeapManager implements ISystemComponent, IChangeable {
 
 	private class HeapStatusUpdater extends Task {
 
-		public static final long CYCLE = 5 * 1000; // 5 sec
+		public static final long CYCLE = 15 * 1000; // 15 sec
 
 		public HeapStatusUpdater() {
 			super("HeapStatus", taskManager);
-			setCycle(CYCLE);
+			setCyclic(CYCLE);
 		}
 
 		@Override

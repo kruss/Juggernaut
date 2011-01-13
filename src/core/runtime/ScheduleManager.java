@@ -104,7 +104,7 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 	/** stop cyclic scheduler */
 	public void stopScheduler() throws Exception { 
 		if(scheduler != null){
-			scheduler.syncKill(1000);
+			scheduler.syncStop(1000);
 			scheduler = null;
 			notifyListeners();
 		}
@@ -216,7 +216,7 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 		
 		private void setCycle() {
 			if(cyclic){
-				setCycle(configuration.getSchedulerIntervall());
+				setCyclic(configuration.getSchedulerIntervall());
 			}
 		}
 

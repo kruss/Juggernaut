@@ -60,7 +60,7 @@ public class LaunchAgent extends LifecycleObject {
 			LaunchConfig launchConfig,
 			String trigger)
 	{
-		super("Launch("+launchConfig.getId()+")", taskManager);
+		super("Launch::"+launchConfig.getName()+"::"+launchConfig.getId(), taskManager);
 		
 		this.fileManager = fileManager;
 		this.history = history;
@@ -96,10 +96,13 @@ public class LaunchAgent extends LifecycleObject {
 	public ArrayList<AbstractOperation> getOperations(){ return operations; }
 	
 	@Override
+	public String getId() {
+		return launchConfig.getId();
+	}
+	@Override
 	public String getFolder() {
 		return fileManager.getLaunchFolderPath(launchConfig.getId());
 	}
-
 	@Override
 	public Logger getLogger() { return logger; }
 	
@@ -171,10 +174,8 @@ public class LaunchAgent extends LifecycleObject {
 				logger.emph(Module.COMMON, "Interrupted");
 				statusManager.setStatus(Status.CANCEL);
 				aboard = true;
-				if(operation.isAlive()){
-					operation.syncKill(1000);
-					operation.getStatusManager().setStatus(Status.CANCEL);
-				}
+				operation.getStatusManager().setStatus(Status.CANCEL);
+				operation.syncStop(1000);
 			}finally{
 				statusManager.addProgress(1);
 			}

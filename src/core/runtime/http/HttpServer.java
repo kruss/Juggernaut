@@ -104,7 +104,7 @@ public class HttpServer implements IHttpServer {
 		
 		logger.log(Module.HTTP, "Shutdown HTTP");
 		serverSocket.close();
-		serverThread.syncKill(1000);
+		serverThread.syncStop(1000);
 		serverThread = null;
 	}
 	
@@ -116,7 +116,7 @@ public class HttpServer implements IHttpServer {
 			super("ServerThread", taskManager);
 			
 			this.server = server;
-			setCycle(100);
+			setCyclic(100);
 		}
 		
 		protected void runTask() {

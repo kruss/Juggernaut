@@ -1,30 +1,65 @@
 package util;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import core.runtime.TaskManager;
 
-public abstract class Task extends Thread {
+public abstract class Task implements IChangeable {
 
+	public enum State { INITIAL, START, RUNNING, IDLE, FINISH, INTERRUPT }
+	
+	private TaskManager taskManager;
+	private Thread thread;
+	private ArrayList<IChangeListener> listeners;
+
+	private State state;
 	private long delay;
 	private long cycle;
 	private long timeout;
 	private Date start;
 
-	private TaskManager taskManager;
-
 	public Task(String name, TaskManager taskManager){
-		super(name);
-		this.taskManager = taskManager;
 		
+		this.taskManager = taskManager;
+		thread = new Thread(name){
+			@Override
+			public void run(){
+				Task.this.run();
+			}
+		};
+		listeners = new ArrayList<IChangeListener>();
+		
+		state = State.INITIAL;
 		delay = 0;
 		cycle = 0;
-		timeout = 0;
 		start = null;
+		timeout = 0;
 	}
 	
-	public void setCycle(long cycle){ this.cycle = cycle; }
+	@Override
+	public void addListener(IChangeListener listener){ listeners.add(listener); }
+	@Override
+	public void removeListener(IChangeListener listener){ listeners.remove(listener); }
+	@Override
+	public void notifyListeners(){
+		for(IChangeListener listener : listeners){ listener.changed(this); }
+	}
+	
+	public long getTaskId() {return thread.getId();}
+	public String getTaskName(){ return thread.getName(); }
+	public String getTaskIdentifier(){ return thread.getName()+" <"+thread.getId()+">"; }
+	
+	private void setState(State state){
+		this.state = state;
+		taskManager.log(state.toString()+"\t"+getTaskIdentifier());
+		notifyListeners();
+	}
+	public State getState(){ return state; }
+	
+	public void setCyclic(long cycle){ this.cycle = cycle; }
 	private boolean isCyclic(){ return cycle > 0; }
+	
 	public boolean isExpired(){
 		
 		if(start != null && timeout > 0){
@@ -38,51 +73,41 @@ public abstract class Task extends Thread {
 		}
 	}
 	
-	public void run(){
+	private void run(){
 		
-		taskManager.debug("Start\t["+getName()+"]");
-		if(taskManager != null){
-			taskManager.register(this);
-		}
+		taskManager.register(this);
+		setState(State.START);
 		try{
 			Thread.sleep(delay);
 			if(isCyclic()){
-				runCyclicTask();
+				runCyclic();
 			}else{
-				runSingleTask();
+				runOnce();
 			}
 		}catch(InterruptedException e){ 
-			taskManager.debug("Interrupt\t["+getName()+"]");
+			setState(State.INTERRUPT);
 		}finally{
-			taskManager.debug("Stopp\t["+getName()+"]");
-			if(taskManager != null){
-				taskManager.deregister(this);
-			}
+			setState(State.FINISH);
+			taskManager.deregister(this);
 		}
 	}
-
-	private void runCyclicTask() throws InterruptedException {
+	
+	private void runCyclic() throws InterruptedException {
 		
-		while(isCyclic() && !isInterrupted()){
-			runSingleTask();
-			taskManager.debug("Idle\t["+getName()+"]");
+		while(isCyclic() && !thread.isInterrupted()){
+			runOnce();
 			Thread.sleep(cycle);
 		}
 	}
 	
-	private void runSingleTask(){
+	private void runOnce(){
 		
 		start = new Date();
-		if(taskManager != null){
-			taskManager.status(this, true);
-		}
+		setState(State.RUNNING);
 		try{
-			taskManager.debug("Run\t["+getName()+"]");
 			runTask();
 		}finally{
-			if(taskManager != null){
-				taskManager.status(this, false);
-			}
+			setState(State.IDLE);
 			start = null;
 		}
 	}
@@ -93,38 +118,38 @@ public abstract class Task extends Thread {
 		
 		this.delay = delay;
 		this.timeout = timeout;
-		start();
+		thread.start();
 	}
 	
 	public void syncRun(long delay, long timeout) throws InterruptedException {
 		
 		asyncRun(delay, timeout);
-		join();
+		thread.join();
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void asyncKill(final long timeout){
+	public void asyncStop(final long timeout){
 		
-		Thread thread = new Thread(new Runnable(){
+		Thread kill = new Thread(new Runnable(){
 			@Override
 			public void run() {
 				try{
-					if(isAlive()){ interrupt(); }
+					if(thread.isAlive()){ thread.interrupt(); }
 					if(timeout > 0){
 						Thread.sleep(timeout);
-						if(isAlive()){ stop(); }
+						if(thread.isAlive()){ thread.stop(); }
 					}
 				}catch(Exception e){
 					taskManager.error(e);
 				}
 			}
 		});
-		thread.start();
+		kill.start();
 	}
 	
-	public void syncKill(long timeout) throws InterruptedException {
+	public void syncStop(long timeout) throws InterruptedException {
 		
-		asyncKill(timeout);
-		join();
+		asyncStop(timeout);
+		thread.join();
 	}
 }
