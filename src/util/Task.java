@@ -2,7 +2,7 @@ package util;
 
 import java.util.Date;
 
-import core.TaskManager;
+import core.runtime.TaskManager;
 
 public abstract class Task extends Thread {
 

@@ -1,18 +1,26 @@
 package core;
 
-import http.HttpServer;
-import launch.LaunchManager;
-import launch.ScheduleManager;
-import smtp.SmtpClient;
-import ui.ConfigPanel;
-import ui.HelpMenu;
-import ui.HistoryPanel;
-import ui.LoggerPanel;
-import ui.PreferencePanel;
-import ui.ProjectMenu;
-import ui.SchedulerPanel;
-import ui.ToolsMenu;
+import core.persistence.Cache;
+import core.persistence.Configuration;
+import core.persistence.History;
+import core.runtime.FileManager;
+import core.runtime.HeapManager;
+import core.runtime.LaunchManager;
+import core.runtime.Registry;
+import core.runtime.ScheduleManager;
+import core.runtime.TaskManager;
+import core.runtime.http.HttpServer;
+import core.runtime.logger.SystemLogger;
+import core.runtime.smtp.SmtpClient;
 import ui.Window;
+import ui.menu.HelpMenu;
+import ui.menu.ProjectMenu;
+import ui.menu.ToolsMenu;
+import ui.panel.ConfigPanel;
+import ui.panel.HistoryPanel;
+import ui.panel.LoggerPanel;
+import ui.panel.PreferencePanel;
+import ui.panel.SchedulerPanel;
 
 public class Application extends AbstractSystem {
 
@@ -29,6 +37,7 @@ public class Application extends AbstractSystem {
 		}
 	}
 	
+	private LogSystem logging;
 	private CoreSystem core;
 	private PersistenceSystem persistence;
 	private RuntimeSystem runtime;
@@ -39,6 +48,8 @@ public class Application extends AbstractSystem {
 	@Override
 	public void init() throws Exception {
 		
+		logging = new LogSystem();
+		add(logging);
 		core = new CoreSystem();
 		add(core);
 		persistence = new PersistenceSystem();
@@ -61,10 +72,23 @@ public class Application extends AbstractSystem {
 		}
 	}
 	
+	/** the application's logger */
+	private class LogSystem extends AbstractSystem {
+		
+		public SystemLogger logger;
+		
+		@Override
+		public void init() throws Exception {
+			
+			logger = new SystemLogger();
+			add(logger);
+			super.init();
+		}
+	}
+	
 	/** io related components */
 	private class CoreSystem extends AbstractSystem {
 		
-		public SystemLogger logger;
 		public TaskManager taskManager;
 		public FileManager fileManager;
 		public HeapManager heapManager;
@@ -72,17 +96,15 @@ public class Application extends AbstractSystem {
 		@Override
 		public void init() throws Exception {
 			
-			logger = new SystemLogger();
-			add(logger);
 			taskManager = new TaskManager(
-					logger);
+					logging.logger);
 			add(taskManager);
 			fileManager = new FileManager(
 					taskManager);
 			add(fileManager);
 			heapManager = new HeapManager(
 					taskManager, 
-					logger);
+					logging.logger);
 			add(heapManager);
 			super.init();
 		}
@@ -101,17 +123,17 @@ public class Application extends AbstractSystem {
 			configuration = Configuration.create(
 					core.fileManager, 
 					core.taskManager,
-					core.logger);
+					logging.logger);
 			add(configuration);
 			cache = Cache.create(
 					configuration,
 					core.fileManager, 
-					core.logger);
+					logging.logger);
 			add(cache);
 			history = History.create(
 					configuration, 
 					core.fileManager, 
-					core.logger);
+					logging.logger);
 			add(history);
 			super.init();
 		}
@@ -131,7 +153,7 @@ public class Application extends AbstractSystem {
 			
 			registry = new Registry(
 					core.taskManager, 
-					core.logger);
+					logging.logger);
 			add(registry);
 			smtpClient = new SmtpClient(
 					persistence.configuration);
@@ -140,7 +162,7 @@ public class Application extends AbstractSystem {
 					persistence.configuration, 
 					core.fileManager, 
 					core.taskManager, 
-					core.logger);
+					logging.logger);
 			add(httpServer);
 			launchManager = new LaunchManager(
 					persistence.configuration);
@@ -154,7 +176,7 @@ public class Application extends AbstractSystem {
 					smtpClient,
 					httpServer,
 					launchManager, 
-					core.logger);
+					logging.logger);
 			add(scheduleManager);
 			super.init();
 		}
@@ -180,7 +202,7 @@ public class Application extends AbstractSystem {
 					application, 
 					persistence.configuration, 
 					runtime.launchManager, 
-					core.logger);
+					logging.logger);
 			add(projectMenu);
 			toolsMenu = new ToolsMenu(
 					application,
@@ -188,7 +210,7 @@ public class Application extends AbstractSystem {
 					core.taskManager,
 					core.fileManager, 
 					core.heapManager,
-					core.logger);
+					logging.logger);
 			add(toolsMenu);
 			helpMenu = new HelpMenu(core.fileManager);
 			add(helpMenu);
@@ -202,26 +224,28 @@ public class Application extends AbstractSystem {
 					runtime.httpServer,
 					runtime.launchManager, 
 					runtime.registry,
-					core.logger);
+					logging.logger);
 			add(configPanel);
 			schedulerPanel = new SchedulerPanel(
 					runtime.launchManager, 
 					runtime.scheduleManager, 
-					core.logger);
+					logging.logger);
 			add(schedulerPanel);
 			historyPanel = new HistoryPanel(
 					persistence.history, 
-					core.logger);
+					logging.logger);
 			add(historyPanel);
 			preferencePanel = new PreferencePanel(
 					persistence.configuration, 
 					runtime.scheduleManager, 
 					runtime.httpServer);
 			add(preferencePanel);
-			loggerPanel = new LoggerPanel(persistence.configuration, core.logger);
+			loggerPanel = new LoggerPanel(
+					persistence.configuration, 
+					logging.logger);
 			add(loggerPanel);
 			window = new Window(
-					core.logger, 
+					logging.logger, 
 					core.taskManager, 
 					core.heapManager, 
 					persistence.configuration, 

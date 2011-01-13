@@ -1,6 +1,5 @@
 package ui;
 
-import http.IHttpServer;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -15,26 +14,35 @@ import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
-import launch.LaunchManager;
-import launch.ScheduleManager;
 
-import logger.Logger;
-import logger.ILogConfig.Module;
 
+import ui.menu.HelpMenu;
+import ui.menu.ProjectMenu;
+import ui.menu.ToolsMenu;
+import ui.panel.ConfigPanel;
+import ui.panel.HistoryPanel;
+import ui.panel.LoggerPanel;
+import ui.panel.PreferencePanel;
+import ui.panel.SchedulerPanel;
 import util.DateTools;
 import util.IChangeListener;
 import util.StringTools;
 import util.UiTools;
 
-import core.Configuration;
 import core.Constants;
-import core.HeapManager;
 import core.ISystemComponent;
-import core.TaskManager;
-import core.HeapManager.HeapStatus;
-import core.TaskManager.TaskInfo;
+import core.persistence.Configuration;
+import core.runtime.HeapManager;
+import core.runtime.LaunchManager;
+import core.runtime.ScheduleManager;
+import core.runtime.TaskManager;
+import core.runtime.HeapManager.HeapStatus;
+import core.runtime.TaskManager.TaskInfo;
+import core.runtime.http.IHttpServer;
+import core.runtime.logger.Logger;
+import core.runtime.logger.ILogConfig.Module;
 
-public class Window extends JFrame implements ISystemComponent, IStatusClient, IChangeListener {
+public class Window extends JFrame implements ISystemComponent, IWindowStatus, IChangeListener {
 
 	private static final long serialVersionUID = 1L;
 	

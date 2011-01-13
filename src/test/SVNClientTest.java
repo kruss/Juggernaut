@@ -6,18 +6,19 @@ import java.io.File;
 import java.util.Date;
 
 
-import logger.Logger;
-import logger.Logger.Mode;
-import logger.ILogConfig.Module;
+
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import core.TaskManager;
+import core.launch.repository.SVNClient;
+import core.launch.repository.IRepositoryClient.Revision;
+import core.runtime.TaskManager;
+import core.runtime.logger.Logger;
+import core.runtime.logger.ILogConfig.Module;
+import core.runtime.logger.Logger.Mode;
 
-import repository.SVNClient;
-import repository.IRepositoryClient.Revision;
 import util.FileTools;
 import util.SystemTools;
 

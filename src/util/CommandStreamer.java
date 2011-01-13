@@ -4,11 +4,11 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import core.TaskManager;
+import core.runtime.TaskManager;
+import core.runtime.logger.Logger;
+import core.runtime.logger.ILogConfig.Module;
 
 
-import logger.Logger;
-import logger.ILogConfig.Module;
 
 
 public class CommandStreamer extends Task {

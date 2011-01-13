@@ -1,0 +1,116 @@
+package core.runtime;
+
+import java.util.ArrayList;
+
+
+import core.ISystemComponent;
+import core.launch.operation.AbstractOperationConfig;
+import core.launch.operation.CommandOperationConfig;
+import core.launch.operation.EclipseOperationConfig;
+import core.launch.operation.SVNOperationConfig;
+import core.launch.operation.SampleOperationConfig;
+import core.launch.trigger.AbstractTriggerConfig;
+import core.launch.trigger.IntervallTriggerConfig;
+import core.launch.trigger.SVNTriggerConfig;
+import core.runtime.logger.Logger;
+import core.runtime.logger.ILogConfig.Module;
+
+
+
+
+
+/** runtime object factory */
+public class Registry implements ISystemComponent {
+
+	private TaskManager taskManager;
+	private Logger logger;
+	
+	private ArrayList<Class<?>> operationConfigs;
+	private ArrayList<Class<?>> triggerConfigs;
+	
+	public Registry(
+			TaskManager taskManager, 
+			Logger logger)
+	{
+		this.taskManager = taskManager;
+		this.logger = logger;
+		
+		operationConfigs = new ArrayList<Class<?>>();
+		triggerConfigs = new ArrayList<Class<?>>();
+	}
+	
+	@Override
+	public void init() throws Exception {
+		
+		operationConfigs.clear();
+		operationConfigs.add(SampleOperationConfig.class);
+		operationConfigs.add(CommandOperationConfig.class);
+		operationConfigs.add(SVNOperationConfig.class);
+		operationConfigs.add(EclipseOperationConfig.class);
+		
+		triggerConfigs.clear();
+		triggerConfigs.add(IntervallTriggerConfig.class);
+		triggerConfigs.add(SVNTriggerConfig.class);
+	}
+	
+	@Override
+	public void shutdown() throws Exception {}
+	
+	public ArrayList<String> getOperationNames(){
+		
+		ArrayList<String> names = new ArrayList<String>();
+		for(Class<?> clazz : operationConfigs){
+			try{
+				names.add(getOperationName(clazz));
+			}catch(Exception e) {
+				logger.error(Module.COMMON, e);
+			}
+		}
+		return names;
+	}
+	
+	private String getOperationName(Class<?> clazz) throws Exception {
+		return ((AbstractOperationConfig) clazz.newInstance()).getName();
+	}
+
+	public ArrayList<String> getTriggerNames(){
+		
+		ArrayList<String> names = new ArrayList<String>();
+		for(Class<?> clazz : triggerConfigs){
+			try{
+				names.add(getTriggerName(clazz));
+			}catch(Exception e) {
+				logger.error(Module.COMMON, e);
+			}
+		}
+		return names;
+	}
+	
+	private String getTriggerName(Class<?> clazz) throws Exception {
+		return ((AbstractTriggerConfig) clazz.newInstance()).getName();
+	}
+
+	public AbstractOperationConfig createOperationConfig(String name) throws Exception {
+
+		for(Class<?> clazz : operationConfigs){
+			if(name.equals(getOperationName(clazz))){
+				AbstractOperationConfig instance = (AbstractOperationConfig) clazz.newInstance();
+				instance.initInstance(taskManager, logger);
+				return instance;
+			}
+		}
+		throw new Exception("No class for name: "+name);
+	}
+	
+	public AbstractTriggerConfig createTriggerConfig(String name) throws Exception {
+
+		for(Class<?> clazz : triggerConfigs){
+			if(name.equals(getTriggerName(clazz))){
+				AbstractTriggerConfig instance = (AbstractTriggerConfig) clazz.newInstance();
+				instance.initInstance(taskManager, logger);
+				return instance;
+			}
+		}
+		throw new Exception("No class for name: "+name);
+	}
+}

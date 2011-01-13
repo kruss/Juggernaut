@@ -3,12 +3,12 @@ package util;
 import java.io.File;
 
 
-import logger.Logger;
-import logger.ILogConfig.Module;
 
 
 import core.Constants;
-import core.TaskManager;
+import core.runtime.TaskManager;
+import core.runtime.logger.Logger;
+import core.runtime.logger.ILogConfig.Module;
 
 public class CommandTask extends Task {
 
