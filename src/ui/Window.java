@@ -59,6 +59,7 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 			IHttpServer httpServer,
 			ProjectMenu projectMenu,
 			ToolsMenu toolsMenu,
+			HelpMenu helpMenu, 
 			ConfigPanel configPanel,
 			SchedulerPanel schedulerPanel,
 			HistoryPanel historyPanel,
@@ -76,6 +77,7 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.add(projectMenu);
 		menuBar.add(toolsMenu);
+		menuBar.add(helpMenu);
 		setJMenuBar(menuBar);
 		
 		JTabbedPane centerPanel = new JTabbedPane();

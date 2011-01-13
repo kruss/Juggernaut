@@ -5,6 +5,7 @@ import launch.LaunchManager;
 import launch.ScheduleManager;
 import smtp.SmtpClient;
 import ui.ConfigPanel;
+import ui.HelpMenu;
 import ui.HistoryPanel;
 import ui.LoggerPanel;
 import ui.PreferencePanel;
@@ -164,6 +165,7 @@ public class Application extends AbstractSystem {
 		
 		public ProjectMenu projectMenu;
 		public ToolsMenu toolsMenu;
+		public HelpMenu helpMenu;
 		public ConfigPanel configPanel;
 		public SchedulerPanel schedulerPanel;
 		public HistoryPanel historyPanel;
@@ -188,6 +190,8 @@ public class Application extends AbstractSystem {
 					core.heapManager,
 					core.logger);
 			add(toolsMenu);
+			helpMenu = new HelpMenu(core.fileManager);
+			add(helpMenu);
 			configPanel = new ConfigPanel(
 					persistence.configuration, 
 					persistence.cache,
@@ -225,7 +229,8 @@ public class Application extends AbstractSystem {
 					runtime.scheduleManager,
 					runtime.httpServer,
 					projectMenu, 
-					toolsMenu, 
+					toolsMenu,
+					helpMenu,
 					configPanel, 
 					schedulerPanel, 
 					historyPanel, 

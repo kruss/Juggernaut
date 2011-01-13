@@ -33,6 +33,22 @@ BUGS
 	util.Task::runSingleTask (81)
 	util.Task::run (52)
 
+#cdt plugin throws
+	[15:09:03] set configuration: cam_integration_main (Debug_Fado_AVB)
+	[15:09:03] ~> evaluate build-order
+	[15:09:03] ERROR !!!
+	[JobException] null
+	
+	com.lear.eclipse.cdtbuilder.util.CdtTools::getLibraryOption (116)
+	com.lear.eclipse.cdtbuilder.build.BuildProjectInitializer::getIncludedProjects (77)
+	com.lear.eclipse.cdtbuilder.build.BuildProjectInitializer::initializeProject (38)
+	com.lear.eclipse.cdtbuilder.build.ProjectBuilder::buildProject (36)
+	com.lear.eclipse.cdtbuilder.build.BuildJob::buildProject (178)
+	com.lear.eclipse.cdtbuilder.build.BuildJob::buildProjects (164)
+	com.lear.eclipse.cdtbuilder.build.BuildJob::run (45)
+	org.eclipse.core.internal.jobs.Worker::run (55)
+	
+	!!!
 
 NOTES
 -----
