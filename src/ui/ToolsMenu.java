@@ -113,11 +113,12 @@ public class ToolsMenu extends JMenu implements ISystemComponent, IChangeListene
 	private void backupConfig(){
 		
 		String path = 
-			fileManager.getDataFolderPath()+File.separator+
+			SystemTools.getWorkingDir()+File.separator+
 			"Configuration_"+DateTools.getFileSystemDate(new Date())+".xml";
 		try{
 			BackupManager backup = new BackupManager(configuration, fileManager, logger);
 			backup.backup(path);
+			
 			UiTools.infoDialog("Backup to:\n\n"+path);
 		}catch(Exception e){
 			UiTools.errorDialog(e);
@@ -126,15 +127,20 @@ public class ToolsMenu extends JMenu implements ISystemComponent, IChangeListene
 	
 	private void restoreConfig(){
 		
-		File file = UiTools.fileDialog("Configuration File", fileManager.getDataFolderPath());
-		if(file != null && UiTools.confirmDialog("Restore Configuration from:\n\n"+file.getAbsolutePath())){
+		File file = UiTools.fileDialog("Configuration File", SystemTools.getWorkingDir());
+		if(
+				file != null && 
+				UiTools.confirmDialog("Restore Configuration from:\n\n"+file.getAbsolutePath())
+		){
 			String path = file.getAbsolutePath();
 			try{
 				BackupManager backup = new BackupManager(configuration, fileManager, logger);
 				Configuration restore = backup.restore(path);
 				restore.save();
+				
 				configuration.setDirty(true);
 				application.revert();
+				
 				UiTools.infoDialog("Restored from:\n\n"+path);
 			}catch(Exception e){
 				UiTools.errorDialog(e);
@@ -157,9 +163,11 @@ public class ToolsMenu extends JMenu implements ISystemComponent, IChangeListene
 	}
 	
 	private class ConfigPage extends AbstractHtmlPage {
+		
 		public ConfigPage(String path) {
 			super(Constants.APP_NAME+" [ Configuration ]", path, null);
 		}
+		
 		@Override
 		public String getBody() {
 			return configuration.toHtml();
