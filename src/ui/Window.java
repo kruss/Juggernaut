@@ -147,11 +147,11 @@ public class Window extends JFrame implements ISystemComponent, IWindowStatus, I
 	
 	public void setTitle(){
 		
-		String info = Constants.APP_NAME+" - "+SystemTools.getWorkingDir();
+		String path = SystemTools.getWorkingDir();
 		if(configuration.isDirty()){
-			setTitle(info+" *");
+			setTitle(path+" *");
 		}else{
-			setTitle(info);
+			setTitle(path);
 		}
 	}
 	
