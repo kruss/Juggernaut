@@ -54,7 +54,9 @@ public class HelpMenu extends JMenu implements ISystemComponent {
 	
 	private void showInfo(){
 		
-		String info = "Version: "+Constants.APP_VERSION+" - Build: "+Logistic.BUILD_DATE;
+		String info = 
+			"Version: "+Constants.APP_VERSION+" ("+Logistic.BUILD_DATE+")\n"+
+			"Directory: "+SystemTools.getWorkingDir();
 		UiTools.infoDialog(info);
 	}
 	

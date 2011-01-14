@@ -1,6 +1,5 @@
 package ui;
 
-
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.event.WindowAdapter;
@@ -27,7 +26,6 @@ import ui.panel.SchedulerPanel;
 import util.DateTools;
 import util.IChangeListener;
 import util.StringTools;
-import util.SystemTools;
 import util.UiTools;
 
 import core.Constants;
@@ -147,11 +145,10 @@ public class Window extends JFrame implements ISystemComponent, IWindowStatus, I
 	
 	public void setTitle(){
 		
-		String path = SystemTools.getWorkingDir();
 		if(configuration.isDirty()){
-			setTitle(path+" *");
+			setTitle(Constants.APP_FULL_NAME+" *");
 		}else{
-			setTitle(path);
+			setTitle(Constants.APP_FULL_NAME);
 		}
 	}
 	

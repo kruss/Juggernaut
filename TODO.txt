@@ -14,6 +14,7 @@ TASKS
 # create properties option in launch-config overriding runtime properties 
 # maybe optional build-folder property
 # chach-monitor wich allows to delete/set values within id-tree
+# create precise time trigger
 
 BUGS
 ----
