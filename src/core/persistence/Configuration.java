@@ -72,7 +72,6 @@ implements
 		UNLOCKER
 	}
 	
-	public enum State { CLEAN, DIRTY }
 	public static final String OUTPUT_FILE = "Configuration.xml";
 	
 	private transient FileManager fileManager;
@@ -269,8 +268,6 @@ implements
 		}
 		return false;
 	}
-	
-	public State getState(){ return isDirty() ? State.DIRTY : State.CLEAN; }
 	
 	public static Configuration load(
 			TaskManager taskManager, FileManager fileManager, Logger logger, String path

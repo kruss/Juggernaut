@@ -27,6 +27,7 @@ import ui.panel.SchedulerPanel;
 import util.DateTools;
 import util.IChangeListener;
 import util.StringTools;
+import util.SystemTools;
 import util.UiTools;
 
 import core.Constants;
@@ -112,7 +113,7 @@ public class Window extends JFrame implements ISystemComponent, IWindowStatus, I
 
 		setSize(Constants.APP_WIDTH, Constants.APP_HEIGHT);
 		setLocation(100, 100);
-		setTitle(Constants.APP_FULL_NAME);
+		setTitle();
 		
 		configuration.addListener(this);
 		scheduleManager.addListener(this);
@@ -144,6 +145,16 @@ public class Window extends JFrame implements ISystemComponent, IWindowStatus, I
 		dispose();
 	}
 	
+	public void setTitle(){
+		
+		String info = Constants.APP_NAME+" - "+SystemTools.getWorkingDir();
+		if(configuration.isDirty()){
+			setTitle(info+" *");
+		}else{
+			setTitle(info);
+		}
+	}
+	
 	public void setStatus(String text){
 		statusLabel.setText(text);
 		logger.log(Module.COMMON, text);
@@ -158,12 +169,7 @@ public class Window extends JFrame implements ISystemComponent, IWindowStatus, I
 	public void changed(Object object) {
 		
 		if(object == configuration){
-			Configuration.State state = configuration.getState();
-			if(state == Configuration.State.CLEAN){
-				setTitle(Constants.APP_FULL_NAME);
-			}else if(state == Configuration.State.DIRTY){
-				setTitle(Constants.APP_FULL_NAME+" *");
-			}
+			setTitle();
 		}
 		
 		if(object == scheduleManager || object == httpServer || object == taskManager || object == heapManager){
