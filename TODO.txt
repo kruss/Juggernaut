@@ -34,8 +34,38 @@ BUGS
 	util.Task::runSingleTask (81)
 	util.Task::run (52)
 
+# on checking schedules:
+	[14.01.2011 17:40:47] Checking Launch [cppdemo ]
+	[14.01.2011 17:40:47] ~> Checking Trigger [SVN]
+	[14.01.2011 17:40:47] (COMMAND) command: svn info svn://10.40.38.84:3690/cppdemo/trunk
+	[14.01.2011 17:40:47] (COMMAND) ~> directory: C:\Tool\Juggernaut
+	[14.01.2011 17:40:47] (COMMAND) ~> Path: trunk
+	[14.01.2011 17:40:47] (COMMAND) ~> URL: svn://10.40.38.84:3690/cppdemo/trunk
+	[14.01.2011 17:40:47] (COMMAND) ~> Repository Root: svn://10.40.38.84:3690/cppdemo
+	[14.01.2011 17:40:47] (COMMAND) ~> Repository UUID: 0fcde1b6-b28e-6845-9283-8db7a2e7b6eb
+	[14.01.2011 17:40:47] (COMMAND) ~> return: 0
+	[14.01.2011 17:40:47] !!!
+	[Exception] SVN Info: no date
+	
+	core.launch.repository.SVNClient::getInfo (64)
+	core.launch.trigger.SVNTrigger::isTriggered (51)
+	core.runtime.ScheduleManager::checkSchedules (148)
+	core.runtime.ScheduleManager::checkSchedules (126)
+	core.runtime.ScheduleManager::access$2 (120)
+	core.runtime.ScheduleManager$SchedulerTask::runTask (232)
+	util.Task::runOnce (107)
+	util.Task::run (84)
+	util.Task::access$0 (75)
+	util.Task$1::run (28)
+	
+	!!!
+
 NOTES
 -----
+
+# linux specific options
+	ECLIPSE: /usr/bin/eclipse
+	COMMAND: /home/kruss/.gem/ruby/1.8/bin/gcover
 
 # serialized objects may contain absolute paths
 
