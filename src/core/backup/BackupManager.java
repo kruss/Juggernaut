@@ -1,58 +1,68 @@
 package core.backup;
 
-import java.util.ArrayList;
-
-
 import ui.option.Option;
 import ui.option.OptionContainer;
 import util.FileTools;
-import util.StringTools;
-
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 import core.backup.Backup.LaunchBackup;
+import core.backup.Backup.OperationBackup;
+import core.backup.Backup.TriggerBackup;
 import core.launch.LaunchConfig;
 import core.launch.operation.AbstractOperationConfig;
 import core.launch.trigger.AbstractTriggerConfig;
 import core.persistence.Configuration;
 import core.runtime.FileManager;
+import core.runtime.Registry;
 import core.runtime.logger.Logger;
 import core.runtime.logger.ILogConfig.Module;
 
 public class BackupManager {
 
 	private Configuration configuration;
+	private Registry registry;
 	private FileManager fileManager;
 	private Logger logger;
 	
-	public BackupManager(Configuration configuration, FileManager fileManager, Logger logger){
-		
+	public BackupManager(
+			Configuration configuration, 
+			Registry registry, 
+			FileManager fileManager, 
+			Logger logger)
+	{
 		this.configuration = configuration;
+		this.registry = registry;
 		this.fileManager = fileManager;
 		this.logger = logger;
 	}
 	
 	public void backup(String path) throws Exception {
 		
-		Backup backup = new Backup();
-		
-		backup.preferences = configuration.getOptionContainer();
+		Backup backup = new Backup(configuration.getVersion());
+		// preferences
+		backup.container = configuration.getOptionContainer();
+		// launches
 		for(LaunchConfig launchConfig : configuration.getLaunchConfigs()){
-			LaunchBackup launchBackup = backup.new LaunchBackup();
-			
-			launchBackup.launch = launchConfig.getOptionContainer();
+			LaunchBackup launchBackup = backup.new LaunchBackup(launchConfig.getName());
+			launchBackup.container = launchConfig.getOptionContainer();
+			// operations
 			for(AbstractOperationConfig operationConfig : launchConfig.getOperationConfigs()){
-				launchBackup.operations.add(operationConfig.getOptionContainer());
+				OperationBackup operationBackup = backup.new OperationBackup(operationConfig.getName());
+				operationBackup.container = operationConfig.getOptionContainer();
+				launchBackup.operations.add(operationBackup);
 			}
+			// triggers
 			for(AbstractTriggerConfig triggerConfig : launchConfig.getTriggerConfigs()){
-				launchBackup.triggers.add(triggerConfig.getOptionContainer());
+				TriggerBackup triggerBackup = backup.new TriggerBackup(triggerConfig.getName());
+				triggerBackup.container = triggerConfig.getOptionContainer();
+				launchBackup.triggers.add(triggerBackup);
 			}
-			
 			backup.launches.add(launchBackup);
 		}
 		
+		logger.log(Module.COMMON, "Backup: "+path);
 		XStream xstream = new XStream(new DomDriver());
 		String xml = xstream.toXML(backup);
 		FileTools.writeFile(path, xml, false);
@@ -64,29 +74,57 @@ public class BackupManager {
 		String xml = FileTools.readFile(path);
 		Backup backup = (Backup)xstream.fromXML(xml);
 		
+		logger.log(Module.COMMON, "Restore "+path);
 		Configuration restore = new Configuration(fileManager, logger, configuration.getPath());
-		
-		logger.log(Module.COMMON, "(BACKUP) Restoring Configuration");
-		restore(backup.preferences, restore.getOptionContainer(), StringTools.enum2strings(Configuration.OPTIONS.class));
+		// preferences
+		restore(backup.container, restore.getOptionContainer());
+		// launches
+		for(LaunchBackup launchBackup : backup.launches){
+			String launchName = launchBackup.name;
+			logger.log(Module.COMMON, "Restore Launch ["+launchName+"]");
+			LaunchConfig launchConfig = new LaunchConfig(launchName);
+			restore(launchBackup.container, launchConfig.getOptionContainer());
+			// operations
+			for(OperationBackup operationBackup : launchBackup.operations){
+				String operationName = operationBackup.name;
+				AbstractOperationConfig operationConfig = registry.createOperationConfig(operationName);
+				if(operationConfig != null){
+					logger.log(Module.COMMON, "Restore Operation ["+operationName+"]");
+					restore(operationBackup.container, operationConfig.getOptionContainer());
+					launchConfig.getOperationConfigs().add(operationConfig);
+				}else{
+					logger.log(Module.COMMON, "No Operation ["+operationName+"]");
+				}
+			}
+			// triggers
+			for(TriggerBackup triggerBackup : launchBackup.triggers){
+				String triggerName = triggerBackup.name;
+				AbstractTriggerConfig triggerConfig = registry.createTriggerConfig(triggerName);
+				if(triggerConfig != null){
+					logger.log(Module.COMMON, "Restore Trigger ["+triggerName+"]");
+					restore(triggerBackup.container, triggerConfig.getOptionContainer());
+					launchConfig.getTriggerConfigs().add(triggerConfig);
+				}else{
+					logger.log(Module.COMMON, "No Trigger ["+triggerName+"]");
+				}
+			}
+			restore.getLaunchConfigs().add(launchConfig);
+		}
+		logger.log(Module.COMMON, "Restore completed (Version: "+backup.version+" -> "+restore.getVersion()+")");
 		
 		return restore;
 	}
 
-	private void restore(OptionContainer source, OptionContainer destination, ArrayList<String> options) {
+	private void restore(OptionContainer source, OptionContainer destination) {
 		
-		for(String name : options){
-			
-			Option sourceOption = source.getOption(name);
-			if(sourceOption != null){
-				Option destinationOption = destination.getOption(name);
-				if(destinationOption != null){
-					destinationOption.setStringValue(sourceOption.getStringValue());
-					logger.debug(Module.COMMON, "(BACKUP) restoring\t: "+name);
-				}else{
-					logger.log(Module.COMMON, "(BACKUP) missing Destination\t: "+name);
-				}
+		for(Option sourceOption : source.getOptions()){
+			String name = sourceOption.getName();
+			Option destinationOption = destination.getOption(name);
+			if(destinationOption != null){
+				destinationOption.setStringValue(sourceOption.getStringValue());
+				logger.debug(Module.COMMON, "Restore Option ["+name+"]");
 			}else{
-				logger.log(Module.COMMON, "(BACKUP) missing Source\t: "+name);
+				logger.log(Module.COMMON, "No Option ["+name+"]");
 			}
 		}
 	}

@@ -11,6 +11,7 @@ import core.runtime.ScheduleManager;
 import core.runtime.TaskManager;
 import core.runtime.http.HttpServer;
 import core.runtime.logger.SystemLogger;
+import core.runtime.logger.ILogConfig.Module;
 import core.runtime.smtp.SmtpClient;
 import ui.Window;
 import ui.menu.HelpMenu;
@@ -64,11 +65,13 @@ public class Application extends AbstractSystem {
 	public void revert() throws Exception {
 		
 		if(ui.isInitialized() && persistence.configuration.isDirty()){
+			logging.logger.emph(Module.COMMON, "revert");
 			ui.shutdown();
 			persistence.clear();
 			persistence.init();
 			ui.clear();
 			ui.init();
+			runtime.reverted();
 		}
 	}
 	
@@ -180,6 +183,10 @@ public class Application extends AbstractSystem {
 			add(scheduleManager);
 			super.init();
 		}
+
+		public void reverted() {
+			launchManager.notifyListeners();
+		}
 	}
 	
 	/** ui related componets */
@@ -207,6 +214,7 @@ public class Application extends AbstractSystem {
 			toolsMenu = new ToolsMenu(
 					application,
 					persistence.configuration, 
+					runtime.registry,
 					core.taskManager,
 					core.fileManager, 
 					core.heapManager,

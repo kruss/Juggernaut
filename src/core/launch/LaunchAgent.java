@@ -175,7 +175,7 @@ public class LaunchAgent extends LifecycleObject {
 				statusManager.setStatus(Status.CANCEL);
 				aboard = true;
 				operation.getStatusManager().setStatus(Status.CANCEL);
-				operation.syncStop(1000);
+				operation.asyncStop(1000);
 			}finally{
 				statusManager.addProgress(1);
 			}

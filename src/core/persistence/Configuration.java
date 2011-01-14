@@ -81,7 +81,6 @@ implements
 	private transient String path;
 	private transient boolean dirty;
 	
-	@SuppressWarnings("unused")
 	private String version;
 	private OptionContainer optionContainer;
 	private ArrayList<LaunchConfig> launchConfigs;
@@ -251,13 +250,13 @@ implements
 		for(IChangeListener listener : listeners){ listener.changed(this); }
 	}
 	
+	public String getVersion(){ return version; }
 	public OptionContainer getOptionContainer(){ return optionContainer; }
 	public ArrayList<LaunchConfig> getLaunchConfigs(){ return launchConfigs; }
 	public LogConfig getLogConfig() { return logConfig; }
 	public String getPath(){ return path; }
 	
 	public void setDirty(boolean dirty){ this.dirty = dirty; }
-	
 	public boolean isDirty(){ 
 		if(dirty){ 
 			return true; 

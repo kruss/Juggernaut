@@ -26,6 +26,7 @@ import core.html.AbstractHtmlPage;
 import core.persistence.Configuration;
 import core.runtime.FileManager;
 import core.runtime.HeapManager;
+import core.runtime.Registry;
 import core.runtime.TaskManager;
 import core.runtime.logger.Logger;
 
@@ -35,6 +36,7 @@ public class ToolsMenu extends JMenu implements ISystemComponent, IChangeListene
 
 	private Application application; 
 	private Configuration configuration;
+	private Registry registry;
 	private FileManager fileManager;
 	private HeapManager heapManager;
 	
@@ -50,6 +52,7 @@ public class ToolsMenu extends JMenu implements ISystemComponent, IChangeListene
 	public ToolsMenu(
 			Application application,
 			Configuration configuration,
+			Registry registry,
 			TaskManager taskManager,
 			FileManager fileManager,
 			HeapManager heapManager,
@@ -59,6 +62,7 @@ public class ToolsMenu extends JMenu implements ISystemComponent, IChangeListene
 		
 		this.application = application;
 		this.configuration = configuration;
+		this.registry = registry;
 		this.fileManager = fileManager;
 		this.heapManager = heapManager;
 		this.logger = logger;
@@ -117,7 +121,7 @@ public class ToolsMenu extends JMenu implements ISystemComponent, IChangeListene
 			SystemTools.getWorkingDir()+File.separator+
 			"Configuration_"+DateTools.getFileSystemDate(new Date())+".xml";
 		try{
-			BackupManager backup = new BackupManager(configuration, fileManager, logger);
+			BackupManager backup = new BackupManager(configuration, registry, fileManager, logger);
 			backup.backup(path);
 			
 			UiTools.infoDialog("Backup to:\n\n"+path);
@@ -128,21 +132,21 @@ public class ToolsMenu extends JMenu implements ISystemComponent, IChangeListene
 	
 	private void restoreConfig(){
 		
-		File file = UiTools.fileDialog("Configuration File", SystemTools.getWorkingDir());
+		File file = UiTools.fileDialog("Backup File", SystemTools.getWorkingDir());
 		if(
 				file != null && 
-				UiTools.confirmDialog("Restore Configuration from:\n\n"+file.getAbsolutePath())
+				UiTools.confirmDialog("Restore Configuration from Backup?")
 		){
 			String path = file.getAbsolutePath();
 			try{
-				BackupManager backup = new BackupManager(configuration, fileManager, logger);
+				BackupManager backup = new BackupManager(configuration, registry, fileManager, logger);
 				Configuration restore = backup.restore(path);
 				restore.save();
 				
 				configuration.setDirty(true);
 				application.revert();
 				
-				UiTools.infoDialog("Restored from:\n\n"+path);
+				UiTools.infoDialog("Restore from:\n\n"+path);
 			}catch(Exception e){
 				UiTools.errorDialog(e);
 			}

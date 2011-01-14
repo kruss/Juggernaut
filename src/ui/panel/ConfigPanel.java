@@ -44,7 +44,6 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 
 	private static final long serialVersionUID = 1L;
 
-	private Logger logger;
 	private Configuration configuration; 
 	private Cache cache;
 	private History history;
@@ -53,6 +52,7 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 	private ISmtpClient smtpClient;
 	private IHttpServer httpServer;
 	private LaunchManager launchManager;
+	private Logger logger;
 	
 	private ArrayList<IChangeListener> listeners;
 	private JComboBox launchCombo;
@@ -138,8 +138,8 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 		topPanel.add(buttonPanel, BorderLayout.SOUTH);
 		
 		launchPanel =  new LaunchConfigPanel(this, configuration);
-		operationPanel = new OperationConfigPanel(this, configuration, registry);
-		triggerPanel = new TriggerConfigPanel(this, configuration, registry);
+		operationPanel = new OperationConfigPanel(this, configuration, registry, logger);
+		triggerPanel = new TriggerConfigPanel(this, configuration, registry, logger);
 		
 		tabPanel = new JTabbedPane();
 		tabPanel.setTabPlacement(JTabbedPane.LEFT);

@@ -6,14 +6,56 @@ import ui.option.OptionContainer;
 
 public class Backup {
 	
-	public OptionContainer preferences;
-	public ArrayList<LaunchBackup> launches = new ArrayList<LaunchBackup>();
+	public String version;
+	public OptionContainer container;
+	public ArrayList<LaunchBackup> launches;
+	
+	public Backup(String version){
+		
+		this.version = version;
+		container = null;
+		launches = new ArrayList<LaunchBackup>();
+	}
 	
 	public class LaunchBackup {
 		
-		public OptionContainer launch;
-		public ArrayList<OptionContainer> operations = new ArrayList<OptionContainer>();
-		public ArrayList<OptionContainer> triggers = new ArrayList<OptionContainer>();
+		public String name;
+		public OptionContainer container;
+		
+		public ArrayList<OperationBackup> operations;
+		public ArrayList<TriggerBackup> triggers;
+		
+		public LaunchBackup(String name){
+			
+			this.name = name;
+			container = null;
+			operations = new ArrayList<OperationBackup>();
+			triggers = new ArrayList<TriggerBackup>();
+		}
+	}
+	
+	public class OperationBackup {
+		
+		public String name;
+		public OptionContainer container;
+		
+		public OperationBackup(String name){
+			
+			this.name = name;
+			container = null;
+		}
+	}
+	
+	public class TriggerBackup {
+		
+		public String name;
+		public OptionContainer container;
+		
+		public TriggerBackup(String name){
+			
+			this.name = name;
+			container = null;
+		}
 	}
 }
 

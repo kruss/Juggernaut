@@ -6,9 +6,6 @@ import core.launch.data.property.PropertyContainer;
 
 import ui.option.Option.Type;
 
-
-
-
 /**
  * container for options of an item
  */
@@ -28,15 +25,15 @@ public class OptionContainer {
 	
 	public ArrayList<Option> getOptions(){ return options; }
 	
+	private boolean hasOption(String name) {
+		return getOption(name) != null;
+	}
+	
 	public void setOption(Option option){
 		
 		if(!hasOption(option.getName())){
 			options.add(option);
 		}
-	}
-	
-	private boolean hasOption(String name) {
-		return getOption(name) != null;
 	}
 
 	public Option getOption(String name){

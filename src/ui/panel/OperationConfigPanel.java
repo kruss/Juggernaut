@@ -28,6 +28,8 @@ import core.launch.LaunchConfig;
 import core.launch.operation.AbstractOperationConfig;
 import core.persistence.Configuration;
 import core.runtime.Registry;
+import core.runtime.logger.Logger;
+import core.runtime.logger.ILogConfig.Module;
 
 public class OperationConfigPanel extends JPanel implements IChangeListener {
 
@@ -36,6 +38,7 @@ public class OperationConfigPanel extends JPanel implements IChangeListener {
 	private ConfigPanel parent;
 	private Configuration configuration;
 	private Registry registry;
+	private Logger logger;
 	
 	private OptionEditor optionEditor;
 	private SelectionListener selectionListener;
@@ -53,11 +56,13 @@ public class OperationConfigPanel extends JPanel implements IChangeListener {
 	public OperationConfigPanel(
 			ConfigPanel parent, 
 			Configuration configuration, 
-			Registry registry)
+			Registry registry,
+			Logger logger)
 	{
 		this.parent = parent;
 		this.configuration = configuration;
 		this.registry = registry;
+		this.logger = logger;
 		
 		optionEditor = new OptionEditor();		
 		selectionListener = new SelectionListener();
@@ -120,8 +125,12 @@ public class OperationConfigPanel extends JPanel implements IChangeListener {
 	
 	private void initOperationCombo() {
 		
-		for(String operationName : registry.getOperationNames()){
-			operationCombo.addItem(operationName);
+		try{
+			for(String operationName : registry.getOperationNames()){
+				operationCombo.addItem(operationName);
+			}
+		}catch(Exception e){
+			logger.error(Module.COMMON, e);
 		}
 	}
 
@@ -242,11 +251,13 @@ public class OperationConfigPanel extends JPanel implements IChangeListener {
 			String operationName = (String)operationCombo.getItemAt(comboIndex);
 			try{
 				AbstractOperationConfig operationConfig = registry.createOperationConfig(operationName);
-				LaunchConfig launchConfig = parent.getCurrentConfig();
-				launchConfig.getOperationConfigs().add(listIndex >=0 ? listIndex+1 : 0, operationConfig);
-				launchConfig.setDirty(true);
-				configuration.notifyListeners();
-				refreshUI(operationConfig);
+				if(operationConfig != null){
+					LaunchConfig launchConfig = parent.getCurrentConfig();
+					launchConfig.getOperationConfigs().add(listIndex >=0 ? listIndex+1 : 0, operationConfig);
+					launchConfig.setDirty(true);
+					configuration.notifyListeners();
+					refreshUI(operationConfig);
+				}
 			}catch(Exception e){
 				UiTools.errorDialog(e);
 			}

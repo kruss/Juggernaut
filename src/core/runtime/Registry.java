@@ -2,7 +2,6 @@ package core.runtime;
 
 import java.util.ArrayList;
 
-
 import core.ISystemComponent;
 import core.launch.operation.AbstractOperationConfig;
 import core.launch.operation.CommandOperationConfig;
@@ -13,11 +12,6 @@ import core.launch.trigger.AbstractTriggerConfig;
 import core.launch.trigger.IntervallTriggerConfig;
 import core.launch.trigger.SVNTriggerConfig;
 import core.runtime.logger.Logger;
-import core.runtime.logger.ILogConfig.Module;
-
-
-
-
 
 /** runtime object factory */
 public class Registry implements ISystemComponent {
@@ -56,15 +50,11 @@ public class Registry implements ISystemComponent {
 	@Override
 	public void shutdown() throws Exception {}
 	
-	public ArrayList<String> getOperationNames(){
+	public ArrayList<String> getOperationNames() throws Exception {
 		
 		ArrayList<String> names = new ArrayList<String>();
 		for(Class<?> clazz : operationConfigs){
-			try{
-				names.add(getOperationName(clazz));
-			}catch(Exception e) {
-				logger.error(Module.COMMON, e);
-			}
+			names.add(getOperationName(clazz));
 		}
 		return names;
 	}
@@ -73,15 +63,11 @@ public class Registry implements ISystemComponent {
 		return ((AbstractOperationConfig) clazz.newInstance()).getName();
 	}
 
-	public ArrayList<String> getTriggerNames(){
+	public ArrayList<String> getTriggerNames() throws Exception {
 		
 		ArrayList<String> names = new ArrayList<String>();
 		for(Class<?> clazz : triggerConfigs){
-			try{
-				names.add(getTriggerName(clazz));
-			}catch(Exception e) {
-				logger.error(Module.COMMON, e);
-			}
+			names.add(getTriggerName(clazz));
 		}
 		return names;
 	}
@@ -99,7 +85,7 @@ public class Registry implements ISystemComponent {
 				return instance;
 			}
 		}
-		throw new Exception("No class for name: "+name);
+		return null;
 	}
 	
 	public AbstractTriggerConfig createTriggerConfig(String name) throws Exception {
@@ -111,6 +97,6 @@ public class Registry implements ISystemComponent {
 				return instance;
 			}
 		}
-		throw new Exception("No class for name: "+name);
+		return null;
 	}
 }

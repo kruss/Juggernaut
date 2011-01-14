@@ -26,6 +26,8 @@ import core.launch.LaunchConfig;
 import core.launch.trigger.AbstractTriggerConfig;
 import core.persistence.Configuration;
 import core.runtime.Registry;
+import core.runtime.logger.Logger;
+import core.runtime.logger.ILogConfig.Module;
 
 public class TriggerConfigPanel extends JPanel implements IChangeListener {
 
@@ -34,6 +36,7 @@ public class TriggerConfigPanel extends JPanel implements IChangeListener {
 	private ConfigPanel parent;
 	private Configuration configuration;
 	private Registry registry;
+	private Logger logger;
 	
 	private OptionEditor optionEditor;
 	private SelectionListener selectionListener;
@@ -51,11 +54,13 @@ public class TriggerConfigPanel extends JPanel implements IChangeListener {
 	public TriggerConfigPanel(
 			ConfigPanel parent, 
 			Configuration configuration, 
-			Registry registry)
+			Registry registry,
+			Logger logger)
 	{
 		this.parent = parent;
 		this.configuration = configuration;
 		this.registry = registry;
+		this.logger = logger;
 
 		optionEditor = new OptionEditor();		
 		selectionListener = new SelectionListener();
@@ -118,8 +123,12 @@ public class TriggerConfigPanel extends JPanel implements IChangeListener {
 	
 	private void initTriggerCombo() {
 		
-		for(String triggerName : registry.getTriggerNames()){
-			triggerCombo.addItem(triggerName);
+		try{
+			for(String triggerName : registry.getTriggerNames()){
+				triggerCombo.addItem(triggerName);
+			}
+		}catch(Exception e){
+			logger.error(Module.COMMON, e);
 		}
 	}
 
@@ -240,11 +249,13 @@ public class TriggerConfigPanel extends JPanel implements IChangeListener {
 			String triggerName = (String)triggerCombo.getItemAt(comboIndex);
 			try{
 				AbstractTriggerConfig triggerConfig = registry.createTriggerConfig(triggerName);
-				LaunchConfig launchConfig = parent.getCurrentConfig();
-				launchConfig.getTriggerConfigs().add(listIndex >=0 ? listIndex+1 : 0, triggerConfig);
-				launchConfig.setDirty(true);
-				configuration.notifyListeners();
-				refreshUI(triggerConfig);
+				if(triggerConfig != null){
+					LaunchConfig launchConfig = parent.getCurrentConfig();
+					launchConfig.getTriggerConfigs().add(listIndex >=0 ? listIndex+1 : 0, triggerConfig);
+					launchConfig.setDirty(true);
+					configuration.notifyListeners();
+					refreshUI(triggerConfig);
+				}
 			}catch(Exception e){
 				UiTools.errorDialog(e);
 			}
