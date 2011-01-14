@@ -1,21 +1,19 @@
 TASKS
 -----
 
-# filter for index-page
-
-# enrole IChangeable, ILogger
-
+# filter on index-page
+# enrole IChangeable
 # more info in operation's runtime description
-# notification history should show 5 launches
-
+# notification history should show last 5 launches
 # all html text markup special chars
+# create lock.txt to esure only one instance running on same data-folder
+# show index and id in option editors
+# create a tutorial
+# collect errors from eclipse cdt-builder plugin
+# create  properties option in launch-config overriding runtime properties 
 
 BUGS
 ----
-
-# UItest blocks UI if rg. SVN command blocks
-
-# String.hashCode() seems not to be stable for constant strings ;-(
 
 # on continous work-load:
 	[ArrayIndexOutOfBoundsException] 1 >= 1
@@ -33,28 +31,10 @@ BUGS
 	util.Task::runSingleTask (81)
 	util.Task::run (52)
 
-#cdt plugin throws
-	[15:09:03] set configuration: cam_integration_main (Debug_Fado_AVB)
-	[15:09:03] ~> evaluate build-order
-	[15:09:03] ERROR !!!
-	[JobException] null
-	
-	com.lear.eclipse.cdtbuilder.util.CdtTools::getLibraryOption (116)
-	com.lear.eclipse.cdtbuilder.build.BuildProjectInitializer::getIncludedProjects (77)
-	com.lear.eclipse.cdtbuilder.build.BuildProjectInitializer::initializeProject (38)
-	com.lear.eclipse.cdtbuilder.build.ProjectBuilder::buildProject (36)
-	com.lear.eclipse.cdtbuilder.build.BuildJob::buildProject (178)
-	com.lear.eclipse.cdtbuilder.build.BuildJob::buildProjects (164)
-	com.lear.eclipse.cdtbuilder.build.BuildJob::run (45)
-	org.eclipse.core.internal.jobs.Worker::run (55)
-	
-	!!!
-
 NOTES
 -----
 
 # serialized objects may contain absolute paths
-
 
 # demo of how to implement context-menu for option
 final Option smtpServer = container.getOption(OPTIONS.SMTP_SERVER.toString());

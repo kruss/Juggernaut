@@ -2,10 +2,21 @@ package core;
 
 import java.io.File;
 
+/**
+ * Contains general constants.<br>
+ * <p>
+ * Version <i>major.minor.micro</i> increased if:
+ * <ul>
+ * 	<li><b>major</b>: changes do affect serialized data and external interfaces</li>
+ * 	<li><b>minor</b>: changes do affect serialized data but not external interfaces</li>
+ * 	<li><b>micro</b>: changes do not affect serialized data and external interfaces</li>
+ * </ul>
+ * </p>
+ */
 public class Constants {
 
 	public static final String 		APP_NAME = "Juggernaut";
-	public static final String 		APP_VERSION = "0.2";
+	public static final String 		APP_VERSION = "0.1.0"; 
 	public static final String 		APP_FULL_NAME = APP_NAME+" ("+APP_VERSION+")";
 	public static final int 		APP_WIDTH = 800;
 	public static final int 		APP_HEIGHT = 600;
