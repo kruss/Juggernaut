@@ -8,9 +8,12 @@ TASKS
 # all html text markup special chars
 # create lock.txt to esure only one instance running on same data-folder
 # show index and id in option editors
+	-> trigger logging name+index on checking schedules
 # create a tutorial
 # collect errors from eclipse cdt-builder plugin
-# create  properties option in launch-config overriding runtime properties 
+# create properties option in launch-config overriding runtime properties 
+# maybe optional build-folder property
+# chach-monitor wich allows to delete/set values within id-tree
 
 BUGS
 ----

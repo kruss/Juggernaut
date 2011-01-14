@@ -119,18 +119,80 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 	
 	private void checkSchedules() {
 		
-		ArrayList<LaunchConfig> launchConfigs = getRandomizedLaunches();
-		logger.log(Module.COMMON, "Checking schedules ("+launchConfigs.size()+")");
+		ArrayList<LaunchConfig> launchConfigs = getLaunches();
 		for(LaunchConfig launchConfig : launchConfigs){
 			if(launchManager.isReady()){
+				logger.log(Module.COMMON, "Checking Launch ["+launchConfig.getName()+"]");
 				if(!checkSchedules(launchConfig)){
-					logger.log(Module.COMMON, "Launch ["+launchConfig.getName()+"] idle");
+					logger.log(Module.COMMON, "Launch ["+launchConfig.getName()+"] is IDLE");
 				}
 			}else{
 				break;
 			}
 		}
 		setUpdated(new Date());
+	}
+	
+	private boolean checkSchedules(LaunchConfig launchConfig) {
+		
+		boolean launched = false;
+		for(AbstractTriggerConfig triggerConfig : launchConfig.getTriggerConfigs()){
+			if(triggerConfig.isReady()){
+				logger.debug(
+						Module.COMMON, 
+						"Checking Trigger ["+triggerConfig.getName()+"]"
+				);
+				AbstractTrigger trigger = triggerConfig.createTrigger(
+						configuration, cache, taskManager, logger
+				);
+				TriggerStatus triggerStatus = trigger.isTriggered();
+				if(triggerStatus.triggered){
+					if(!launched)
+					{
+						LaunchAgent launch = launchConfig.createLaunch(
+								configuration, cache, history, fileManager, taskManager, smtpClient, httpServer, triggerStatus.message
+						);
+						LaunchStatus launchStatus = launchManager.runLaunch(launch);
+						if(launchStatus.launched){
+							logger.log(
+									Module.COMMON, 
+									"Launch ["+launchConfig.getName()+"] is TRIGGERD: "+triggerStatus.message
+							);
+							trigger.wasTriggered(true);
+							launched = true;
+						}else{
+							logger.log(
+									Module.COMMON, 
+									"Launch ["+launchConfig.getName()+"] is BLOCKED: "+launchStatus.message
+							);
+							trigger.wasTriggered(false); // actual launched
+							break;
+						}
+					}else{
+						trigger.wasTriggered(true); // simulate launched
+					}
+				}else{
+					logger.debug(
+							Module.COMMON, 
+							"Trigger ["+triggerConfig.getName()+"] is IDLE: "+triggerStatus.message
+					);
+				}
+			}
+		}
+		return launched;
+	}
+	
+	/** get randomized list of the launches to be scheduled */
+	private ArrayList<LaunchConfig> getLaunches(){
+		
+		ArrayList<LaunchConfig> configs = new ArrayList<LaunchConfig>();
+		for(LaunchConfig config : configuration.getLaunchConfigs()){
+			if(config.isReady()){
+				configs.add(config);
+			}
+		}
+		Collections.shuffle(configs);
+		return configs;
 	}
 	
 	public void setUpdated(Date updated){
@@ -144,61 +206,6 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 		synchronized(this){
 			return updated;
 		}
-	}
-	
-	private boolean checkSchedules(LaunchConfig launchConfig) {
-		
-		boolean launched = false;
-		for(AbstractTriggerConfig triggerConfig : launchConfig.getTriggerConfigs()){
-			AbstractTrigger trigger = triggerConfig.createTrigger(
-					configuration, cache, taskManager, logger
-			);
-			TriggerStatus triggerStatus = trigger.isTriggered();
-			if(triggerStatus.triggered){
-				if(!launched)
-				{
-					LaunchAgent launch = launchConfig.createLaunch(
-							configuration, cache, history, fileManager, taskManager, smtpClient, httpServer, triggerStatus.message
-					);
-					LaunchStatus launchStatus = launchManager.runLaunch(launch);
-					if(launchStatus.launched){
-						logger.log(
-								Module.COMMON, 
-								"Launch ["+launchConfig.getName()+"] trigger: "+triggerStatus.message
-						);
-						trigger.wasTriggered(true);
-						launched = true;
-					}else{
-						logger.log(
-								Module.COMMON, 
-								"Launch ["+launchConfig.getName()+"] blocked: "+launchStatus.message
-						);
-						trigger.wasTriggered(false); // actual launched
-						break;
-					}
-				}else{
-					trigger.wasTriggered(true); // simulate launched
-				}
-			}else{
-				logger.debug(
-						Module.COMMON, 
-						"Trigger ["+triggerConfig.getId()+"] idle: "+triggerStatus.message
-				);
-			}
-		}
-		return launched;
-	}
-	
-	private ArrayList<LaunchConfig> getRandomizedLaunches(){
-		
-		ArrayList<LaunchConfig> configs = new ArrayList<LaunchConfig>();
-		for(LaunchConfig config : configuration.getLaunchConfigs()){
-			if(config.isReady()){
-				configs.add(config);
-			}
-		}
-		Collections.shuffle(configs);
-		return configs;
 	}
 	
 	private class SchedulerTask extends Task {

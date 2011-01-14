@@ -69,6 +69,10 @@ public abstract class AbstractTriggerConfig implements IOptionInitializer {
 		return optionContainer.getOption(OPTIONS.ACTIVE.toString()).getBooleanValue(); 
 	}
 	
+	public boolean isReady() {
+		return isActive() && isValid();
+	}
+	
 	@Override
 	public String toString(){ 
 		if(isActive()){

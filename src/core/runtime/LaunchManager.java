@@ -124,10 +124,10 @@ public class LaunchManager implements ISystemComponent, ILifecycleListener {
 		LaunchAgent agent = (LaunchAgent)object;
 		String date = DateTools.getTextDate(new Date());
 		if(lifecycle == Lifecycle.START){
-			setStatus("Launch ["+agent.getConfig().getName()+"] started at "+date);
+			setStatus("Launch ["+agent.getConfig().getName()+"] has STARTED: "+date);
 		}
 		if(lifecycle == Lifecycle.FINISH){
-			setStatus("Launch ["+agent.getConfig().getName()+"] finished at "+date);
+			setStatus("Launch ["+agent.getConfig().getName()+"] has FINISHED: "+date);
 			synchronized(agents){
 				agents.remove(agent);
 			}
