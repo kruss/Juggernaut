@@ -176,6 +176,9 @@ public class OperationConfigPanel extends JPanel implements IChangeListener {
 		int listIndex = operationList.getSelectedIndex();
 		if(listIndex >= 0){
 			currentConfig = parent.getCurrentConfig().getOperationConfigs().get(listIndex);
+			logger.debug(
+					Module.COMMON, currentConfig.getClass().getSimpleName()+" ("+currentConfig.getId()+")"
+			);
 			optionEditor.setOptionContainer(currentConfig.getOptionContainer(), currentConfig);
 		}else{
 			currentConfig = null;
