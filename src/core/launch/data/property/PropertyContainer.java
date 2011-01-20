@@ -23,6 +23,13 @@ public class PropertyContainer {
 		}
 	}
 	
+	public void setProperties(ArrayList<Property> properties){
+		
+		for(Property property : properties){
+			setProperty(property);
+		}
+	}
+	
 	public Property getProperty(String id, String key){
 		
 		for(Property entry : entries){
@@ -31,13 +38,6 @@ public class PropertyContainer {
 			}
 		}
 		return null;
-	}
-	
-	public void setProperties(ArrayList<Property> properties){
-		
-		for(Property property : properties){
-			setProperty(property);
-		}
 	}
 	
 	public ArrayList<Property> getProperties(String id){
@@ -49,6 +49,31 @@ public class PropertyContainer {
 			}
 		}
 		return list;
+	}
+	
+	public ArrayList<String> getIds(){
+		
+		ArrayList<String> ids = new ArrayList<String>();
+		for(Property entry : entries){
+			ids.add(entry.id);
+		}
+		return ids;
+	}
+	
+	public void removeProperty(String id, String key){
+		
+		Property property = getProperty(id, key);
+		if(property != null){
+			entries.remove(property);
+		}
+	}
+	
+	public void removeProperties(String id){
+		
+		ArrayList<Property> properties = getProperties(id);
+		for(Property property : properties){
+			entries.remove(property);
+		}
 	}
 	
 	/** expand all properties within value of syntax {id@key} */
@@ -75,19 +100,5 @@ public class PropertyContainer {
 			}
 		}
 		return string;
-	}
-
-	/** remove entries which does not match given ids */
-	public boolean cleanup(ArrayList<String> validIds) {
-		
-		boolean cleanup = false;
-		for(int i=entries.size()-1; i>=0; i--){
-			Property entry = entries.get(i);
-			if(!validIds.contains(entry.id)){
-				entries.remove(entry);
-				cleanup = true;
-			}
-		}
-		return cleanup;
 	}
 }

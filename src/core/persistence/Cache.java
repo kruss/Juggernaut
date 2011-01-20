@@ -123,23 +123,36 @@ public class Cache implements ISystemComponent {
 	private void cleanup() throws Exception {
 		
 		synchronized(container){
-			if(container.cleanup(getValidIds())){
+			boolean cleanup = false;
+			
+			ArrayList<String> ids = container.getIds();
+			ArrayList<String> validIds = getIds(configuration);
+			for(String id : ids){
+				if(!validIds.contains(id)){
+					container.removeProperties(id);
+					cleanup = true;
+				}
+			}
+			
+			if(cleanup){
 				dirty = true;
 				save();
 			}
 		}
 	}
 
-	private ArrayList<String> getValidIds() {
+	/** get all ids of current configuration */
+	private ArrayList<String> getIds(Configuration configuration) {
 		
 		ArrayList<String> ids = new ArrayList<String>();
 		for(LaunchConfig config : configuration.getLaunchConfigs()){
-			ids.addAll(getLaunchIds(config));
+			ids.addAll(getIds(config));
 		}
 		return ids;
 	}
 	
-	private ArrayList<String> getLaunchIds(LaunchConfig config) {
+	/** get all ids of a launch */
+	private ArrayList<String> getIds(LaunchConfig config) {
 		
 		ArrayList<String> ids = new ArrayList<String>();
 		ids.add(config.getId());
