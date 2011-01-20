@@ -29,10 +29,14 @@ public class PropertyInfo {
 				@Override
 				public void perform() {
 					Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-					clipboard.setContents(new StringSelection(id+"@"+property), null);
+					clipboard.setContents(new StringSelection(getPropertyString(property)), null);
 					UiTools.infoDialog("Copied ["+property+"] to Clipboard");
 				}
 			});
 		}
+	}
+	
+	private String getPropertyString(String property) {
+		return "{"+id+"@"+property+"}";
 	}
 }

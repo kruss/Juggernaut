@@ -20,6 +20,11 @@ TASKS
 BUGS
 ----
 
+# after cloning launch all configured property-ids are invalid
+# after restoring a backup all configured property-ids are invalid
+# after restoring a backup all existing build-folders will remain
+
+
 # on continous work-load:
 	[ArrayIndexOutOfBoundsException] 1 >= 1
 	java.util.Vector::removeElementAt (511)
