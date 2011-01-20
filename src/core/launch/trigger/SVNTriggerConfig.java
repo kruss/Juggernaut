@@ -19,7 +19,7 @@ public class SVNTriggerConfig extends AbstractTriggerConfig {
 	public enum OPTIONS {
 		URL, DELAY
 	}
-	
+
 	public SVNTriggerConfig(){
 		
 		optionContainer.setOption(new Option(

@@ -1,12 +1,15 @@
 package ui.option;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
@@ -15,7 +18,9 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -27,15 +32,18 @@ import javax.swing.event.ChangeListener;
 
 
 import util.IChangeListener;
+import util.IChangeable;
 import util.StringTools;
 
-public class OptionEditor extends JPanel {
+public class OptionEditor extends JPanel implements IChangeable {
 
 	private static final long serialVersionUID = 1L;
 
 	private ArrayList<IChangeListener> listeners;
 	private OptionContainer container;
 	private boolean groups;
+	private JPanel centerPanel;
+	private JPopupMenu popup;
 	
 	public OptionEditor(){
 		
@@ -52,9 +60,10 @@ public class OptionEditor extends JPanel {
 		
 		removeAll();
 		this.container = container;
-		JPanel centerPanel = new JPanel();
+		centerPanel = new JPanel();
 		centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
 		if(container != null){
+			// create panel
 			String groupName = "";
 			JPanel groupPanel = null;
 			for(Option option : container.getOptions()){
@@ -79,8 +88,27 @@ public class OptionEditor extends JPanel {
 				groupPanel = null;
 			}
 			add(centerPanel, BorderLayout.NORTH);
-			setToolTipText(container.getDescription());
+			// set tool-tip
+			if(!container.getDescription().isEmpty()){
+				for(int i=0; i<getComponentCount(); i++){
+					Component component = getComponent(i);
+					if(component instanceof JPanel){
+						((JPanel) component).setToolTipText(container.getDescription());
+					}
+				}
+				setToolTipText(container.getDescription());
+			}
+			// set actions
 			if(initializer != null){
+				popup = new JPopupMenu();
+				centerPanel.addMouseListener(new MouseAdapter(){
+					public void mouseClicked(MouseEvent e){
+						if(e.getButton() == MouseEvent.BUTTON3){
+							popup.show(e.getComponent(), e.getX(), e.getY());
+						}
+					}
+				});
+				initializer.initEditor(this);
 				initializer.initOptions(container);
 			}
 		}else{
@@ -88,12 +116,13 @@ public class OptionEditor extends JPanel {
 		}
 	}
 
+	@Override
 	public void addListener(IChangeListener listener){ listeners.add(listener); }
-	
+	@Override
+	public void removeListener(IChangeListener listener){ listeners.remove(listener); }
+	@Override
 	public void notifyListeners(){
-		for(IChangeListener listener : listeners){
-			listener.changed(this);
-		}
+		for(IChangeListener listener : listeners){ listener.changed(this); }
 	}
 	
 	private JPanel createPanel(Option option) {
@@ -267,6 +296,18 @@ public class OptionEditor extends JPanel {
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(component, BorderLayout.WEST);
 		return panel;
+	}
+	
+	public void addEditorDelegate(final IEditorDelegate delegate){
+		
+		JMenuItem item = new JMenuItem(delegate.getDelegateName());
+		item.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){ 
+				delegate.perform();
+			}
+		});
+		
+		popup.add(item);
 	}
 	
 	public static void setOptionDelegate(final Option option, final IOptionDelegate delegate){

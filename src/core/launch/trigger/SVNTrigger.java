@@ -11,14 +11,9 @@ import core.runtime.TaskManager;
 import core.runtime.logger.Logger;
 import core.runtime.logger.ILogConfig.Module;
 
-
-
-
-
-
 public class SVNTrigger extends AbstractTrigger {
 
-	private enum PROPERTY { REVISION };
+	private enum PROPERTY { REVISION }
 	
 	private SVNClient client;
 	private SVNTriggerConfig config;

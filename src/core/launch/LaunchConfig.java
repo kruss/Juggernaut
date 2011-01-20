@@ -1,12 +1,13 @@
 package core.launch;
 
-
 import java.util.ArrayList;
 import java.util.UUID;
 
+import ui.dialog.PropertyInfo;
 import ui.option.IOptionInitializer;
 import ui.option.Option;
 import ui.option.OptionContainer;
+import ui.option.OptionEditor;
 import ui.option.Option.Type;
 import util.DateTools;
 import util.StringTools;
@@ -26,7 +27,6 @@ import core.runtime.http.IHttpServer;
 import core.runtime.smtp.ISmtpClient;
 
 
-
 /**
  * the configuration of a launch,- will be serialized
  */
@@ -39,7 +39,7 @@ public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitialize
 	public enum OPTIONS {
 		ACTIVE, DESCRIPTION, CLEAN, TIMEOUT, NOTIFICATION, ADMINISTRATORS, COMMITTERS, MESSAGE
 	}
-	
+
 	private String id;
 	private String name;
 	private OptionContainer optionContainer;
@@ -53,7 +53,7 @@ public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitialize
 		this.name = name;
 		
 		optionContainer = new OptionContainer();
-		optionContainer.setDescription("the configuration of the launch");
+		optionContainer.setDescription("The launch settings");
 		optionContainer.setOption(new Option(
 				GROUPS.GENERAL.toString(),
 				OPTIONS.ACTIVE.toString(), "The launch's active state",
@@ -102,6 +102,13 @@ public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitialize
 	
 	@Override
 	public void initOptions(OptionContainer container){}
+	@Override
+	public void initEditor(OptionEditor editor) {
+		
+		ArrayList<String> properties = StringTools.enum2strings(LaunchAgent.PROPERTY.class);
+		PropertyInfo info = new PropertyInfo(id, properties);
+		info.setInfo(editor);
+	}
 	
 	public String getId(){ return id; }
 	

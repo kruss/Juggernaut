@@ -16,7 +16,7 @@ import core.runtime.logger.ILogConfig.Module;
 
 public class SVNOperation extends AbstractOperation implements IRepositoryOperation {
 
-	private enum PROPERTY { URL, REVISION };
+	public enum PROPERTY { URL, REVISION };
 	
 	private SVNClient client;
 	private SVNOperationConfig config;

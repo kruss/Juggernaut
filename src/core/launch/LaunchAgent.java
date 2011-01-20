@@ -34,7 +34,7 @@ import util.SystemTools;
 
 public class LaunchAgent extends LifecycleObject {
 
-	private enum PROPERTY { NAME, FOLDER, START }
+	public enum PROPERTY { NAME, FOLDER, START }
 	
 	private History history;
 	private FileManager fileManager;

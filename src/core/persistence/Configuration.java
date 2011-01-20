@@ -182,6 +182,8 @@ implements
 				new SmtpTest(new SmtpClient(this), logger)
 		);
 	}
+	@Override
+	public void initEditor(OptionEditor editor) {}
 	
 	/** answers if scheduler is active */
 	public boolean isScheduler(){

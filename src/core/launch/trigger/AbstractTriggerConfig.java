@@ -6,6 +6,7 @@ import java.util.UUID;
 import ui.option.IOptionInitializer;
 import ui.option.Option;
 import ui.option.OptionContainer;
+import ui.option.OptionEditor;
 import ui.option.Option.Type;
 
 
@@ -59,6 +60,8 @@ public abstract class AbstractTriggerConfig implements IOptionInitializer {
 	
 	@Override
 	public void initOptions(OptionContainer container) {}
+	@Override
+	public void initEditor(OptionEditor editor) {}
 	
 	public void setId(String id){ this.id = id; }
 	public String getId(){ return id; }

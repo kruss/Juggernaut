@@ -3,6 +3,7 @@ package core.runtime.logger;
 import ui.option.IOptionInitializer;
 import ui.option.Option;
 import ui.option.OptionContainer;
+import ui.option.OptionEditor;
 import ui.option.Option.Type;
 import util.StringTools;
 
@@ -47,4 +48,6 @@ public class LogConfig implements ILogConfig, IOptionInitializer {
 
 	@Override
 	public void initOptions(OptionContainer container) {}
+	@Override
+	public void initEditor(OptionEditor editor) {}
 }

@@ -1,6 +1,8 @@
 package core.launch.operation;
 
 
+import java.util.ArrayList;
+
 import core.launch.LaunchAgent;
 import core.launch.repository.RepositoryTest;
 import core.launch.repository.SVNClient;
@@ -13,6 +15,7 @@ import ui.option.Option;
 import ui.option.OptionContainer;
 import ui.option.OptionEditor;
 import ui.option.Option.Type;
+import util.StringTools;
 
 public class SVNOperationConfig extends AbstractOperationConfig {
 	
@@ -51,6 +54,11 @@ public class SVNOperationConfig extends AbstractOperationConfig {
 	@Override
 	public String getDescription(){
 		return "An operation to checkout a SVN Repository";
+	}
+	
+	@Override
+	public ArrayList<String> getPropertyNames() { 
+		return StringTools.enum2strings(SVNOperation.PROPERTY.class);
 	}
 	
 	public String getUrl(){
