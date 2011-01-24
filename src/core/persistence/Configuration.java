@@ -109,12 +109,12 @@ implements
 		optionContainer.setOption(new Option(
 				GROUPS.GENERAL.toString(),
 				OPTIONS.MAXIMUM_AGENTS.toString(), "Maximum number of parallel launches", 
-				Type.INTEGER, 3, 1, 10
+				Type.INTEGER, 2, 1, 10
 		));
 		optionContainer.setOption(new Option(
 				GROUPS.GENERAL.toString(),
 				OPTIONS.MAXIMUM_HISTORY.toString(), "Maximum number of launches in history (0 = unlimited)", 
-				Type.INTEGER, 1000, 0, 1000
+				Type.INTEGER, 100, 0, 1000
 		));
 		optionContainer.setOption(new Option(
 				GROUPS.GENERAL.toString(),
