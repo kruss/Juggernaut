@@ -34,7 +34,9 @@ public class EclipseOperation extends AbstractOperation {
 	
 	@Override
 	public String getDescription() {
-		return config.getEclipsePath();
+		return StringTools.border(
+				StringTools.join(config.getBuildPattern(), ", ")
+		, 300);
 	}
 
 	@Override

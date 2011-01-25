@@ -30,7 +30,6 @@ import core.runtime.smtp.Mail;
 
 
 import util.DateTools;
-import util.StringTools;
 import util.SystemTools;
 
 public class Notification {
@@ -315,10 +314,14 @@ public class Notification {
 		
 		ArrayList<String> admins = new ArrayList<String>();
 		for(String addr : smtpClient.getConfig().getAdministratorAddresses()){
-			StringTools.addUnique(admins, addr);
+			if(!admins.contains(addr)){
+				admins.add(addr);
+			}
 		}
 		for(String addr : launch.getConfig().getAdministratorAddresses()){
-			StringTools.addUnique(admins, addr);
+			if(!admins.contains(addr)){
+				admins.add(addr);
+			}
 		}
 		Collections.sort(admins);
 		return admins;

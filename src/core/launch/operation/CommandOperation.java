@@ -11,6 +11,7 @@ import core.persistence.Configuration;
 import core.runtime.TaskManager;
 
 import util.CommandTask;
+import util.StringTools;
 
 public class CommandOperation extends AbstractOperation {
 
@@ -29,7 +30,9 @@ public class CommandOperation extends AbstractOperation {
 
 	@Override
 	public String getDescription() {
-		return config.getCommand();
+		return StringTools.border(
+				config.getCommand()+" "+config.getArguments()
+		, 300);
 	}
 	
 	@Override

@@ -93,11 +93,19 @@ public class StringTools {
 			throw new RuntimeException(e);     
 		} 
 	}
-
-	/** add item to list if not already contained */
-	public static void addUnique(ArrayList<String> list, String item) {
-		if(!list.contains(item)){
-			list.add(item);
+	
+	/** creates 'xxx...xxx' string if length &gt; border */
+	public static String border(String text, int border){
+		
+		String bordered = "";
+		int length = text.length();
+		if(length <= border){
+			bordered = text;
+		}else{
+			int delta = (int)Math.floor((double)(length - border) / (double)2);
+			int mid = (int)Math.floor((double)length / (double)2);
+			bordered = text.substring(0, mid-delta)+ "..." + text.substring(mid+delta, length);
 		}
+		return bordered;
 	}
 }
