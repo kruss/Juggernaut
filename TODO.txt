@@ -2,8 +2,8 @@ TASKS
 -----
 
 # filter on index-page
+# Console opperation should work with absolute paths
 # enrole IChangeable
-# more info in operation's runtime description
 # notification history should show last 5 launches
 # all html text markup special chars
 # create lock.txt to esure only one instance running on same data-folder
