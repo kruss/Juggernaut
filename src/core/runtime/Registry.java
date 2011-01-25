@@ -11,7 +11,7 @@ import core.launch.operation.SampleOperationConfig;
 import core.launch.trigger.AbstractTriggerConfig;
 import core.launch.trigger.IntervallTriggerConfig;
 import core.launch.trigger.SVNTriggerConfig;
-import core.launch.trigger.TimedTriggerConfig;
+import core.launch.trigger.TimeTriggerConfig;
 import core.runtime.logger.Logger;
 
 /** runtime object factory */
@@ -45,8 +45,8 @@ public class Registry implements ISystemComponent {
 		
 		triggerConfigs.clear();
 		triggerConfigs.add(IntervallTriggerConfig.class);
+		triggerConfigs.add(TimeTriggerConfig.class);
 		triggerConfigs.add(SVNTriggerConfig.class);
-		triggerConfigs.add(TimedTriggerConfig.class);
 	}
 	
 	@Override

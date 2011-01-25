@@ -24,6 +24,8 @@ BUGS
 # after restoring a backup all configured property-ids are invalid
 # after restoring a backup all existing build-folders will remain
 
+# spinners should have key-listener ?!?
+
 
 # on continous work-load:
 	[ArrayIndexOutOfBoundsException] 1 >= 1

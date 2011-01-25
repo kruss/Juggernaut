@@ -11,6 +11,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -24,6 +25,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SpinnerDateModel;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
@@ -136,12 +138,12 @@ public class OptionEditor extends JPanel implements IChangeable {
 				return createTextAreaPanel(option); 
 			case TEXT_LIST:
 				return createTextListPanel(option);
-			case DATE:
-				return createTextFieldPanel(option); 
 			case INTEGER:
 				return createIntegerSpinnerPanel(option);
 			case BOOLEAN:
 				return createCheckBoxPanel(option); 
+			case TIME:
+				return createTimeSpinnerPanel(option); 
 		}
 		return null;
 	}
@@ -294,6 +296,30 @@ public class OptionEditor extends JPanel implements IChangeable {
 			}
 		});
 		JPanel panel = new JPanel(new BorderLayout());
+		panel.add(component, BorderLayout.WEST);
+		return panel;
+	}
+	
+	private JPanel createTimeSpinnerPanel(final Option option) {
+		
+	    final JSpinner component = new JSpinner(new SpinnerDateModel());
+	    option.component = component;
+	    JSpinner.DateEditor editor = new JSpinner.DateEditor(component, "HH:mm");
+	    component.setEditor(editor);
+		editor.getTextField().setColumns(8);
+		component.setToolTipText(option.getDescription());
+		Date date = new Date((new Long(option.getStringValue())).longValue());
+		component.setValue(date);
+		component.addChangeListener(new ChangeListener(){
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				long value = ((Date)component.getValue()).getTime();
+				container.getOption(option.getName()).setStringValue(""+value);
+				notifyListeners();
+			}
+		});
+		JPanel panel = new JPanel(new BorderLayout());
+		panel.add(new JLabel(option.getUIName()+":"), BorderLayout.NORTH);
 		panel.add(component, BorderLayout.WEST);
 		return panel;
 	}

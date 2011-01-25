@@ -16,7 +16,7 @@ import javax.swing.JPopupMenu;
  */
 public class Option {
 
-	public enum Type { TEXT, TEXT_SMALL, TEXT_AREA, TEXT_LIST, DATE, INTEGER, BOOLEAN }
+	public enum Type { TEXT, TEXT_SMALL, TEXT_AREA, TEXT_LIST, INTEGER, BOOLEAN, TIME }
 	
 	public enum Properties {
 		INTEGER_MIN, INTEGER_MAX, LIST_SIZE, LIST_ITEM
