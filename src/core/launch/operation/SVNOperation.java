@@ -1,6 +1,5 @@
 package core.launch.operation;
 
-import util.StringTools;
 import core.launch.LaunchAgent;
 import core.launch.data.Artifact;
 import core.launch.data.StatusManager.Status;
@@ -12,8 +11,6 @@ import core.persistence.Cache;
 import core.persistence.Configuration;
 import core.runtime.TaskManager;
 import core.runtime.logger.ILogConfig.Module;
-
-
 
 public class SVNOperation extends AbstractOperation implements IRepositoryOperation {
 
@@ -54,9 +51,7 @@ public class SVNOperation extends AbstractOperation implements IRepositoryOperat
 	
 	@Override
 	public String getDescription() {
-		return StringTools.border(
-				config.getUrl() + (currentRevision != null ? " ("+currentRevision+")" : "")
-		, 300);
+		return config.getUrl() + (currentRevision != null ? " ("+currentRevision+")" : "");
 	}
 	
 	private void setLastRevision(String revision){

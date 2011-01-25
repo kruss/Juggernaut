@@ -8,6 +8,7 @@ import core.html.HtmlTable;
 import core.launch.data.StatusManager;
 
 import util.DateTools;
+import util.StringTools;
 
 public class LaunchHistoryPage extends AbstractHistoryPage {
 	
@@ -40,7 +41,7 @@ public class LaunchHistoryPage extends AbstractHistoryPage {
 			for(OperationHistory operation : history.operations){
 				HtmlLink link = new HtmlLink(operation.name, operation.id+File.separator+OUTPUT_FILE);
 				table.addContentCell(operation.index+".) <b>"+link.getHtml()+"</b>");
-				table.addContentCell(operation.description);
+				table.addContentCell(StringTools.border(operation.description, 150));
 				table.addContentCell(
 						operation.start != null ? DateTools.getTextDate(operation.start) : ""
 				);

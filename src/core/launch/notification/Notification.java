@@ -30,6 +30,7 @@ import core.runtime.smtp.Mail;
 
 
 import util.DateTools;
+import util.StringTools;
 import util.SystemTools;
 
 public class Notification {
@@ -143,7 +144,7 @@ public class Notification {
 			table.addHeaderCell("Status", 100);
 			for(AbstractOperation operation : launch.getOperations()){
 				table.addContentCell(operation.getIndex()+".) <b>"+operation.getConfig().getName()+"</b>");
-				table.addContentCell(operation.getDescription());
+				table.addContentCell(StringTools.border(operation.getDescription(), 100));
 				Status currentStatus = operation.getStatusManager().getStatus();
 				OperationHistory operationHistory = previous != null ? previous.getOperation(operation.getConfig().getId()) : null;
 				Status lastStatus = operationHistory != null ? operationHistory.status : null;
