@@ -86,11 +86,13 @@ public abstract class AbstractHtmlPage {
 	
 	public void create() throws Exception {
 		
-		String html = getHtml();
-		FileTools.writeFile(path, html, false);
-		
-		for(AbstractHtmlPage child : childs){
-			child.create();
+		if(path != null){
+			String html = getHtml();
+			FileTools.writeFile(path, html, false);
+			
+			for(AbstractHtmlPage child : childs){
+				child.create();
+			}
 		}
 	}
 	

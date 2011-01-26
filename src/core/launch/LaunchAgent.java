@@ -1,10 +1,8 @@
 package core.launch;
 
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-
 
 import core.launch.data.Artifact;
 import core.launch.data.Error;
@@ -109,19 +107,19 @@ public class LaunchAgent extends LifecycleObject {
 	@Override
 	protected void init() throws Exception {
 		
-		// setup the history-folder
+		// setup history-folder
 		launchHistory.init();
 		
-		// setup the logger
+		// setup logger
 		logger.setLogFile(new File(launchHistory.logfile), 0);
 		logger.info(Module.COMMON, "Launch ["+launchConfig.getName()+"]");
 		artifacts.add(new Artifact("Logfile", logger.getLogFile()));
 		
 		// setup launch-folder
 		File folder = new File(getFolder());
-		logger.log(Module.COMMON, "Folder: "+folder.getAbsolutePath());
 		if(launchConfig.isClean() && folder.isDirectory()){
 			try{
+				logger.log(Module.COMMON, "delete: "+folder.getAbsolutePath());
 				FileTools.deleteFolder(folder.getAbsolutePath());
 			}catch(Exception e){
 				if(fileManager.hasUnlocker()){
@@ -133,6 +131,7 @@ public class LaunchAgent extends LifecycleObject {
 			}
 		}
 		if(!folder.isDirectory()){
+			logger.log(Module.COMMON, "create: "+folder.getAbsolutePath());
 			FileTools.createFolder(folder.getAbsolutePath());
 		}
 		
@@ -147,8 +146,9 @@ public class LaunchAgent extends LifecycleObject {
 				new Property(launchConfig.getId(), PROPERTY.START.toString(), ""+statusManager.getStart().getTime())
 		);
 		
-		// debug options
-		logger.debug(Module.COMMON, "Settings:\n"+launchConfig.getOptionContainer().toString());
+		// debug configuration
+		logger.debug(Module.COMMON, "Configuration:\n"+launchConfig.getOptionContainer().toString());
+		artifacts.add(new Artifact("Configuration", new ConfigPage(getId(), launchConfig.getOptionContainer()).getHtml(), "htm"));
 	}
 	
 	@Override

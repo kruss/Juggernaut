@@ -3,6 +3,7 @@ package core.launch;
 import java.util.ArrayList;
 import java.util.Date;
 
+import core.html.AbstractHtmlPage;
 import core.launch.ILifecycleListener.Lifecycle;
 import core.launch.data.Artifact;
 import core.launch.data.StatusManager;
@@ -12,6 +13,7 @@ import core.runtime.logger.Logger;
 import core.runtime.logger.ILogConfig.Module;
 
 
+import ui.option.OptionContainer;
 import util.Task;
 
 public abstract class LifecycleObject extends Task {
@@ -68,6 +70,21 @@ public abstract class LifecycleObject extends Task {
 			statusManager.setEnd(new Date());
 			finish();
 			notifyListeners(Lifecycle.FINISH);
+		}
+	}
+	
+	protected class ConfigPage extends AbstractHtmlPage {
+
+		private OptionContainer container;
+		
+		public ConfigPage(String name, OptionContainer container) {
+			super("Config ["+name+"]", null, null);
+			this.container = container;
+		}
+		
+		@Override
+		public String getBody() {
+			return container.toHtml();
 		}
 	}
 }

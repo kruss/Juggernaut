@@ -16,7 +16,7 @@ public class Artifact {
 	public String name;
 	public String description;
 	private String content;
-	private String contentType;
+	private String type;
 	private File file;
 	public Status status;
 	
@@ -27,11 +27,11 @@ public class Artifact {
 		init(name);
 	}
 	
-	public Artifact(String name, String content, String contentType){
+	public Artifact(String name, String content, String type){
 		
 		init(name);
 		this.content = content;
-		this.contentType = contentType;
+		this.type = type;
 	}
 	
 	public Artifact(String name, File file){
@@ -55,7 +55,7 @@ public class Artifact {
 		if(content != null){
 			String path = 
 				folder.getAbsolutePath()+File.separator+
-				UUID.randomUUID().toString()+"."+contentType;
+				UUID.randomUUID().toString()+"."+type;
 			FileTools.writeFile(path, content, false);
 			file = new File(path);
 			content = null;

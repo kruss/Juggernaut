@@ -17,8 +17,6 @@ import core.runtime.logger.ILogConfig.Module;
 
 import util.FileTools;
 
-
-
 public abstract class AbstractOperation extends LifecycleObject {
 
 	protected Configuration configuration;
@@ -93,8 +91,10 @@ public abstract class AbstractOperation extends LifecycleObject {
 		
 		// expand properties
 		config.getOptionContainer().expand(parent.getPropertyContainer());
-		// debug options
-		logger.debug(Module.COMMON, "Settings:\n"+config.getOptionContainer().toString());		
+		
+		// debug configuration
+		logger.debug(Module.COMMON, "Configuration:\n"+config.getOptionContainer().toString());		
+		artifacts.add(new Artifact("Configuration", new ConfigPage(getId(), config.getOptionContainer()).getHtml(), "htm"));
 	}
 	
 	@Override

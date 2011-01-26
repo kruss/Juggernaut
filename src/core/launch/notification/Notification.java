@@ -7,6 +7,7 @@ import java.util.Date;
 
 
 
+import core.html.AbstractHtmlPage;
 import core.html.HtmlLink;
 import core.html.HtmlList;
 import core.html.HtmlTable;
@@ -75,7 +76,7 @@ public class Notification {
 			status = Status.CANCEL;
 		}
 		
-		Artifact artifact = new Artifact(getClass().getSimpleName(), mail.getHtml(), "htm");
+		Artifact artifact = new Artifact("Notification", (new MailPage(mail)).getHtml(), "htm");
 		artifact.status = status;
 		return artifact;
 	}
@@ -344,5 +345,30 @@ public class Notification {
 		}
 		Collections.sort(committers);
 		return committers;
+	}
+	
+	protected class MailPage extends AbstractHtmlPage {
+
+		private Mail mail;
+		
+		public MailPage(Mail mail) {
+			super("Mail: \""+mail.subject+"\"", null, null);
+			this.mail = mail;
+		}
+		
+		@Override
+		public String getBody() {
+			
+			StringBuilder content = new StringBuilder();
+			HtmlList list = new HtmlList(null);
+			list.addEntry("From", mail.from);
+			list.addEntry("To", StringTools.join(mail.to, "; "));
+			list.addEntry("Cc", StringTools.join(mail.cc, "; "));
+			list.addEntry("Send", ""+mail.isSend());
+			content.append(list.getHtml());
+			content.append("<hr>");
+			content.append(mail.content);
+			return content.toString();
+		}
 	}
 }
