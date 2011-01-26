@@ -41,7 +41,7 @@ import core.runtime.http.IHttpServer;
 import core.runtime.logger.Logger;
 import core.runtime.logger.ILogConfig.Module;
 
-public class Window extends JFrame implements ISystemComponent, IWindowStatus, IChangeListener {
+public class Window extends JFrame implements ISystemComponent, IStatusClient, IChangeListener {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -118,7 +118,8 @@ public class Window extends JFrame implements ISystemComponent, IWindowStatus, I
 		httpServer.addListener(this);
 		taskManager.addListener(this);
 		heapManager.addListener(this);
-		launchManager.addClient(this);
+		launchManager.setClient(this);
+		configPanel.setClient(this);
 	}
 	
 	@Override
@@ -154,7 +155,7 @@ public class Window extends JFrame implements ISystemComponent, IWindowStatus, I
 	
 	public void setStatus(String text){
 		statusLabel.setText(text);
-		logger.log(Module.COMMON, text);
+		logger.debug(Module.COMMON, text);
 	}
 	
 	@Override

@@ -1,6 +1,6 @@
 package ui;
 
-public interface IWindowStatus {
+public interface IStatusClient {
 
 	public void status(String text);
 }

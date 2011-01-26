@@ -20,6 +20,8 @@ import javax.swing.event.ListSelectionListener;
 
 
 
+import ui.IStatusClient;
+import ui.IStatusProvider;
 import ui.option.OptionEditor;
 import util.IChangeListener;
 import util.UiTools;
@@ -31,7 +33,7 @@ import core.runtime.Registry;
 import core.runtime.logger.Logger;
 import core.runtime.logger.ILogConfig.Module;
 
-public class OperationConfigPanel extends JPanel implements IChangeListener {
+public class OperationConfigPanel extends JPanel implements IChangeListener, IStatusProvider {
 
 	private static final long serialVersionUID = 1L;
 
@@ -40,6 +42,7 @@ public class OperationConfigPanel extends JPanel implements IChangeListener {
 	private Registry registry;
 	private Logger logger;
 	
+	private IStatusClient client;
 	private OptionEditor optionEditor;
 	private SelectionListener selectionListener;
 	private KeyListener keySelectionListener;
@@ -64,6 +67,7 @@ public class OperationConfigPanel extends JPanel implements IChangeListener {
 		this.registry = registry;
 		this.logger = logger;
 		
+		client = null;
 		optionEditor = new OptionEditor();		
 		selectionListener = new SelectionListener();
 		keySelectionListener = new KeySelectionListener();
@@ -123,6 +127,15 @@ public class OperationConfigPanel extends JPanel implements IChangeListener {
 		adjustSelection();
 	}
 	
+	@Override
+	public void setClient(IStatusClient client){ this.client = client; }
+	@Override
+	public void status(String text){
+		if(client != null){
+			client.status(text);
+		}
+	}
+	
 	private void initOperationCombo() {
 		
 		try{
@@ -176,10 +189,8 @@ public class OperationConfigPanel extends JPanel implements IChangeListener {
 		int listIndex = operationList.getSelectedIndex();
 		if(listIndex >= 0){
 			currentConfig = parent.getCurrentConfig().getOperationConfigs().get(listIndex);
-			logger.debug(
-					Module.COMMON, currentConfig.getClass().getSimpleName()+" ("+currentConfig.getId()+")"
-			);
 			optionEditor.setOptionContainer(currentConfig.getOptionContainer(), currentConfig);
+			status("Operation "+(listIndex+1)+"/"+operationList.getModel().getSize()+" ("+currentConfig.getId()+")");
 		}else{
 			currentConfig = null;
 			optionEditor.setOptionContainer(null, null);

@@ -5,9 +5,11 @@ import java.util.Collections;
 import java.util.Date;
 
 
-import ui.IWindowStatus;
+import ui.IStatusClient;
+import ui.IStatusProvider;
 import util.DateTools;
 import util.IChangeListener;
+import util.IChangeable;
 import core.ISystemComponent;
 import core.launch.ILifecycleListener;
 import core.launch.LaunchAgent;
@@ -18,33 +20,35 @@ import core.persistence.Configuration;
 import core.runtime.logger.ILogProvider;
 
 /** maintains launches to be executed */
-public class LaunchManager implements ISystemComponent, ILifecycleListener {
+public class LaunchManager implements ISystemComponent, ILifecycleListener, IChangeable, IStatusProvider {
 
 	private Configuration configuration;
 	private ArrayList<LaunchAgent> agents;
 	private ArrayList<IChangeListener> listeners;
-	private ArrayList<IWindowStatus> clients;
+	private IStatusClient client;
 	
 	public LaunchManager(Configuration configuration){
 		
 		this.configuration = configuration;
 		agents = new ArrayList<LaunchAgent>();
 		listeners = new ArrayList<IChangeListener>();
-		clients = new ArrayList<IWindowStatus>();
+		client = null;
 	}
 	
+	@Override
 	public void addListener(IChangeListener listener){ listeners.add(listener); }
-	
+	@Override
+	public void removeListener(IChangeListener listener){ listeners.remove(listener); }
+	@Override
 	public void notifyListeners(){
-		for(IChangeListener listener : listeners){
-			listener.changed(this);
-		}
+		for(IChangeListener listener : listeners){ listener.changed(this); }
 	}
 	
-	public void addClient(IWindowStatus client){ clients.add(client); }
-	
-	public void setStatus(String text){
-		for(IWindowStatus client : clients){
+	@Override
+	public void setClient(IStatusClient client){ this.client = client; }
+	@Override
+	public void status(String text){
+		if(client != null){
 			client.status(text);
 		}
 	}
@@ -124,10 +128,10 @@ public class LaunchManager implements ISystemComponent, ILifecycleListener {
 		LaunchAgent agent = (LaunchAgent)object;
 		String date = DateTools.getTextDate(new Date());
 		if(lifecycle == Lifecycle.START){
-			setStatus("Launch ["+agent.getConfig().getName()+"] has STARTED: "+date);
+			status("Launch ["+agent.getConfig().getName()+"] has STARTED: "+date);
 		}
 		if(lifecycle == Lifecycle.FINISH){
-			setStatus("Launch ["+agent.getConfig().getName()+"] has FINISHED: "+date);
+			status("Launch ["+agent.getConfig().getName()+"] has FINISHED: "+date);
 			synchronized(agents){
 				agents.remove(agent);
 			}

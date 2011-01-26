@@ -18,8 +18,11 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 
+import ui.IStatusClient;
+import ui.IStatusProvider;
 import util.FileTools;
 import util.IChangeListener;
+import util.IChangeable;
 import util.SystemTools;
 import util.UiTools;
 
@@ -40,7 +43,7 @@ import core.runtime.logger.Logger;
 import core.runtime.logger.ILogConfig.Module;
 import core.runtime.smtp.ISmtpClient;
 
-public class ConfigPanel extends JPanel implements ISystemComponent, IChangeListener {
+public class ConfigPanel extends JPanel implements ISystemComponent, IChangeListener, IChangeable, IStatusProvider {
 
 	private static final long serialVersionUID = 1L;
 
@@ -55,6 +58,7 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 	private Logger logger;
 	
 	private ArrayList<IChangeListener> listeners;
+	private IStatusClient client;
 	private JComboBox launchCombo;
 	private SelectionListener selectionListener;
 	private JButton addLaunch;
@@ -92,7 +96,9 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 		this.httpServer = httpServer;
 		this.launchManager = launchManager;
 		this.logger = logger;
+		
 		listeners = new ArrayList<IChangeListener>();
+		client = null;
 		
 		launchCombo = new JComboBox();
 		launchCombo.setToolTipText("Configured Launches");
@@ -168,11 +174,25 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 	@Override
 	public void shutdown() throws Exception {}
 	
+	@Override
 	public void addListener(IChangeListener listener){ listeners.add(listener); }
-	
+	@Override
+	public void removeListener(IChangeListener listener){ listeners.remove(listener); }
+	@Override
 	public void notifyListeners(){
-		for(IChangeListener listener : listeners){
-			listener.changed(this);
+		for(IChangeListener listener : listeners){ listener.changed(this); }
+	}
+	
+	@Override
+	public void setClient(IStatusClient client){ 
+		this.client = client; 
+		operationPanel.setClient(client);
+		triggerPanel.setClient(client);
+	}
+	@Override
+	public void status(String text){
+		if(client != null){
+			client.status(text);
 		}
 	}
 	
@@ -192,9 +212,7 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 		int index = launchCombo.getSelectedIndex();
 		if(index >= 0){
 			currentConfig = configuration.getLaunchConfigs().get(index);
-			logger.debug(
-					Module.COMMON, currentConfig.getClass().getSimpleName()+" ("+currentConfig.getId()+")"
-			);
+			status("Launch "+(index+1)+"/"+launchCombo.getItemCount()+" ("+currentConfig.getId()+")");
 		}else{
 			currentConfig = null;
 		}
