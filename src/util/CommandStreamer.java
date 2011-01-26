@@ -39,7 +39,7 @@ public class CommandStreamer extends Task {
 	        String line=null;
 	        while( (line = bufferedReader.readLine()) != null){
 	        	parent.stream(line+"\n");
-	        	logger.debug(Module.COMMAND, line);
+	        	logger.debug(Module.COMMAND, name+": "+line);
 	        }
 	        
 			bufferedReader.close();
