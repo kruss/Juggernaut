@@ -35,7 +35,8 @@ import util.SystemTools;
 
 public class Notification {
 
-	private static final int MAX_HISTORY = 3;
+	private static final int HISTORY_MAX = 3;
+	private static final int DESCRIPTION_MAX = 75;
 	
 	private History history;
 	private ISmtpClient smtpClient;
@@ -144,7 +145,7 @@ public class Notification {
 			table.addHeaderCell("Status", 100);
 			for(AbstractOperation operation : launch.getOperations()){
 				table.addContentCell(operation.getIndex()+".) <b>"+operation.getConfig().getName()+"</b>");
-				table.addContentCell(StringTools.border(operation.getDescription(), 100));
+				table.addContentCell(StringTools.border(operation.getDescription(), DESCRIPTION_MAX));
 				Status currentStatus = operation.getStatusManager().getStatus();
 				OperationHistory operationHistory = previous != null ? previous.getOperation(operation.getConfig().getId()) : null;
 				Status lastStatus = operationHistory != null ? operationHistory.status : null;
@@ -239,7 +240,7 @@ public class Notification {
 		if(previous != null){
 			HtmlList list = new HtmlList("History");
 			LaunchHistory entry = previous;
-			while(entry != null && list.getSize() < MAX_HISTORY){
+			while(entry != null && list.getSize() < HISTORY_MAX){
 				list.addEntry(DateTools.getTextDate(entry.start), StatusManager.getStatusHtml(entry.status));
 				entry = history.getPrevious(entry);
 			}

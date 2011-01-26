@@ -12,6 +12,8 @@ import util.StringTools;
 
 public class LaunchHistoryPage extends AbstractHistoryPage {
 	
+	private static final int DESCRIPTION_MAX = 100;
+	
 	private LaunchHistory history;
 	
 	public LaunchHistoryPage(String name, String path, HtmlLink parent, LaunchHistory history) {
@@ -41,7 +43,7 @@ public class LaunchHistoryPage extends AbstractHistoryPage {
 			for(OperationHistory operation : history.operations){
 				HtmlLink link = new HtmlLink(operation.name, operation.id+File.separator+OUTPUT_FILE);
 				table.addContentCell(operation.index+".) <b>"+link.getHtml()+"</b>");
-				table.addContentCell(StringTools.border(operation.description, 150));
+				table.addContentCell(StringTools.border(operation.description, DESCRIPTION_MAX));
 				table.addContentCell(
 						operation.start != null ? DateTools.getTextDate(operation.start) : ""
 				);
