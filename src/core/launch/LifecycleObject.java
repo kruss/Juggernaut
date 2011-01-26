@@ -78,7 +78,7 @@ public abstract class LifecycleObject extends Task {
 		private OptionContainer container;
 		
 		public ConfigPage(String name, OptionContainer container) {
-			super("Config ["+name+"]", null, null);
+			super("Configuration ["+name+"]", null, null);
 			this.container = container;
 		}
 		

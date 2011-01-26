@@ -110,8 +110,8 @@ public class SVNOperation extends AbstractOperation implements IRepositoryOperat
 			history = client.getHistory(config.getUrl(), startRevision, endRevision);
 			logger.log(Module.COMMAND, "History has "+history.commits.size()+" Committs");
 			
-			Artifact commitArtifact = new Artifact("Commits", history.output, "txt");
-			commitArtifact.description = "Intervall: "+history.revision1+" - "+history.revision2;
+			Artifact commitArtifact = new Artifact("History", history.output, "txt");
+			commitArtifact.description = "Revision: "+history.revision1+" - "+history.revision2;
 			artifacts.add(commitArtifact);
 		}
 	}
