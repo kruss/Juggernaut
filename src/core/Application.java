@@ -168,7 +168,9 @@ public class Application extends AbstractSystem {
 					logging.logger);
 			add(httpServer);
 			launchManager = new LaunchManager(
-					persistence.configuration);
+					persistence.configuration,
+					core.fileManager,
+					logging.logger);
 			add(launchManager);
 			scheduleManager = new ScheduleManager(
 					persistence.configuration, 

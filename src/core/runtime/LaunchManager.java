@@ -1,5 +1,6 @@
 package core.runtime;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -8,28 +9,41 @@ import java.util.Date;
 import ui.IStatusClient;
 import ui.IStatusProvider;
 import util.DateTools;
+import util.FileTools;
 import util.IChangeListener;
 import util.IChangeable;
 import core.ISystemComponent;
 import core.launch.ILifecycleListener;
 import core.launch.LaunchAgent;
+import core.launch.LaunchConfig;
 import core.launch.LifecycleObject;
 import core.launch.data.StatusManager.Status;
 import core.launch.trigger.AbstractTrigger;
 import core.persistence.Configuration;
 import core.runtime.logger.ILogProvider;
+import core.runtime.logger.Logger;
+import core.runtime.logger.ILogConfig.Module;
 
 /** maintains launches to be executed */
 public class LaunchManager implements ISystemComponent, ILifecycleListener, IChangeable, IStatusProvider {
 
 	private Configuration configuration;
+	private FileManager fileManager;
+	private Logger logger;
+	
 	private ArrayList<LaunchAgent> agents;
 	private ArrayList<IChangeListener> listeners;
 	private IStatusClient client;
 	
-	public LaunchManager(Configuration configuration){
-		
+	public LaunchManager(
+			Configuration configuration, 
+			FileManager fileManager, 
+			Logger logger)
+	{
 		this.configuration = configuration;
+		this.fileManager = fileManager;
+		this.logger = logger;
+		
 		agents = new ArrayList<LaunchAgent>();
 		listeners = new ArrayList<IChangeListener>();
 		client = null;
@@ -54,8 +68,10 @@ public class LaunchManager implements ISystemComponent, ILifecycleListener, ICha
 	}
 
 	@Override
-	public void init() throws Exception {}
-	
+	public void init() throws Exception {
+		cleanup();
+	}
+
 	@Override
 	public void shutdown() throws Exception {
 		for(int i=agents.size()-1; i>=0; i--){
@@ -194,5 +210,52 @@ public class LaunchManager implements ISystemComponent, ILifecycleListener, ICha
 		}else{
 			return null;
 		}
+	}
+	
+
+	public void cleanup() {
+		
+		// silently delete any legacy items in build-folder
+		final ArrayList<File> legacyFiles = getLegacyFiles();
+		if(legacyFiles.size() > 0){
+			Thread thread = new Thread(new Runnable(){
+				@Override
+				public void run() {
+					for(File file : legacyFiles){
+						logger.debug(Module.COMMON, "cleanup: "+file.getAbsolutePath());
+						try{
+							if(file.isDirectory()){
+								FileTools.deleteFolder(file.getAbsolutePath());
+							}else{
+								FileTools.deleteFile(file.getAbsolutePath());
+							}
+						}catch(Exception e){
+							logger.error(Module.COMMON, e);
+						}
+					}
+				}
+			});
+			thread.start();
+		}
+	}
+	
+	private ArrayList<File> getLegacyFiles() {
+		
+		ArrayList<File> files = new ArrayList<File>();
+		for(File file : fileManager.getBuildFolder().listFiles()){
+			boolean legacy = true;
+			if(file.isDirectory()){
+				for(LaunchConfig launchConfig : configuration.getLaunchConfigs()){
+					if(launchConfig.getId().equals(file.getName())){
+						legacy = false;
+						break;
+					}
+				}
+			}
+			if(legacy){
+				files.add(file);
+			}
+		}
+		return files;
 	}
 }
