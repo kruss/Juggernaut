@@ -188,7 +188,7 @@ public class TriggerConfigPanel extends JPanel implements IChangeListener, IStat
 		if(listIndex >= 0){
 			currentConfig = parent.getCurrentConfig().getTriggerConfigs().get(listIndex);
 			optionEditor.setOptionContainer(currentConfig.getOptionContainer(), currentConfig);
-			status("Trigger "+(listIndex+1)+"/"+triggerList.getModel().getSize()+" ("+currentConfig.getId()+")");
+			status("Trigger "+(listIndex+1)+"/"+triggerList.getModel().getSize()+" ["+currentConfig.getId()+"]");
 		}else{
 			currentConfig = null;
 			optionEditor.setOptionContainer(null, null);

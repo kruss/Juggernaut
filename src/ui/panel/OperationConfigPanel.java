@@ -190,7 +190,7 @@ public class OperationConfigPanel extends JPanel implements IChangeListener, ISt
 		if(listIndex >= 0){
 			currentConfig = parent.getCurrentConfig().getOperationConfigs().get(listIndex);
 			optionEditor.setOptionContainer(currentConfig.getOptionContainer(), currentConfig);
-			status("Operation "+(listIndex+1)+"/"+operationList.getModel().getSize()+" ("+currentConfig.getId()+")");
+			status("Operation "+(listIndex+1)+"/"+operationList.getModel().getSize()+" ["+currentConfig.getId()+"]");
 		}else{
 			currentConfig = null;
 			optionEditor.setOptionContainer(null, null);

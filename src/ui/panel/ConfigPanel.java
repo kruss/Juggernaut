@@ -212,7 +212,7 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 		int index = launchCombo.getSelectedIndex();
 		if(index >= 0){
 			currentConfig = configuration.getLaunchConfigs().get(index);
-			status("Launch "+(index+1)+"/"+launchCombo.getItemCount()+" ("+currentConfig.getId()+")");
+			status("Launch "+(index+1)+"/"+launchCombo.getItemCount()+" ["+currentConfig.getId()+"]");
 		}else{
 			currentConfig = null;
 		}

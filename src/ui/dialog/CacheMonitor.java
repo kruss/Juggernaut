@@ -36,6 +36,7 @@ public class CacheMonitor extends JDialog implements ISystemComponent, IChangeLi
 	private Cache cache;
 	private DefaultTableModel tableModel;
 	private JTable cacheTable;
+	private JButton emptyCache;
 	private JButton deleteEntry;
 	private JButton editEntry;
 	
@@ -56,7 +57,7 @@ public class CacheMonitor extends JDialog implements ISystemComponent, IChangeLi
 				}
 			}
 		};
-		tableModel.addColumn("Id");
+		tableModel.addColumn("Item");
 		tableModel.addColumn("Key");
 		tableModel.addColumn("Value");
 		
@@ -88,10 +89,15 @@ public class CacheMonitor extends JDialog implements ISystemComponent, IChangeLi
 		});
 		
 		TableColumnModel columnModel = cacheTable.getColumnModel();
-		columnModel.getColumn(0).setMinWidth(150);
-		columnModel.getColumn(1).setMinWidth(75);
-		columnModel.getColumn(2).setMinWidth(75);
-			
+		columnModel.getColumn(0).setMinWidth(200);
+		columnModel.getColumn(1).setMinWidth(100);
+		columnModel.getColumn(2).setMinWidth(100);
+		
+		emptyCache = new JButton(" Empty ");
+		emptyCache.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){ emptyCache(); }
+		});
+		
 		deleteEntry = new JButton(" Delete ");
 		deleteEntry.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){ deleteEntry(); }
@@ -104,6 +110,7 @@ public class CacheMonitor extends JDialog implements ISystemComponent, IChangeLi
 		
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+		buttonPanel.add(emptyCache);
 		buttonPanel.add(deleteEntry);
 		buttonPanel.add(editEntry);
 		
@@ -123,7 +130,7 @@ public class CacheMonitor extends JDialog implements ISystemComponent, IChangeLi
 		
 		UiTools.setLookAndFeel(this, Constants.APP_STYLE);
 		setAlwaysOnTop(true);
-		setSize(400, 200); 
+		setSize(500, 200); 
 		setLocation(75, 75);
 		setVisible(false);
 	}
@@ -167,7 +174,7 @@ public class CacheMonitor extends JDialog implements ISystemComponent, IChangeLi
 		
 		for(CacheInfo entry : entries){
 			Object[] rowData = {
-				entry.id,
+				entry.identifier,
 				entry.key,
 				entry.value,
 			};
@@ -182,7 +189,7 @@ public class CacheMonitor extends JDialog implements ISystemComponent, IChangeLi
 		initUI();
 		if(selected != null){	
 			for(int i=0; i<entries.size(); i++){
-				if(entries.get(i).id.equals(selected.id)){
+				if(entries.get(i).id.equals(selected.id) && entries.get(i).key.equals(selected.key)){
 					cacheTable.changeSelection(i, -1, false, false);
 					break;
 				}
@@ -228,10 +235,17 @@ public class CacheMonitor extends JDialog implements ISystemComponent, IChangeLi
 		return selected;
 	}
 	
+	private void emptyCache(){
+		
+		if(UiTools.confirmDialog("Empty cache ?\n\n!!! Complete cache will be deleted !!!")){
+			cache.clear();
+		}
+	}
+	
 	private void deleteEntry(){
 		
 		CacheInfo selected = getSelectedEntry();
-		if(selected != null && UiTools.confirmDialog("Delete [ "+selected.id+"::"+selected.key+" ] Entry ?")){
+		if(selected != null && UiTools.confirmDialog("Delete [ "+selected.identifier+" ] Entry ?")){
 			cache.removeValue(selected.id, selected.key);
 		}
 	}

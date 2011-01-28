@@ -76,6 +76,10 @@ public class PropertyContainer {
 		}
 	}
 	
+	public void clear() {
+		entries.clear();
+	}
+	
 	/** expand all properties within value of syntax {id@key} */
 	public String expand(String string) {
 		

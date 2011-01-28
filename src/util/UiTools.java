@@ -32,9 +32,9 @@ public class UiTools {
 	public static String inputDialog(String text, String value){ 
 		
 		if(value != null){
-			return JOptionPane.showInputDialog(text, value);
+			return JOptionPane.showInputDialog(text, value).trim();
 		}else{
-			return JOptionPane.showInputDialog(text);
+			return JOptionPane.showInputDialog(text).trim();
 		}
 	}	
 	

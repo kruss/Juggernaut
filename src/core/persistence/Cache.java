@@ -122,6 +122,19 @@ public class Cache implements ISystemComponent, IChangeable {
 		}
 	}
 	
+	public void clear(){
+		
+		synchronized(container){
+			container.clear();
+			dirty = true;
+			try{ 
+				save(); 
+			}catch(Exception e){
+				logger.error(Module.COMMON, e);
+			}
+		}
+	}
+	
 	public static Cache load(Configuration configuration, Logger logger, String path) throws Exception {
 		
 		logger.debug(Module.COMMON, "load: "+path);
@@ -147,14 +160,25 @@ public class Cache implements ISystemComponent, IChangeable {
 			notifyListeners();
 		}
 	}
-	
+
 	public ArrayList<CacheInfo> getInfo(){
 		
 		ArrayList<CacheInfo> info = new ArrayList<CacheInfo>();
-		synchronized(container){
-			for(String id : container.getIds()){
-				for(Property property : container.getProperties(id)){
-					info.add(new CacheInfo(property));
+		for(LaunchConfig launchConfig : configuration.getLaunchConfigs()){
+			String launchIdentifier = "Launch("+launchConfig.getName()+")";
+			for(Property property : container.getProperties(launchConfig.getId())){
+				info.add(new CacheInfo(launchIdentifier, property));
+			}
+			for(AbstractOperationConfig operationConfig : launchConfig.getOperationConfigs()){
+				String operationIdentifier = launchIdentifier+"::Operation("+operationConfig.getName()+")";
+				for(Property property : container.getProperties(operationConfig.getId())){
+					info.add(new CacheInfo(operationIdentifier, property));
+				}
+			}
+			for(AbstractTriggerConfig triggerConfig : launchConfig.getTriggerConfigs()){
+				String triggerIdentifier = launchIdentifier+"::Trigger("+triggerConfig.getName()+")";
+				for(Property property : container.getProperties(triggerConfig.getId())){
+					info.add(new CacheInfo(triggerIdentifier, property));
 				}
 			}
 		}
@@ -163,17 +187,18 @@ public class Cache implements ISystemComponent, IChangeable {
 
 	public class CacheInfo {
 		
+		public String identifier;
 		public String id;
 		public String key;
 		public String value;
 		
-		public CacheInfo(Property property){
+		public CacheInfo(String identifier, Property property){
+			this.identifier = identifier;
 			id = property.id;
 			key = property.key;
 			value = property.value;
 		}
 	}
-	
 	
 	private void cleanup() throws Exception {
 		
