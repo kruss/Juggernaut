@@ -115,6 +115,8 @@ public class FileManager implements ISystemComponent {
 			}else if(file.isDirectory()){
 				FileTools.deleteFolder(file.getAbsolutePath());
 			}
+		}else{
+			throw new Exception("No unlocker available");
 		}
 	}
 }
