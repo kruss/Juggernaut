@@ -127,7 +127,7 @@ public class HeapManager implements ISystemComponent, IChangeable {
 
 		@Override
 		protected void runTask() {
-			logger.log(Module.COMMON, "Running Garbage Collector");
+			logger.log(Module.COMMON, "Running Garbage-Collector");
 			runtime.gc();
 		}
 	}

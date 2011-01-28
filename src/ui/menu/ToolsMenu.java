@@ -90,13 +90,13 @@ public class ToolsMenu extends JMenu implements ISystemComponent, IChangeListene
 		});
 		configMenu.add(printConfig);
 		
-		collectGarbage = new JMenuItem("Garbage Collector");
+		collectGarbage = new JMenuItem("Run Garbage-Collector");
 		collectGarbage.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){ collectGarbage(); }
 		});
 		add(collectGarbage);
 		
-		taskMonitor = new JMenuItem("Task Monitor");
+		taskMonitor = new JMenuItem("Show Task");
 		taskMonitor.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){ taskMonitor(); }
 		});
