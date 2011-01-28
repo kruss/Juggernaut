@@ -1,5 +1,6 @@
 package core.launch.operation;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import ui.option.Option;
@@ -43,9 +44,16 @@ public class CommandOperationConfig extends AbstractOperationConfig {
 				Type.TEXT, ""
 		));
 	}
-	
+
 	@Override
-	public String getName(){ return OPERATION_NAME; }
+	public String getName(){
+		String command = getCommand();
+		if(!command.isEmpty()){
+			return StringTools.border((new File(command)).getName(), 25);
+		}else{
+			return OPERATION_NAME;
+		}
+	}
 	
 	@Override
 	public String getDescription(){
