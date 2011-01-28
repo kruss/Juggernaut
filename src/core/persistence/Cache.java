@@ -5,6 +5,8 @@ import java.util.ArrayList;
 
 
 import util.FileTools;
+import util.IChangeListener;
+import util.IChangeable;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
@@ -24,7 +26,7 @@ import core.runtime.logger.ILogConfig.Module;
 /**
  * the cache of the application,- will be serialized
  */
-public class Cache implements ISystemComponent {
+public class Cache implements ISystemComponent, IChangeable {
 
 	public static Cache create(Configuration configuration, FileManager fileManager, Logger logger) throws Exception {
 		
@@ -40,6 +42,7 @@ public class Cache implements ISystemComponent {
 	
 	private transient Configuration configuration;
 	private transient Logger logger;
+	private transient ArrayList<IChangeListener> listeners;
 	
 	@SuppressWarnings("unused")
 	private String version;
@@ -54,6 +57,7 @@ public class Cache implements ISystemComponent {
 		
 		version = Constants.APP_VERSION;
 		container = new PropertyContainer();
+		listeners = new ArrayList<IChangeListener>();
 		this.path = path;
 		dirty = true;
 	}
@@ -66,6 +70,15 @@ public class Cache implements ISystemComponent {
 	@Override
 	public void shutdown() throws Exception {
 		cleanup();
+	}
+	
+	@Override
+	public void addListener(IChangeListener listener){ listeners.add(listener); }
+	@Override
+	public void removeListener(IChangeListener listener){ listeners.remove(listener); }
+	@Override
+	public void notifyListeners(){
+		for(IChangeListener listener : listeners){ listener.changed(this); }
 	}
 	
 	public void setDirty(boolean dirty){ this.dirty = dirty; }
@@ -96,6 +109,19 @@ public class Cache implements ISystemComponent {
 		}
 	}
 	
+	public void removeValue(String id, String key){
+		
+		synchronized(container){
+			container.removeProperty(id, key);
+			dirty = true;
+			try{ 
+				save(); 
+			}catch(Exception e){
+				logger.error(Module.COMMON, e);
+			}
+		}
+	}
+	
 	public static Cache load(Configuration configuration, Logger logger, String path) throws Exception {
 		
 		logger.debug(Module.COMMON, "load: "+path);
@@ -104,6 +130,7 @@ public class Cache implements ISystemComponent {
 		Cache cache = (Cache)xstream.fromXML(xml);
 		cache.configuration = configuration;
 		cache.logger = logger;
+		cache.listeners = new ArrayList<IChangeListener>();
 		cache.path = path;
 		cache.dirty = false;
 		return cache;
@@ -117,9 +144,37 @@ public class Cache implements ISystemComponent {
 			String xml = xstream.toXML(this);
 			FileTools.writeFile(path, xml, false);
 			dirty = false;
+			notifyListeners();
 		}
 	}
+	
+	public ArrayList<CacheInfo> getInfo(){
+		
+		ArrayList<CacheInfo> info = new ArrayList<CacheInfo>();
+		synchronized(container){
+			for(String id : container.getIds()){
+				for(Property property : container.getProperties(id)){
+					info.add(new CacheInfo(property));
+				}
+			}
+		}
+		return info;
+	}
 
+	public class CacheInfo {
+		
+		public String id;
+		public String key;
+		public String value;
+		
+		public CacheInfo(Property property){
+			id = property.id;
+			key = property.key;
+			value = property.value;
+		}
+	}
+	
+	
 	private void cleanup() throws Exception {
 		
 		synchronized(container){

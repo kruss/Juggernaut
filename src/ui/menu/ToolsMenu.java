@@ -11,9 +11,9 @@ import javax.swing.JMenuItem;
 
 
 
+import ui.dialog.CacheMonitor;
 import ui.dialog.TaskMonitor;
 import util.DateTools;
-import util.IChangeListener;
 import util.SystemTools;
 import util.UiTools;
 
@@ -23,6 +23,7 @@ import core.Constants;
 import core.ISystemComponent;
 import core.backup.BackupManager;
 import core.html.AbstractHtmlPage;
+import core.persistence.Cache;
 import core.persistence.Configuration;
 import core.runtime.FileManager;
 import core.runtime.HeapManager;
@@ -30,7 +31,7 @@ import core.runtime.Registry;
 import core.runtime.TaskManager;
 import core.runtime.logger.Logger;
 
-public class ToolsMenu extends JMenu implements ISystemComponent, IChangeListener {
+public class ToolsMenu extends JMenu implements ISystemComponent {
 
 	private static final long serialVersionUID = 1L;
 
@@ -43,15 +44,18 @@ public class ToolsMenu extends JMenu implements ISystemComponent, IChangeListene
 	private JMenuItem backupConfig;
 	private JMenuItem restoreConfig;
 	private JMenuItem printConfig;
-	private JMenuItem collectGarbage;
-	private JMenuItem taskMonitor;
+	private JMenuItem showTaskMonitor;
+	private JMenuItem showCacheMonitor;
+	private JMenuItem cleanupHeap;
 	private Logger logger;
 	
-	private TaskMonitor monitor;
+	private TaskMonitor taskMonitor;
+	private CacheMonitor cacheMonitor;
 	
 	public ToolsMenu(
 			Application application,
 			Configuration configuration,
+			Cache cache,
 			Registry registry,
 			TaskManager taskManager,
 			FileManager fileManager,
@@ -67,7 +71,8 @@ public class ToolsMenu extends JMenu implements ISystemComponent, IChangeListene
 		this.heapManager = heapManager;
 		this.logger = logger;
 		
-		monitor = new TaskMonitor(taskManager);
+		taskMonitor = new TaskMonitor(taskManager);
+		cacheMonitor = new CacheMonitor(cache);
 		
 		JMenu configMenu = new JMenu("Configuration");
 		add(configMenu);
@@ -90,29 +95,38 @@ public class ToolsMenu extends JMenu implements ISystemComponent, IChangeListene
 		});
 		configMenu.add(printConfig);
 		
-		collectGarbage = new JMenuItem("Run Garbage-Collector");
-		collectGarbage.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){ collectGarbage(); }
-		});
-		add(collectGarbage);
+		JMenu monitorMenu = new JMenu("Monitor");
+		add(monitorMenu);
 		
-		taskMonitor = new JMenuItem("Show Task");
-		taskMonitor.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){ taskMonitor(); }
+		showTaskMonitor = new JMenuItem("Tasks");
+		showTaskMonitor.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){ showTaskMonitor(); }
 		});
-		add(taskMonitor);
+		monitorMenu.add(showTaskMonitor);
 		
-		configuration.addListener(this);
+		showCacheMonitor = new JMenuItem("Cache");
+		showCacheMonitor.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){ showCacheMonitor(); }
+		});
+		monitorMenu.add(showCacheMonitor);
+		
+		cleanupHeap = new JMenuItem("Cleanup Heap");
+		cleanupHeap.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){ cleanupHeap(); }
+		});
+		add(cleanupHeap);
 	}
 	
 	@Override
 	public void init() throws Exception {
-		monitor.init();
+		taskMonitor.init();
+		cacheMonitor.init();
 	}
 	
 	@Override
 	public void shutdown() throws Exception {
-		monitor.shutdown();
+		taskMonitor.shutdown();
+		cacheMonitor.shutdown();
 	}
 	
 	private void backupConfig(){
@@ -179,14 +193,15 @@ public class ToolsMenu extends JMenu implements ISystemComponent, IChangeListene
 		}
 	}
 	
-	private void collectGarbage(){
-		heapManager.cleanup();
+	private void showTaskMonitor(){
+		taskMonitor.showDialog(true);
 	}
 	
-	private void taskMonitor(){
-		monitor.showDialog(true);
+	private void showCacheMonitor(){
+		cacheMonitor.showDialog(true);
 	}
-
-	@Override
-	public void changed(Object object) {}
+	
+	private void cleanupHeap(){
+		heapManager.cleanup();
+	}
 }

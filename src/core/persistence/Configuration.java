@@ -48,8 +48,7 @@ implements
 	IToolConfig,
 	ISmtpConfig,
 	IHttpConfig,
-	IChangeable, 
-	IChangeListener
+	IChangeable
 {
 
 	public static Configuration create(TaskManager taskManager, FileManager fileManager, Logger logger) throws Exception {
@@ -347,13 +346,5 @@ implements
 		html.append("<h2>Logging</h2>");
 		html.append(logConfig.getOptionContainer().toHtml());
 		return html.toString();
-	}
-	
-	@Override
-	public void changed(Object object) {
-		
-		if(object instanceof LogConfig){
-			notifyListeners();
-		}
 	}
 }

@@ -26,24 +26,25 @@ import util.IChangeListener;
 import util.UiTools;
 import core.Constants;
 import core.ISystemComponent;
-import core.runtime.TaskManager;
-import core.runtime.TaskManager.TaskInfo;
+import core.persistence.Cache;
+import core.persistence.Cache.CacheInfo;
 
-public class TaskMonitor extends JDialog implements ISystemComponent, IChangeListener {
+public class CacheMonitor extends JDialog implements ISystemComponent, IChangeListener {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private TaskManager taskManager;
+	private Cache cache;
 	private DefaultTableModel tableModel;
-	private JTable taskTable;
-	private JButton killTask;
+	private JTable cacheTable;
+	private JButton deleteEntry;
+	private JButton editEntry;
 	
-	private ArrayList<TaskInfo> tasks;
+	private ArrayList<CacheInfo> entries;
 	
-	public TaskMonitor(TaskManager taskManager){
+	public CacheMonitor(Cache cache){
 		
-		this.taskManager = taskManager;
-		tasks = new ArrayList<TaskInfo>();
+		this.cache = cache;
+		entries = new ArrayList<CacheInfo>();
 		
 		tableModel = new DefaultTableModel(){
 			private static final long serialVersionUID = 1L;
@@ -55,27 +56,27 @@ public class TaskMonitor extends JDialog implements ISystemComponent, IChangeLis
 				}
 			}
 		};
-		tableModel.addColumn("Task");
 		tableModel.addColumn("Id");
-		tableModel.addColumn("Status");
+		tableModel.addColumn("Key");
+		tableModel.addColumn("Value");
 		
-		taskTable = new JTable(tableModel){
+		cacheTable = new JTable(tableModel){
 			private static final long serialVersionUID = 1L;
 			@Override
 			public boolean isCellEditable(int row, int col){ 
 					return false;
 			}
 		};
-		taskTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		taskTable.setRowSelectionAllowed(true);
-		taskTable.setColumnSelectionAllowed(false);
+		cacheTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		cacheTable.setRowSelectionAllowed(true);
+		cacheTable.setColumnSelectionAllowed(false);
 		
-		taskTable.addMouseListener(new MouseAdapter(){
+		cacheTable.addMouseListener(new MouseAdapter(){
 			public void mouseClicked(MouseEvent e){
 				adjustSelection();
 			}
 		});
-		taskTable.addKeyListener(new KeyListener(){
+		cacheTable.addKeyListener(new KeyListener(){
 			@Override
 			public void keyPressed(KeyEvent e) {}
 			@Override
@@ -86,24 +87,28 @@ public class TaskMonitor extends JDialog implements ISystemComponent, IChangeLis
 			public void keyTyped(KeyEvent e) {}
 		});
 		
-		TableColumnModel columnModel = taskTable.getColumnModel();
+		TableColumnModel columnModel = cacheTable.getColumnModel();
 		columnModel.getColumn(0).setMinWidth(150);
-		columnModel.getColumn(1).setMinWidth(50);
-			columnModel.getColumn(1).setMaxWidth(50);
-		columnModel.getColumn(2).setMinWidth(100);
-			columnModel.getColumn(2).setMaxWidth(100);
+		columnModel.getColumn(1).setMinWidth(75);
+		columnModel.getColumn(2).setMinWidth(75);
 			
-		killTask = new JButton(" Kill ");
-		killTask.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){ killTask(); }
+		deleteEntry = new JButton(" Delete ");
+		deleteEntry.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){ deleteEntry(); }
+		});
+		
+		editEntry = new JButton(" Edit ");
+		editEntry.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){ editEntry(); }
 		});
 		
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-		buttonPanel.add(killTask);
+		buttonPanel.add(deleteEntry);
+		buttonPanel.add(editEntry);
 		
 		JPanel centerPanel = new JPanel(new BorderLayout());
-		centerPanel.add(new JScrollPane(taskTable), BorderLayout.CENTER);
+		centerPanel.add(new JScrollPane(cacheTable), BorderLayout.CENTER);
 		centerPanel.add(buttonPanel, BorderLayout.SOUTH);
 		
 		add(centerPanel);
@@ -138,12 +143,12 @@ public class TaskMonitor extends JDialog implements ISystemComponent, IChangeLis
 		
 		if(visible){
 			if(!isVisible()){
-				taskManager.addListener(this);
+				cache.addListener(this);
 				updateUI();
 			}
 		}else{
 			if(isVisible()){
-				taskManager.removeListener(this);
+				cache.removeListener(this);
 				clearUI();
 			}
 		}
@@ -152,7 +157,7 @@ public class TaskMonitor extends JDialog implements ISystemComponent, IChangeLis
 
 	private void clearUI() {
 		
-		taskTable.clearSelection();
+		cacheTable.clearSelection();
 		for(int i=tableModel.getRowCount()-1; i>=0; i--){
 			tableModel.removeRow(i);
 		}
@@ -160,25 +165,25 @@ public class TaskMonitor extends JDialog implements ISystemComponent, IChangeLis
 	
 	private void initUI() {
 		
-		for(TaskInfo task : tasks){
+		for(CacheInfo entry : entries){
 			Object[] rowData = {
-				task.name,
-				task.id,
-				task.state.toString(),
+				entry.id,
+				entry.key,
+				entry.value,
 			};
 			tableModel.addRow(rowData);
 		}
-		setTitle("Task-Monitor ("+tasks.size()+")");
+		setTitle("Cache-Monitor ("+entries.size()+")");
 	}
 
-	private void refreshUI(TaskInfo selected) {
+	private void refreshUI(CacheInfo selected) {
 		
 		clearUI();
 		initUI();
 		if(selected != null){	
-			for(int i=0; i<tasks.size(); i++){
-				if(tasks.get(i).name.equals(selected.name)){
-					taskTable.changeSelection(i, -1, false, false);
+			for(int i=0; i<entries.size(); i++){
+				if(entries.get(i).id.equals(selected.id)){
+					cacheTable.changeSelection(i, -1, false, false);
 					break;
 				}
 			}
@@ -188,44 +193,57 @@ public class TaskMonitor extends JDialog implements ISystemComponent, IChangeLis
 	
 	private synchronized void updateUI() {
 		
-		TaskInfo selected = getSelectedTask();
-		tasks = taskManager.getInfo();
+		CacheInfo selected = getSelectedEntry();
+		entries = cache.getInfo();
 		refreshUI(selected);
 	}
 	
 	private void adjustSelection() {
 		
-		TaskInfo selected = getSelectedTask();
+		CacheInfo selected = getSelectedEntry();
 		if(selected != null){
-			killTask.setEnabled(true);
+			deleteEntry.setEnabled(true);
+			editEntry.setEnabled(true);
 		}else{
-			killTask.setEnabled(false);
+			deleteEntry.setEnabled(false);
+			editEntry.setEnabled(false);
 		}
 	}
 	
 	@Override
 	public void changed(Object object) {
 		
-		if(object instanceof TaskManager){
+		if(object instanceof Cache){
 			updateUI();
 		}
 	}
 	
-	private TaskInfo getSelectedTask() {
+	private CacheInfo getSelectedEntry() {
 		
-		TaskInfo selected = null;
-		int index = taskTable.getSelectedRow();
+		CacheInfo selected = null;
+		int index = cacheTable.getSelectedRow();
 		if(index >=0){				
-			selected = tasks.get(index);
+			selected = entries.get(index);
 		}
 		return selected;
 	}
 	
-	private void killTask(){
+	private void deleteEntry(){
 		
-		TaskInfo selected = getSelectedTask();
-		if(selected != null && UiTools.confirmDialog("Kill [ "+selected.name+" <"+selected.id+"> ] Task ?")){
-			taskManager.kill(selected.id);
+		CacheInfo selected = getSelectedEntry();
+		if(selected != null && UiTools.confirmDialog("Delete [ "+selected.id+"::"+selected.key+" ] Entry ?")){
+			cache.removeValue(selected.id, selected.key);
+		}
+	}
+	
+	private void editEntry(){
+		
+		CacheInfo selected = getSelectedEntry();
+		if(selected != null){			
+			String value = UiTools.inputDialog("Edit Entry", selected.value);
+			if(value != null){
+				cache.setValue(selected.id, selected.key, value);
+			}
 		}
 	}
 }
