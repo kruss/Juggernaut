@@ -64,14 +64,14 @@ public class LaunchManager implements ISystemComponent, ILifecycleListener, ICha
 		}
 	}
 	
-	public LaunchStatus runLaunch(LaunchAgent launch) {
+	public LaunchStatus runLaunch(LaunchAgent agent) {
 		
 		synchronized(agents){
-			if(isReady() || launch.getTrigger().equals(AbstractTrigger.USER_TRIGGER)){
-				if(!isRunning(launch.getConfig().getId())){
-					agents.add(launch);
-					launch.addListener(this);
-					launch.asyncRun(0, launch.getConfig().getTimeout());
+			if(isReady() || agent.getTrigger().equals(AbstractTrigger.USER_TRIGGER)){
+				if(!isRunning(agent.getConfig().getId())){
+					agents.add(agent);
+					agent.addListener(this);
+					agent.asyncRun(0, agent.getConfig().getTimeout());
 					return new LaunchStatus("Launch started", true);
 				}else{
 					return new LaunchStatus("Already running", false);
@@ -159,13 +159,13 @@ public class LaunchManager implements ISystemComponent, ILifecycleListener, ICha
 		public int progress;
 		public Status status;
 		
-		public LaunchInfo(LaunchAgent launch){
-			name = launch.getConfig().getName();
-			id = launch.getConfig().getId();
-			trigger = launch.getTrigger();
-			start = launch.getStatusManager().getStart();
-			progress = launch.getStatusManager().getProgress();
-			status = launch.getStatusManager().getStatus();
+		public LaunchInfo(LaunchAgent agent){
+			name = agent.getConfig().getName();
+			id = agent.getConfig().getId();
+			trigger = agent.getTrigger();
+			start = agent.getStatusManager().getStart();
+			progress = agent.getStatusManager().getProgress();
+			status = agent.getStatusManager().getStatus();
 		}
 		
 		@Override

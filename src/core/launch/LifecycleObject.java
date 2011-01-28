@@ -36,11 +36,8 @@ public abstract class LifecycleObject extends Task {
 	}
 	
 	public void addListener(ILifecycleListener listener){ listeners.add(listener); }
-	
 	public void notifyListeners(Lifecycle lifecycle){
-		for(ILifecycleListener listener : listeners){
-			listener.lifecycleChanged(this, lifecycle);
-		}
+		for(ILifecycleListener listener : listeners){ listener.lifecycleChanged(this, lifecycle); }
 	}
 	
 	public abstract String getId();
@@ -70,6 +67,7 @@ public abstract class LifecycleObject extends Task {
 			statusManager.setEnd(new Date());
 			finish();
 			notifyListeners(Lifecycle.FINISH);
+			listeners.clear();
 		}
 	}
 	

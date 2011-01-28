@@ -9,6 +9,7 @@ import java.util.Date;
 
 import util.FileTools;
 import util.IChangeListener;
+import util.IChangeable;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
@@ -26,7 +27,7 @@ import core.runtime.logger.ILogConfig.Module;
 /**
  * the configuration of the application,- will be serialized
  */
-public class History implements ISystemComponent {
+public class History implements ISystemComponent, IChangeable {
 
 	public static History create(Configuration configuration, FileManager fileManager, Logger logger) throws Exception {
 		
@@ -72,12 +73,13 @@ public class History implements ISystemComponent {
 	@Override
 	public void shutdown() throws Exception {}
 
+	@Override
 	public void addListener(IChangeListener listener){ listeners.add(listener); }
-	
+	@Override
+	public void removeListener(IChangeListener listener){ listeners.remove(listener); }
+	@Override
 	public void notifyListeners(){
-		for(IChangeListener listener : listeners){
-			listener.changed(this);
-		}
+		for(IChangeListener listener : listeners){ listener.changed(this); }
 	}
 	
 	public ArrayList<LaunchHistory> getEntries(){ return entries; }
