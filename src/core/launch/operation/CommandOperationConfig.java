@@ -16,6 +16,8 @@ import core.runtime.TaskManager;
 public class CommandOperationConfig extends AbstractOperationConfig {
 	
 	public static final String OPERATION_NAME = "Command";
+	
+	private static final int NAME_MAX = 25;
 
 	public enum OPTIONS {
 		COMMAND, DIRECTORY, ARGUMENTS, OUTPUT
@@ -49,7 +51,7 @@ public class CommandOperationConfig extends AbstractOperationConfig {
 	public String getName(){
 		String command = getCommand();
 		if(!command.isEmpty()){
-			return StringTools.border((new File(command)).getName(), 25);
+			return StringTools.border((new File(command)).getName(), NAME_MAX);
 		}else{
 			return OPERATION_NAME;
 		}
