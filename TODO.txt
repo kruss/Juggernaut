@@ -8,7 +8,6 @@ TASKS
 # create a tutorial
 # collect errors from eclipse cdt-builder plugin
 # create properties option in launch-config overriding runtime properties 
-# cach-monitor wich allows to delete/set values within id-tree
 # make history delete for multi select
 
 BUGS
