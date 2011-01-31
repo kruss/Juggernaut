@@ -43,8 +43,8 @@ public class SVNClient implements IRepositoryClient {
 		RevisionInfo result = new RevisionInfo();
 		result.output = task.getOutput();
 		
-		// find e.g: "Revision: 1234"
-		Pattern p1 = Pattern.compile("^Revision: (\\d+)", Pattern.MULTILINE | Pattern.UNIX_LINES);
+		// find e.g: "Last Changed Rev: 1234"
+		Pattern p1 = Pattern.compile("^Last Changed Rev: (\\d+)", Pattern.MULTILINE | Pattern.UNIX_LINES);
 		Matcher m1 = p1.matcher(result.output);
 		if(m1.find() && m1.groupCount() >= 1){
 			result.revision = m1.group(1);
