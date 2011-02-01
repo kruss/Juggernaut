@@ -26,6 +26,7 @@ public class Constants {
 	public static final String 		BUILD_FOLDER = DATA_FOLDER+File.separator+"build";
 	public static final String 		HISTORY_FOLDER = DATA_FOLDER+File.separator+"history";
 	public static final String 		TEMP_FOLDER = DATA_FOLDER+File.separator+"temp";
+	public static final String 		INDEX_NAME = "index";
 	
 	public static final long 		LOGFILE_MAX = 2 * 1024 * 1024; // 2MB
 	

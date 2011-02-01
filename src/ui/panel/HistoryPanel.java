@@ -26,8 +26,8 @@ import javax.swing.table.TableColumnModel;
 
 
 
+import core.Constants;
 import core.ISystemComponent;
-import core.launch.history.LaunchHistoryPage;
 import core.persistence.History;
 import core.persistence.History.HistoryInfo;
 import core.runtime.logger.Logger;
@@ -360,7 +360,7 @@ public class HistoryPanel extends JPanel implements ISystemComponent, IChangeLis
 	}
 
 	private String getHistoryIndexPath(HistoryInfo entry) {
-		return entry.folder+File.separator+LaunchHistoryPage.OUTPUT_FILE;
+		return entry.folder+File.separator+Constants.INDEX_NAME+".htm";
 	}
 	
 	public void filterHistory(){

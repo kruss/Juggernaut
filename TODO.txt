@@ -17,6 +17,8 @@ BUGS
 # after restoring a backup all configured property-ids are invalid
 # after restoring a backup all existing build-folders will remain
 
+# history panel with filter set shows strange behave on: delete / filter for legacy names
+
 
 # on continous work-load:
 	[ArrayIndexOutOfBoundsException] 1 >= 1

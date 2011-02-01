@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import util.DateTools;
 
+import core.Constants;
 import core.html.AbstractHtmlPage;
 import core.html.HtmlLink;
 import core.html.HtmlList;
@@ -59,7 +60,7 @@ public class HistoryPage extends AbstractHtmlPage {
 		table.addHeaderCell("Time", 75);
 		table.addHeaderCell("Status", 100);
 		for(HistoryInfo entry : entries){
-			HtmlLink link = new HtmlLink(entry.name, entry.start.getTime()+File.separator+LaunchHistoryPage.OUTPUT_FILE);
+			HtmlLink link = new HtmlLink(entry.name, entry.start.getTime()+File.separator+Constants.INDEX_NAME+".htm");
 			table.addContentCell("<b>"+link.getHtml()+"</b>");
 			table.addContentCell(entry.trigger);
 			table.addContentCell(

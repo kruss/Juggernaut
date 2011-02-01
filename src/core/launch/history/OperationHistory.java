@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 
+import core.Constants;
 import core.html.AbstractHtmlPage;
 import core.html.HtmlLink;
 import core.launch.data.Error;
@@ -54,12 +55,12 @@ public class OperationHistory extends AbstractHistory {
 		return new OperationHistoryPage(
 				"Operation [ "+name+" ]", 
 				getIndexPath(),
-				new HtmlLink("&lt;&lt;", "../"+LaunchHistoryPage.OUTPUT_FILE),
+				new HtmlLink("&lt;&lt;", "../"+Constants.INDEX_NAME+".htm"),
 				this
 		);
 	}
 	
 	public String getIndexPath() {
-		return folder+File.separator+OperationHistoryPage.OUTPUT_FILE;
+		return folder+File.separator+Constants.INDEX_NAME+".htm";
 	}
 }

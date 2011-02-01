@@ -3,6 +3,7 @@ package core.launch.history;
 
 import java.io.File;
 
+import core.Constants;
 import core.html.HtmlLink;
 import core.html.HtmlTable;
 import core.launch.data.StatusManager;
@@ -41,7 +42,7 @@ public class LaunchHistoryPage extends AbstractHistoryPage {
 			table.addHeaderCell("Time", 75);
 			table.addHeaderCell("Status", 100);
 			for(OperationHistory operation : history.operations){
-				HtmlLink link = new HtmlLink(operation.name, operation.id+File.separator+OUTPUT_FILE);
+				HtmlLink link = new HtmlLink(operation.name, operation.id+File.separator+Constants.INDEX_NAME+".htm");
 				table.addContentCell(operation.index+".) <b>"+link.getHtml()+"</b>");
 				table.addContentCell(StringTools.border(operation.description, DESCRIPTION_MAX));
 				table.addContentCell(

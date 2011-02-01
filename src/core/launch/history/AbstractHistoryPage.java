@@ -12,8 +12,6 @@ import core.launch.data.StatusManager;
 import util.DateTools;
 
 public abstract class AbstractHistoryPage extends AbstractHtmlPage {
-
-	public static final String OUTPUT_FILE = "index.htm";
 	
 	private AbstractHistory history;
 	

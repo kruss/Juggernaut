@@ -4,11 +4,11 @@ package core.launch.history;
 import java.io.File;
 import java.util.ArrayList;
 
+import core.Constants;
 import core.html.AbstractHtmlPage;
 import core.html.HtmlLink;
 import core.launch.LaunchAgent;
 import core.launch.data.Error;
-import core.persistence.History;
 import core.runtime.FileManager;
 import core.runtime.logger.Logger;
 
@@ -64,13 +64,13 @@ public class LaunchHistory extends AbstractHistory {
 		return new LaunchHistoryPage(
 				"Launch [ "+name+" ]", 
 				getIndexPath(),
-				new HtmlLink("&lt;&lt;", "../"+History.INDEX_NAME+"["+name.hashCode()+"].htm"),
+				new HtmlLink("&lt;&lt;", "../"+Constants.INDEX_NAME+".htm"),
 				this
 		);
 	}
 	
 	public String getIndexPath() {
-		return folder+File.separator+LaunchHistoryPage.OUTPUT_FILE;
+		return folder+File.separator+Constants.INDEX_NAME+".htm";
 	}
 
 	public OperationHistory getOperation(String id) {
