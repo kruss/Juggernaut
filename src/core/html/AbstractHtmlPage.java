@@ -10,7 +10,7 @@ import util.FileTools;
 
 public abstract class AbstractHtmlPage {
 
-	private static final int REFRESH = 60; // sec
+	private static final int REFRESH = 5 * 60; // sec
 	
 	protected String name;
 	protected String path;
