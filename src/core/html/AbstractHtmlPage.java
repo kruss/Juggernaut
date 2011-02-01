@@ -12,13 +12,14 @@ public abstract class AbstractHtmlPage {
 
 	private static final int REFRESH = 5 * 60; // sec
 	
-	protected String name;
-	protected String path;
-	protected HtmlLink parent;
-	protected ArrayList<AbstractHtmlPage> childs;
+	private String name;
+	private String path;
+	private HtmlLink parent;
+	private ArrayList<ChildPage> childs;
 	
-	public String getName(){ return name; }
-	public String getPath(){ return path; }
+	public void addChild(AbstractHtmlPage page, HtmlLink link){
+		childs.add(new ChildPage(page, link));
+	}
 	
 	protected boolean expires;	// if set the page will always be loaded from original location
 	protected boolean refresh;	// if set the page will auto-reload in given interval
@@ -28,7 +29,7 @@ public abstract class AbstractHtmlPage {
 		this.name = name;
 		this.path = path;
 		this.parent = parent;
-		childs = new ArrayList<AbstractHtmlPage>();
+		childs = new ArrayList<ChildPage>();
 		
 		expires = false;
 		refresh = false;
@@ -61,12 +62,10 @@ public abstract class AbstractHtmlPage {
 			html.append("<hr><h1>"+name+"</h1><hr>\n");
 		}
 		if(childs.size() > 0){
-			html.append("<p class='small'>&gt;&gt; ");
-			for(AbstractHtmlPage child : childs){
-				HtmlLink link = new HtmlLink(child.getName(), child.getPath());
-				html.append("["+link.getHtml()+"] ");
+			for(int i=0; i<childs.size(); i++){
+				html.append(childs.get(i).link.getHtml()+(i < childs.size()-1 ? " / " : ""));
 			}
-			html.append("</p>");
+			html.append("<hr>");
 		}
 		html.append("<p>");
 		return html.toString();
@@ -90,9 +89,21 @@ public abstract class AbstractHtmlPage {
 			String html = getHtml();
 			FileTools.writeFile(path, html, false);
 			
-			for(AbstractHtmlPage child : childs){
-				child.create();
+			for(ChildPage child : childs){
+				child.page.create();
 			}
+		}
+	}
+	
+	private class ChildPage {
+		
+		public AbstractHtmlPage page;
+		public HtmlLink link;
+		
+		public ChildPage(AbstractHtmlPage page, HtmlLink link){
+			
+			this.page = page;
+			this.link = link;
 		}
 	}
 	

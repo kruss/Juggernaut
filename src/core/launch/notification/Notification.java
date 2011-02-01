@@ -16,8 +16,8 @@ import core.launch.data.Artifact;
 import core.launch.data.Error;
 import core.launch.data.StatusManager;
 import core.launch.data.StatusManager.Status;
-import core.launch.history.HistoryPage;
 import core.launch.history.LaunchHistory;
+import core.launch.history.LaunchHistoryPage;
 import core.launch.history.OperationHistory;
 import core.launch.operation.AbstractOperation;
 import core.launch.operation.IRepositoryOperation;
@@ -272,7 +272,7 @@ public class Notification {
 			try{
 				String url = 
 					"http://"+SystemTools.getHostName()+":"+httpServer.getConfig().getHttpPort()+
-					"/"+launch.getStatusManager().getStart().getTime()+"/"+HistoryPage.OUTPUT_FILE;
+					"/"+launch.getStatusManager().getStart().getTime()+"/"+LaunchHistoryPage.OUTPUT_FILE;
 				HtmlLink link = new HtmlLink(url, url);
 				link.setExtern(true);
 				HtmlList list = new HtmlList("Output");

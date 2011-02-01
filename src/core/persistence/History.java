@@ -3,6 +3,7 @@ package core.persistence;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 
 
@@ -16,6 +17,7 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 
 import core.Constants;
 import core.ISystemComponent;
+import core.html.HtmlLink;
 import core.launch.data.StatusManager.Status;
 import core.launch.history.HistoryPage;
 import core.launch.history.LaunchHistory;
@@ -68,7 +70,7 @@ public class History implements ISystemComponent, IChangeable {
 	@Override
 	public void init() throws Exception {
 		save();
-		if(!(new File(getIndexPath())).exists()){
+		if(fileManager.getHistoryFolder().listFiles().length == 0){
 			createIndex();
 		}
 	}
@@ -148,20 +150,36 @@ public class History implements ISystemComponent, IChangeable {
 		createIndex();
 	}
 
-	/** creates the history index-page */
+	/** creates the history index */
 	private void createIndex(){
 		
 		try{
-			HistoryPage page = new HistoryPage(this, getIndexPath());
-			page.create();
+			// delete index-files
+			File[] files = fileManager.getHistoryFolder().listFiles();
+			for(File file : files){
+				if(file.isFile() && file.getName().startsWith("index")){
+					FileTools.deleteFile(file.getAbsolutePath());
+				}
+			}
+			// create main-index page
+			HistoryPage main = new HistoryPage(
+					Constants.APP_NAME+" [ History ]", 
+					fileManager.getHistoryFolderPath()+File.separator+"index.htm",
+					null, getHistoryInfo());
+			ArrayList<String> names = getHistoryNames();
+			// create sub-index pages
+			for(int i=0; i<names.size(); i++){
+				String name = names.get(i);
+				HistoryPage child = new HistoryPage(
+						"History [ "+name+" ]", 
+						fileManager.getHistoryFolderPath()+File.separator+"index["+i+"].htm",
+						new HtmlLink("&lt;&lt;", "index.htm"), getHistoryInfo(name));
+				main.addChild(child, new HtmlLink(name, "index["+i+"].htm"));
+			}
+			main.create();
 		}catch(Exception e){
 			logger.error(Module.COMMON, e);
 		}
-	}
-	
-	private String getIndexPath() {
-		return 
-			fileManager.getHistoryFolderPath()+File.separator+HistoryPage.OUTPUT_FILE;
 	}
 
 	/** remove old entries */
@@ -245,5 +263,28 @@ public class History implements ISystemComponent, IChangeable {
 			infos.add(new HistoryInfo(entry));
 		}
 		return infos;
+	}
+	
+	private synchronized ArrayList<HistoryInfo> getHistoryInfo(String name){
+		
+		ArrayList<HistoryInfo> infos = new ArrayList<HistoryInfo>();
+		for(LaunchHistory entry : entries){
+			if(entry.name.equals(name)){
+				infos.add(new HistoryInfo(entry));
+			}
+		}
+		return infos;
+	}
+	
+	private synchronized ArrayList<String> getHistoryNames(){
+		
+		ArrayList<String> names = new ArrayList<String>();
+		for(LaunchHistory entry : entries){
+			if(!names.contains(entry.name)){
+				names.add(entry.name);
+			}
+		}
+		Collections.sort(names);
+		return names;
 	}
 }
