@@ -68,6 +68,9 @@ public class History implements ISystemComponent, IChangeable {
 	@Override
 	public void init() throws Exception {
 		save();
+		if(!(new File(getIndexPath())).exists()){
+			createIndex();
+		}
 	}
 
 	@Override
@@ -145,21 +148,20 @@ public class History implements ISystemComponent, IChangeable {
 		createIndex();
 	}
 
-	/** creates the main index-page */
+	/** creates the history index-page */
 	private void createIndex(){
 		
-		HistoryPage page = new HistoryPage(this, getIndexPath());
 		try{
+			HistoryPage page = new HistoryPage(this, getIndexPath());
 			page.create();
 		}catch(Exception e){
 			logger.error(Module.COMMON, e);
 		}
 	}
 	
-	public String getIndexPath() {
+	private String getIndexPath() {
 		return 
-			fileManager.getHistoryFolderPath()+
-			File.separator+HistoryPage.OUTPUT_FILE;
+			fileManager.getHistoryFolderPath()+File.separator+HistoryPage.OUTPUT_FILE;
 	}
 
 	/** remove old entries */

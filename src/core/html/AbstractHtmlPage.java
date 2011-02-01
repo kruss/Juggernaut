@@ -20,8 +20,8 @@ public abstract class AbstractHtmlPage {
 	public String getName(){ return name; }
 	public String getPath(){ return path; }
 	
-	protected boolean expires;
-	protected boolean refresh;
+	protected boolean expires;	// if set the page will always be loaded from original location
+	protected boolean refresh;	// if set the page will auto-reload in given interval
 	
 	public AbstractHtmlPage(String name, String path, HtmlLink parent){
 		

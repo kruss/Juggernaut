@@ -71,9 +71,7 @@ public class Artifact {
 		StringBuilder html = new StringBuilder();
 		if(file != null){
 			HtmlLink link = new HtmlLink(name, file.getName());
-			if(file.isDirectory()){
-				link.setExtern(true);
-			}
+			link.setExtern(true);
 			html.append("<b>"+link.getHtml()+"</b>");
 		}else{
 			html.append("<b>"+name+"</b>");

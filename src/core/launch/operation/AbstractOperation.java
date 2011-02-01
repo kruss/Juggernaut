@@ -94,7 +94,7 @@ public abstract class AbstractOperation extends LifecycleObject {
 		
 		// debug configuration
 		logger.debug(Module.COMMON, "Configuration:\n"+config.getOptionContainer().toString());		
-		artifacts.add(new Artifact("Configuration", new ConfigPage(getId(), config.getOptionContainer()).getHtml(), "htm"));
+		artifacts.add(new Artifact("Configuration", new ConfigPage(config.getName(), config.getOptionContainer()).getHtml(), "htm"));
 	}
 	
 	@Override

@@ -148,7 +148,7 @@ public class LaunchAgent extends LifecycleObject {
 		
 		// debug configuration
 		logger.debug(Module.COMMON, "Configuration:\n"+launchConfig.getOptionContainer().toString());
-		artifacts.add(new Artifact("Configuration", new ConfigPage(getId(), launchConfig.getOptionContainer()).getHtml(), "htm"));
+		artifacts.add(new Artifact("Configuration", new ConfigPage(launchConfig.getName(), launchConfig.getOptionContainer()).getHtml(), "htm"));
 	}
 	
 	@Override
