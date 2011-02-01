@@ -42,6 +42,7 @@ public class History implements ISystemComponent, IChangeable {
 	}
 	
 	public static final String OUTPUT_FILE = "History.xml";
+	public static final String INDEX_NAME = "index";
 	
 	private transient Configuration configuration;
 	private transient FileManager fileManager;
@@ -157,24 +158,24 @@ public class History implements ISystemComponent, IChangeable {
 			// delete index-files
 			File[] files = fileManager.getHistoryFolder().listFiles();
 			for(File file : files){
-				if(file.isFile() && file.getName().startsWith("index")){
+				if(file.isFile() && file.getName().startsWith(INDEX_NAME)){
 					FileTools.deleteFile(file.getAbsolutePath());
 				}
 			}
 			// create main-index page
 			HistoryPage main = new HistoryPage(
 					Constants.APP_NAME+" [ History ]", 
-					fileManager.getHistoryFolderPath()+File.separator+"index.htm",
+					fileManager.getHistoryFolderPath()+File.separator+INDEX_NAME+".htm",
 					null, getHistoryInfo());
-			ArrayList<String> names = getHistoryNames();
 			// create sub-index pages
+			ArrayList<String> names = getHistoryNames();
 			for(int i=0; i<names.size(); i++){
 				String name = names.get(i);
 				HistoryPage child = new HistoryPage(
 						"History [ "+name+" ]", 
-						fileManager.getHistoryFolderPath()+File.separator+"index["+i+"].htm",
-						new HtmlLink("&lt;&lt;", "index.htm"), getHistoryInfo(name));
-				main.addChild(child, new HtmlLink(name, "index["+i+"].htm"));
+						fileManager.getHistoryFolderPath()+File.separator+INDEX_NAME+"["+i+"].htm",
+						new HtmlLink("&lt;&lt;", INDEX_NAME+".htm"), getHistoryInfo(name));
+				main.addChild(child, new HtmlLink(name, INDEX_NAME+"["+i+"].htm"));
 			}
 			main.create();
 		}catch(Exception e){

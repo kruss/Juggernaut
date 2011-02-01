@@ -60,6 +60,7 @@ public class HistoryPage extends AbstractHtmlPage {
 		table.addHeaderCell("Status", 100);
 		for(HistoryInfo entry : entries){
 			HtmlLink link = new HtmlLink(entry.name, entry.start.getTime()+File.separator+LaunchHistoryPage.OUTPUT_FILE);
+			link.setExtern(true);
 			table.addContentCell("<b>"+link.getHtml()+"</b>");
 			table.addContentCell(entry.trigger);
 			table.addContentCell(
