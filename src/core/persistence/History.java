@@ -162,20 +162,18 @@ public class History implements ISystemComponent, IChangeable {
 					FileTools.deleteFile(file.getAbsolutePath());
 				}
 			}
-			// create main-index page
+			// create main-index
 			HistoryPage main = new HistoryPage(
 					Constants.APP_NAME+" [ History ]", 
 					fileManager.getHistoryFolderPath()+File.separator+INDEX_NAME+".htm",
 					null, getHistoryInfo());
-			// create sub-index pages
-			ArrayList<String> names = getHistoryNames();
-			for(int i=0; i<names.size(); i++){
-				String name = names.get(i);
+			// create sub-indexes
+			for(String name : getHistoryNames()){
 				HistoryPage child = new HistoryPage(
 						"History [ "+name+" ]", 
-						fileManager.getHistoryFolderPath()+File.separator+INDEX_NAME+"["+i+"].htm",
+						fileManager.getHistoryFolderPath()+File.separator+INDEX_NAME+"["+name.hashCode()+"].htm",
 						new HtmlLink("&lt;&lt;", INDEX_NAME+".htm"), getHistoryInfo(name));
-				main.addChild(child, new HtmlLink(name, INDEX_NAME+"["+i+"].htm"));
+				main.addChild(child, new HtmlLink(name, INDEX_NAME+"["+name.hashCode()+"].htm"));
 			}
 			main.create();
 		}catch(Exception e){
