@@ -16,8 +16,8 @@ public class LaunchHistoryPage extends AbstractHistoryPage {
 	
 	private LaunchHistory history;
 	
-	public LaunchHistoryPage(String name, String path, LaunchHistory history) {
-		super(name, path, null, history);
+	public LaunchHistoryPage(String name, String path, HtmlLink parent, LaunchHistory history) {
+		super(name, path, parent, history);
 		this.history = history;
 	}
 

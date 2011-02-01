@@ -5,6 +5,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import core.html.AbstractHtmlPage;
+import core.html.HtmlLink;
 import core.launch.LaunchAgent;
 import core.launch.data.Error;
 import core.runtime.FileManager;
@@ -62,6 +63,7 @@ public class LaunchHistory extends AbstractHistory {
 		return new LaunchHistoryPage(
 				"Launch [ "+name+" ]", 
 				getIndexPath(),
+				new HtmlLink("&lt;&lt;", "../"+HistoryPage.OUTPUT_FILE),
 				this
 		);
 	}
