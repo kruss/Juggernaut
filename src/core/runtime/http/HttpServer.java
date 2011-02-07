@@ -93,7 +93,7 @@ public class HttpServer implements IHttpServer {
 	private void startHttpServer() throws Exception {
 		
 		int port = config.getHttpPort();
-		logger.log(Module.HTTP, "Startup HTTP - Port: "+port);
+		logger.debug(Module.HTTP, "Startup HTTP - Port: "+port);
 		serverSocket = new ServerSocket(port);
 		final HttpServer instance = this;
 		serverThread = new ServerThread(instance);
@@ -102,7 +102,7 @@ public class HttpServer implements IHttpServer {
 	
 	private void stopHttpServer() throws Exception {
 		
-		logger.log(Module.HTTP, "Shutdown HTTP");
+		logger.debug(Module.HTTP, "Shutdown HTTP");
 		serverSocket.close();
 		serverThread.syncStop(1000);
 		serverThread = null;

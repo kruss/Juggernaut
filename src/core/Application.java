@@ -5,6 +5,7 @@ import core.persistence.Configuration;
 import core.persistence.History;
 import core.runtime.FileManager;
 import core.runtime.HeapManager;
+import core.runtime.HistoryIndex;
 import core.runtime.LaunchManager;
 import core.runtime.Registry;
 import core.runtime.ScheduleManager;
@@ -146,6 +147,7 @@ public class Application extends AbstractSystem {
 	private class RuntimeSystem extends AbstractSystem {
 		
 		public Registry registry;
+		public HistoryIndex index;
 		public SmtpClient smtpClient;
 		public LaunchManager launchManager;
 		public ScheduleManager scheduleManager;
@@ -158,6 +160,11 @@ public class Application extends AbstractSystem {
 					core.taskManager, 
 					logging.logger);
 			add(registry);
+			index = new HistoryIndex(
+					core.fileManager, 
+					persistence.history, 
+					logging.logger);
+			add(index);
 			smtpClient = new SmtpClient(
 					persistence.configuration);
 			add(smtpClient);

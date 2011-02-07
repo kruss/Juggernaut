@@ -17,7 +17,6 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 import core.Constants;
 import core.ISystemComponent;
 import core.launch.data.StatusManager.Status;
-import core.launch.history.HistoryIndex;
 import core.launch.history.LaunchHistory;
 import core.runtime.FileManager;
 import core.runtime.logger.Logger;
@@ -32,16 +31,15 @@ public class History implements ISystemComponent, IChangeable {
 		
 		File file = new File(fileManager.getDataFolderPath()+File.separator+History.OUTPUT_FILE);
 		if(file.isFile()){
-			return History.load(configuration, fileManager, logger, file.getAbsolutePath());
+			return History.load(configuration, logger, file.getAbsolutePath());
 		}else{
-			return new History(configuration, fileManager, logger, file.getAbsolutePath());
+			return new History(configuration, logger, file.getAbsolutePath());
 		}	
 	}
 	
 	public static final String OUTPUT_FILE = "History.xml";
 	
 	private transient Configuration configuration;
-	private transient FileManager fileManager;
 	private transient Logger logger;
 	
 	@SuppressWarnings("unused")
@@ -51,10 +49,9 @@ public class History implements ISystemComponent, IChangeable {
 	private transient String path;
 	private transient boolean dirty;
 
-	public History(Configuration configuration, FileManager fileManager, Logger logger, String path){
+	public History(Configuration configuration, Logger logger, String path){
 		
 		this.configuration = configuration;
-		this.fileManager = fileManager;
 		this.logger = logger;
 		
 		version = Constants.APP_VERSION;
@@ -67,9 +64,6 @@ public class History implements ISystemComponent, IChangeable {
 	@Override
 	public void init() throws Exception {
 		save();
-		if(fileManager.getHistoryFolder().listFiles().length == 0){
-			createIndex();
-		}
 	}
 
 	@Override
@@ -90,14 +84,13 @@ public class History implements ISystemComponent, IChangeable {
 	public void setDirty(boolean dirty){ this.dirty = dirty; }
 	public boolean isDirty(){ return dirty; }
 	
-	public static History load(Configuration configuration, FileManager fileManager, Logger logger, String path) throws Exception {
+	public static History load(Configuration configuration, Logger logger, String path) throws Exception {
 	
 		logger.debug(Module.COMMON, "load: "+path);
 		XStream xstream = new XStream(new DomDriver());
 		String xml = FileTools.readFile(path);
 		History history = (History)xstream.fromXML(xml);
 		history.configuration = configuration;
-		history.fileManager = fileManager;
 		history.logger = logger;
 		history.listeners = new ArrayList<IChangeListener>();
 		history.path = path;
@@ -124,7 +117,6 @@ public class History implements ISystemComponent, IChangeable {
 		dirty = true;
 		save();
 		cleanup();
-		createIndex();
 	}
 	
 	public synchronized void delete(String id) {
@@ -135,7 +127,6 @@ public class History implements ISystemComponent, IChangeable {
 				delete(entry);
 			}
 		}
-		createIndex();
 	}
 	
 	/** clear old entries */
@@ -143,19 +134,6 @@ public class History implements ISystemComponent, IChangeable {
 		
 		for(int i = entries.size()-1; i>=0; i--){
 			delete(entries.get(i));
-		}
-		createIndex();
-	}
-
-	/** creates the history index */
-	private void createIndex(){
-		
-		logger.debug(Module.COMMON, "create index");
-		try{
-			HistoryIndex index = new HistoryIndex(fileManager, this, logger);
-			index.create();
-		}catch(Exception e){
-			logger.error(Module.COMMON, e);
 		}
 	}
 

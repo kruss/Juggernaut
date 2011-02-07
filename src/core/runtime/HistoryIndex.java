@@ -1,4 +1,4 @@
-package core.launch.history;
+package core.runtime;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -6,7 +6,9 @@ import java.util.Date;
 
 import util.DateTools;
 import util.FileTools;
+import util.IChangeListener;
 import core.Constants;
+import core.ISystemComponent;
 import core.html.AbstractHtmlPage;
 import core.html.HtmlLink;
 import core.html.HtmlList;
@@ -15,30 +17,45 @@ import core.launch.data.StatusManager;
 import core.launch.data.StatusManager.Status;
 import core.persistence.History;
 import core.persistence.History.HistoryInfo;
-import core.runtime.FileManager;
 import core.runtime.logger.Logger;
 import core.runtime.logger.ILogConfig.Module;
 
 /** generates the history index */
-public class HistoryIndex {
+public class HistoryIndex implements ISystemComponent, IChangeListener {
 
 	private static final long OVERVIEW_MAX = 5 * 60 * 1000; //24 * 60 * 60 * 1000; // 1 day
 	
 	private History history;
 	private Logger logger;
 	private File folder;
+	private Date date;
 	
 	public HistoryIndex(FileManager fileManager, History history, Logger logger){
 		
 		this.history = history;
 		this.logger = logger;
+		
 		folder = fileManager.getHistoryFolder();
+		date = null;
 	}
 	
-	public void create() throws Exception {
+	@Override
+	public void init() throws Exception {
+		create();
+		history.addListener(this);
+	}
+
+	@Override
+	public void shutdown() throws Exception {
+		history.removeListener(this);
+	}
+	
+	public synchronized void create() throws Exception {
 		
+		date = new Date();
 		cleanup();
 		createIndex();
+		logger.debug(Module.COMMON, "create index: "+((new Date()).getTime()-date.getTime())+" ms");
 	}
 	
 	private void cleanup() throws Exception {
@@ -89,7 +106,6 @@ public class HistoryIndex {
 			
 			StringBuilder html = new StringBuilder();
 			if(names.size() > 0){
-				Date now = new Date();
 				for(String name : names){
 					try{ 
 						ArrayList<HistoryInfo> entries = history.getHistoryInfo(name);
@@ -97,7 +113,7 @@ public class HistoryIndex {
 						HistoryInfo last = entries.get(0);
 						HtmlLink link = new HtmlLink(last.name, Constants.INDEX_NAME+"["+last.name.hashCode()+"].htm");
 						html.append("<h3>Launch ["+link.getHtml()+"] - "+StatusManager.getStatusHtml(last.status)+"</h3>");
-						ArrayList<HistoryInfo> latest = filterHistory(entries, now, OVERVIEW_MAX);
+						ArrayList<HistoryInfo> latest = filterHistory(entries, date, OVERVIEW_MAX);
 						if(latest.size() > 0){
 							html.append(getHistoryHtml(null, latest));
 						}
@@ -210,5 +226,17 @@ public class HistoryIndex {
 			}
 		}
 		return (int)Math.round(((double)time / (double)total));
+	}
+
+	@Override
+	public void changed(Object object) {
+		
+		if(object instanceof History){
+			try{
+				create();
+			}catch(Exception e){
+				logger.error(Module.COMMON, e);
+			}
+		}
 	}
 }
