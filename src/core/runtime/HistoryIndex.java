@@ -23,7 +23,7 @@ import core.runtime.logger.ILogConfig.Module;
 /** generates the history index */
 public class HistoryIndex implements ISystemComponent, IChangeListener {
 
-	private static final long OVERVIEW_MAX = 5 * 60 * 1000; //24 * 60 * 60 * 1000; // 1 day
+	private static final long DATE_THRESHOLD = 24 * 60 * 60 * 1000; // 1 day
 	
 	private History history;
 	private Logger logger;
@@ -110,10 +110,9 @@ public class HistoryIndex implements ISystemComponent, IChangeListener {
 					try{ 
 						ArrayList<HistoryInfo> entries = history.getHistoryInfo(name);
 						createSubIndex(name, entries);
-						HistoryInfo last = entries.get(0);
-						HtmlLink link = new HtmlLink(last.name, Constants.INDEX_NAME+"["+last.name.hashCode()+"].htm");
-						html.append("<h3>Launch ["+link.getHtml()+"] - "+StatusManager.getStatusHtml(last.status)+"</h3>");
-						ArrayList<HistoryInfo> latest = filterHistory(entries, date, OVERVIEW_MAX);
+						HtmlLink link = new HtmlLink(name, Constants.INDEX_NAME+"["+name.hashCode()+"].htm");
+						html.append("<h3>Launch [ "+link.getHtml()+" ]</h3>");
+						ArrayList<HistoryInfo> latest = filterHistory(entries, date, DATE_THRESHOLD);
 						if(latest.size() > 0){
 							html.append(getHistoryHtml(null, latest));
 						}
@@ -186,13 +185,8 @@ public class HistoryIndex implements ISystemComponent, IChangeListener {
 			HtmlLink link = new HtmlLink(entry.name, entry.start.getTime()+File.separator+Constants.INDEX_NAME+".htm");
 			table.addContentCell("<b>"+link.getHtml()+"</b>");
 			table.addContentCell(entry.trigger);
-			table.addContentCell(
-					entry.start != null ? DateTools.getTextDate(entry.start) : ""
-			);
-			table.addContentCell(
-					(entry.start != null && entry.end != null) ? 
-							DateTools.getTimeDiff(entry.start, entry.end)+ " '" : ""
-			);
+			table.addContentCell(DateTools.getTextDate(entry.start));
+			table.addContentCell(DateTools.getTimeDiff(entry.start, entry.end)+ " '");
 			table.addContentCell(StatusManager.getStatusHtml(entry.status));
 		}
 		return table.getHtml();
