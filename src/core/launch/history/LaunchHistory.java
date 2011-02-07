@@ -64,7 +64,7 @@ public class LaunchHistory extends AbstractHistory {
 		return new LaunchHistoryPage(
 				"Launch [ "+name+" ]", 
 				getIndexPath(),
-				new HtmlLink("&lt;&lt;", "../"+Constants.INDEX_NAME+".htm"),
+				new HtmlLink("&lt;&lt;", "../"+Constants.INDEX_NAME+"["+name.hashCode()+"].htm"),
 				this
 		);
 	}

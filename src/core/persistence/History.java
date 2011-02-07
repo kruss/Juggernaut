@@ -1,6 +1,5 @@
 package core.persistence;
 
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,14 +16,12 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 
 import core.Constants;
 import core.ISystemComponent;
-import core.html.HtmlLink;
 import core.launch.data.StatusManager.Status;
-import core.launch.history.HistoryPage;
+import core.launch.history.HistoryIndex;
 import core.launch.history.LaunchHistory;
 import core.runtime.FileManager;
 import core.runtime.logger.Logger;
 import core.runtime.logger.ILogConfig.Module;
-
 
 /**
  * the configuration of the application,- will be serialized
@@ -153,30 +150,10 @@ public class History implements ISystemComponent, IChangeable {
 	/** creates the history index */
 	private void createIndex(){
 		
+		logger.debug(Module.COMMON, "create index");
 		try{
-			// delete index-files
-			File[] files = fileManager.getHistoryFolder().listFiles();
-			for(File file : files){
-				if(file.isFile() && file.getName().startsWith(Constants.INDEX_NAME)){
-					FileTools.deleteFile(file.getAbsolutePath());
-				}
-			}
-			// create main-index
-			HistoryPage main = new HistoryPage(
-					Constants.APP_NAME+" [ History ]", 
-					fileManager.getHistoryFolderPath()+File.separator+Constants.INDEX_NAME+".htm",
-					null, getHistoryInfo());
-			// create sub-indexes
-			ArrayList<String> names = getHistoryNames();
-			for(int i=0; i<names.size(); i++){
-				String name = names.get(i);
-				HistoryPage child = new HistoryPage(
-						"History [ "+name+" ]", 
-						fileManager.getHistoryFolderPath()+File.separator+Constants.INDEX_NAME+"["+i+"].htm",
-						new HtmlLink("&lt;&lt;", Constants.INDEX_NAME+".htm"), getHistoryInfo(name));
-				main.addChild(child, new HtmlLink(name, Constants.INDEX_NAME+"["+i+"].htm"));
-			}
-			main.create();
+			HistoryIndex index = new HistoryIndex(fileManager, this, logger);
+			index.create();
 		}catch(Exception e){
 			logger.error(Module.COMMON, e);
 		}
@@ -265,7 +242,7 @@ public class History implements ISystemComponent, IChangeable {
 		return infos;
 	}
 	
-	private synchronized ArrayList<HistoryInfo> getHistoryInfo(String name){
+	public synchronized ArrayList<HistoryInfo> getHistoryInfo(String name){
 		
 		ArrayList<HistoryInfo> infos = new ArrayList<HistoryInfo>();
 		for(LaunchHistory entry : entries){
@@ -276,7 +253,7 @@ public class History implements ISystemComponent, IChangeable {
 		return infos;
 	}
 	
-	private synchronized ArrayList<String> getHistoryNames(){
+	public synchronized ArrayList<String> getHistoryNames(){
 		
 		ArrayList<String> names = new ArrayList<String>();
 		for(LaunchHistory entry : entries){

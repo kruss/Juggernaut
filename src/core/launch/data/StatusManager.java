@@ -93,6 +93,11 @@ public class StatusManager {
 	
 	public static String getStatusHtml(Status status) {
 
+		return "<font color='"+getStatusColor(status)+"'>"+status.toString()+"</font>";
+	}
+	
+	public static String getStatusColor(Status status) {
+
 		String color = "black";
 		if(status == Status.UNDEFINED){
 			color = "orange";
@@ -103,6 +108,6 @@ public class StatusManager {
 		}else if(status == Status.FAILURE){
 			color = "purple";
 		}
-		return "<font color='"+color+"'>"+status.toString()+"</font>";
+		return color;
 	}
 }
