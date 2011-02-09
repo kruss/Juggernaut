@@ -7,6 +7,7 @@ import java.util.Date;
 
 
 import core.Constants;
+import core.Result;
 import core.html.AbstractHtmlPage;
 import core.html.HtmlLink;
 import core.launch.data.Error;
@@ -19,6 +20,7 @@ public class OperationHistory extends AbstractHistory {
 	private transient FileManager fileManager;
 	
 	public int index;
+	public ArrayList<Result> results;
 	public ArrayList<Error> errors;
 	
 	public OperationHistory(AbstractOperation operation, FileManager fileManager){
@@ -30,6 +32,7 @@ public class OperationHistory extends AbstractHistory {
 		id = operation.getConfig().getId();
 		name = operation.getConfig().getName();
 		index = operation.getIndex();
+		results = new ArrayList<Result>();
 		errors = new ArrayList<Error>();
 	}
 	
@@ -46,6 +49,7 @@ public class OperationHistory extends AbstractHistory {
 		start = operation.getStatusManager().getStart();
 		end = operation.getStatusManager().getEnd();
 		status = operation.getStatusManager().getStatus();
+		results = operation.getResultManager().getResults();
 		errors = operation.getErrors();
 		super.finish();
 	}

@@ -91,6 +91,10 @@ public class StatusManager {
 		}
 	}
 	
+	public static String getStatusHtml(Status status) {
+		return "<font color='"+getStatusColor(status)+"'>"+status.toString()+"</font>";
+	}
+	
 	public static String getStatusColor(Status status) {
 
 		String color = "black";
@@ -104,10 +108,5 @@ public class StatusManager {
 			color = "purple";
 		}
 		return color;
-	}
-	
-	public static String getStatusHtml(Status status) {
-		
-		return "<font color='"+getStatusColor(status)+"'>"+status.toString()+"</font>";
 	}
 }

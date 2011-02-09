@@ -1,8 +1,10 @@
 package core.launch.history;
 
+import core.Result;
 import core.html.HtmlLink;
 import core.html.HtmlList;
 import core.launch.data.Error;
+import core.launch.data.ResultManager;
 
 public class OperationHistoryPage extends AbstractHistoryPage {
 	
@@ -18,12 +20,47 @@ public class OperationHistoryPage extends AbstractHistoryPage {
 		
 		StringBuilder html = new StringBuilder();
 		html.append(getGeneralHtml());
+		html.append(getResultHtml());
 		html.append(getArtifactHtml());
 		html.append(getErrorHtml());
 		return html.toString();
 	}
 	
-	protected String getErrorHtml(){
+	private String getResultHtml(){
+		
+		if(history.results.size() > 0){
+			HtmlList list = new HtmlList("Results");
+			for(Result result : history.results){
+				list.addEntry(null, getResultHtml(result));
+			}
+			return list.getHtml();
+		}else{
+			return "";
+		}
+	}
+	
+	private String getResultHtml(Result result){
+		
+		StringBuilder html = new StringBuilder();
+		if(result.status != Result.Status.UNDEFINED){
+			html.append("<b>"+result.name+" - "+ResultManager.getStatusHtml(result.status)+"</b>");
+		}else{
+			html.append("<b>"+result.name+"</b>");
+		}
+		if(!result.message.isEmpty()){
+			html.append("<p>"+result.message+"</p>");
+		}
+		if(result.results.size() > 0){
+			HtmlList list = new HtmlList(null);
+			for(Result child : result.results){
+				list.addEntry(null, getResultHtml(child));
+			}
+			return list.getHtml();
+		}
+		return html.toString();
+	}
+	
+	private String getErrorHtml(){
 		
 		if(history.errors.size() > 0){
 			HtmlList list = new HtmlList("Errors");

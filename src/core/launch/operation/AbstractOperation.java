@@ -1,13 +1,15 @@
 package core.launch.operation;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
+import core.Feedback;
+import core.Result;
 import core.launch.LaunchAgent;
 import core.launch.LifecycleObject;
 import core.launch.data.Artifact;
 import core.launch.data.Error;
+import core.launch.data.ResultManager;
 import core.launch.data.StatusManager.Status;
 import core.persistence.Cache;
 import core.persistence.Configuration;
@@ -25,6 +27,7 @@ public abstract class AbstractOperation extends LifecycleObject {
 	protected TaskManager taskManager;
 	protected Logger logger;
 	protected AbstractOperationConfig config;
+	protected ResultManager resultManager;
 	protected ArrayList<Error> errors;
 	
 	public LaunchAgent getParent(){ return parent; }
@@ -45,9 +48,11 @@ public abstract class AbstractOperation extends LifecycleObject {
 		this.taskManager = taskManager;
 		logger = parent.getLogger();
 		this.config = config.clone();
+		resultManager = new ResultManager(statusManager);
 		errors = new ArrayList<Error>();
 	}
 	
+	public ResultManager getResultManager(){ return resultManager; }
 	public ArrayList<Error> getErrors(){ return errors; }
 	public void addError(String message){
 		errors.add(new Error(this, message));
@@ -109,17 +114,34 @@ public abstract class AbstractOperation extends LifecycleObject {
 	}
 	
 	/** copy a relative output-folder to history */
-	public void collectOuttput(String outputFolder) {
+	public void handleOutput(String outputFolder) {
 		
 		File source = new File(getFolder()+File.separator+outputFolder);
-		File destination = new File(historyFolder+File.separator+outputFolder);
-		if(source.isDirectory() && destination.mkdirs()){
-			logger.debug(Module.COMMAND, "Collecting output: "+source.getAbsolutePath());
-			try{
-				FileTools.copyFolder(source.getAbsolutePath(), destination.getAbsolutePath());
-				artifacts.add(new Artifact("Output ["+outputFolder+"]", destination));
-			}catch(IOException e){
-				logger.error(Module.COMMAND, e);
+		if(source.isDirectory()){
+			// get results
+			File file = new File(source+File.separator+Feedback.OUTPUT_FILE);
+			if(file.isFile()){
+				logger.debug(Module.COMMAND, "Collecting Feedback: "+file.getAbsolutePath());
+				try{
+					Feedback feedback = new Feedback();
+					feedback.deserialize(file.getAbsolutePath());
+					for(Result result : feedback.results){
+						resultManager.addResult(result);
+					}
+				}catch(Exception e){
+					logger.error(Module.COMMAND, e);
+				}
+			}
+			// copy output
+			File destination = new File(historyFolder+File.separator+outputFolder);
+			if(destination.mkdirs()){
+				logger.debug(Module.COMMAND, "Collecting Output: "+source.getAbsolutePath());
+				try{
+					FileTools.copyFolder(source.getAbsolutePath(), destination.getAbsolutePath());
+					artifacts.add(new Artifact("Output ["+outputFolder+"]", destination));
+				}catch(Exception e){
+					logger.error(Module.COMMAND, e);
+				}
 			}
 		}
 	}

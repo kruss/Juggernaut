@@ -119,7 +119,7 @@ public class EclipseOperation extends AbstractOperation {
 	
 	@Override
 	protected void finish() {		
-		collectOuttput(".build");
+		handleOutput(".build");
 		super.finish();
 	}
 }

@@ -63,7 +63,7 @@ public class CommandOperation extends AbstractOperation {
 	protected void finish() {
 		ArrayList<String> outputs = config.getOutputs();
 		for(String output : outputs){
-			collectOuttput(output);
+			handleOutput(output);
 		}
 		super.finish();
 	}
