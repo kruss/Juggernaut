@@ -43,19 +43,19 @@ public class OperationHistoryPage extends AbstractHistoryPage {
 		
 		StringBuilder html = new StringBuilder();
 		if(result.status != Result.Status.UNDEFINED){
-			html.append("<b>"+result.name+" - "+ResultManager.getStatusHtml(result.status)+"</b>");
+			html.append("<b>"+result.name+" - "+ResultManager.getStatusHtml(result.status)+"</b>\n");
 		}else{
-			html.append("<b>"+result.name+"</b>");
+			html.append("<b>"+result.name+"</b>\n");
 		}
 		if(!result.message.isEmpty()){
-			html.append("<p>"+result.message+"</p>");
+			html.append("<br><i>"+result.message+"</i>\n");
 		}
 		if(result.results.size() > 0){
 			HtmlList list = new HtmlList(null);
 			for(Result child : result.results){
 				list.addEntry(null, getResultHtml(child));
 			}
-			return list.getHtml();
+			html.append(list.getHtml());
 		}
 		return html.toString();
 	}
