@@ -47,8 +47,12 @@ public class OperationHistoryPage extends AbstractHistoryPage {
 		}else{
 			html.append("<b>"+result.name+"</b>\n");
 		}
+		for(String key : result.properties.keySet()){
+			String value = result.properties.get(key);
+			html.append("<br>- "+key+": <i>"+value+"</i>\n");
+		}
 		if(!result.message.isEmpty()){
-			html.append("<br><i>"+result.message+"</i>\n");
+			html.append("<br>"+result.message.replaceAll("\\n", "<br>")+"\n");
 		}
 		if(result.results.size() > 0){
 			HtmlList list = new HtmlList(null);
