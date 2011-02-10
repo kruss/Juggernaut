@@ -88,7 +88,6 @@ public class EclipseOperation extends AbstractOperation {
 		// cdt-builder args
 		arguments.add("-cdt.builder");
 		arguments.add("-cdt.import");
-		arguments.add("-cdt.refresh");
 		if(config.isCleanBuild()){
 			arguments.add("-cdt.clean");
 		}
