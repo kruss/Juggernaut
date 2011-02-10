@@ -74,7 +74,7 @@ public abstract class AbstractHistoryPage extends AbstractHtmlPage {
 			HtmlList list = new HtmlList("Errors");
 			list.setType(HtmlList.Type.OL);
 			for(Error error : history.errors){
-				list.addEntry(null, error.getHtml());
+				list.addEntry(error.component, "<font color='red'>"+error.message+"</font>");
 			}
 			return list.getHtml();
 		}else{

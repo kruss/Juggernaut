@@ -36,7 +36,7 @@ public class ResultManager {
 		}
 		
 		if(result.resolution == Resolution.ERROR){
-			parent.getStatusManager().addError(parent, trace + (result.message.isEmpty() ? "" : ": "+result.message));
+			parent.getStatusManager().addError(parent, trace, result.message);
 		}
 		
 		for(Result child : result.results){

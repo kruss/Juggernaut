@@ -76,9 +76,9 @@ public class StatusManager {
 	public Date getEnd(){ return end; }
 
 	public ArrayList<Error> getErrors(){ return errors; }
-	public void addError(LifecycleObject origin, String message){
+	public void addError(LifecycleObject origin, String component, String message){
 		setStatus(Status.ERROR);
-		errors.add(new Error(origin, message));
+		errors.add(new Error(origin, component, message));
 	}
 	
 	public static int getStatusValue(Status status){

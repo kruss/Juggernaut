@@ -174,7 +174,7 @@ public class Notification {
 		if(newErrors.size() > 0){
 			HtmlList list = new HtmlList("Errors (new)");
 			for(Error error : newErrors){
-				list.addEntry(error.identifier, error.getHtml());
+				list.addEntry(error.origin+"::"+error.component, "<font color='red'>"+error.message+"</font>");
 			}
 			html.append(list.getHtml());
 		}
@@ -183,7 +183,7 @@ public class Notification {
 		if(oldErrors.size() > 0){
 			HtmlList list = new HtmlList("Errors (old)");
 			for(Error error : oldErrors){
-				list.addEntry(error.identifier, error.getHtml());
+				list.addEntry(error.origin+"::"+error.component, "<font color='red'>"+error.message+"</font>");
 			}
 			html.append(list.getHtml());
 		}

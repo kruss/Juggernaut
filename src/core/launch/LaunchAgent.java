@@ -165,15 +165,15 @@ public class LaunchAgent extends LifecycleObject {
 				logger.log(Module.COMMON, "Status: "+status.toString());	
 				if(status == Status.ERROR){
 					if(!operation.getConfig().isCritical()){
-						statusManager.addError(this, identifier+" with status "+status.toString());
+						statusManager.addError(this, null, identifier+" with status "+status.toString());
 						statusManager.setStatus(Status.ERROR);
 					}else{
-						statusManager.addError(this, identifier+" with CRITICAL status "+status.toString());
+						statusManager.addError(this, null, identifier+" with CRITICAL status "+status.toString());
 						statusManager.setStatus(Status.FAILURE);
 						aboard = true;
 					}
 				}else if(status == Status.FAILURE){
-					statusManager.addError(this, identifier+" with status "+status.toString());
+					statusManager.addError(this, null, identifier+" with status "+status.toString());
 					statusManager.setStatus(Status.FAILURE);
 					aboard = true;
 				}
@@ -213,7 +213,7 @@ public class LaunchAgent extends LifecycleObject {
 		Status status = statusManager.getStatus();
 		if(status != Status.SUCCEED && status != Status.CANCEL){
 			if(statusManager.getErrors().size() == 0){
-				statusManager.addError(this, "Launch did not succeed");
+				statusManager.addError(this, null, "Launch did not succeed");
 			}
 		}
 		

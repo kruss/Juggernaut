@@ -32,7 +32,7 @@ public class SampleOperation extends AbstractOperation {
 		
 		if(config.isThrowError()){
 			logger.log(Module.COMMON, "throwing error...");
-			statusManager.addError(this, "Sample Error");
+			statusManager.addError(this, null, "Sample Error");
 		}
 		if(config.isThrowException()){
 			logger.log(Module.COMMON, "throwing exception...");

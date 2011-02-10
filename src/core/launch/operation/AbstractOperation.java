@@ -99,7 +99,7 @@ public abstract class AbstractOperation extends LifecycleObject {
 		Status status = statusManager.getStatus();
 		if(status != Status.SUCCEED && status != Status.CANCEL){
 			if(statusManager.getErrors().size() == 0){
-				statusManager.addError(this, "Operation did not succeed");
+				statusManager.addError(this, null, "Operation did not succeed");
 			}
 		}
 	}

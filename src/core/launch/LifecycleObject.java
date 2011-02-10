@@ -62,7 +62,7 @@ public abstract class LifecycleObject extends Task {
 				statusManager.setStatus(Status.CANCEL);
 			}else{
 				getLogger().error(Module.COMMON, e);
-				statusManager.addError(this, e.getClass().getSimpleName()+": "+e.getMessage());
+				statusManager.addError(this, null, e.getClass().getSimpleName()+": "+e.getMessage());
 				statusManager.setStatus(Status.FAILURE);
 			}
 		}finally{

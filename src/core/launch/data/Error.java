@@ -6,22 +6,20 @@ import core.launch.LifecycleObject;
 
 public class Error {
 	
-	public String id;				// id of origin
-	public String identifier;		// identifier of origin
+	public String id;				
+	public String origin;		
+	public String component;
 	public String message;
 	
-	public Error(LifecycleObject origin, String message){
+	public Error(LifecycleObject origin, String component, String message){
 		this.id = origin.getId();
-		this.identifier = origin.getIdentifier();
-		this.message = message;	
-	}
-	
-	public String getHtml() {
-		return "<font color='red'>"+message+"</font>";	
+		this.origin = origin.getIdentifier();
+		this.component = (component != null ? component : "GENERIC");
+		this.message = (message != null ? message : "UNDEFINED");
 	}
 	
 	public long getHash(){
-		return (id+message).hashCode();	
+		return (id+component+message).hashCode();	
 	}
 	
 	/** return errors which are in list1 but not in list2 */
