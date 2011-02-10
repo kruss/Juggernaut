@@ -36,7 +36,13 @@ public class ResultManager {
 		}
 		
 		if(result.resolution == Resolution.ERROR){
-			parent.getStatusManager().addError(parent, trace, result.message);
+			if(result.messages.size() > 0){
+				for(String message : result.messages){
+					parent.getStatusManager().addError(parent, trace, message);
+				}
+			}else{
+				parent.getStatusManager().addError(parent, trace, null);
+			}
 		}
 		
 		for(Result child : result.results){
@@ -48,16 +54,16 @@ public class ResultManager {
 		
 		StringBuilder html = new StringBuilder();
 		if(result.resolution != Resolution.UNDEFINED){
-			html.append("<b>"+result.name+"</b> - "+ResultManager.getResolutionHtml(result.resolution)+"\n");
+			html.append("<b>"+result.name+"</b> - "+getResolutionHtml(result.resolution)+"\n");
 		}else{
 			html.append("<b>"+result.name+"</b>\n");
 		}
 		for(String key : result.values.keySet()){
 			String value = result.values.get(key);
-			html.append("<br>- "+key+": "+value+"\n");
+			html.append("<br>- <i>"+key+": "+value+"</i>\n");
 		}
-		if(!result.message.isEmpty()){
-			html.append("<br><i>"+result.message.replaceAll("\\n", "<br>")+"</i>\n");
+		for(String message : result.messages){
+			html.append("<br>+ "+message+"\n");
 		}
 		if(result.results.size() > 0){
 			html.append("<ul>\n");
@@ -78,14 +84,12 @@ public class ResultManager {
 	public static String getResolutionColor(Resolution resolution) {
 
 		String color = "black";
-		if(resolution == Resolution.UNDEFINED){
-			color = "orange";
-		}else if(resolution == Resolution.SUCCEED){
+		if(resolution == Resolution.SUCCEED){
 			color = "green";
-		}else if(resolution == Resolution.ERROR){
-			color = "red";
 		}else if(resolution == Resolution.WARNING){
 			color = "blue";
+		}else if(resolution == Resolution.ERROR){
+			color = "red";
 		}
 		return color;
 	}

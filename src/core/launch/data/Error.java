@@ -6,6 +6,9 @@ import core.launch.LifecycleObject;
 
 public class Error {
 	
+	public static final String GENERIC = "GENERIC";
+	public static final String UNDEFINED = "UNDEFINED";
+	
 	public String id;				
 	public String origin;		
 	public String component;
@@ -14,8 +17,8 @@ public class Error {
 	public Error(LifecycleObject origin, String component, String message){
 		this.id = origin.getId();
 		this.origin = origin.getIdentifier();
-		this.component = (component != null ? component : "GENERIC");
-		this.message = (message != null ? message : "UNDEFINED");
+		this.component = (component != null ? component : GENERIC);
+		this.message = (message != null ? message : UNDEFINED);
 	}
 	
 	public long getHash(){
