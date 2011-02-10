@@ -9,6 +9,7 @@ import java.util.UUID;
 import core.html.AbstractHtmlPage;
 import core.launch.LifecycleObject;
 import core.launch.data.Artifact;
+import core.launch.data.Error;
 import core.launch.data.StatusManager.Status;
 
 import util.FileTools;
@@ -28,12 +29,14 @@ public abstract class AbstractHistory {
 	public Status status;
 	public String folder;
 	public ArrayList<Artifact> artifacts;
+	public ArrayList<Error> errors;
 	
 	public AbstractHistory(LifecycleObject object){
 		
 		this.object = object;
 		historyId = UUID.randomUUID().toString();
 		artifacts = new ArrayList<Artifact>();
+		errors = new ArrayList<Error>();
 	}
 	
 	public void init() throws Exception {

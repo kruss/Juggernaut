@@ -1,14 +1,12 @@
 package core.launch.operation;
 
 import java.io.File;
-import java.util.ArrayList;
 
 import core.Feedback;
 import core.Result;
 import core.launch.LaunchAgent;
 import core.launch.LifecycleObject;
 import core.launch.data.Artifact;
-import core.launch.data.Error;
 import core.launch.data.ResultManager;
 import core.launch.data.StatusManager.Status;
 import core.persistence.Cache;
@@ -28,10 +26,10 @@ public abstract class AbstractOperation extends LifecycleObject {
 	protected Logger logger;
 	protected AbstractOperationConfig config;
 	protected ResultManager resultManager;
-	protected ArrayList<Error> errors;
 	
 	public LaunchAgent getParent(){ return parent; }
-	public AbstractOperationConfig getConfig(){ return config; }
+	public AbstractOperationConfig getConfig(){ return config; }	
+	public ResultManager getResultManager(){ return resultManager; }
 
 	public AbstractOperation(
 			Configuration configuration, 
@@ -49,14 +47,6 @@ public abstract class AbstractOperation extends LifecycleObject {
 		logger = parent.getLogger();
 		this.config = config.clone();
 		resultManager = new ResultManager(statusManager);
-		errors = new ArrayList<Error>();
-	}
-	
-	public ResultManager getResultManager(){ return resultManager; }
-	public ArrayList<Error> getErrors(){ return errors; }
-	public void addError(String message){
-		errors.add(new Error(this, message));
-		statusManager.setStatus(Status.ERROR);
 	}
 	
 	/** returns the 1-based index of this operation within the launch */
@@ -105,10 +95,11 @@ public abstract class AbstractOperation extends LifecycleObject {
 	@Override
 	protected void finish() {
 		
+		// check final status
 		Status status = statusManager.getStatus();
 		if(status != Status.SUCCEED && status != Status.CANCEL){
-			if(errors.size() == 0){
-				addError("Operation did not succeed");
+			if(statusManager.getErrors().size() == 0){
+				statusManager.addError(this, "Operation did not succeed");
 			}
 		}
 	}

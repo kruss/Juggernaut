@@ -1,5 +1,6 @@
 package core.launch.data;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import core.launch.LifecycleObject;
@@ -18,6 +19,7 @@ public class StatusManager {
 	private int progressMax;
 	private Date start;
 	private Date end;
+	private ArrayList<Error> errors;
 	
 	public StatusManager(LifecycleObject parent){
 		
@@ -27,6 +29,7 @@ public class StatusManager {
 		progressMax = 0;
 		start = null;
 		end = null;
+		errors = new ArrayList<Error>();
 	}
 	
 	public long getHash(){
@@ -72,6 +75,12 @@ public class StatusManager {
 	}
 	public Date getEnd(){ return end; }
 
+	public ArrayList<Error> getErrors(){ return errors; }
+	public void addError(LifecycleObject origin, String message){
+		setStatus(Status.ERROR);
+		errors.add(new Error(origin, message));
+	}
+	
 	public static int getStatusValue(Status status){
 		
 		if(status == Status.UNDEFINED){

@@ -98,6 +98,10 @@ public class LaunchAgent extends LifecycleObject {
 		return launchConfig.getId();
 	}
 	@Override
+	public String getIdentifier() {
+		return launchConfig.getName();
+	}
+	@Override
 	public String getFolder() {
 		return fileManager.getLaunchFolderPath(launchConfig.getId());
 	}
@@ -156,17 +160,20 @@ public class LaunchAgent extends LifecycleObject {
 		
 		for(AbstractOperation operation : operations){
 			try{
-				Status operationStatus = executeOperation(operation);
-				logger.log(Module.COMMON, "Operation: "+operationStatus.toString());	
-				if(operationStatus == Status.ERROR){
+				Status status = executeOperation(operation);
+				String identifier = operation.getIdentifier();
+				logger.log(Module.COMMON, "Status: "+status.toString());	
+				if(status == Status.ERROR){
 					if(!operation.getConfig().isCritical()){
+						statusManager.addError(this, identifier+" with status "+status.toString());
 						statusManager.setStatus(Status.ERROR);
 					}else{
-						logger.emph(Module.COMMON, "Critical operation failed");
+						statusManager.addError(this, identifier+" with CRITICAL status "+status.toString());
 						statusManager.setStatus(Status.FAILURE);
 						aboard = true;
 					}
-				}else if(operationStatus == Status.FAILURE){
+				}else if(status == Status.FAILURE){
+					statusManager.addError(this, identifier+" with status "+status.toString());
 					statusManager.setStatus(Status.FAILURE);
 					aboard = true;
 				}
@@ -184,10 +191,10 @@ public class LaunchAgent extends LifecycleObject {
 
 	private Status executeOperation(AbstractOperation operation)throws Exception {
 		
-		logger.info(
-				Module.COMMON, 
+		logger.info(Module.COMMON, 
 				operation.getIndex()+"/"+launchConfig.getOperationConfigs().size()+
-				" Operation ["+operation.getConfig().getUIName()+"]"
+				" Operation ["+operation.getConfig().getUIName()+"]" +
+				(operation.getConfig().isCritical() ? " - CRITICAL" : "")
 		);
 		if(!aboard){
 			operation.syncRun(0, 0);
@@ -202,6 +209,14 @@ public class LaunchAgent extends LifecycleObject {
 
 		logger.info(Module.COMMON, "Output");
 		
+		// check final status
+		Status status = statusManager.getStatus();
+		if(status != Status.SUCCEED && status != Status.CANCEL){
+			if(statusManager.getErrors().size() == 0){
+				statusManager.addError(this, "Launch did not succeed");
+			}
+		}
+		
 		// perform notification
 		try{ 
 			notificationManager.performNotification();
@@ -211,6 +226,7 @@ public class LaunchAgent extends LifecycleObject {
 		
 		// add to history
 		try{ 
+			logger.log(Module.COMMON, "history: "+launchHistory.folder);
 			launchHistory.finish(); 
 			history.add(launchHistory);
 		}catch(Exception e){
@@ -244,11 +260,11 @@ public class LaunchAgent extends LifecycleObject {
 		return list;
 	}
 	
-	public ArrayList<Error> getErrors(){
+	public ArrayList<Error> getOperationErrors(){
 		
 		ArrayList<Error> errors = new ArrayList<Error>();
 		for(AbstractOperation operation : operations){
-				errors.addAll(operation.getErrors());
+				errors.addAll(operation.getStatusManager().getErrors());
 		}
 		return errors;
 	}

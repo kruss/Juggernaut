@@ -3,7 +3,6 @@ package core.launch.history;
 import core.Result;
 import core.html.HtmlLink;
 import core.html.HtmlList;
-import core.launch.data.Error;
 import core.launch.data.ResultManager;
 
 public class OperationHistoryPage extends AbstractHistoryPage {
@@ -31,46 +30,7 @@ public class OperationHistoryPage extends AbstractHistoryPage {
 		if(history.results.size() > 0){
 			HtmlList list = new HtmlList("Results");
 			for(Result result : history.results){
-				list.addEntry(null, getResultHtml(result));
-			}
-			return list.getHtml();
-		}else{
-			return "";
-		}
-	}
-	
-	private String getResultHtml(Result result){
-		
-		StringBuilder html = new StringBuilder();
-		if(result.status != Result.Status.UNDEFINED){
-			html.append("<b>"+result.name+"</b> - "+ResultManager.getStatusHtml(result.status)+"\n");
-		}else{
-			html.append("<b>"+result.name+"</b>\n");
-		}
-		for(String key : result.properties.keySet()){
-			String value = result.properties.get(key);
-			html.append("<br>- "+key+": "+value+"\n");
-		}
-		if(!result.message.isEmpty()){
-			html.append("<br><i>"+result.message.replaceAll("\\n", "<br>")+"</i>\n");
-		}
-		if(result.results.size() > 0){
-			HtmlList list = new HtmlList(null);
-			for(Result child : result.results){
-				list.addEntry(null, getResultHtml(child));
-			}
-			html.append(list.getHtml());
-		}
-		return html.toString();
-	}
-	
-	private String getErrorHtml(){
-		
-		if(history.errors.size() > 0){
-			HtmlList list = new HtmlList("Errors");
-			list.setType(HtmlList.Type.OL);
-			for(Error error : history.errors){
-				list.addEntry(null, error.getHtml());
+				list.addEntry(null, ResultManager.getResultHtml(result));
 			}
 			return list.getHtml();
 		}else{

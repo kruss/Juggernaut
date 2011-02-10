@@ -128,7 +128,7 @@ public class NotificationManager {
 	private Long computeErrorHash() {
 		
 		long hash = 0;
-		for(Error error : launch.getErrors()){
+		for(Error error : launch.getOperationErrors()){
 			hash += error.getHash();
 		}
 		return new Long(hash);

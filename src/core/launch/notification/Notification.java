@@ -174,7 +174,7 @@ public class Notification {
 		if(newErrors.size() > 0){
 			HtmlList list = new HtmlList("Errors (new)");
 			for(Error error : newErrors){
-				list.addEntry(error.origin, error.getHtml());
+				list.addEntry(error.identifier, error.getHtml());
 			}
 			html.append(list.getHtml());
 		}
@@ -183,7 +183,7 @@ public class Notification {
 		if(oldErrors.size() > 0){
 			HtmlList list = new HtmlList("Errors (old)");
 			for(Error error : oldErrors){
-				list.addEntry(error.origin, error.getHtml());
+				list.addEntry(error.identifier, error.getHtml());
 			}
 			html.append(list.getHtml());
 		}
@@ -193,15 +193,15 @@ public class Notification {
 
 	private ArrayList<Error> getNewErrors() {
 		if(previous != null){
-			return Error.getDelta(launch.getErrors(), previous.getErrors());
+			return Error.getDelta(launch.getOperationErrors(), previous.getErrors());
 		}else{
-			return launch.getErrors();
+			return launch.getOperationErrors();
 		}
 	}
 
 	private ArrayList<Error> getOldErrors() {
 		if(previous != null){
-			return Error.getMatch(launch.getErrors(), previous.getErrors());
+			return Error.getMatch(launch.getOperationErrors(), previous.getErrors());
 		}else{
 			return new ArrayList<Error>();
 		}

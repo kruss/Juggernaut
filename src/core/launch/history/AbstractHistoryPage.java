@@ -7,6 +7,7 @@ import core.html.AbstractHtmlPage;
 import core.html.HtmlLink;
 import core.html.HtmlList;
 import core.launch.data.Artifact;
+import core.launch.data.Error;
 import core.launch.data.StatusManager;
 
 import util.DateTools;
@@ -65,5 +66,19 @@ public abstract class AbstractHistoryPage extends AbstractHtmlPage {
 		}
 		html.append("</ul>\n");
 		return html.toString();
+	}
+	
+	protected String getErrorHtml(){
+		
+		if(history.errors.size() > 0){
+			HtmlList list = new HtmlList("Errors");
+			list.setType(HtmlList.Type.OL);
+			for(Error error : history.errors){
+				list.addEntry(null, error.getHtml());
+			}
+			return list.getHtml();
+		}else{
+			return "";
+		}
 	}
 }

@@ -2,19 +2,17 @@ package core.launch.data;
 
 import java.util.ArrayList;
 
-import core.launch.operation.AbstractOperation;
-
-
+import core.launch.LifecycleObject;
 
 public class Error {
 	
-	public String id;			// id of origin
-	public String origin;		// name of origin
+	public String id;				// id of origin
+	public String identifier;		// identifier of origin
 	public String message;
 	
-	public Error(AbstractOperation operation, String message){
-		this.id = operation.getConfig().getId();
-		this.origin = operation.getIdentifier();
+	public Error(LifecycleObject origin, String message){
+		this.id = origin.getId();
+		this.identifier = origin.getIdentifier();
 		this.message = message;	
 	}
 	

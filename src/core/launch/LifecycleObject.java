@@ -41,6 +41,7 @@ public abstract class LifecycleObject extends Task {
 	}
 	
 	public abstract String getId();
+	public abstract String getIdentifier();
 	public abstract String getFolder();
 	public abstract Logger getLogger();
 	
@@ -61,6 +62,7 @@ public abstract class LifecycleObject extends Task {
 				statusManager.setStatus(Status.CANCEL);
 			}else{
 				getLogger().error(Module.COMMON, e);
+				statusManager.addError(this, e.getClass().getSimpleName()+": "+e.getMessage());
 				statusManager.setStatus(Status.FAILURE);
 			}
 		}finally{

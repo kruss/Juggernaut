@@ -56,6 +56,7 @@ public class LaunchHistory extends AbstractHistory {
 
 		end = launch.getStatusManager().getEnd();
 		status = launch.getStatusManager().getStatus();
+		errors = launch.getStatusManager().getErrors();
 		super.finish();
 	}
 

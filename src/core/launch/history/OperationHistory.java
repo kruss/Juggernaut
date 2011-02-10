@@ -10,7 +10,6 @@ import core.Constants;
 import core.Result;
 import core.html.AbstractHtmlPage;
 import core.html.HtmlLink;
-import core.launch.data.Error;
 import core.launch.operation.AbstractOperation;
 import core.runtime.FileManager;
 
@@ -21,7 +20,6 @@ public class OperationHistory extends AbstractHistory {
 	
 	public int index;
 	public ArrayList<Result> results;
-	public ArrayList<Error> errors;
 	
 	public OperationHistory(AbstractOperation operation, FileManager fileManager){
 		super(operation);
@@ -33,7 +31,6 @@ public class OperationHistory extends AbstractHistory {
 		name = operation.getConfig().getUIName();
 		index = operation.getIndex();
 		results = new ArrayList<Result>();
-		errors = new ArrayList<Error>();
 	}
 	
 	public void init() throws Exception {	
@@ -49,8 +46,8 @@ public class OperationHistory extends AbstractHistory {
 		start = operation.getStatusManager().getStart();
 		end = operation.getStatusManager().getEnd();
 		status = operation.getStatusManager().getStatus();
+		errors = operation.getStatusManager().getErrors();
 		results = operation.getResultManager().getResults();
-		errors = operation.getErrors();
 		super.finish();
 	}
 	
