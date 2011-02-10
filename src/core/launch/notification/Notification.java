@@ -145,8 +145,8 @@ public class Notification {
 			table.addHeaderCell("Description", 250);
 			table.addHeaderCell("Status", 100);
 			for(AbstractOperation operation : launch.getOperations()){
-				table.addContentCell(operation.getIndex()+".) <b>"+operation.getConfig().getName()+"</b>");
-				table.addContentCell(StringTools.border(operation.getDescription(), DESCRIPTION_MAX));
+				table.addContentCell(operation.getIndex()+".) <b>"+operation.getConfig().getUIName()+"</b>");
+				table.addContentCell(StringTools.border(operation.getRuntimeDescription(), DESCRIPTION_MAX));
 				Status currentStatus = operation.getStatusManager().getStatus();
 				OperationHistory operationHistory = previous != null ? previous.getOperation(operation.getConfig().getId()) : null;
 				Status lastStatus = operationHistory != null ? operationHistory.status : null;

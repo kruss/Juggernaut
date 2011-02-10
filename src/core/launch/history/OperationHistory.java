@@ -30,7 +30,7 @@ public class OperationHistory extends AbstractHistory {
 		this.fileManager = fileManager;
 		
 		id = operation.getConfig().getId();
-		name = operation.getConfig().getName();
+		name = operation.getConfig().getUIName();
 		index = operation.getIndex();
 		results = new ArrayList<Result>();
 		errors = new ArrayList<Error>();
@@ -45,7 +45,7 @@ public class OperationHistory extends AbstractHistory {
 	
 	public void finish() throws Exception {
 		
-		description = operation.getDescription();
+		description = operation.getRuntimeDescription();
 		start = operation.getStatusManager().getStart();
 		end = operation.getStatusManager().getEnd();
 		status = operation.getStatusManager().getStatus();

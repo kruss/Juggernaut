@@ -33,7 +33,7 @@ public class EclipseOperation extends AbstractOperation {
 	}
 	
 	@Override
-	public String getDescription() {
+	public String getRuntimeDescription() {
 		return StringTools.join(config.getBuildPattern(), ", ");
 	}
 

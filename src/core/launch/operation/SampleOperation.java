@@ -19,7 +19,7 @@ public class SampleOperation extends AbstractOperation {
 	}
 
 	@Override
-	public String getDescription() {
+	public String getRuntimeDescription() {
 		return 
 			"Idle: "+DateTools.millis2sec(config.getIdleTime())+" sec" +
 			(config.isThrowError() ? " / Throwing: error" : "") +

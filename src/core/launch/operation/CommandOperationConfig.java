@@ -48,7 +48,10 @@ public class CommandOperationConfig extends AbstractOperationConfig {
 	}
 
 	@Override
-	public String getName(){
+	public String getName(){ return OPERATION_NAME; }
+	
+	@Override
+	public String getUIName(){
 		String command = getCommand();
 		if(!command.isEmpty()){
 			return StringTools.border((new File(command)).getName(), NAME_MAX);

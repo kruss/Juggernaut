@@ -39,6 +39,9 @@ public class SampleOperationConfig extends AbstractOperationConfig {
 	public String getName(){ return OPERATION_NAME; }
 	
 	@Override
+	public String getUIName(){ return OPERATION_NAME; }
+	
+	@Override
 	public String getDescription(){
 		return "An operation to test the framework";
 	}

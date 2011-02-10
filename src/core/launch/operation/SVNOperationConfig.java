@@ -52,6 +52,9 @@ public class SVNOperationConfig extends AbstractOperationConfig {
 	public String getName(){ return OPERATION_NAME; }
 	
 	@Override
+	public String getUIName(){ return OPERATION_NAME; }
+	
+	@Override
 	public String getDescription(){
 		return "An operation to checkout a SVN Repository";
 	}

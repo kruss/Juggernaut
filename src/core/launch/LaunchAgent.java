@@ -187,7 +187,7 @@ public class LaunchAgent extends LifecycleObject {
 		logger.info(
 				Module.COMMON, 
 				operation.getIndex()+"/"+launchConfig.getOperationConfigs().size()+
-				" Operation ["+operation.getConfig().getName()+"]"
+				" Operation ["+operation.getConfig().getUIName()+"]"
 		);
 		if(!aboard){
 			operation.syncRun(0, 0);

@@ -325,7 +325,7 @@ implements
 				html.append("<h3>Operation(s):</h3>");
 				html.append("<ol>");
 				for(AbstractOperationConfig operationConfig : launchConfig.getOperationConfigs()){
-					html.append("<li><b>[ "+operationConfig.getName()+" ]</b>");
+					html.append("<li><b>[ "+operationConfig.getUIName()+" ]</b>");
 					html.append(operationConfig.getOptionContainer().toHtml());
 					html.append("</li>");
 				}

@@ -50,7 +50,7 @@ public class SVNOperation extends AbstractOperation implements IRepositoryOperat
 	}
 	
 	@Override
-	public String getDescription() {
+	public String getRuntimeDescription() {
 		return config.getUrl() + (currentRevision != null ? " ("+currentRevision+")" : "");
 	}
 	

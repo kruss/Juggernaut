@@ -170,7 +170,7 @@ public class Cache implements ISystemComponent, IChangeable {
 				info.add(new CacheInfo(launchIdentifier, property));
 			}
 			for(AbstractOperationConfig operationConfig : launchConfig.getOperationConfigs()){
-				String operationIdentifier = launchIdentifier+"::Operation("+operationConfig.getName()+")";
+				String operationIdentifier = launchIdentifier+"::Operation("+operationConfig.getUIName()+")";
 				for(Property property : container.getProperties(operationConfig.getId())){
 					info.add(new CacheInfo(operationIdentifier, property));
 				}

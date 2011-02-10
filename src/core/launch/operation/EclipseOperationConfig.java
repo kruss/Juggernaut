@@ -58,6 +58,9 @@ public class EclipseOperationConfig extends AbstractOperationConfig {
 	public String getName(){ return OPERATION_NAME; }
 	
 	@Override
+	public String getUIName(){ return OPERATION_NAME; }
+	
+	@Override
 	public String getDescription(){
 		return "An operation to run Eclipse with CDT-Builder Plugin";
 	}

@@ -92,13 +92,14 @@ public abstract class AbstractOperationConfig implements IOptionInitializer {
 	@Override
 	public String toString(){ 
 		if(isActive()){
-			return (isValid() ? "" : "~ ") + getName();
+			return (isValid() ? "" : "~ ") + getUIName();
 		}else{
-			return (isValid() ? "" : "~ ") + "<"+getName()+">";
+			return (isValid() ? "" : "~ ") + "<"+getUIName()+">";
 		}
 	}
 	
 	public abstract String getName();
+	public abstract String getUIName();
 	public abstract String getDescription();
 	public abstract boolean isValid();
 	public abstract AbstractOperation createOperation(

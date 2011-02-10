@@ -40,7 +40,7 @@ public abstract class AbstractOperation extends LifecycleObject {
 			LaunchAgent parent, 
 			AbstractOperationConfig config)
 	{
-		super("Opperation::"+config.getName()+"::"+config.getId(), taskManager);
+		super("Opperation::"+config.getUIName()+"::"+config.getId(), taskManager);
 		
 		this.configuration = configuration;
 		this.cache = cache;
@@ -73,11 +73,11 @@ public abstract class AbstractOperation extends LifecycleObject {
 	}
 
 	/** provides the runtime description */
-	public abstract String getDescription();
+	public abstract String getRuntimeDescription();
 	
 	/** provides name+index as identifier */
 	public String getIdentifier() {
-		return config.getName()+"["+getIndex()+"]";
+		return config.getUIName()+"["+getIndex()+"]";
 	}
 	
 	@Override
@@ -99,7 +99,7 @@ public abstract class AbstractOperation extends LifecycleObject {
 		
 		// debug configuration
 		logger.debug(Module.COMMON, "Configuration:\n"+config.getOptionContainer().toString());		
-		artifacts.add(new Artifact("Configuration", new ConfigPage(config.getName(), config.getOptionContainer()).getHtml(), "htm"));
+		artifacts.add(new Artifact("Configuration", new ConfigPage(config.getUIName(), config.getOptionContainer()).getHtml(), "htm"));
 	}
 	
 	@Override

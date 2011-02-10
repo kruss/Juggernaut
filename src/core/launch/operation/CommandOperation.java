@@ -28,7 +28,7 @@ public class CommandOperation extends AbstractOperation {
 	}
 
 	@Override
-	public String getDescription() {
+	public String getRuntimeDescription() {
 		return config.getCommand() + (!config.getArguments().isEmpty() ? " "+config.getArguments() : "");
 	}
 	
