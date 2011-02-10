@@ -24,15 +24,15 @@ import ui.panel.LoggerPanel;
 import ui.panel.PreferencePanel;
 import ui.panel.SchedulerPanel;
 
-public class Application extends AbstractSystem {
+public class Juggernaut extends AbstractSystem {
 
-	private static Application application;
+	private static Juggernaut juggernaut;
 	
 	public static void main(String[] args){
 		
 		try{
-			application = new Application();
-			application.init(); 
+			juggernaut = new Juggernaut();
+			juggernaut.init(); 
 		}catch(Exception e){
 			e.printStackTrace();
 			System.exit(Constants.PROCESS_NOK);
@@ -45,7 +45,7 @@ public class Application extends AbstractSystem {
 	private RuntimeSystem runtime;
 	private UISystem ui;
 	
-	private Application(){}
+	private Juggernaut(){}
 	
 	@Override
 	public void init() throws Exception {
@@ -215,13 +215,13 @@ public class Application extends AbstractSystem {
 		public void init() throws Exception {
 			
 			projectMenu = new ProjectMenu(
-					application, 
+					juggernaut, 
 					persistence.configuration, 
 					runtime.launchManager, 
 					logging.logger);
 			add(projectMenu);
 			toolsMenu = new ToolsMenu(
-					application,
+					juggernaut,
 					persistence.configuration,
 					persistence.cache, 
 					runtime.registry,

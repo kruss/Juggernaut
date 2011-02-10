@@ -16,7 +16,7 @@ import util.UiTools;
 
 import core.AbstractSystem;
 import core.Constants;
-import core.Application;
+import core.Juggernaut;
 import core.ISystemComponent;
 import core.persistence.Configuration;
 import core.runtime.LaunchManager;
@@ -27,7 +27,7 @@ public class ProjectMenu extends JMenu implements ISystemComponent, IChangeListe
 
 	private static final long serialVersionUID = 1L;
 
-	private Application application; 
+	private Juggernaut juggernaut; 
 	private Configuration configuration;
 	private LaunchManager launchManager;
 	private Logger logger;
@@ -37,14 +37,14 @@ public class ProjectMenu extends JMenu implements ISystemComponent, IChangeListe
 	private JMenuItem quit;
 	
 	public ProjectMenu(
-			Application application, 
+			Juggernaut juggernaut, 
 			Configuration configuration,
 			LaunchManager launchManager,
 			Logger logger)
 	{
 		super("Project");
 		
-		this.application = application;
+		this.juggernaut = juggernaut;
 		this.configuration = configuration;
 		this.launchManager = launchManager;
 		this.logger = logger;
@@ -82,7 +82,7 @@ public class ProjectMenu extends JMenu implements ISystemComponent, IChangeListe
 	private void revert(){
 		
 		try{
-			application.revert();
+			juggernaut.revert();
 		}catch(Exception e){
 			UiTools.errorDialog(e);
 		}
@@ -108,7 +108,7 @@ public class ProjectMenu extends JMenu implements ISystemComponent, IChangeListe
 				@Override
 				public void run() {
 					try{
-						application.shutdown();
+						juggernaut.shutdown();
 					}catch(Exception e){
 						if(e != AbstractSystem.ABOARDING){
 							UiTools.errorDialog(e);

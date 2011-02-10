@@ -18,7 +18,7 @@ import util.SystemTools;
 import util.UiTools;
 
 
-import core.Application;
+import core.Juggernaut;
 import core.Constants;
 import core.ISystemComponent;
 import core.backup.BackupManager;
@@ -35,7 +35,7 @@ public class ToolsMenu extends JMenu implements ISystemComponent {
 
 	private static final long serialVersionUID = 1L;
 
-	private Application application; 
+	private Juggernaut juggernaut; 
 	private Configuration configuration;
 	private Registry registry;
 	private FileManager fileManager;
@@ -53,7 +53,7 @@ public class ToolsMenu extends JMenu implements ISystemComponent {
 	private CacheMonitor cacheMonitor;
 	
 	public ToolsMenu(
-			Application application,
+			Juggernaut juggernaut,
 			Configuration configuration,
 			Cache cache,
 			Registry registry,
@@ -64,7 +64,7 @@ public class ToolsMenu extends JMenu implements ISystemComponent {
 	{
 		super("Tools");
 		
-		this.application = application;
+		this.juggernaut = juggernaut;
 		this.configuration = configuration;
 		this.registry = registry;
 		this.fileManager = fileManager;
@@ -158,7 +158,7 @@ public class ToolsMenu extends JMenu implements ISystemComponent {
 				restore.save();
 				
 				configuration.setDirty(true);
-				application.revert();
+				juggernaut.revert();
 				
 				UiTools.infoDialog("Restore from:\n\n"+path);
 			}catch(Exception e){
