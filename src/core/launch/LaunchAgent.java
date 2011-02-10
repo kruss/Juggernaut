@@ -207,7 +207,7 @@ public class LaunchAgent extends LifecycleObject {
 	@Override
 	protected void finish() {
 
-		logger.info(Module.COMMON, "Output");
+		logger.info(Module.COMMON, "Finish");
 		
 		// check final status
 		Status status = statusManager.getStatus();
@@ -226,7 +226,7 @@ public class LaunchAgent extends LifecycleObject {
 		
 		// add to history
 		try{ 
-			logger.log(Module.COMMON, "history: "+launchHistory.folder);
+			logger.log(Module.COMMON, "output: "+launchHistory.folder);
 			launchHistory.finish(); 
 			history.add(launchHistory);
 		}catch(Exception e){
