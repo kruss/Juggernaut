@@ -4,18 +4,18 @@ import java.util.ArrayList;
 
 import core.Result;
 import core.Result.Resolution;
-import core.launch.data.StatusManager.Status;
+import core.launch.LifecycleObject;
 
 public class ResultManager {
 
 	public static final String OUTPUT_FILE = "result.xml";
 
-	private StatusManager statusManager;
+	private LifecycleObject parent;
 	private ArrayList<Result> results;
 	
-	public ResultManager(StatusManager statusManager) {
+	public ResultManager(LifecycleObject parent) {
 		
-		this.statusManager = statusManager;
+		this.parent = parent;
 		results = new ArrayList<Result>();
 	}
 	
@@ -23,12 +23,27 @@ public class ResultManager {
 	
 	public void addResult(Result result){
 		
+		addResultErrors(result, null);
 		results.add(result);
-		if(result.resolution == Resolution.ERROR){
-			statusManager.setStatus(Status.ERROR);
-		}
 	}
 	
+	private void addResultErrors(Result result, String trace) {
+		
+		if(trace == null){
+			trace = result.name;
+		}else{
+			trace += "::"+result.name;
+		}
+		
+		if(result.resolution == Resolution.ERROR){
+			parent.getStatusManager().addError(parent, trace + (result.message.isEmpty() ? "" : ": "+result.message));
+		}
+		
+		for(Result child : result.results){
+			addResultErrors(child, trace);
+		}
+	}
+
 	public static String getResultHtml(Result result){
 		
 		StringBuilder html = new StringBuilder();

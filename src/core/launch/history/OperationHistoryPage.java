@@ -20,8 +20,8 @@ public class OperationHistoryPage extends AbstractHistoryPage {
 		StringBuilder html = new StringBuilder();
 		html.append(getGeneralHtml());
 		html.append(getResultHtml());
-		html.append(getArtifactHtml());
 		html.append(getErrorHtml());
+		html.append(getArtifactHtml());
 		return html.toString();
 	}
 	

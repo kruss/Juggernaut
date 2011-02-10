@@ -28,8 +28,8 @@ public class LaunchHistoryPage extends AbstractHistoryPage {
 		StringBuilder html = new StringBuilder();
 		html.append(getGeneralHtml());
 		html.append(getOperationsHtml());
-		html.append(getArtifactHtml());
 		html.append(getErrorHtml());
+		html.append(getArtifactHtml());
 		return html.toString();
 	}
 	

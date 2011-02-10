@@ -46,7 +46,7 @@ public abstract class AbstractOperation extends LifecycleObject {
 		this.taskManager = taskManager;
 		logger = parent.getLogger();
 		this.config = config.clone();
-		resultManager = new ResultManager(statusManager);
+		resultManager = new ResultManager(this);
 	}
 	
 	/** returns the 1-based index of this operation within the launch */
