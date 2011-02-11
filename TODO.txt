@@ -13,6 +13,8 @@ TASKS
 BUGS
 ----
 
+# serialized versions in persistent files do not update
+
 # after cloning launch all configured property-ids are invalid
 # after restoring a backup all configured property-ids are invalid
 # after restoring a backup all existing build-folders will remain
