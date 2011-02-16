@@ -7,6 +7,7 @@ import java.util.Date;
 import util.DateTools;
 import util.FileTools;
 import util.IChangeListener;
+import util.Task;
 import core.Constants;
 import core.ISystemComponent;
 import core.html.AbstractHtmlPage;
@@ -23,39 +24,51 @@ import core.runtime.logger.ILogConfig.Module;
 /** generates the history index */
 public class HistoryIndex implements ISystemComponent, IChangeListener {
 
+	// TODO as option
 	private static final long DATE_THRESHOLD = 24 * 60 * 60 * 1000; // 1 day
 	
+	private TaskManager taskManager;
 	private History history;
 	private Logger logger;
 	private File folder;
-	private Date date;
+	private Date update;
+	private IndexUpdater updater;
 	
-	public HistoryIndex(FileManager fileManager, History history, Logger logger){
+	public HistoryIndex(FileManager fileManager, TaskManager taskManager, History history, Logger logger){
 		
+		this.taskManager = taskManager;
 		this.history = history;
 		this.logger = logger;
-		
 		folder = fileManager.getHistoryFolder();
-		date = null;
+		update = null;
+		updater = null;
 	}
 	
 	@Override
 	public void init() throws Exception {
-		create();
+		update();
 		history.addListener(this);
+		if(updater == null){
+			updater = new IndexUpdater();
+			updater.asyncRun(0, 0);
+		}
 	}
 
 	@Override
 	public void shutdown() throws Exception {
 		history.removeListener(this);
+		if(updater != null){
+			updater.syncStop(1000);
+			updater = null;
+		}
 	}
 	
-	public synchronized void create() throws Exception {
+	public synchronized void update() throws Exception {
 		
-		date = new Date();
+		update = new Date();
 		cleanup();
 		createIndex();
-		logger.debug(Module.COMMON, "create index: "+((new Date()).getTime()-date.getTime())+" ms");
+		logger.debug(Module.COMMON, "update index ("+((new Date()).getTime()-update.getTime())+" ms)");
 	}
 	
 	private void cleanup() throws Exception {
@@ -115,7 +128,7 @@ public class HistoryIndex implements ISystemComponent, IChangeListener {
 						HistoryInfo last = entries.get(0); // at least one !
 						HtmlLink link = new HtmlLink(name, Constants.INDEX_NAME+"["+name.hashCode()+"].htm");
 						html.append("<h3>Launch [ "+link.getHtml()+" ] - "+StatusManager.getStatusHtml(last.status)+"</h3>");
-						ArrayList<HistoryInfo> latest = filterHistory(entries, date, DATE_THRESHOLD);
+						ArrayList<HistoryInfo> latest = filterHistory(entries, update, DATE_THRESHOLD);
 						if(latest.size() > 0){
 							html.append(getHistoryHtml(null, latest));
 						}
@@ -230,9 +243,31 @@ public class HistoryIndex implements ISystemComponent, IChangeListener {
 		
 		if(object instanceof History){
 			try{
-				create();
+				update();
 			}catch(Exception e){
 				logger.error(Module.COMMON, e);
+			}
+		}
+	}
+	
+	private class IndexUpdater extends Task {
+
+		public static final long CYCLE = 60 * 60 * 1000; // 1 hour
+
+		public IndexUpdater() {
+			super("IndexUpdater", taskManager);
+			setCyclic(CYCLE);
+		}
+
+		@Override
+		protected void runTask() {
+			
+			if((new Date()).getTime() - update.getTime() >= DATE_THRESHOLD){
+				try{
+					update();
+				}catch(Exception e){
+					logger.error(Module.COMMON, e);
+				}
 			}
 		}
 	}

@@ -113,7 +113,7 @@ public class HttpServer implements IHttpServer {
 		private HttpServer server;
 		
 		public ServerThread(HttpServer server) {
-			super("ServerThread", taskManager);
+			super("HttpServer", taskManager);
 			
 			this.server = server;
 			setCyclic(100);

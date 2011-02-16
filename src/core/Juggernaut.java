@@ -162,6 +162,7 @@ public class Juggernaut extends AbstractSystem {
 			add(registry);
 			index = new HistoryIndex(
 					core.fileManager, 
+					core.taskManager,
 					persistence.history, 
 					logging.logger);
 			add(index);

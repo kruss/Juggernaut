@@ -27,12 +27,13 @@ public class HeapManager implements ISystemComponent, IChangeable {
 		this.logger = logger;
 		runtime = Runtime.getRuntime();
 		heap = new HeapStatus();
+		updater = null;
 		listeners = new ArrayList<IChangeListener>();
 	}
 
 	@Override
 	public void init() throws Exception {
-		if (updater == null) {
+		if(updater == null){
 			updater = new HeapStatusUpdater();
 			updater.asyncRun(0, 0);
 		}
@@ -40,7 +41,7 @@ public class HeapManager implements ISystemComponent, IChangeable {
 
 	@Override
 	public void shutdown() throws Exception {
-		if (updater != null) {
+		if(updater != null){
 			updater.syncStop(1000);
 			updater = null;
 		}

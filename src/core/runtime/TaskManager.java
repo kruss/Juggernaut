@@ -149,7 +149,7 @@ public class TaskManager implements ISystemComponent, IChangeable, IChangeListen
 		public static final long CYCLE = 10 * 1000; // 10 sec
 		
 		public TimeoutTask(TaskManager taskManager) {
-			super("Timeout", taskManager);
+			super("TimeoutTask", taskManager);
 			setCyclic(CYCLE);
 		}
 
