@@ -108,10 +108,13 @@ public class HistoryIndex implements ISystemComponent, IChangeListener {
 			if(names.size() > 0){
 				for(String name : names){
 					try{ 
+						// create launch sub-index
 						ArrayList<HistoryInfo> entries = history.getHistoryInfo(name);
 						createSubIndex(name, entries);
+						// create launch overview
+						HistoryInfo last = entries.get(0); // at least one !
 						HtmlLink link = new HtmlLink(name, Constants.INDEX_NAME+"["+name.hashCode()+"].htm");
-						html.append("<h3>Launch [ "+link.getHtml()+" ]</h3>");
+						html.append("<h3>Launch [ "+link.getHtml()+" ] - "+StatusManager.getStatusHtml(last.status)+"</h3>");
 						ArrayList<HistoryInfo> latest = filterHistory(entries, date, DATE_THRESHOLD);
 						if(latest.size() > 0){
 							html.append(getHistoryHtml(null, latest));
