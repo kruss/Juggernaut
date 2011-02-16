@@ -112,7 +112,6 @@ public class History implements ISystemComponent, IChangeable {
 	
 	public synchronized void add(LaunchHistory entry) throws Exception {
 		
-		entry.init();
 		entries.add(0, entry);
 		dirty = true;
 		save();
