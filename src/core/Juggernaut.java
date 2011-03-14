@@ -1,5 +1,7 @@
 package core;
 
+import java.io.File;
+
 import core.persistence.Cache;
 import core.persistence.Configuration;
 import core.persistence.History;
@@ -23,84 +25,126 @@ import ui.panel.HistoryPanel;
 import ui.panel.LoggerPanel;
 import ui.panel.PreferencePanel;
 import ui.panel.SchedulerPanel;
+import util.SystemTools;
+import util.UiTools;
 
 public class Juggernaut extends AbstractSystem {
-
-	private static Juggernaut juggernaut;
+	
+	private static final String LOCK_FILE = "lock";
+	
+	private static File getLockFile(){
+		return new File(SystemTools.getWorkingDir()+File.separator+LOCK_FILE);
+	}
 	
 	public static void main(String[] args){
 		
 		try{
-			juggernaut = new Juggernaut();
-			juggernaut.init(); 
+			if(!getLockFile().isFile()){
+				Juggernaut juggernaut = new Juggernaut();
+				juggernaut.init(); 
+			}else{
+				throw new Exception("Lock-File at: "+getLockFile().getAbsolutePath());
+			}
 		}catch(Exception e){
-			e.printStackTrace();
+			if(e != ABOARDING){
+				e.printStackTrace();
+				UiTools.errorDialog("Error on STARTUP !!!", e);
+			}else{
+				getLockFile().delete();
+			}
 			System.exit(Constants.PROCESS_NOK);
 		}
 	}
+
+	private Logging logging;
+	private Core core;
+	private Persistence persistence;
+	private Runtime runtime;
+	private UI ui;
 	
-	private LogSystem logging;
-	private CoreSystem core;
-	private PersistenceSystem persistence;
-	private RuntimeSystem runtime;
-	private UISystem ui;
-	
-	private Juggernaut(){
-		showProgress(true);
+	private Juggernaut() throws Exception {
+		setMonitor(new SystemMonitor());
+		
+		logging = new Logging();
+		add(logging);
+		core = new Core();
+		add(core);
+		persistence = new Persistence();
+		add(persistence);
+		runtime = new Runtime();
+		add(runtime);
+		ui = new UI(this);
+		add(ui);
 	}
 	
 	@Override
 	public void init() throws Exception {
 		
-		logging = new LogSystem();
-		add(logging);
-		core = new CoreSystem();
-		add(core);
-		persistence = new PersistenceSystem();
-		add(persistence);
-		runtime = new RuntimeSystem();
-		add(runtime);
-		ui = new UISystem();
-		add(ui);
-		super.init();
+		monitor.startProgress(this, Constants.APP_NAME+" - INIT");
+		try{
+			getLockFile().createNewFile();
+			super.init();
+		}finally{
+			monitor.stopProgress();
+		}
 	}
 
-	public void revert() throws Exception {
+	@Override
+	public void shutdown() throws Exception {
 		
-		if(ui.isInitialized() && persistence.configuration.isDirty()){
-			logging.logger.emph(Module.COMMON, "revert");
-			ui.shutdown();
-			persistence.clear();
-			persistence.init();
-			ui.clear();
-			ui.init();
-			runtime.reverted();
+		monitor.startProgress(this,  Constants.APP_NAME+" - SHUTDOWN");
+		try{
+			super.shutdown();
+		}finally{
+			getLockFile().delete();
+			monitor.stopProgress();
 		}
 	}
 	
+	public void revert() throws Exception {
+		
+		if(
+				ui.isInitialized() && 
+				persistence.configuration.isDirty()
+		){
+			logging.logger.emph(Module.COMMON, "revert");
+			// partly shutdown
+			ui.shutdown();
+			remove(ui);
+			persistence.shutdown();
+			remove(persistence);
+			// partly init
+			persistence = new Persistence();
+			add(persistence);
+			persistence.init();
+			ui = new UI(this);
+			add(ui);
+			ui.init();
+			// update 
+			runtime.reverted();
+		}
+	}
+
 	/** the application's logger */
-	private class LogSystem extends AbstractSystem {
+	private class Logging extends AbstractSystem {
 		
 		public SystemLogger logger;
 		
-		@Override
-		public void init() throws Exception {
+		public Logging() throws Exception {
 			
 			logger = new SystemLogger();
 			add(logger);
-			super.init();
 		}
 	}
 	
 	/** io related components */
-	private class CoreSystem extends AbstractSystem {
+	private class Core extends AbstractSystem {
 		
 		public TaskManager taskManager;
 		public FileManager fileManager;
 		public HeapManager heapManager;
 		
-		@Override
-		public void init() throws Exception {
+		public Core() throws Exception {
 			
 			taskManager = new TaskManager(
 					logging.logger);
@@ -112,19 +156,17 @@ public class Juggernaut extends AbstractSystem {
 					taskManager, 
 					logging.logger);
 			add(heapManager);
-			super.init();
 		}
 	}
 	
 	/** persistence related components */
-	private class PersistenceSystem extends AbstractSystem {
+	private class Persistence extends AbstractSystem {
 		
 		public Configuration configuration;
 		public Cache cache;
 		public History history;
 		
-		@Override
-		public void init() throws Exception {
+		public Persistence() throws Exception {
 			
 			configuration = Configuration.create(
 					core.taskManager,
@@ -141,12 +183,11 @@ public class Juggernaut extends AbstractSystem {
 					core.fileManager, 
 					logging.logger);
 			add(history);
-			super.init();
 		}
 	}
 	
 	/** runtime related components */
-	private class RuntimeSystem extends AbstractSystem {
+	private class Runtime extends AbstractSystem {
 		
 		public Registry registry;
 		public HistoryIndex index;
@@ -155,8 +196,7 @@ public class Juggernaut extends AbstractSystem {
 		public ScheduleManager scheduleManager;
 		public HttpServer httpServer;
 		
-		@Override
-		public void init() throws Exception {
+		public Runtime() throws Exception {
 			
 			registry = new Registry(
 					core.taskManager, 
@@ -193,16 +233,16 @@ public class Juggernaut extends AbstractSystem {
 					launchManager, 
 					logging.logger);
 			add(scheduleManager);
-			super.init();
 		}
 
 		public void reverted() {
 			launchManager.notifyListeners();
+			scheduleManager.notifyListeners();
 		}
 	}
 	
 	/** ui related componets */
-	private class UISystem extends AbstractSystem {
+	private class UI extends AbstractSystem {
 		
 		public ProjectMenu projectMenu;
 		public ToolsMenu toolsMenu;
@@ -214,8 +254,7 @@ public class Juggernaut extends AbstractSystem {
 		public LoggerPanel loggerPanel;
 		public Window window;
 		
-		@Override
-		public void init() throws Exception {
+		public UI(Juggernaut juggernaut) throws Exception {
 			
 			projectMenu = new ProjectMenu(
 					juggernaut, 
@@ -282,7 +321,6 @@ public class Juggernaut extends AbstractSystem {
 					loggerPanel,
 					preferencePanel);
 			add(window);
-			super.init();
 		}
 	}
 }
