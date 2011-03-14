@@ -10,16 +10,20 @@ TASKS
 # create properties option in launch-config overriding runtime properties 
 # make history delete for multi select
 
+# prevent persistent files from being corrupted on shutdown !!!
+
 BUGS
 ----
 
-# serialized versions in persistent files do not update
+# timeout launches remain in launch-manager & do not provide correct status
 
 # after cloning launch all configured property-ids are invalid
 # after restoring a backup all configured property-ids are invalid
 # after restoring a backup all existing build-folders will remain
 
 # history panel with filter set shows strange behave on: delete / filter for legacy names
+
+# serialized versions in persistent files do not update
 
 
 # on continous work-load:

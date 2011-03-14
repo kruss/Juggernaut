@@ -45,7 +45,9 @@ public class Juggernaut extends AbstractSystem {
 	private RuntimeSystem runtime;
 	private UISystem ui;
 	
-	private Juggernaut(){}
+	private Juggernaut(){
+		showProgress(true);
+	}
 	
 	@Override
 	public void init() throws Exception {
