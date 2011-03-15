@@ -8,7 +8,6 @@ import core.launch.repository.SVNClient;
 import core.launch.repository.IRepositoryClient.CheckoutInfo;
 import core.launch.repository.IRepositoryClient.HistoryInfo;
 import core.persistence.Cache;
-import core.persistence.Configuration;
 import core.runtime.TaskManager;
 import core.runtime.logger.ILogConfig.Module;
 
@@ -32,14 +31,13 @@ public class SVNOperation extends AbstractOperation implements IRepositoryOperat
 	public HistoryInfo getHistory(){ return history; }
 	
 	public SVNOperation(
-			Configuration configuration, 
 			Cache cache, 
 			TaskManager 
 			taskManager, 
 			LaunchAgent parent, 
 			SVNOperationConfig config)
 	{
-		super(configuration, cache, taskManager, parent, config);
+		super(cache, taskManager, parent, config);
 		this.config = (SVNOperationConfig) super.config;
 		
 		client = new SVNClient(taskManager,parent.getLogger());

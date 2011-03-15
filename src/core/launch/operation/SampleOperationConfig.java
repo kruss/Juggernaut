@@ -2,7 +2,6 @@ package core.launch.operation;
 
 import core.launch.LaunchAgent;
 import core.persistence.Cache;
-import core.persistence.Configuration;
 import core.runtime.TaskManager;
 import ui.option.Option;
 import ui.option.Option.Type;
@@ -64,11 +63,10 @@ public class SampleOperationConfig extends AbstractOperationConfig {
 	
 	@Override
 	public AbstractOperation createOperation(
-			Configuration configuration, 
 			Cache cache, 
 			TaskManager taskManager, 
 			LaunchAgent parent)
 	{
-		return new SampleOperation(configuration, cache, taskManager, parent, this);
+		return new SampleOperation(cache, taskManager, parent, this);
 	}
 }

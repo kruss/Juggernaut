@@ -9,7 +9,6 @@ import util.StringTools;
 
 import core.launch.LaunchAgent;
 import core.persistence.Cache;
-import core.persistence.Configuration;
 import core.runtime.TaskManager;
 
 
@@ -92,11 +91,10 @@ public class CommandOperationConfig extends AbstractOperationConfig {
 	
 	@Override
 	public AbstractOperation createOperation(
-			Configuration configuration, 
 			Cache cache, 
 			TaskManager taskManager, 
 			LaunchAgent parent)
 	{
-		return new CommandOperation(configuration, cache, taskManager, parent, this);
+		return new CommandOperation(cache, taskManager, parent, this);
 	}
 }

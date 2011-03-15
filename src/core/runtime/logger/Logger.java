@@ -41,9 +41,8 @@ public class Logger implements ILogger, ILogProvider {
 	}
 	public File getLogFile(){ return logfile; }
 	
-	public void setConfig(ILogConfig config){
-		this.config = config;
-	}
+	public void setConfig(ILogConfig config){ this.config = config; }
+	public ILogConfig getConfig(){ return config; }
 	
 	public Logger(Mode mode){
 

@@ -2,7 +2,6 @@ package core.launch.operation;
 
 import core.launch.LaunchAgent;
 import core.persistence.Cache;
-import core.persistence.Configuration;
 import core.runtime.TaskManager;
 import core.runtime.logger.ILogConfig.Module;
 import util.DateTools;
@@ -13,8 +12,8 @@ public class SampleOperation extends AbstractOperation {
 
 	private SampleOperationConfig config;
 	
-	public SampleOperation(Configuration configuration, Cache cache, TaskManager taskManager, LaunchAgent parent, SampleOperationConfig config) {
-		super(configuration, cache, taskManager, parent, config);
+	public SampleOperation(Cache cache, TaskManager taskManager, LaunchAgent parent, SampleOperationConfig config) {
+		super(cache, taskManager, parent, config);
 		this.config = (SampleOperationConfig) super.config;
 	}
 

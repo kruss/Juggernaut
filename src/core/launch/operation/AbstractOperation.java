@@ -10,7 +10,6 @@ import core.launch.data.Artifact;
 import core.launch.data.ResultManager;
 import core.launch.data.StatusManager.Status;
 import core.persistence.Cache;
-import core.persistence.Configuration;
 import core.runtime.TaskManager;
 import core.runtime.logger.Logger;
 import core.runtime.logger.ILogConfig.Module;
@@ -19,7 +18,6 @@ import util.FileTools;
 
 public abstract class AbstractOperation extends LifecycleObject {
 
-	protected Configuration configuration;
 	protected Cache cache;
 	protected LaunchAgent parent;
 	protected TaskManager taskManager;
@@ -32,7 +30,6 @@ public abstract class AbstractOperation extends LifecycleObject {
 	public ResultManager getResultManager(){ return resultManager; }
 
 	public AbstractOperation(
-			Configuration configuration, 
 			Cache cache, 
 			TaskManager taskManager, 
 			LaunchAgent parent, 
@@ -40,7 +37,6 @@ public abstract class AbstractOperation extends LifecycleObject {
 	{
 		super("Opperation::"+config.getUIName()+"::"+config.getId(), taskManager);
 		
-		this.configuration = configuration;
 		this.cache = cache;
 		this.parent = parent;
 		this.taskManager = taskManager;

@@ -7,7 +7,6 @@ import core.launch.LaunchAgent;
 import core.launch.data.Artifact;
 import core.launch.data.StatusManager.Status;
 import core.persistence.Cache;
-import core.persistence.Configuration;
 import core.runtime.TaskManager;
 
 import util.CommandTask;
@@ -17,13 +16,12 @@ public class CommandOperation extends AbstractOperation {
 	private CommandOperationConfig config;
 	
 	public CommandOperation(
-			Configuration configuration, 
 			Cache cache, 
 			TaskManager taskManager, 
 			LaunchAgent parent, 
 			CommandOperationConfig config)
 	{
-		super(configuration, cache, taskManager, parent, config);
+		super(cache, taskManager, parent, config);
 		this.config = (CommandOperationConfig) super.config;
 	}
 

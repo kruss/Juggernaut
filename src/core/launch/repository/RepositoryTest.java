@@ -34,7 +34,7 @@ public class RepositoryTest extends AbstractUITest {
 	
 	private class TestTask extends Task {
 		
-		public static final int TIMEOUT = 30 * 1000; // 30 sec
+		public static final int TIMEOUT = 10 * 1000; // 10 sec
 		
 		private String url;
 		public TestStatus result;

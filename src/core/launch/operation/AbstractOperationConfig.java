@@ -16,7 +16,6 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 
 import core.launch.LaunchAgent;
 import core.persistence.Cache;
-import core.persistence.Configuration;
 import core.runtime.TaskManager;
 import core.runtime.logger.Logger;
 
@@ -103,7 +102,6 @@ public abstract class AbstractOperationConfig implements IOptionInitializer {
 	public abstract String getDescription();
 	public abstract boolean isValid();
 	public abstract AbstractOperation createOperation(
-			Configuration configuration, 
 			Cache cache, 
 			TaskManager taskManager, 
 			LaunchAgent parent);

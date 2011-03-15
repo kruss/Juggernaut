@@ -8,7 +8,6 @@ import util.StringTools;
 
 import core.launch.LaunchAgent;
 import core.persistence.Cache;
-import core.persistence.Configuration;
 import core.runtime.TaskManager;
 
 
@@ -101,11 +100,10 @@ public class EclipseOperationConfig extends AbstractOperationConfig {
 	
 	@Override
 	public AbstractOperation createOperation(
-			Configuration configuration, 
 			Cache cache, 
 			TaskManager taskManager, 
 			LaunchAgent parent)
 	{
-		return new EclipseOperation(configuration, cache, taskManager, parent, this);
+		return new EclipseOperation(cache, taskManager, parent, this);
 	}
 }

@@ -8,7 +8,7 @@ import util.UiTools;
 
 public class SystemMonitor {
 
-	private final static long SYSTEM_DELAY = 1000;
+	private final static long SYSTEM_DELAY = 500;
 	
 	private ProgressMonitor monitor;
 	private int max;

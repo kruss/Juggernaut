@@ -34,6 +34,7 @@ public class LaunchAgent extends LifecycleObject {
 
 	public enum PROPERTY { NAME, FOLDER, START }
 	
+	private Logger logger;
 	private History history;
 	private FileManager fileManager;
 	private LaunchConfig launchConfig;
@@ -42,7 +43,6 @@ public class LaunchAgent extends LifecycleObject {
 	private ArrayList<AbstractOperation> operations;
 	private NotificationManager notificationManager;
 	private LaunchHistory launchHistory;
-	private Logger logger;
 	private boolean aboard;
 	
 	public LaunchHistory getHistory(){ return launchHistory; }
@@ -59,20 +59,21 @@ public class LaunchAgent extends LifecycleObject {
 			String trigger)
 	{
 		super("Launch::"+launchConfig.getName()+"::"+launchConfig.getId(), taskManager);
-		
-		this.fileManager = fileManager;
-		this.history = history;
-		this.launchConfig = launchConfig.clone();
-		this.trigger = trigger;
+
 		logger = new Logger(Mode.FILE);
 		logger.setConfig(configuration.getLogConfig());
+		
+		this.history = history;
+		this.fileManager = fileManager;
+		this.launchConfig = launchConfig.clone();
+		this.trigger = trigger;
 		
 		propertyContainer = new PropertyContainer();
 		
 		operations = new ArrayList<AbstractOperation>();
 		for(AbstractOperationConfig operationConfig : launchConfig.getOperationConfigs()){
 			if(operationConfig.isActive()){
-				AbstractOperation operation = operationConfig.createOperation(configuration, cache, taskManager, this);
+				AbstractOperation operation = operationConfig.createOperation(cache, taskManager, this);
 				operations.add(operation);
 			}
 		}

@@ -224,6 +224,9 @@ public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitialize
 			IHttpServer httpServer,
 			String trigger)
 	{
-		return new LaunchAgent(configuration, cache, history, fileManager, taskManager, smtpClient, httpServer, this, trigger);
+		return new LaunchAgent(
+				configuration, cache, history, fileManager, 
+				taskManager, smtpClient, httpServer, this, trigger
+		);
 	}
 }

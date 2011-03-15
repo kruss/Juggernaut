@@ -8,7 +8,6 @@ import core.launch.repository.RepositoryTest;
 import core.launch.repository.SVNClient;
 import core.launch.repository.IRepositoryClient.Revision;
 import core.persistence.Cache;
-import core.persistence.Configuration;
 import core.runtime.TaskManager;
 
 import ui.option.Option;
@@ -84,11 +83,10 @@ public class SVNOperationConfig extends AbstractOperationConfig {
 	
 	@Override
 	public AbstractOperation createOperation(
-			Configuration configuration, 
 			Cache cache, 
 			TaskManager taskManager, 
 			LaunchAgent parent)
 	{
-		return new SVNOperation(configuration, cache, taskManager, parent, this);
+		return new SVNOperation(cache, taskManager, parent, this);
 	}
 }

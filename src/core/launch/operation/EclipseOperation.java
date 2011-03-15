@@ -7,7 +7,6 @@ import core.launch.LaunchAgent;
 import core.launch.data.Artifact;
 import core.launch.data.StatusManager.Status;
 import core.persistence.Cache;
-import core.persistence.Configuration;
 import core.runtime.TaskManager;
 import core.runtime.logger.ILogConfig.Level;
 import core.runtime.logger.ILogConfig.Module;
@@ -22,13 +21,12 @@ public class EclipseOperation extends AbstractOperation {
 	private EclipseOperationConfig config;
 	
 	public EclipseOperation(
-			Configuration configuration, 
 			Cache cache, 
 			TaskManager taskManager, 
 			LaunchAgent parent, 
 			EclipseOperationConfig config)
 	{
-		super(configuration, cache, taskManager, parent, config);
+		super(cache, taskManager, parent, config);
 		this.config = (EclipseOperationConfig) super.config;
 	}
 	
@@ -106,7 +104,7 @@ public class EclipseOperation extends AbstractOperation {
 				arguments.add("-cdt.exclude \""+pattern+"\"");
 			}
 		}
-		if(configuration.getLogConfig().getLogLevel(Module.COMMAND) == Level.DEBUG){
+		if(logger.getConfig().getLogLevel(Module.COMMAND) == Level.DEBUG){
 			arguments.add("-cdt.verbose");
 		}
 		// vm args
