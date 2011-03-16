@@ -7,7 +7,6 @@ import java.util.ArrayList;
 
 import ui.option.IEditorDelegate;
 import ui.option.OptionEditor;
-import util.UiTools;
 
 public class PropertyInfo {
 
@@ -20,7 +19,7 @@ public class PropertyInfo {
 		this.properties = properties;
 	}
 
-	public void setInfo(OptionEditor editor){
+	public void setInfo(final OptionEditor editor){
 		
 		for(final String property : properties){
 			editor.addEditorDelegate(new IEditorDelegate(){
@@ -30,7 +29,7 @@ public class PropertyInfo {
 				public void perform() {
 					Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 					clipboard.setContents(new StringSelection(getPropertyString(property)), null);
-					UiTools.infoDialog("Copied ["+property+"] to Clipboard");
+					editor.status("Copy ["+property+"] to Clipboard");
 				}
 			});
 		}

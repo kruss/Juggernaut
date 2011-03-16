@@ -33,15 +33,18 @@ import javax.swing.event.ChangeListener;
 
 
 
+import ui.IStatusClient;
+import ui.IStatusProvider;
 import util.IChangeListener;
 import util.IChangeable;
 import util.StringTools;
 
-public class OptionEditor extends JPanel implements IChangeable {
+public class OptionEditor extends JPanel implements IChangeable, IStatusProvider {
 
 	private static final long serialVersionUID = 1L;
 
 	private ArrayList<IChangeListener> listeners;
+	private IStatusClient client;
 	private OptionContainer container;
 	private IOptionInitializer initializer;
 	private boolean groups;
@@ -51,6 +54,7 @@ public class OptionEditor extends JPanel implements IChangeable {
 	public OptionEditor(){
 		
 		listeners = new ArrayList<IChangeListener>();
+		client = null;
 		container = null;
 		groups = true;
 		
@@ -127,6 +131,18 @@ public class OptionEditor extends JPanel implements IChangeable {
 	@Override
 	public void notifyListeners(){
 		for(IChangeListener listener : listeners){ listener.changed(this); }
+	}
+	
+	@Override
+	public void setStatusClient(IStatusClient client) {
+		this.client = client; 
+	}
+
+	@Override
+	public void status(String text) {
+		if(client != null){
+			client.status(text);
+		}
 	}
 	
 	private JPanel createPanel(Option option) {

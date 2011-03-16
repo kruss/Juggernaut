@@ -24,6 +24,7 @@ public class PreferencePanel extends JPanel implements ISystemComponent, IChange
 	private IHttpServer httpServer;
 	
 	private OptionEditor optionEditor;
+	public OptionEditor getEditor(){ return optionEditor; }
 	
 	public PreferencePanel(
 			Configuration configuration,

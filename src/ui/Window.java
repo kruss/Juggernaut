@@ -118,8 +118,9 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 		httpServer.addListener(this);
 		taskManager.addListener(this);
 		heapManager.addListener(this);
-		launchManager.setClient(this);
-		configPanel.setClient(this);
+		launchManager.setStatusClient(this);
+		configPanel.setStatusClient(this);
+		preferencePanel.getEditor().setStatusClient(this);
 	}
 	
 	@Override

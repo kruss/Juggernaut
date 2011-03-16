@@ -184,10 +184,13 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 	}
 	
 	@Override
-	public void setClient(IStatusClient client){ 
+	public void setStatusClient(IStatusClient client){ 
 		this.client = client; 
-		operationPanel.setClient(client);
-		triggerPanel.setClient(client);
+		launchPanel.getEditor().setStatusClient(client);
+		operationPanel.setStatusClient(client);
+		operationPanel.getEditor().setStatusClient(client);
+		triggerPanel.setStatusClient(client);
+		triggerPanel.getEditor().setStatusClient(client);
 	}
 	@Override
 	public void status(String text){

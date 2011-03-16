@@ -52,6 +52,7 @@ public class TriggerConfigPanel extends JPanel implements IChangeListener, IStat
 	private JButton moveTriggerDown;
 	private AbstractTriggerConfig currentConfig;
 	
+	public OptionEditor getEditor(){ return optionEditor; }
 	public AbstractTriggerConfig getCurrentConfig(){ return currentConfig; }
 	
 	public TriggerConfigPanel(
@@ -126,7 +127,9 @@ public class TriggerConfigPanel extends JPanel implements IChangeListener, IStat
 	}
 	
 	@Override
-	public void setClient(IStatusClient client){ this.client = client; }
+	public void setStatusClient(IStatusClient client){ 
+		this.client = client; 
+	}
 	@Override
 	public void status(String text){
 		if(client != null){

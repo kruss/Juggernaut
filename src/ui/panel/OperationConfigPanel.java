@@ -54,6 +54,7 @@ public class OperationConfigPanel extends JPanel implements IChangeListener, ISt
 	private JButton moveOperationDown;
 	private AbstractOperationConfig currentConfig;
 	
+	public OptionEditor getEditor(){ return optionEditor; }
 	public AbstractOperationConfig getCurrentConfig(){ return currentConfig; }
 	
 	public OperationConfigPanel(
@@ -128,7 +129,9 @@ public class OperationConfigPanel extends JPanel implements IChangeListener, ISt
 	}
 	
 	@Override
-	public void setClient(IStatusClient client){ this.client = client; }
+	public void setStatusClient(IStatusClient client){ 
+		this.client = client;
+	}
 	@Override
 	public void status(String text){
 		if(client != null){

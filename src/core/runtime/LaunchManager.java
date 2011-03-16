@@ -59,7 +59,7 @@ public class LaunchManager implements ISystemComponent, ILifecycleListener, ICha
 	}
 	
 	@Override
-	public void setClient(IStatusClient client){ this.client = client; }
+	public void setStatusClient(IStatusClient client){ this.client = client; }
 	@Override
 	public void status(String text){
 		if(client != null){
