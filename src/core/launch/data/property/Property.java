@@ -2,6 +2,8 @@ package core.launch.data.property;
 
 public class Property implements Comparable<Property> {
 	
+	public static final String GENERIC_ID = "00000000-0000-0000-0000-000000000000";
+	
 	public String id; 
 	public String key; 
 	public String value;

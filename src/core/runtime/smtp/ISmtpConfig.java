@@ -6,6 +6,6 @@ public interface ISmtpConfig {
 
 	public boolean isNotification();
 	public String getSmtpServer();
-	public String getSmtpAddress();
+	public String getHostAddress();
 	public ArrayList<String> getAdministratorAddresses();
 }

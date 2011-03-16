@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 
 
+import ui.dialog.PropertyInfo;
 import ui.option.IOptionInitializer;
 import ui.option.Option;
 import ui.option.OptionContainer;
@@ -23,6 +24,7 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 import core.Constants;
 import core.ISystemComponent;
 import core.launch.LaunchConfig;
+import core.launch.data.property.Property;
 import core.launch.operation.AbstractOperationConfig;
 import core.launch.trigger.AbstractTriggerConfig;
 import core.runtime.FileManager;
@@ -62,13 +64,13 @@ implements
 	}
 	
 	public enum GROUPS {
-		GENERAL, NOTIFICATION, EXTRA
+		GENERAL, HTTP, SMTP, RUNTIME, TOOL
 	}
 	
 	public enum OPTIONS {
 		SCHEDULER, SCHEDULER_INTERVAL, MAXIMUM_AGENTS, MAXIMUM_HISTORY, SERVER, HTTP_PORT, 
-		NOTIFICATION, ADMINISTRATORS, SMTP_SERVER, SMTP_ADDRESS, 
-		UNLOCKER
+		NOTIFICATION, ADMINISTRATORS, SMTP_SERVER, HOST_ADDRESS, 
+		PROPERTY, UNLOCKER
 	}
 	
 	public static final String OUTPUT_FILE = "Configuration.xml";
@@ -116,37 +118,42 @@ implements
 				Type.INTEGER, 100, 0, 1000
 		));
 		optionContainer.setOption(new Option(
-				GROUPS.GENERAL.toString(),
+				GROUPS.HTTP.toString(),
 				OPTIONS.SERVER.toString(), "Run the HTTP-Server",
 				Type.BOOLEAN, false
 		));
 		optionContainer.setOption(new Option(
-				GROUPS.GENERAL.toString(),
+				GROUPS.HTTP.toString(),
 				OPTIONS.HTTP_PORT.toString(), "The HTTP-Server port", 
 				Type.INTEGER, 80, 1, 1024
 		));
 		optionContainer.setOption(new Option(
-				GROUPS.NOTIFICATION.toString(),
+				GROUPS.SMTP.toString(),
 				OPTIONS.NOTIFICATION.toString(), "Perform eMail-notifications",
 				Type.BOOLEAN, false
 		));
 		optionContainer.setOption(new Option(
-				GROUPS.NOTIFICATION.toString(),
+				GROUPS.SMTP.toString(),
 				OPTIONS.ADMINISTRATORS.toString(), "List of administrator eMails (comma seperated)", 
 				Type.TEXT, ""
 		));
 		optionContainer.setOption(new Option(
-				GROUPS.NOTIFICATION.toString(),
+				GROUPS.SMTP.toString(),
 				OPTIONS.SMTP_SERVER.toString(), "The SMTP-Server for notifications", 
 				Type.TEXT_SMALL, ""
 		));
 		optionContainer.setOption(new Option(
-				GROUPS.NOTIFICATION.toString(),
-				OPTIONS.SMTP_ADDRESS.toString(), "The SMTP-Address for notifications", 
+				GROUPS.SMTP.toString(),
+				OPTIONS.HOST_ADDRESS.toString(), "The HOST-Address for notifications", 
 				Type.TEXT_SMALL, "SMTP@"+Constants.APP_NAME
 		));
 		optionContainer.setOption(new Option(
-				GROUPS.EXTRA.toString(),
+				GROUPS.RUNTIME.toString(),
+				OPTIONS.PROPERTY.toString(), "System-Properties (linewise <key=value>, commented with '//')",
+				Type.TEXT_AREA, ""
+		));
+		optionContainer.setOption(new Option(
+				GROUPS.TOOL.toString(),
 				OPTIONS.UNLOCKER.toString(), "Command to free locked ressources", 
 				Type.TEXT, ""
 		));
@@ -182,7 +189,15 @@ implements
 		);
 	}
 	@Override
-	public void initEditor(OptionEditor editor) {}
+	public void initEditor(OptionEditor editor) {
+		
+		ArrayList<String> keys = new ArrayList<String>();
+		for(Property property : getSystemProperties()){
+			keys.add(property.key);
+		}
+		PropertyInfo info = new PropertyInfo(Property.GENERIC_ID, keys);
+		info.setInfo(editor);
+	}
 	
 	/** answers if scheduler is active */
 	public boolean isScheduler(){
@@ -225,8 +240,8 @@ implements
 	}
 	
 	@Override
-	public String getSmtpAddress() {
-		return optionContainer.getOption(OPTIONS.SMTP_ADDRESS.toString()).getStringValue();
+	public String getHostAddress() {
+		return optionContainer.getOption(OPTIONS.HOST_ADDRESS.toString()).getStringValue();
 	}
 	
 	@Override
@@ -234,6 +249,21 @@ implements
 		
 		String value = optionContainer.getOption(OPTIONS.ADMINISTRATORS.toString()).getStringValue();
 		return StringTools.split(value, ", ");
+	}
+	
+	public ArrayList<Property> getSystemProperties() {
+		
+		String value = optionContainer.getOption(OPTIONS.PROPERTY.toString()).getStringValue();
+		ArrayList<String> entries = StringTools.split(value, "\\n", "//");
+		ArrayList<Property> properties = new ArrayList<Property>();
+		for(String entry : entries){
+			String[] seg = entry.split("=");
+			if(seg.length == 2){
+				Property property = new Property(Property.GENERIC_ID, seg[0].toUpperCase(), seg[1]);
+				properties.add(property);
+			}
+		}
+		return properties;
 	}
 	
 	@Override

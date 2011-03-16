@@ -69,6 +69,7 @@ public class LaunchAgent extends LifecycleObject {
 		this.trigger = trigger;
 		
 		propertyContainer = new PropertyContainer();
+		propertyContainer.setProperties(configuration.getSystemProperties());
 		
 		operations = new ArrayList<AbstractOperation>();
 		for(AbstractOperationConfig operationConfig : launchConfig.getOperationConfigs()){

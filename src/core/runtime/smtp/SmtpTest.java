@@ -24,7 +24,7 @@ public class SmtpTest extends AbstractUITest {
 			if(address != null && !address.isEmpty()){
 				
 				Mail mail = new Mail("Test");
-				mail.from = client.getConfig().getSmtpAddress();
+				mail.from = client.getConfig().getHostAddress();
 				mail.to.add(address);
 				mail.content = "Send by "+Constants.APP_NAME+"!";
 				

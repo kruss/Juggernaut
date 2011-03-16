@@ -58,7 +58,7 @@ public class Notification {
 	public Artifact performNotification() {
 		
 		Mail mail = new Mail(getSubject());
-		mail.from = smtpClient.getConfig().getSmtpAddress();
+		mail.from = smtpClient.getConfig().getHostAddress();
 		mail.to = getToAdresses();
 		mail.cc = getCcAdresses();
 		mail.content = getContent();
