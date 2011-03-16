@@ -59,6 +59,7 @@ public class PreferencePanel extends JPanel implements ISystemComponent, IChange
 	public void changed(Object object) {
 		
 		if(object == optionEditor){
+			optionEditor.refreshPopup();
 			applyChanges();
 			configuration.setDirty(true);
 			configuration.notifyListeners();

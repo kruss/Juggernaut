@@ -43,6 +43,7 @@ public class OptionEditor extends JPanel implements IChangeable {
 
 	private ArrayList<IChangeListener> listeners;
 	private OptionContainer container;
+	private IOptionInitializer initializer;
 	private boolean groups;
 	private JPanel centerPanel;
 	private JPopupMenu popup;
@@ -62,6 +63,7 @@ public class OptionEditor extends JPanel implements IChangeable {
 		
 		removeAll();
 		this.container = container;
+		this.initializer = initializer;
 		centerPanel = new JPanel();
 		centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
 		if(container != null){
@@ -345,5 +347,13 @@ public class OptionEditor extends JPanel implements IChangeable {
 			}
 		});
 		option.parent.add(button, BorderLayout.EAST);
+	}
+	
+	public void refreshPopup(){
+		
+		if(initializer != null){
+			popup.removeAll();
+			initializer.initEditor(this);
+		}
 	}
 }
