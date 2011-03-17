@@ -141,7 +141,9 @@ public class LaunchAgent extends LifecycleObject {
 			FileTools.createFolder(folder.getAbsolutePath());
 		}
 		
-		// set properties
+		// apply system-properties
+		launchConfig.getOptionContainer().expand(propertyContainer);
+		// set launch-properties
 		propertyContainer.setProperty(
 				new Property(launchConfig.getId(), PROPERTY.NAME.toString(), launchConfig.getName())
 		);
