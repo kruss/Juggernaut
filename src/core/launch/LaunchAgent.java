@@ -129,7 +129,7 @@ public class LaunchAgent extends LifecycleObject {
 				FileTools.deleteFolder(folder.getAbsolutePath());
 			}catch(Exception e){
 				if(fileManager.hasUnlocker()){
-					logger.log(Module.COMMON, "Unable to delete ("+e.getMessage()+") => Retry with unlocker");
+					logger.error(Module.COMMON, e.getMessage());
 					fileManager.deleteWithUnlocker(folder, logger);
 				}else{
 					throw e;

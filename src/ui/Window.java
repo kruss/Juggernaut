@@ -91,8 +91,8 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 		centerPanel.setTabPlacement(JTabbedPane.TOP);
 		centerPanel.add(configPanel, "Configuration");
 		centerPanel.add(schedulerPanel, "Scheduler");
-		centerPanel.add(historyPanel, "History");
 		centerPanel.add(loggerPanel, "Logger");
+		centerPanel.add(historyPanel, "History");
 		centerPanel.add(preferencePanel, "Preferences");
 		
 		statusLabel = new JLabel();

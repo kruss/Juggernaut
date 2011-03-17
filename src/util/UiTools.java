@@ -40,10 +40,10 @@ public class UiTools {
 	
 	public static boolean confirmDialog(String text) {
 		
-		int option = UiTools.optionDialog(
-				text, UiTools.YES_NO_OPTIONS
+		int option = optionDialog(
+				text, YES_NO_OPTIONS
 		);
-		return option == UiTools.YES_OPTION;
+		return option == YES_OPTION;
 	}
 	
 	public static boolean confirmDialog(String text, Exception e) {

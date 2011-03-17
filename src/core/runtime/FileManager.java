@@ -102,21 +102,23 @@ public class FileManager implements ISystemComponent {
 	public void deleteWithUnlocker(File file, Logger logger) throws Exception {
 		
 		if(hasUnlocker()){
+			logger.log(Module.COMMON, "unlock: "+file.getAbsolutePath());
 			String command = config.getUnlocker();
 			String arguments = file.getAbsolutePath();
-			String path = file.getParentFile().getAbsolutePath();
+			String path = SystemTools.getWorkingDir();
 			CommandTask task = new CommandTask(
 					command, arguments, path, taskManager, logger
 			);
 			task.syncRun(0, IToolConfig.UNLOCKER_TIMEOUT);
-			logger.debug(Module.COMMON, "delete: "+file.getAbsolutePath());
+			
+			logger.log(Module.COMMON, "delete: "+file.getAbsolutePath());
 			if(file.isFile()){
 				FileTools.deleteFile(file.getAbsolutePath());
 			}else if(file.isDirectory()){
 				FileTools.deleteFolder(file.getAbsolutePath());
 			}
 		}else{
-			throw new Exception("No unlocker available");
+			throw new Exception("Missing Unlocker");
 		}
 	}
 }

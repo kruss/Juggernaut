@@ -154,7 +154,7 @@ implements
 		));
 		optionContainer.setOption(new Option(
 				GROUPS.TOOL.toString(),
-				OPTIONS.UNLOCKER.toString(), "Command to free locked ressources", 
+				OPTIONS.UNLOCKER.toString(), "Command receiving locked ressource-path as argument", 
 				Type.TEXT, ""
 		));
 		

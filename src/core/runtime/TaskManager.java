@@ -99,7 +99,7 @@ public class TaskManager implements ISystemComponent, IChangeable, IChangeListen
 			for(int i=tasks.size()-1; i>=0; i--){
 				Task task = tasks.get(i);
 				if(task.isExpired()){
-						logger.log(Module.TASK, "Timeout dedected for Task [ "+task.getThreadName()+" <"+task.getThreadId()+"> ]");
+						logger.log(Module.TASK, "Timeout for Task [ "+task.getThreadName()+" <"+task.getThreadId()+"> ]");
 						task.asyncStop(1000);
 						tasks.remove(task);
 						notifyListeners();
