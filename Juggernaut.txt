@@ -1,0 +1,10 @@
+
+	>>> JUGGERNAUT (0.5.3) <<<
+
+[21.03.2011 14:21:53] RUN SCHEDULER
+[21.03.2011 14:21:53] Check Launch [cppdemo]
+[21.03.2011 14:21:53] (COMMAND) command: svn info svn://10.40.38.84/cppdemo/trunk
+[21.03.2011 14:21:53] Launch [cppdemo] is IDLE
+[21.03.2011 14:21:53] Check Launch [test-1]
+[21.03.2011 14:21:53] Launch [test-1] is TRIGGERD: Intervall time elapsed
+[21.03.2011 14:21:53] scheduled 1 / 2

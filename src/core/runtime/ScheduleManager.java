@@ -135,7 +135,7 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 			}
 		}
 		setUpdated(new Date());
-		logger.emph(Module.COMMON, "Scheduled "+count+" / "+launchConfigs.size());
+		logger.log(Module.COMMON, "scheduled "+count+" / "+launchConfigs.size());
 	}
 	
 	private boolean checkSchedules(LaunchConfig launchConfig) {
