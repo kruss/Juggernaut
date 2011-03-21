@@ -193,7 +193,7 @@ public class HistoryPanel extends JPanel implements ISystemComponent, IChangeLis
 					entry.trigger,
 					entry.start != null ? DateTools.getTextDate(entry.start) : "",
 					(entry.start != null && entry.end != null) ? 
-							DateTools.getTimeDiff(entry.start, entry.end)+ " '" : "",
+							DateTools.getDiffMinutes(entry.start, entry.end)+ " '" : "",
 					entry.status.toString()
 				};
 				tableModel.addRow(rowData);

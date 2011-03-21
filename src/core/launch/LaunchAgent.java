@@ -182,7 +182,7 @@ public class LaunchAgent extends LifecycleObject {
 					aboard = true;
 				}
 			}catch(InterruptedException e){
-				logger.emph(Module.COMMON, "Interrupted");
+				logger.emph(Module.COMMON, "Interrupted <"+getThreadId()+">");
 				statusManager.setStatus(Status.CANCEL);
 				aboard = true;
 				operation.getStatusManager().setStatus(Status.CANCEL);
@@ -201,7 +201,7 @@ public class LaunchAgent extends LifecycleObject {
 				(operation.getConfig().isCritical() ? " - CRITICAL" : "")
 		);
 		if(!aboard){
-			operation.syncRun(0, 0);
+			operation.syncRun(0, timeout);
 		}else{
 			operation.getStatusManager().setStatus(Status.CANCEL);
 		}

@@ -37,7 +37,7 @@ public abstract class AbstractHistoryPage extends AbstractHtmlPage {
 			list.addEntry("Start", DateTools.getTextDate(history.start));
 		}
 		if(history.start != null && history.end != null){
-			list.addEntry("Time", DateTools.getTimeDiff(history.start, history.end)+" '");
+			list.addEntry("Time", DateTools.getDiffMinutes(history.start, history.end)+" '");
 		}
 		return list.getHtml();
 	}

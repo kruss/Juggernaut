@@ -120,17 +120,22 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 	private void checkSchedules() {
 		
 		ArrayList<LaunchConfig> launchConfigs = getLaunches();
+		logger.emph(Module.COMMON, "Run Scheduler");
+		int count = 0;
 		for(LaunchConfig launchConfig : launchConfigs){
 			if(launchManager.isReady()){
-				logger.log(Module.COMMON, "Checking Launch ["+launchConfig.getName()+"]");
+				logger.log(Module.COMMON, "Check Launch ["+launchConfig.getName()+"]");
 				if(!checkSchedules(launchConfig)){
 					logger.log(Module.COMMON, "Launch ["+launchConfig.getName()+"] is IDLE");
+				}else{
+					count++;
 				}
 			}else{
 				break;
 			}
 		}
 		setUpdated(new Date());
+		logger.emph(Module.COMMON, "Scheduled "+count+" / "+launchConfigs.size());
 	}
 	
 	private boolean checkSchedules(LaunchConfig launchConfig) {
@@ -140,7 +145,7 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 			if(triggerConfig.isReady()){
 				logger.debug(
 						Module.COMMON, 
-						"Checking Trigger ["+triggerConfig.getName()+"]"
+						"Check Trigger ["+triggerConfig.getName()+"]"
 				);
 				AbstractTrigger trigger = triggerConfig.createTrigger(
 						configuration, cache, taskManager, logger

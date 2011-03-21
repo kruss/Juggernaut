@@ -64,8 +64,8 @@ public class CommandTask extends Task {
 					this, "ERR", process.getErrorStream(), taskManager, logger
 			);    
 			
-			outputStream.asyncRun(0, 0);
-			errorStream.asyncRun(0, 0);
+			outputStream.asyncRun(0, timeout);
+			errorStream.asyncRun(0, timeout);
 			try{
 				process.waitFor();
 				result = process.exitValue();

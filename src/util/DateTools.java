@@ -67,9 +67,13 @@ public class DateTools {
 	}
 	
 	/** get time difference in minutes */
-	public static int getTimeDiff(Date start, Date end) {
-
+	public static int getDiffMinutes(Date start, Date end) {
 		return (int)((end.getTime() - start.getTime()) / (1000 * 60));
+	}
+	
+	/** get time difference in seconds */
+	public static int getDiffSeconds(Date start, Date end) {
+		return (int)((end.getTime() - start.getTime()) / (1000));
 	}
 	
 	public static long millis2sec(long millis){

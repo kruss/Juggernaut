@@ -42,10 +42,13 @@ public class TaskManager implements ISystemComponent, IChangeable, IChangeListen
 
 		timeout.syncStop(1000);
 		synchronized(tasks){
-			for(int i=tasks.size()-1; i>=0; i--){
-				Task task = tasks.get(i);
-				task.syncStop(1000);
-				tasks.remove(task);
+			if(tasks.size() > 0){
+				logger.debug(Module.TASK, "stopping "+tasks.size()+" tasks");
+				for(int i=tasks.size()-1; i>=0; i--){
+					Task task = tasks.get(i);
+					tasks.remove(task);
+					task.asyncStop(0);
+				}
 			}
 		}
 	}

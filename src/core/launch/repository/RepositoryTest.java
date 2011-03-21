@@ -9,6 +9,8 @@ import ui.dialog.AbstractUITest;
 import util.Task;
 
 public class RepositoryTest extends AbstractUITest {
+	
+	public static final int TIMEOUT = 5 * 1000; // 5 sec
 
 	private TaskManager taskManager;
 	private IRepositoryClient client;
@@ -25,7 +27,7 @@ public class RepositoryTest extends AbstractUITest {
 		
 		if(!url.isEmpty()){			
 			TestTask task = new TestTask(getTestName(), taskManager, url);
-			task.syncRun(0, TestTask.TIMEOUT);
+			task.syncRun(0, TIMEOUT);
 			return task.result;
 		}else{
 			return new TestStatus(Status.ERROR, "Missing URL");
@@ -33,8 +35,6 @@ public class RepositoryTest extends AbstractUITest {
 	}
 	
 	private class TestTask extends Task {
-		
-		public static final int TIMEOUT = 10 * 1000; // 10 sec
 		
 		private String url;
 		public TestStatus result;

@@ -17,7 +17,7 @@ import util.SystemTools;
 
 
 public class EclipseOperation extends AbstractOperation {
-
+	
 	private EclipseOperationConfig config;
 	
 	public EclipseOperation(
@@ -63,7 +63,7 @@ public class EclipseOperation extends AbstractOperation {
 		);
 		
 		try{
-			task.syncRun(0, 0);
+			task.syncRun(0, timeout);
 		}finally{
 			if(task.hasSucceded()){
 				statusManager.setStatus(Status.SUCCEED);

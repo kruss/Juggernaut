@@ -6,7 +6,7 @@ import java.util.Date;
 import core.runtime.TaskManager;
 
 public abstract class Task implements IChangeable {
-
+	
 	public enum State { INITIAL, START, RUNNING, IDLE, FINISH, INTERRUPT }
 	
 	private TaskManager taskManager;
@@ -15,10 +15,10 @@ public abstract class Task implements IChangeable {
 
 	private State state;
 	private long delay;
-	private long cycle;
-	private long timeout;
+	protected long cycle;
+	protected long timeout;
 	private Date start;
-
+	
 	public Task(String name, TaskManager taskManager){
 		
 		this.taskManager = taskManager;

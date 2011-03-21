@@ -51,7 +51,7 @@ public class LaunchHistoryPage extends AbstractHistoryPage {
 				);
 				table.addContentCell(
 						(operation.start != null && operation.end != null) ? 
-								DateTools.getTimeDiff(operation.start, operation.end)+ " '" : ""
+								DateTools.getDiffMinutes(operation.start, operation.end)+ " '" : ""
 				);
 				table.addContentCell(StatusManager.getStatusHtml(operation.status));
 			}

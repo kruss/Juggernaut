@@ -202,7 +202,7 @@ public class HistoryIndex implements ISystemComponent, IChangeListener {
 			table.addContentCell("<b>"+link.getHtml()+"</b>");
 			table.addContentCell(entry.trigger);
 			table.addContentCell(DateTools.getTextDate(entry.start));
-			table.addContentCell(DateTools.getTimeDiff(entry.start, entry.end)+ " '");
+			table.addContentCell(DateTools.getDiffMinutes(entry.start, entry.end)+ " '");
 			table.addContentCell(StatusManager.getStatusHtml(entry.status));
 		}
 		return table.getHtml();
@@ -231,7 +231,7 @@ public class HistoryIndex implements ISystemComponent, IChangeListener {
 		int total = 0;
 		for(HistoryInfo entry : entries){
 			if(entry.status != Status.CANCEL){
-				time += DateTools.getTimeDiff(entry.start, entry.end);
+				time += DateTools.getDiffMinutes(entry.start, entry.end);
 				total++;
 			}
 		}

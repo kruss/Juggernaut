@@ -12,7 +12,7 @@ import core.runtime.TaskManager;
 import util.CommandTask;
 
 public class CommandOperation extends AbstractOperation {
-
+	
 	private CommandOperationConfig config;
 	
 	public CommandOperation(
@@ -44,7 +44,7 @@ public class CommandOperation extends AbstractOperation {
 		);
 		
 		try{
-			task.syncRun(0, 0);
+			task.syncRun(0, timeout);
 		}finally{
 			if(task.hasSucceded()){
 				statusManager.setStatus(Status.SUCCEED);
