@@ -120,7 +120,7 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 	private void checkSchedules() {
 		
 		ArrayList<LaunchConfig> launchConfigs = getLaunches();
-		logger.emph(Module.COMMON, "Run Scheduler");
+		logger.debug(Module.COMMON, "Running Scheduler");
 		int count = 0;
 		for(LaunchConfig launchConfig : launchConfigs){
 			if(launchManager.isReady()){
@@ -135,7 +135,7 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 			}
 		}
 		setUpdated(new Date());
-		logger.log(Module.COMMON, "scheduled "+count+" / "+launchConfigs.size());
+		logger.debug(Module.COMMON, "Scheduled: "+count+"/"+launchConfigs.size());
 	}
 	
 	private boolean checkSchedules(LaunchConfig launchConfig) {
