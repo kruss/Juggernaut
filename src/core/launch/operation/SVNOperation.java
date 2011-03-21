@@ -13,6 +13,7 @@ import core.runtime.logger.ILogConfig.Module;
 
 public class SVNOperation extends AbstractOperation implements IRepositoryOperation {
 
+	public static final int HISTORY_TIMEOUT = 120 * 1000; // 120 sec
 	public enum PROPERTY { URL, REVISION };
 	
 	private SVNClient client;
@@ -87,7 +88,7 @@ public class SVNOperation extends AbstractOperation implements IRepositoryOperat
 
 		lastRevision = getLastRevision();
 		
-		CheckoutInfo checkout = client.checkout(url, revision, parent.getFolder());
+		CheckoutInfo checkout = client.checkout(url, revision, parent.getFolder(), timeout);
 		currentRevision = checkout.revision;
 		logger.log(Module.COMMAND, "Checkout with Revision: "+currentRevision);
 
@@ -102,10 +103,10 @@ public class SVNOperation extends AbstractOperation implements IRepositoryOperat
 	private void svnHistory() throws Exception {
 		
 		if(lastRevision != null && !lastRevision.equals(currentRevision)){
-			String startRevision = client.getNextRevision(lastRevision);
+			String startRevision = client.getNextRevision(lastRevision, HISTORY_TIMEOUT);
 			String endRevision = currentRevision;
 			
-			history = client.getHistory(config.getUrl(), startRevision, endRevision);
+			history = client.getHistory(config.getUrl(), startRevision, endRevision, HISTORY_TIMEOUT);
 			logger.log(Module.COMMAND, "History has "+history.commits.size()+" Committs");
 			
 			Artifact commitArtifact = new Artifact("History", history.output, "txt");

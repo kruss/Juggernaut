@@ -49,7 +49,7 @@ public class RepositoryTest extends AbstractUITest {
 		@Override
 		protected void runTask() {
 			try{
-				RevisionInfo info = client.getInfo(url);
+				RevisionInfo info = client.getInfo(url, timeout);
 				result = new TestStatus(Status.SUCCEED, info.toString());
 			}catch(Exception e){
 				result = new TestStatus(e);

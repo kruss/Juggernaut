@@ -6,11 +6,11 @@ import java.util.Date;
 import util.DateTools;
 
 public interface IRepositoryClient {
-
+	
 	public enum Revision { HEAD };
 	
 	/** get the current revision-info of url */
-	public RevisionInfo getInfo(String url) throws Exception;
+	public RevisionInfo getInfo(String url, long timeout) throws Exception;
 	
 	public class RevisionInfo {
 		
@@ -24,7 +24,7 @@ public interface IRepositoryClient {
 	}
 
 	/** checkout url of given revision to destination-path and returns the checkout-info */
-	public CheckoutInfo checkout(String url, String revision, String destination) throws Exception;
+	public CheckoutInfo checkout(String url, String revision, String destination, long timeout) throws Exception;
 	
 	public class CheckoutInfo {
 		
@@ -37,7 +37,7 @@ public interface IRepositoryClient {
 	}
 	
 	/** get history of url within interval: [revision1, revision2] */
-	public HistoryInfo getHistory(String url, String revision1, String revision2) throws Exception;
+	public HistoryInfo getHistory(String url, String revision1, String revision2, long timeout) throws Exception;
 
 	public class HistoryInfo {
 		
@@ -68,5 +68,5 @@ public interface IRepositoryClient {
 	}
 	
 	/** get the next revision to the specified one */
-	public String getNextRevision(String revision) throws Exception;
+	public String getNextRevision(String revision, long timeout) throws Exception;
 }

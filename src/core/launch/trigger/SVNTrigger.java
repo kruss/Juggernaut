@@ -13,6 +13,7 @@ import core.runtime.logger.ILogConfig.Module;
 
 public class SVNTrigger extends AbstractTrigger {
 
+	public static final int INFO_TIMEOUT = 30 * 1000; // 30 sec
 	private enum PROPERTY { REVISION }
 	
 	private SVNClient client;
@@ -43,7 +44,7 @@ public class SVNTrigger extends AbstractTrigger {
 	public TriggerStatus isTriggered() {
 		
 		try{
-			info = client.getInfo(config.getUrl());
+			info = client.getInfo(config.getUrl(), INFO_TIMEOUT);
 			String lastRevision = getLastRevision();
 			Date currentDate = new Date();
 			

@@ -16,10 +16,6 @@ import util.SystemTools;
 
 public class SVNClient implements IRepositoryClient {
 	
-	public static final int INFO_TIMEOUT 			= 30 * 1000; 			// 30 sec
-	public static final int CHECKOUT_TIMEOUT 		= 120 * 60 * 1000; 		// 120 min
-	public static final int HISTORY_TIMEOUT 		= 180 * 1000; 			// 3 min
-	
 	private TaskManager taskManager;
 	private Logger logger;
 	
@@ -29,7 +25,7 @@ public class SVNClient implements IRepositoryClient {
 	}
 	
 	@Override
-	public RevisionInfo getInfo(String url) throws Exception {
+	public RevisionInfo getInfo(String url, long timeout) throws Exception {
 
 		String name = "SVN Info";
 		String path =  SystemTools.getWorkingDir();
@@ -38,7 +34,7 @@ public class SVNClient implements IRepositoryClient {
 
 		// perform task
 		CommandTask task = new CommandTask(command, arguments, path, taskManager, logger);
-		task.syncRun(0, INFO_TIMEOUT);
+		task.syncRun(0, timeout);
 		if(!task.hasSucceded()){
 			throw new Exception(name+" failed: "+task.getResult());
 		}
@@ -73,7 +69,7 @@ public class SVNClient implements IRepositoryClient {
 	}
 
 	@Override
-	public CheckoutInfo checkout(String url, String revision, String destination) throws Exception {
+	public CheckoutInfo checkout(String url, String revision, String destination, long timeout) throws Exception {
 		
 		String name = "SVN Checkout";
 		String path =  SystemTools.getWorkingDir();
@@ -82,7 +78,7 @@ public class SVNClient implements IRepositoryClient {
 
 		// perform task
 		CommandTask task = new CommandTask(command, arguments, path, taskManager, logger);
-		task.syncRun(0, CHECKOUT_TIMEOUT);
+		task.syncRun(0, timeout);
 		if(!task.hasSucceded()){
 			throw new Exception(name+" failed: "+task.getResult());
 		}
@@ -106,7 +102,7 @@ public class SVNClient implements IRepositoryClient {
 	}
 
 	@Override
-	public HistoryInfo getHistory(String url, String revision1, String revision2) throws Exception {
+	public HistoryInfo getHistory(String url, String revision1, String revision2, long timeout) throws Exception {
 
 		String name = "SVN History";
 		String path =  SystemTools.getWorkingDir();
@@ -115,7 +111,7 @@ public class SVNClient implements IRepositoryClient {
 
 		// perform task
 		CommandTask task = new CommandTask(command, arguments, path, taskManager, logger);
-		task.syncRun(0, HISTORY_TIMEOUT);
+		task.syncRun(0, timeout);
 		if(!task.hasSucceded()){
 			throw new Exception(name+" failed: "+task.getResult());
 		}
@@ -147,7 +143,7 @@ public class SVNClient implements IRepositoryClient {
 	}
 	
 	@Override
-	public String getNextRevision(String revision) throws Exception {
+	public String getNextRevision(String revision, long timeout) throws Exception {
 
 		if(revision.equals(Revision.HEAD.toString())){
 			return Revision.HEAD.toString();

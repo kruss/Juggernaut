@@ -25,6 +25,7 @@ import util.SystemTools;
 public class SVNClientTest {
 
 	private static final String SVN_REPOSITORY = "svn://10.40.38.84:3690/cppdemo/trunk";
+	public static final int SVN_TIMEOUT = 30 * 1000; // 30 sec
 	
 	private Logger logger;
 	private TaskManager taskManager;
@@ -61,7 +62,7 @@ public class SVNClientTest {
 		logger.info(Module.COMMON, "SVN Info");
 		
 		try{
-			client.getInfo(SVN_REPOSITORY);
+			client.getInfo(SVN_REPOSITORY, SVN_TIMEOUT);
 		}catch(Exception e){
 			logger.error(Module.COMMON, e);
 			fail(e.getMessage());
@@ -75,7 +76,7 @@ public class SVNClientTest {
 		String revision = Revision.HEAD.toString();
 		
 		try{
-			client.checkout(SVN_REPOSITORY, revision, folder.getAbsolutePath());
+			client.checkout(SVN_REPOSITORY, revision, folder.getAbsolutePath(), SVN_TIMEOUT);
 		}catch(Exception e){
 			logger.error(Module.COMMON, e);
 			fail(e.getMessage());
@@ -88,7 +89,7 @@ public class SVNClientTest {
 		logger.info(Module.COMMON, "SVN History");
 		
 		try{
-			client.getHistory(SVN_REPOSITORY, "0", Revision.HEAD.toString());
+			client.getHistory(SVN_REPOSITORY, "0", Revision.HEAD.toString(), SVN_TIMEOUT);
 		}catch(Exception e){
 			logger.error(Module.COMMON, e);
 			fail(e.getMessage());
@@ -98,8 +99,8 @@ public class SVNClientTest {
 	@Test public void getNextRevision() {
 		
 		try{
-			assertTrue(client.getNextRevision(Revision.HEAD.toString()).equals(Revision.HEAD.toString()));
-			assertTrue(client.getNextRevision("0").equals("1"));
+			assertTrue(client.getNextRevision(Revision.HEAD.toString(), SVN_TIMEOUT).equals(Revision.HEAD.toString()));
+			assertTrue(client.getNextRevision("0", SVN_TIMEOUT).equals("1"));
 		}catch(Exception e) {
 			logger.error(Module.COMMON, e);
 			fail(e.getMessage());
