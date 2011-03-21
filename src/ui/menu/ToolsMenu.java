@@ -4,6 +4,7 @@ package ui.menu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
 
 import javax.swing.JMenu;
@@ -14,6 +15,8 @@ import javax.swing.JMenuItem;
 import ui.dialog.CacheMonitor;
 import ui.dialog.TaskMonitor;
 import util.DateTools;
+import util.FileTools;
+import util.IChangeListener;
 import util.SystemTools;
 import util.UiTools;
 
@@ -29,13 +32,16 @@ import core.runtime.FileManager;
 import core.runtime.HeapManager;
 import core.runtime.Registry;
 import core.runtime.TaskManager;
+import core.runtime.logger.ErrorManager;
 import core.runtime.logger.Logger;
+import core.runtime.logger.ErrorManager.ErrorInfo;
 
-public class ToolsMenu extends JMenu implements ISystemComponent {
+public class ToolsMenu extends JMenu implements ISystemComponent, IChangeListener {
 
 	private static final long serialVersionUID = 1L;
 
 	private Juggernaut juggernaut; 
+	private ErrorManager errorManager;
 	private Configuration configuration;
 	private Registry registry;
 	private FileManager fileManager;
@@ -46,6 +52,8 @@ public class ToolsMenu extends JMenu implements ISystemComponent {
 	private JMenuItem printConfig;
 	private JMenuItem showTaskMonitor;
 	private JMenuItem showCacheMonitor;
+	private JMenuItem showErrors;
+	private JMenuItem clearErrors;
 	private JMenuItem cleanupHeap;
 	private Logger logger;
 	
@@ -54,6 +62,7 @@ public class ToolsMenu extends JMenu implements ISystemComponent {
 	
 	public ToolsMenu(
 			Juggernaut juggernaut,
+			ErrorManager errorManager,
 			Configuration configuration,
 			Cache cache,
 			Registry registry,
@@ -65,6 +74,7 @@ public class ToolsMenu extends JMenu implements ISystemComponent {
 		super("Tools");
 		
 		this.juggernaut = juggernaut;
+		this.errorManager = errorManager;
 		this.configuration = configuration;
 		this.registry = registry;
 		this.fileManager = fileManager;
@@ -110,11 +120,32 @@ public class ToolsMenu extends JMenu implements ISystemComponent {
 		});
 		monitorMenu.add(showCacheMonitor);
 		
-		cleanupHeap = new JMenuItem("Cleanup Heap");
+		JMenu errorMenu = new JMenu("Error");
+		add(errorMenu);
+		
+		showErrors = new JMenuItem("Show");
+		showErrors.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){ showErrors(); }
+		});
+		errorMenu.add(showErrors);
+		
+		clearErrors = new JMenuItem("Clear");
+		clearErrors.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){ clearErrors(); }
+		});
+		errorMenu.add(clearErrors);
+		
+		JMenu cleanupMenu = new JMenu("Cleanup");
+		add(cleanupMenu);
+		
+		cleanupHeap = new JMenuItem("Heap");
 		cleanupHeap.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){ cleanupHeap(); }
 		});
-		add(cleanupHeap);
+		cleanupMenu.add(cleanupHeap);
+		
+		errorManager.addListener(this);
+		toggleErrorUI();
 	}
 	
 	@Override
@@ -201,7 +232,45 @@ public class ToolsMenu extends JMenu implements ISystemComponent {
 		cacheMonitor.showDialog(true);
 	}
 	
+	private void showErrors(){
+		
+		try{
+			String path = fileManager.getTempFolder()+File.separator+"errors.txt";
+			StringBuilder info = new StringBuilder();
+			ArrayList<ErrorInfo> errors = errorManager.getInfo();
+			for(ErrorInfo error : errors){
+				info.append("### "+error.title+" ###\n\n"+error.message+"\n");
+			}
+			FileTools.writeFile(path, info.toString().replaceAll("\n", "\r\n"), false);
+			SystemTools.openBrowser(path);
+		}catch(Exception e){
+			UiTools.errorDialog(e);
+		}
+	}
+	
+	private void clearErrors(){
+		errorManager.clear();
+	}
+	
 	private void cleanupHeap(){
 		heapManager.cleanup();
+	}
+	
+	@Override
+	public void changed(Object object) {
+		
+		if(object == errorManager){
+			toggleErrorUI();
+		}
+	}
+
+	private void toggleErrorUI() {
+		if(errorManager.getErrorCount() > 0){
+			showErrors.setEnabled(true);
+			clearErrors.setEnabled(true);
+		}else{
+			showErrors.setEnabled(false);
+			clearErrors.setEnabled(false);
+		}
 	}
 }

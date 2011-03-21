@@ -13,6 +13,7 @@ import core.runtime.Registry;
 import core.runtime.ScheduleManager;
 import core.runtime.TaskManager;
 import core.runtime.http.HttpServer;
+import core.runtime.logger.ErrorManager;
 import core.runtime.logger.SystemLogger;
 import core.runtime.logger.ILogConfig.Module;
 import core.runtime.smtp.SmtpClient;
@@ -128,11 +129,15 @@ public class Juggernaut extends AbstractSystem {
 	/** the application's logger */
 	private class Logging extends AbstractSystem {
 		
+		public ErrorManager errorManager;
 		public SystemLogger logger;
 		
 		public Logging() throws Exception {
 			
-			logger = new SystemLogger();
+			errorManager = new ErrorManager();
+			add(errorManager);
+			
+			logger = new SystemLogger(errorManager);
 			add(logger);
 		}
 	}
@@ -223,6 +228,7 @@ public class Juggernaut extends AbstractSystem {
 					logging.logger);
 			add(launchManager);
 			scheduleManager = new ScheduleManager(
+					logging.errorManager,
 					persistence.configuration, 
 					persistence.cache,
 					persistence.history, 
@@ -264,6 +270,7 @@ public class Juggernaut extends AbstractSystem {
 			add(projectMenu);
 			toolsMenu = new ToolsMenu(
 					juggernaut,
+					logging.errorManager,
 					persistence.configuration,
 					persistence.cache, 
 					runtime.registry,
@@ -275,6 +282,7 @@ public class Juggernaut extends AbstractSystem {
 			helpMenu = new HelpMenu(core.fileManager);
 			add(helpMenu);
 			configPanel = new ConfigPanel(
+					logging.errorManager,
 					persistence.configuration, 
 					persistence.cache,
 					persistence.history, 
@@ -306,6 +314,7 @@ public class Juggernaut extends AbstractSystem {
 			add(loggerPanel);
 			window = new Window(
 					logging.logger, 
+					logging.errorManager,
 					core.taskManager, 
 					core.heapManager, 
 					persistence.configuration, 

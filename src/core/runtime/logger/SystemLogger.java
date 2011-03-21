@@ -10,8 +10,8 @@ import util.SystemTools;
 
 public class SystemLogger extends Logger implements ISystemComponent {
 	
-	public SystemLogger() {
-		super(Mode.FILE_AND_CONSOLE);
+	public SystemLogger(ErrorManager errorManager) {
+		super(errorManager, Mode.FILE_AND_CONSOLE);
 	}
 
 	@Override

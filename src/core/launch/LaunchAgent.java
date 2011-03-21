@@ -22,6 +22,7 @@ import core.persistence.History;
 import core.runtime.FileManager;
 import core.runtime.TaskManager;
 import core.runtime.http.IHttpServer;
+import core.runtime.logger.ErrorManager;
 import core.runtime.logger.Logger;
 import core.runtime.logger.ILogConfig.Module;
 import core.runtime.logger.Logger.Mode;
@@ -48,6 +49,7 @@ public class LaunchAgent extends LifecycleObject {
 	public LaunchHistory getHistory(){ return launchHistory; }
 	
 	public LaunchAgent(
+			ErrorManager errorManager,
 			Configuration configuration, 
 			Cache cache,
 			History history, 
@@ -60,7 +62,7 @@ public class LaunchAgent extends LifecycleObject {
 	{
 		super("Launch::"+launchConfig.getName()+"::"+launchConfig.getId(), taskManager);
 
-		logger = new Logger(Mode.FILE);
+		logger = new Logger(errorManager, Mode.FILE);
 		logger.setConfig(configuration.getLogConfig());
 		
 		this.history = history;

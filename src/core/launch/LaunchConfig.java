@@ -24,6 +24,7 @@ import core.persistence.History;
 import core.runtime.FileManager;
 import core.runtime.TaskManager;
 import core.runtime.http.IHttpServer;
+import core.runtime.logger.ErrorManager;
 import core.runtime.smtp.ISmtpClient;
 
 
@@ -215,6 +216,7 @@ public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitialize
 	}
 	
 	public LaunchAgent createLaunch(
+			ErrorManager errorManager,
 			Configuration configuration, 
 			Cache cache,
 			History history, 
@@ -225,7 +227,7 @@ public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitialize
 			String trigger)
 	{
 		return new LaunchAgent(
-				configuration, cache, history, fileManager, 
+				errorManager, configuration, cache, history, fileManager, 
 				taskManager, smtpClient, httpServer, this, trigger
 		);
 	}

@@ -33,7 +33,7 @@ public class SVNClientTest {
 	private File folder;
 	
 	public SVNClientTest(){
-		logger = new Logger(Mode.CONSOLE);
+		logger = new Logger(null, Mode.CONSOLE);
 		taskManager = new TaskManager(logger);
 		client = new SVNClient(taskManager, logger);
 		folder = new File(SystemTools.getWorkingDir()+File.separator+(new Date()).getTime()); 

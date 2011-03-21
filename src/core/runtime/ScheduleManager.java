@@ -20,6 +20,7 @@ import core.persistence.Configuration;
 import core.persistence.History;
 import core.runtime.LaunchManager.LaunchStatus;
 import core.runtime.http.IHttpServer;
+import core.runtime.logger.ErrorManager;
 import core.runtime.logger.Logger;
 import core.runtime.logger.ILogConfig.Module;
 import core.runtime.smtp.ISmtpClient;
@@ -28,6 +29,7 @@ import core.runtime.smtp.ISmtpClient;
 /** checks the configured launches for triggers to be fired */
 public class ScheduleManager implements ISystemComponent, IChangeable {
 
+	private ErrorManager errorManager;
 	private Configuration configuration;
 	private Cache cache;
 	private History history;
@@ -42,6 +44,7 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 	private ArrayList<IChangeListener> listeners;
 	
 	public ScheduleManager(
+			ErrorManager errorManager,
 			Configuration configuration,
 			Cache cache,
 			History history,
@@ -52,7 +55,7 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 			LaunchManager launchManager, 
 			Logger logger
 	){
-		
+		this.errorManager = errorManager;
 		this.configuration = configuration;
 		this.cache = cache;
 		this.history = history;
@@ -155,7 +158,8 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 					if(!launched)
 					{
 						LaunchAgent launch = launchConfig.createLaunch(
-								configuration, cache, history, fileManager, taskManager, smtpClient, httpServer, triggerStatus.message
+								errorManager, configuration, cache, history, fileManager, 
+								taskManager, smtpClient, httpServer, triggerStatus.message
 						);
 						LaunchStatus launchStatus = launchManager.runLaunch(launch);
 						if(launchStatus.launched){

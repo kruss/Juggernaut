@@ -21,6 +21,7 @@ public class Logger implements ILogger, ILogProvider {
 	
 	public enum Mode { FILE, CONSOLE, FILE_AND_CONSOLE }
 	
+	private ErrorManager errorManager;
 	private Mode mode;
 	private File logfile;
 	private long logfileMax;
@@ -44,8 +45,9 @@ public class Logger implements ILogger, ILogProvider {
 	public void setConfig(ILogConfig config){ this.config = config; }
 	public ILogConfig getConfig(){ return config; }
 	
-	public Logger(Mode mode){
+	public Logger(ErrorManager errorManager, Mode mode){
 
+		this.errorManager = errorManager;
 		this.mode = mode;
 		config = null;
 		logfile = null;
@@ -79,7 +81,6 @@ public class Logger implements ILogger, ILogProvider {
 		}
 	}
 	
-    @Override
     public String getBuffer(){ 
     	StringBuilder text = new StringBuilder();
     	for(String log : buffer){
@@ -87,7 +88,7 @@ public class Logger implements ILogger, ILogProvider {
     	}
     	return text.toString();
     }
-	
+    
 	private enum Type { DEBUG, NORMAL, EMPHASISED, ERROR, INFO }
 	
 	@Override
@@ -123,7 +124,8 @@ public class Logger implements ILogger, ILogProvider {
     private synchronized void createLog(Module module, Level level, String text, Type type) {
 
     	if(isLogging(module, level)){
-	    	String time = "["+DateTools.getTextDate(new Date())+"] ";
+    		Date date = new Date();
+	    	String time = "["+DateTools.getTextDate(date)+"] ";
 	    	String info = (module != Module.COMMON) ? "("+module.toString()+") " : "";
 	    	String log;
 	    	
@@ -147,6 +149,9 @@ public class Logger implements ILogger, ILogProvider {
 			}
 			notifyListeners(log);
 			buffer(log);
+			if(type == Type.ERROR && errorManager != null){
+				errorManager.add(date, module, text);
+			}
     	}
 	}
 

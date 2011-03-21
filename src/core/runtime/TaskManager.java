@@ -70,6 +70,12 @@ public class TaskManager implements ISystemComponent, IChangeable, IChangeListen
 		logger.error(Module.TASK, e);
 	}
 	
+	public int getTaskCount() {
+		synchronized(tasks){
+			return tasks.size();
+		}
+	}
+	
 	/** register a task for timeout control */
 	public void register(Task task) {
 		

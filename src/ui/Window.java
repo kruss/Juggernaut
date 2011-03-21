@@ -36,8 +36,8 @@ import core.runtime.LaunchManager;
 import core.runtime.ScheduleManager;
 import core.runtime.TaskManager;
 import core.runtime.HeapManager.HeapStatus;
-import core.runtime.TaskManager.TaskInfo;
 import core.runtime.http.IHttpServer;
+import core.runtime.logger.ErrorManager;
 import core.runtime.logger.Logger;
 import core.runtime.logger.ILogConfig.Module;
 
@@ -46,6 +46,7 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 	private static final long serialVersionUID = 1L;
 	
 	private Logger logger;
+	private ErrorManager errorManager;
 	private TaskManager taskManager;
 	private HeapManager heapManager;
 	private Configuration configuration;
@@ -58,6 +59,7 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 	
 	public Window(
 			Logger logger,
+			ErrorManager errorManager,
 			TaskManager taskManager,
 			HeapManager heapManager,
 			Configuration configuration,
@@ -74,6 +76,7 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 			PreferencePanel preferencePanel)
 	{
 		this.logger = logger;
+		this.errorManager = errorManager;
 		this.taskManager = taskManager;
 		this.heapManager = heapManager;
 		this.configuration = configuration;
@@ -113,6 +116,7 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 		setLocation(100, 100);
 		setTitle();
 		
+		errorManager.addListener(this);
 		configuration.addListener(this);
 		scheduleManager.addListener(this);
 		httpServer.addListener(this);
@@ -171,7 +175,10 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 			setTitle();
 		}
 		
-		if(object == scheduleManager || object == httpServer || object == taskManager || object == heapManager){
+		if(
+				object == errorManager || object == scheduleManager || object == httpServer || 
+				object == taskManager || object == heapManager
+		){
 			setInfo();
 		}
 	}
@@ -179,10 +186,10 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 	private void setInfo() {
 		
 		ArrayList<String> infos = new ArrayList<String>();
-		infos.add("Scheduler "+(scheduleManager.isRunning() ? "ON" : "OFF"));
+		infos.add("Schedule "+(scheduleManager.isRunning() ? "ON" : "OFF"));
 		infos.add("Server "+(httpServer.isRunning() ? "ON" : "OFF"));
-		ArrayList<TaskInfo> tasks = taskManager.getInfo();
-		infos.add("Task "+tasks.size());
+		infos.add("Task "+taskManager.getTaskCount());
+		infos.add("Error "+errorManager.getErrorCount());
 		HeapStatus heap = heapManager.getHeapStatus();
 		long MB = 1024 * 1024;
 		infos.add("Heap "+Math.round(heap.usedMemory / MB)+"/"+Math.round(heap.maxMemory / MB));

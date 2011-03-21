@@ -39,6 +39,7 @@ import core.runtime.Registry;
 import core.runtime.TaskManager;
 import core.runtime.LaunchManager.LaunchStatus;
 import core.runtime.http.IHttpServer;
+import core.runtime.logger.ErrorManager;
 import core.runtime.logger.Logger;
 import core.runtime.logger.ILogConfig.Module;
 import core.runtime.smtp.ISmtpClient;
@@ -47,6 +48,7 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 
 	private static final long serialVersionUID = 1L;
 
+	private ErrorManager errorManager;
 	private Configuration configuration; 
 	private Cache cache;
 	private History history;
@@ -76,6 +78,7 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 	public LaunchConfig getCurrentConfig(){ return currentConfig; }
 	
 	public ConfigPanel(
+			ErrorManager errorManager,
 			Configuration configuration, 
 			Cache cache,
 			History history,
@@ -87,6 +90,7 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 			Registry registry,
 			Logger logger)
 	{
+		this.errorManager = errorManager;
 		this.configuration = configuration;
 		this.cache = cache;
 		this.history = history;
@@ -386,7 +390,8 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 				try{
 					LaunchConfig config = configuration.getLaunchConfigs().get(index);
 					LaunchAgent launch = config.createLaunch(
-							configuration, cache, history, fileManager, taskManager, smtpClient, httpServer, AbstractTrigger.USER_TRIGGER
+							errorManager, configuration, cache, history, fileManager, 
+							taskManager, smtpClient, httpServer, AbstractTrigger.USER_TRIGGER
 					);
 					LaunchStatus status = launchManager.runLaunch(launch);
 					if(!status.launched){
