@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 
 
+import ui.dialog.OptionEditorDialog;
 import ui.dialog.PropertyInfo;
 import ui.option.IOptionInitializer;
 import ui.option.Option;
@@ -29,6 +30,7 @@ import core.launch.operation.AbstractOperationConfig;
 import core.launch.trigger.AbstractTriggerConfig;
 import core.runtime.FileManager;
 import core.runtime.IToolConfig;
+import core.runtime.MaintenanceConfig;
 import core.runtime.TaskManager;
 import core.runtime.http.HttpTest;
 import core.runtime.http.IHttpConfig;
@@ -84,6 +86,7 @@ implements
 	private String version;
 	private OptionContainer optionContainer;
 	private ArrayList<LaunchConfig> launchConfigs;
+	private MaintenanceConfig maintenanceConfig;
 	private LogConfig logConfig;
 
 	public Configuration( 
@@ -159,6 +162,7 @@ implements
 		));
 		
 		launchConfigs = new ArrayList<LaunchConfig>();
+		maintenanceConfig = new MaintenanceConfig();
 		logConfig = new LogConfig();
 		listeners = new ArrayList<IChangeListener>();
 		this.path = path;
@@ -177,6 +181,17 @@ implements
 	
 	@Override
 	public void initOptions(OptionContainer container) {
+		
+		OptionEditor.setOptionDelegate(
+				container.getOption(OPTIONS.SCHEDULER.toString()),
+				new OptionEditorDialog("Advanced", maintenanceConfig.getOptionContainer(), new IChangeListener(){
+					@Override
+					public void changed(Object object) {
+							maintenanceConfig.setDirty(true);
+							notifyListeners();
+					} 
+				})
+		);
 		
 		OptionEditor.setOptionDelegate(
 				container.getOption(OPTIONS.HTTP_PORT.toString()),
@@ -283,6 +298,7 @@ implements
 	public String getVersion(){ return version; }
 	public OptionContainer getOptionContainer(){ return optionContainer; }
 	public ArrayList<LaunchConfig> getLaunchConfigs(){ return launchConfigs; }
+	public MaintenanceConfig getMaintenanceConfig(){ return maintenanceConfig; }
 	public LogConfig getLogConfig() { return logConfig; }
 	public String getPath(){ return path; }
 	
@@ -290,7 +306,7 @@ implements
 	public boolean isDirty(){ 
 		if(dirty){ 
 			return true; 
-		}else if(logConfig.isDirty()){
+		}else if(maintenanceConfig.isDirty() || logConfig.isDirty()){
 			return true;
 		}else{
 			for(LaunchConfig launchConfig : launchConfigs){
@@ -322,6 +338,7 @@ implements
 			}
 		}
 		configuration.dirty = false;
+		configuration.maintenanceConfig.setDirty(false);
 		configuration.logConfig.setDirty(false);
 		return configuration;
 	}
@@ -336,6 +353,7 @@ implements
 			for(LaunchConfig launchConfig : launchConfigs){
 				launchConfig.setDirty(false);
 			}
+			maintenanceConfig.setDirty(false);
 			logConfig.setDirty(false);
 			dirty = false;
 			notifyListeners();
@@ -373,6 +391,8 @@ implements
 			}
 		}
 		html.append("<hr>");
+		html.append("<h2>Maintenance</h2>");
+		html.append(maintenanceConfig.getOptionContainer().toHtml());
 		html.append("<h2>Logging</h2>");
 		html.append(logConfig.getOptionContainer().toHtml());
 		return html.toString();

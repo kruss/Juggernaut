@@ -238,7 +238,11 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 
 		@Override
 		protected void runTask() {
-			checkSchedules();
+			if(!configuration.getMaintenanceConfig().isMaintenanceToday(new Date())){
+				checkSchedules();
+			}else{
+				logger.debug(Module.COMMON, "Scheduler IDLE");
+			}
 			setCycle();
 		}
 	}
