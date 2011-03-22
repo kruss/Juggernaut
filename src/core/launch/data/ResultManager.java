@@ -1,6 +1,7 @@
 package core.launch.data;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import core.Result;
 import core.Result.Resolution;
@@ -58,7 +59,12 @@ public class ResultManager {
 		}else{
 			html.append("<b>"+result.name+"</b>\n");
 		}
+		ArrayList<String> keys = new ArrayList<String>();
 		for(String key : result.values.keySet()){
+			keys.add(key);
+		}
+		Collections.sort(keys);
+		for(String key : keys){
 			String value = result.values.get(key);
 			html.append("<br>- <i>"+key+": "+value+"</i>\n");
 		}
