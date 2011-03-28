@@ -76,7 +76,7 @@ public class EclipseOperation extends AbstractOperation {
 		}
 	}
 
-	private ArrayList<String> getArguments() {
+	private ArrayList<String> getArguments() throws Exception {
 		
 		ArrayList<String> arguments = new ArrayList<String>();
 		// eclipse args
@@ -86,6 +86,14 @@ public class EclipseOperation extends AbstractOperation {
 		// cdt-builder args
 		arguments.add("-cdt.builder");
 		arguments.add("-cdt.import");
+		if(!config.getPreferencePath().isEmpty()){
+			File preferences = new File(config.getPreferencePath());
+			if(preferences.isFile()){
+				arguments.add("-cdt.preferences \""+preferences.getCanonicalPath()+"\"");
+			}else{
+				throw new Exception("invalid path: "+preferences.getAbsolutePath());
+			}
+		}
 		if(config.isCleanBuild()){
 			arguments.add("-cdt.clean");
 		}

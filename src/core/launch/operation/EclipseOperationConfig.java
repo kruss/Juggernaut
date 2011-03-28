@@ -16,7 +16,7 @@ public class EclipseOperationConfig extends AbstractOperationConfig {
 	public static final String OPERATION_NAME = "Eclipse";
 
 	public enum OPTIONS {
-		ECLIPSE, BUILD, EXCLUDE, CLEAN, STRICT, HEAP
+		ECLIPSE, BUILD, EXCLUDE, CLEAN, STRICT, HEAP, PREFERENCES
 	}
 	
 	public EclipseOperationConfig(){
@@ -50,6 +50,11 @@ public class EclipseOperationConfig extends AbstractOperationConfig {
 				GROUPS.SETTINGS.toString(),
 				OPTIONS.HEAP.toString(), "Set the HEAP size for the Eclipse VM (MB)", 
 				Type.INTEGER, 128, 64, 640
+		));
+		optionContainer.setOption(new Option(
+				GROUPS.SETTINGS.toString(),
+				OPTIONS.PREFERENCES.toString(), "Optional path to a preference file (epf)", 
+				Type.TEXT, ""
 		));
 	}
 	
@@ -91,6 +96,10 @@ public class EclipseOperationConfig extends AbstractOperationConfig {
 	/** get the HEAP size for the Eclipse VM (MB) */
 	public int getHeapSize(){
 		return optionContainer.getOption(OPTIONS.HEAP.toString()).getIntegerValue();
+	}
+	
+	public String getPreferencePath(){ 
+		return optionContainer.getOption(OPTIONS.PREFERENCES.toString()).getStringValue(); 
 	}
 	
 	@Override
