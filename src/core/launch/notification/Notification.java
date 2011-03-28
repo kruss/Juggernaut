@@ -316,9 +316,11 @@ public class Notification {
 	
 	private boolean isCommitterStatusValid(){
 		
+		Status lastStatus = previous != null ? previous.status : Status.UNDEFINED;
 		Status currentStatus = launch.getStatusManager().getStatus();
-		Status lastStatus = previous != null ? previous.status : null;
-		return currentStatus != Status.FAILURE && (lastStatus == null || lastStatus != Status.FAILURE);
+		return 
+			(lastStatus == Status.SUCCEED || lastStatus == Status.ERROR) && 
+			(currentStatus == Status.SUCCEED || currentStatus == Status.ERROR);
 	}
 	
 	private ArrayList<String> getAdministratorAdresses() {
