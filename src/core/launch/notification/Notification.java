@@ -318,9 +318,14 @@ public class Notification {
 		
 		Status lastStatus = previous != null ? previous.status : Status.UNDEFINED;
 		Status currentStatus = launch.getStatusManager().getStatus();
-		return 
-			(lastStatus == Status.SUCCEED || lastStatus == Status.ERROR) && 
-			(currentStatus == Status.SUCCEED || currentStatus == Status.ERROR);
+		
+		if(lastStatus == Status.SUCCEED && currentStatus == Status.ERROR){
+			return true;
+		}else if(lastStatus == Status.ERROR && currentStatus == Status.ERROR){
+			return true;
+		}else{
+			return false;
+		}
 	}
 	
 	private ArrayList<String> getAdministratorAdresses() {
