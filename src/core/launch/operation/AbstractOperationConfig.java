@@ -106,6 +106,7 @@ public abstract class AbstractOperationConfig implements IOptionInitializer {
 			TaskManager taskManager, 
 			LaunchAgent parent);
 	
+	/** clone configuration as it is */
 	public AbstractOperationConfig clone(){
 		
 		XStream xstream = new XStream(new DomDriver());

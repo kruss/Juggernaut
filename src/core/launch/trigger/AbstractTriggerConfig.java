@@ -94,6 +94,7 @@ public abstract class AbstractTriggerConfig implements IOptionInitializer {
 			TaskManager taskManager, 
 			Logger logger);
 	
+	/** clone configuration as it is */
 	public AbstractTriggerConfig clone(){
 		
 		XStream xstream = new XStream(new DomDriver());

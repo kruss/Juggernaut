@@ -192,6 +192,7 @@ public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitialize
 		return name.compareTo(o.getName());
 	}
 	
+	/** clone configuration as it is */
 	public LaunchConfig clone(){
 		
 		XStream xstream = new XStream(new DomDriver());
@@ -200,16 +201,17 @@ public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitialize
 		return config;
 	}
 	
+	/** clone configuration with new id (recursive) */
 	public LaunchConfig duplicate(){
 		
 		LaunchConfig config = this.clone();
 		config.id = UUID.randomUUID().toString();
 		config.name = this.getName()+" (Copy)";
 		config.dirty = true;
-		for(AbstractOperationConfig operatioConfig : operations){
+		for(AbstractOperationConfig operatioConfig : config.getOperationConfigs()){
 			operatioConfig.setId(UUID.randomUUID().toString());
 		}
-		for(AbstractTriggerConfig triggerConfig : triggers){
+		for(AbstractTriggerConfig triggerConfig : config.getTriggerConfigs()){
 			triggerConfig.setId(UUID.randomUUID().toString());
 		}
 		return config;
