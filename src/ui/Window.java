@@ -26,6 +26,7 @@ import ui.panel.SchedulerPanel;
 import util.DateTools;
 import util.IChangeListener;
 import util.StringTools;
+import util.SystemTools;
 import util.UiTools;
 
 import core.Constants;
@@ -151,11 +152,8 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 	
 	public void setTitle(){
 		
-		if(configuration.isDirty()){
-			setTitle(Constants.APP_FULL_NAME+" *");
-		}else{
-			setTitle(Constants.APP_FULL_NAME);
-		}
+		String title = Constants.APP_FULL_NAME+" - "+SystemTools.getWorkingDir()+(configuration.isDirty() ? " *" : "");
+		setTitle(title);
 	}
 	
 	public void setStatus(String text){
