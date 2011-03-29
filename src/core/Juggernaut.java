@@ -106,23 +106,29 @@ public class Juggernaut extends AbstractSystem {
 		
 		if(
 				ui.isInitialized() && 
-				persistence.configuration.isDirty()
+				persistence.configuration.isDirty() &&
+				!runtime.launchManager.isBusy()
 		){
 			logging.logger.emph(Module.COMMON, "revert");
-			// partly shutdown
+			// shutdown
 			ui.shutdown();
-			remove(ui);
+			 remove(ui);
+			runtime.shutdown();
+			 remove(runtime);
 			persistence.shutdown();
-			remove(persistence);
-			// partly init
+			 remove(persistence);
+			// init
 			persistence = new Persistence();
-			add(persistence);
-			persistence.init();
+			 add(persistence);
+			 persistence.init();
+			runtime = new Runtime();
+			 add(runtime);
+			 runtime.init();
 			ui = new UI(this);
-			add(ui);
-			ui.init();
-			// update 
-			runtime.reverted();
+			 add(ui);
+			 ui.init();
+		}else{
+			throw new Exception("Not valid state for revert");
 		}
 	}
 
@@ -240,11 +246,6 @@ public class Juggernaut extends AbstractSystem {
 					logging.logger);
 			add(scheduleManager);
 		}
-
-		public void reverted() {
-			launchManager.notifyListeners();
-			scheduleManager.notifyListeners();
-		}
 	}
 	
 	/** ui related componets */
@@ -277,6 +278,7 @@ public class Juggernaut extends AbstractSystem {
 					core.taskManager,
 					core.fileManager, 
 					core.heapManager,
+					runtime.launchManager,
 					logging.logger);
 			add(toolsMenu);
 			helpMenu = new HelpMenu(core.fileManager);

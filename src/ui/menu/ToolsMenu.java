@@ -30,6 +30,7 @@ import core.persistence.Cache;
 import core.persistence.Configuration;
 import core.runtime.FileManager;
 import core.runtime.HeapManager;
+import core.runtime.LaunchManager;
 import core.runtime.Registry;
 import core.runtime.TaskManager;
 import core.runtime.logger.ErrorManager;
@@ -46,6 +47,7 @@ public class ToolsMenu extends JMenu implements ISystemComponent, IChangeListene
 	private Registry registry;
 	private FileManager fileManager;
 	private HeapManager heapManager;
+	private LaunchManager launchManager;
 	
 	private JMenuItem backupConfig;
 	private JMenuItem restoreConfig;
@@ -69,6 +71,7 @@ public class ToolsMenu extends JMenu implements ISystemComponent, IChangeListene
 			TaskManager taskManager,
 			FileManager fileManager,
 			HeapManager heapManager,
+			LaunchManager launchManager,
 			Logger logger)
 	{
 		super("Tools");
@@ -79,6 +82,7 @@ public class ToolsMenu extends JMenu implements ISystemComponent, IChangeListene
 		this.registry = registry;
 		this.fileManager = fileManager;
 		this.heapManager = heapManager;
+		this.launchManager = launchManager;
 		this.logger = logger;
 		
 		taskMonitor = new TaskMonitor(taskManager);
@@ -145,7 +149,10 @@ public class ToolsMenu extends JMenu implements ISystemComponent, IChangeListene
 		cleanupMenu.add(cleanupHeap);
 		
 		errorManager.addListener(this);
+		launchManager.addListener(this);
+		
 		toggleErrorUI();
+		toggleRestoreUI();
 	}
 	
 	@Override
@@ -180,7 +187,7 @@ public class ToolsMenu extends JMenu implements ISystemComponent, IChangeListene
 		File file = UiTools.fileDialog("Backup File", SystemTools.getWorkingDir());
 		if(
 				file != null && 
-				UiTools.confirmDialog("Restore Configuration from Backup?")
+				UiTools.confirmDialog("Restore from Backup?")
 		){
 			String path = file.getAbsolutePath();
 			try{
@@ -191,7 +198,7 @@ public class ToolsMenu extends JMenu implements ISystemComponent, IChangeListene
 				configuration.setDirty(true);
 				juggernaut.revert();
 				
-				UiTools.infoDialog("Restore from:\n\n"+path);
+				UiTools.infoDialog("Restored from:\n\n"+path);
 			}catch(Exception e){
 				UiTools.errorDialog(e);
 			}
@@ -262,6 +269,9 @@ public class ToolsMenu extends JMenu implements ISystemComponent, IChangeListene
 		if(object == errorManager){
 			toggleErrorUI();
 		}
+		if(object == launchManager){
+			toggleRestoreUI();
+		}
 	}
 
 	private void toggleErrorUI() {
@@ -271,6 +281,14 @@ public class ToolsMenu extends JMenu implements ISystemComponent, IChangeListene
 		}else{
 			showErrors.setEnabled(false);
 			clearErrors.setEnabled(false);
+		}
+	}
+	
+	private void toggleRestoreUI() {
+		if(!launchManager.isBusy()){
+			restoreConfig.setEnabled(true);
+		}else{
+			restoreConfig.setEnabled(false);
 		}
 	}
 }

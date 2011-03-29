@@ -1,13 +1,8 @@
 TASKS
 -----
 
-# filter on index-page
 # Console opperation should work with absolute paths
 # all html text markup special chars
-# create lock.txt to esure only one instance running on same data-folder
-# create a tutorial
-# collect errors from eclipse cdt-builder plugin
-# create properties option in launch-config overriding runtime properties 
 # make history delete for multi select
 
 # prevent persistent files from being corrupted on shutdown !!!
@@ -16,57 +11,10 @@ BUGS
 ----
 
 # timeout launches remain in launch-manager & do not provide correct status
-
-# after cloning launch all configured property-ids are invalid
-# after restoring a backup all configured property-ids are invalid
 # after restoring a backup all existing build-folders will remain
-
-# history panel with filter set shows strange behave on: delete / filter for legacy names
-
+# history panel with filter set shows strange behave on delete 
 # serialized versions in persistent files do not update
 
-
-# on continous work-load:
-	[ArrayIndexOutOfBoundsException] 1 >= 1
-	java.util.Vector::removeElementAt (511)
-	javax.swing.table.DefaultTableModel::removeRow (446)
-	ui.SchedulerPanel::clearUI (163)
-	ui.SchedulerPanel::refreshUI (192)
-	ui.SchedulerPanel::changed (230)
-	launch.LaunchManager::notifyListeners (37)
-	launch.LaunchManager::lifecycleChanged (132)
-	launch.LifecycleObject::notifyListeners (39)
-	launch.StatusManager::addProgress (50)
-	launch.LaunchAgent::execute (173)
-	launch.LifecycleObject::runTask (56)
-	util.Task::runSingleTask (81)
-	util.Task::run (52)
-
-# on checking schedules:
-	[14.01.2011 17:40:47] Checking Launch [cppdemo ]
-	[14.01.2011 17:40:47] ~> Checking Trigger [SVN]
-	[14.01.2011 17:40:47] (COMMAND) command: svn info svn://10.40.38.84:3690/cppdemo/trunk
-	[14.01.2011 17:40:47] (COMMAND) ~> directory: C:\Tool\Juggernaut
-	[14.01.2011 17:40:47] (COMMAND) ~> Path: trunk
-	[14.01.2011 17:40:47] (COMMAND) ~> URL: svn://10.40.38.84:3690/cppdemo/trunk
-	[14.01.2011 17:40:47] (COMMAND) ~> Repository Root: svn://10.40.38.84:3690/cppdemo
-	[14.01.2011 17:40:47] (COMMAND) ~> Repository UUID: 0fcde1b6-b28e-6845-9283-8db7a2e7b6eb
-	[14.01.2011 17:40:47] (COMMAND) ~> return: 0
-	[14.01.2011 17:40:47] !!!
-	[Exception] SVN Info: no date
-	
-	core.launch.repository.SVNClient::getInfo (64)
-	core.launch.trigger.SVNTrigger::isTriggered (51)
-	core.runtime.ScheduleManager::checkSchedules (148)
-	core.runtime.ScheduleManager::checkSchedules (126)
-	core.runtime.ScheduleManager::access$2 (120)
-	core.runtime.ScheduleManager$SchedulerTask::runTask (232)
-	util.Task::runOnce (107)
-	util.Task::run (84)
-	util.Task::access$0 (75)
-	util.Task$1::run (28)
-	
-	!!!
 
 NOTES
 -----
@@ -75,14 +23,5 @@ NOTES
 	ECLIPSE: /usr/bin/eclipse
 	COMMAND: /home/kruss/.gem/ruby/1.8/bin/gcover
 
-# serialized objects may contain absolute paths
+# serialized objects should not contain absolute paths
 
-# demo of how to implement context-menu for option
-final Option smtpServer = container.getOption(OPTIONS.SMTP_SERVER.toString());
-JMenuItem testConnection = new JMenuItem("Test");
-testConnection.addActionListener(new ActionListener(){
-	public void actionPerformed(ActionEvent e){ 
-		System.out.println("test: "+((JTextField)smtpServer.component).getText());
-	}
-});
-smtpServer.addPopup(testConnection);

@@ -70,7 +70,10 @@ public class ProjectMenu extends JMenu implements ISystemComponent, IChangeListe
 		add(quit);
 		
 		configuration.addListener(this);
-		toggleConfigurationUI();
+		launchManager.addListener(this);
+		
+		toggleSaveUI();
+		toggleRevertUI();
 	}
 	
 	@Override
@@ -126,17 +129,26 @@ public class ProjectMenu extends JMenu implements ISystemComponent, IChangeListe
 	public void changed(Object object) {
 		
 		if(object == configuration){
-			toggleConfigurationUI();
+			toggleSaveUI();
+		}
+		if(object == configuration || object == launchManager){
+			toggleRevertUI();
 		}
 	}
 
-	private void toggleConfigurationUI() {
+	private void toggleSaveUI() {
 		if(configuration.isDirty()){
-			revert.setEnabled(true);
 			save.setEnabled(true);
 		}else{
-			revert.setEnabled(false);
 			save.setEnabled(false);
+		}
+	}
+	
+	private void toggleRevertUI() {
+		if(configuration.isDirty() && !launchManager.isBusy()){
+			revert.setEnabled(true);
+		}else{
+			revert.setEnabled(false);
 		}
 	}
 }

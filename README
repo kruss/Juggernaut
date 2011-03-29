@@ -1,5 +1,3 @@
-Juggernaut is a java application to execute automated tasks.
-
-It provides a framework to setup commandline operations and triggers for tasks to be executed.
+Juggernaut is a java framework to execute automated builds via commandline.
 
 More to come...
