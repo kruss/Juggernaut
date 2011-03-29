@@ -31,7 +31,7 @@ public class LaunchHistory extends AbstractHistory {
 		id = launch.getConfig().getId();
 		name = launch.getConfig().getName();
 		description = launch.getConfig().getDescription();
-		trigger = launch.getTrigger();
+		trigger = launch.getTrigger().getStatus().message;
 		operations = new ArrayList<OperationHistory>();		
 
 	}

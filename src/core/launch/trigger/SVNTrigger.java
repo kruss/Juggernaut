@@ -3,6 +3,7 @@ package core.launch.trigger;
 import java.util.Date;
 
 
+import core.launch.LaunchAgent;
 import core.launch.repository.SVNClient;
 import core.launch.repository.IRepositoryClient.RevisionInfo;
 import core.persistence.Cache;
@@ -41,7 +42,7 @@ public class SVNTrigger extends AbstractTrigger {
 	}
 	
 	@Override
-	public TriggerStatus isTriggered() {
+	public void checkTrigger() {
 		
 		try{
 			info = client.getInfo(config.getUrl(), INFO_TIMEOUT);
@@ -49,38 +50,38 @@ public class SVNTrigger extends AbstractTrigger {
 			Date currentDate = new Date();
 			
 			if(lastRevision == null){
-				return new TriggerStatus(
+				status = new TriggerStatus(
 						config.getName()+" initial run", true
 				);
 			}else{
 				if(!lastRevision.equals(info.revision)){
 					if( info.date.getTime() + config.getDelay() <= currentDate.getTime() ){
-						return new TriggerStatus(
+						status = new TriggerStatus(
 								config.getName()+" revision changed ("+info.revision+")", true
 						);
 					}else{
-						return new TriggerStatus(
+						status = new TriggerStatus(
 								config.getName()+" revision changed within delay", false
 						);
 					}
 				}else{
-					return new TriggerStatus(
+					status = new TriggerStatus(
 							config.getName()+" repository idle", false
 					);
 				}
 			}
 		}catch(Exception e){
 			logger.error(Module.COMMON, e);
-			return new TriggerStatus(
+			status = new TriggerStatus(
 					e.getMessage(), false
 			);
 		}
 	}
 
 	@Override
-	public void wasTriggered(boolean triggered) {
+	public void wasTriggered(LaunchAgent launch) {
 		
-		if(triggered && info != null){
+		if(info != null){
 			setLastRevision(info.revision);
 		}
 	}

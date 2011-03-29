@@ -16,6 +16,7 @@ import core.launch.operation.AbstractOperation;
 import core.launch.operation.AbstractOperationConfig;
 import core.launch.operation.IRepositoryOperation;
 import core.launch.trigger.AbstractTrigger;
+import core.launch.trigger.UserTrigger;
 import core.persistence.Cache;
 import core.persistence.Configuration;
 import core.persistence.History;
@@ -39,7 +40,7 @@ public class LaunchAgent extends LifecycleObject {
 	private History history;
 	private FileManager fileManager;
 	private LaunchConfig launchConfig;
-	private String trigger;
+	private AbstractTrigger trigger;
 	private PropertyContainer propertyContainer;
 	private ArrayList<AbstractOperation> operations;
 	private NotificationManager notificationManager;
@@ -58,7 +59,7 @@ public class LaunchAgent extends LifecycleObject {
 			ISmtpClient smtpClient,
 			IHttpServer httpServer,
 			LaunchConfig launchConfig,
-			String trigger)
+			AbstractTrigger trigger)
 	{
 		super("Launch::"+launchConfig.getName()+"::"+launchConfig.getId(), taskManager);
 
@@ -93,7 +94,7 @@ public class LaunchAgent extends LifecycleObject {
 	}
 	
 	public LaunchConfig getConfig(){ return launchConfig; }
-	public String getTrigger(){ return trigger; }
+	public AbstractTrigger getTrigger(){ return trigger; }
 	public PropertyContainer getPropertyContainer(){ return propertyContainer; }
 	public ArrayList<AbstractOperation> getOperations(){ return operations; }
 	
@@ -240,7 +241,7 @@ public class LaunchAgent extends LifecycleObject {
 		}
 		
 		// open browser
-		if(trigger == AbstractTrigger.USER_TRIGGER){
+		if(trigger instanceof UserTrigger){
 			try{
 				String path = launchHistory.getIndexPath();
 				logger.debug(Module.COMMON, "browser: "+path);

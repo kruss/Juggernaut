@@ -18,7 +18,7 @@ import core.launch.LaunchAgent;
 import core.launch.LaunchConfig;
 import core.launch.LifecycleObject;
 import core.launch.data.StatusManager.Status;
-import core.launch.trigger.AbstractTrigger;
+import core.launch.trigger.UserTrigger;
 import core.persistence.Configuration;
 import core.runtime.logger.ILogProvider;
 import core.runtime.logger.Logger;
@@ -83,7 +83,7 @@ public class LaunchManager implements ISystemComponent, ILifecycleListener, ICha
 	public LaunchStatus runLaunch(LaunchAgent agent) {
 		
 		synchronized(agents){
-			if(isReady() || agent.getTrigger().equals(AbstractTrigger.USER_TRIGGER)){
+			if(isReady() || agent.getTrigger() instanceof UserTrigger){
 				if(!isRunning(agent.getConfig().getId())){
 					agents.add(agent);
 					agent.addListener(this);
@@ -93,7 +93,7 @@ public class LaunchManager implements ISystemComponent, ILifecycleListener, ICha
 					return new LaunchStatus("Already running", false);
 				}
 			}else{
-				return new LaunchStatus("Maximum tasks", false);
+				return new LaunchStatus("No agent available", false);
 			}
 		}
 	}
@@ -178,7 +178,7 @@ public class LaunchManager implements ISystemComponent, ILifecycleListener, ICha
 		public LaunchInfo(LaunchAgent agent){
 			name = agent.getConfig().getName();
 			id = agent.getConfig().getId();
-			trigger = agent.getTrigger();
+			trigger = agent.getTrigger().getStatus().message;
 			start = agent.getStatusManager().getStart();
 			progress = agent.getStatusManager().getProgress();
 			status = agent.getStatusManager().getStatus();

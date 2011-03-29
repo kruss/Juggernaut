@@ -29,7 +29,7 @@ import util.UiTools;
 import core.ISystemComponent;
 import core.launch.LaunchAgent;
 import core.launch.LaunchConfig;
-import core.launch.trigger.AbstractTrigger;
+import core.launch.trigger.UserTriggerConfig;
 import core.persistence.Cache;
 import core.persistence.Configuration;
 import core.persistence.History;
@@ -390,8 +390,9 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 				try{
 					LaunchConfig config = configuration.getLaunchConfigs().get(index);
 					LaunchAgent launch = config.createLaunch(
-							errorManager, configuration, cache, history, fileManager, 
-							taskManager, smtpClient, httpServer, AbstractTrigger.USER_TRIGGER
+							errorManager, configuration, cache, history, 
+							fileManager, taskManager, smtpClient, httpServer, 
+							(new UserTriggerConfig()).createTrigger(configuration, cache, taskManager, logger)
 					);
 					LaunchStatus status = launchManager.runLaunch(launch);
 					if(!status.launched){

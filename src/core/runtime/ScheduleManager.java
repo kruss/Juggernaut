@@ -143,7 +143,6 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 	
 	private boolean checkSchedules(LaunchConfig launchConfig) {
 		
-		boolean launched = false;
 		for(AbstractTriggerConfig triggerConfig : launchConfig.getTriggerConfigs()){
 			if(triggerConfig.isReady()){
 				logger.debug(
@@ -153,33 +152,29 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 				AbstractTrigger trigger = triggerConfig.createTrigger(
 						configuration, cache, taskManager, logger
 				);
-				TriggerStatus triggerStatus = trigger.isTriggered();
+				trigger.checkTrigger();
+				TriggerStatus triggerStatus = trigger.getStatus();
 				if(triggerStatus.triggered){
-					if(!launched)
-					{
-						LaunchAgent launch = launchConfig.createLaunch(
-								errorManager, configuration, cache, history, fileManager, 
-								taskManager, smtpClient, httpServer, triggerStatus.message
+
+					LaunchAgent launch = launchConfig.createLaunch(
+							errorManager, configuration, cache, history, fileManager, 
+							taskManager, smtpClient, httpServer, trigger
+					);
+					LaunchStatus launchStatus = launchManager.runLaunch(launch);
+					if(launchStatus.launched){
+						logger.log(
+								Module.COMMON, 
+								"Launch ["+launchConfig.getName()+"] is TRIGGERD: "+triggerStatus.message
 						);
-						LaunchStatus launchStatus = launchManager.runLaunch(launch);
-						if(launchStatus.launched){
-							logger.log(
-									Module.COMMON, 
-									"Launch ["+launchConfig.getName()+"] is TRIGGERD: "+triggerStatus.message
-							);
-							trigger.wasTriggered(true);
-							launched = true;
-						}else{
-							logger.log(
-									Module.COMMON, 
-									"Launch ["+launchConfig.getName()+"] is BLOCKED: "+launchStatus.message
-							);
-							trigger.wasTriggered(false); // actual launched
-							break;
-						}
+						trigger.wasTriggered(launch);
+						return true;
 					}else{
-						trigger.wasTriggered(true); // simulate launched
+						logger.log(
+								Module.COMMON, 
+								"Launch ["+launchConfig.getName()+"] is BLOCKED: "+launchStatus.message
+						);
 					}
+
 				}else{
 					logger.debug(
 							Module.COMMON, 
@@ -188,7 +183,7 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 				}
 			}
 		}
-		return launched;
+		return false;
 	}
 	
 	/** get randomized list of the launches to be scheduled */

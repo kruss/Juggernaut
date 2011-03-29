@@ -126,7 +126,7 @@ public class Notification {
 		if(!description.isEmpty()){
 			list.addEntry("Description", description);
 		}
-		String trigger = launch.getTrigger();
+		String trigger = launch.getTrigger().getStatus().message;
 		if(!trigger.isEmpty()){
 			list.addEntry("Trigger", trigger);
 		}

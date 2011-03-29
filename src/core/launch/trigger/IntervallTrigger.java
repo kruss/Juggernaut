@@ -3,6 +3,7 @@ package core.launch.trigger;
 import java.util.Date;
 
 
+import core.launch.LaunchAgent;
 import core.persistence.Cache;
 import core.persistence.Configuration;
 import core.runtime.logger.Logger;
@@ -39,20 +40,20 @@ public class IntervallTrigger extends AbstractTrigger {
 	}
 	
 	@Override
-	public TriggerStatus isTriggered() {
+	public void checkTrigger() {
 		
 		Date lastDate = getLastDate();
 		newDate = new Date();
 		
 		if(lastDate == null){
-			return new TriggerStatus(config.getName()+" initial run", true);
+			status = new TriggerStatus(config.getName()+" initial run", true);
 		}else{
 			if((lastDate.getTime() + config.getIntervall()) <= newDate.getTime()){
-				return new TriggerStatus(
+				status = new TriggerStatus(
 						config.getName()+" time elapsed", true
 				);
 			}else{
-				return new TriggerStatus(
+				status = new TriggerStatus(
 						config.getName()+" time not elapsed", false
 				);
 			}
@@ -60,9 +61,9 @@ public class IntervallTrigger extends AbstractTrigger {
 	}
 
 	@Override
-	public void wasTriggered(boolean triggered) {
+	public void wasTriggered(LaunchAgent launch) {
 		
-		if(triggered && newDate != null){
+		if(newDate != null){
 			setLastDate(newDate);
 		}
 	}

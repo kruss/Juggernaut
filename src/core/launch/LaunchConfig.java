@@ -18,6 +18,7 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 import core.launch.operation.AbstractOperationConfig;
+import core.launch.trigger.AbstractTrigger;
 import core.launch.trigger.AbstractTriggerConfig;
 import core.persistence.Cache;
 import core.persistence.Configuration;
@@ -249,7 +250,7 @@ public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitialize
 			TaskManager taskManager, 
 			ISmtpClient smtpClient,
 			IHttpServer httpServer,
-			String trigger)
+			AbstractTrigger trigger)
 	{
 		return new LaunchAgent(
 				errorManager, configuration, cache, history, fileManager, 

@@ -1,19 +1,21 @@
 package core.launch.trigger;
 
+import core.launch.LaunchAgent;
 import core.persistence.Cache;
 import core.persistence.Configuration;
 import core.runtime.logger.Logger;
 
 public abstract class AbstractTrigger {
 	
-	public static String USER_TRIGGER = "Run by user";
-	
 	protected Configuration configuration;
 	protected Cache cache;
 	protected AbstractTriggerConfig config;
 	protected Logger logger;
 	
+	protected TriggerStatus status;
+	
 	public AbstractTriggerConfig getConfig(){ return config; }
+	public TriggerStatus getStatus(){ return status; }
 	
 	public AbstractTrigger(
 			Configuration configuration, 
@@ -25,10 +27,12 @@ public abstract class AbstractTrigger {
 		this.cache = cache;
 		this.logger = logger;
 		this.config = config.clone();
+		
+		status = new TriggerStatus("UNDEFINED", false);
 	}
 	
-	public abstract TriggerStatus isTriggered();
-	public abstract void wasTriggered(boolean triggered);
+	public abstract void checkTrigger();
+	public abstract void wasTriggered(LaunchAgent launch);
 	
 	public class TriggerStatus {
 		

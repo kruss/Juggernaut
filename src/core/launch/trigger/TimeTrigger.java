@@ -5,6 +5,7 @@ import java.util.Date;
 
 import util.DateTools;
 
+import core.launch.LaunchAgent;
 import core.persistence.Cache;
 import core.persistence.Configuration;
 import core.runtime.logger.Logger;
@@ -40,26 +41,26 @@ public class TimeTrigger extends AbstractTrigger {
 	}
 
 	@Override
-	public TriggerStatus isTriggered() {
+	public void checkTrigger() {
 
 		Date lastDate = getLastDate();
 		newDate = new Date();
 		
 		if(!isScheduledToday(newDate)){
-			return new TriggerStatus(
+			status = new TriggerStatus(
 					"Not scheduled today", false
 			);	
 		}else if(wasRunningToday(lastDate, newDate)){
-			return new TriggerStatus(
+			status = new TriggerStatus(
 					"Already running today", false
 			);	
 		}else{
 			if(isScheduledNow(newDate)){
-				return new TriggerStatus(
+				status = new TriggerStatus(
 						config.getName()+" scheduled", true
 				);	
 			}else{
-				return new TriggerStatus(
+				status = new TriggerStatus(
 						config.getName()+" not scheduled", false
 				);	
 			}
@@ -115,9 +116,9 @@ public class TimeTrigger extends AbstractTrigger {
 	}
 	
 	@Override
-	public void wasTriggered(boolean triggered) {
+	public void wasTriggered(LaunchAgent launch) {
 		
-		if(triggered && newDate != null){
+		if(newDate != null){
 			setLastDate(newDate);
 		}
 	}
