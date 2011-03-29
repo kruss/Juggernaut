@@ -1,6 +1,7 @@
 package core.launch;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.UUID;
 
 import ui.dialog.PropertyInfo;
@@ -204,17 +205,38 @@ public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitialize
 	/** clone configuration with new id (recursive) */
 	public LaunchConfig duplicate(){
 		
+		HashMap<String, String> map = new HashMap<String, String>();
 		LaunchConfig config = this.clone();
-		config.id = UUID.randomUUID().toString();
+		config.id = duplicateId(config.id, map);
 		config.name = this.getName()+" (Copy)";
 		config.dirty = true;
-		for(AbstractOperationConfig operatioConfig : config.getOperationConfigs()){
-			operatioConfig.setId(UUID.randomUUID().toString());
+		for(AbstractOperationConfig operationConfig : config.getOperationConfigs()){
+			operationConfig.setId(duplicateId(operationConfig.getId(), map));
 		}
 		for(AbstractTriggerConfig triggerConfig : config.getTriggerConfigs()){
-			triggerConfig.setId(UUID.randomUUID().toString());
+			triggerConfig.setId(duplicateId(triggerConfig.getId(), map));
 		}
-		return config;
+		return applyDuplicateIds(config, map);
+	}
+
+	private String duplicateId(String id, HashMap<String, String> map){
+		String newId = UUID.randomUUID().toString();
+		map.put(id, newId);
+		return newId;
+	}
+	
+	private LaunchConfig applyDuplicateIds(LaunchConfig config, HashMap<String, String> map) {
+		
+		XStream xstream = new XStream(new DomDriver());
+		String xml = xstream.toXML(config);
+		for(String id : map.keySet()){
+			String newId = map.get(id);
+			if(newId != null){
+				xml = xml.replaceAll(id, newId);
+			}
+		}
+		LaunchConfig applied = (LaunchConfig)xstream.fromXML(xml);
+		return applied;
 	}
 	
 	public LaunchAgent createLaunch(
