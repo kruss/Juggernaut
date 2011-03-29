@@ -94,6 +94,7 @@ public class EclipseOperation extends AbstractOperation {
 				throw new Exception("invalid path: "+preferences.getAbsolutePath());
 			}
 		}
+		arguments.add("-cdt.noindex");
 		if(config.isCleanBuild()){
 			arguments.add("-cdt.clean");
 		}
