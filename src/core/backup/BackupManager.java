@@ -40,23 +40,19 @@ public class BackupManager {
 	
 	public void backup(String path) throws Exception {
 		
-		Backup backup = new Backup(configuration.getVersion());
 		// preferences
-		backup.container = configuration.getOptionContainer();
+		Backup backup = new Backup(configuration);
 		// launches
 		for(LaunchConfig launchConfig : configuration.getLaunchConfigs()){
-			LaunchBackup launchBackup = backup.new LaunchBackup(launchConfig.getName());
-			launchBackup.container = launchConfig.getOptionContainer();
+			LaunchBackup launchBackup = backup.new LaunchBackup(launchConfig);
 			// operations
 			for(AbstractOperationConfig operationConfig : launchConfig.getOperationConfigs()){
-				OperationBackup operationBackup = backup.new OperationBackup(operationConfig.getName());
-				operationBackup.container = operationConfig.getOptionContainer();
+				OperationBackup operationBackup = backup.new OperationBackup(operationConfig);
 				launchBackup.operations.add(operationBackup);
 			}
 			// triggers
 			for(AbstractTriggerConfig triggerConfig : launchConfig.getTriggerConfigs()){
-				TriggerBackup triggerBackup = backup.new TriggerBackup(triggerConfig.getName());
-				triggerBackup.container = triggerConfig.getOptionContainer();
+				TriggerBackup triggerBackup = backup.new TriggerBackup(triggerConfig);
 				launchBackup.triggers.add(triggerBackup);
 			}
 			backup.launches.add(launchBackup);
@@ -83,6 +79,7 @@ public class BackupManager {
 			String launchName = launchBackup.name;
 			logger.log(Module.COMMON, "Restore Launch ["+launchName+"]");
 			LaunchConfig launchConfig = new LaunchConfig(launchName);
+			launchConfig.setId(launchBackup.id);
 			restore(launchBackup.container, launchConfig.getOptionContainer());
 			// operations
 			for(OperationBackup operationBackup : launchBackup.operations){
@@ -90,6 +87,7 @@ public class BackupManager {
 				AbstractOperationConfig operationConfig = registry.createOperationConfig(operationName);
 				if(operationConfig != null){
 					logger.log(Module.COMMON, "Restore Operation ["+operationName+"]");
+					operationConfig.setId(operationBackup.id);
 					restore(operationBackup.container, operationConfig.getOptionContainer());
 					launchConfig.getOperationConfigs().add(operationConfig);
 				}else{
@@ -102,6 +100,7 @@ public class BackupManager {
 				AbstractTriggerConfig triggerConfig = registry.createTriggerConfig(triggerName);
 				if(triggerConfig != null){
 					logger.log(Module.COMMON, "Restore Trigger ["+triggerName+"]");
+					triggerConfig.setId(triggerBackup.id);
 					restore(triggerBackup.container, triggerConfig.getOptionContainer());
 					launchConfig.getTriggerConfigs().add(triggerConfig);
 				}else{

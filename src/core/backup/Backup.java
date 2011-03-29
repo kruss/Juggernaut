@@ -2,6 +2,11 @@ package core.backup;
 
 import java.util.ArrayList;
 
+import core.launch.LaunchConfig;
+import core.launch.operation.AbstractOperationConfig;
+import core.launch.trigger.AbstractTriggerConfig;
+import core.persistence.Configuration;
+
 import ui.option.OptionContainer;
 
 public class Backup {
@@ -10,25 +15,27 @@ public class Backup {
 	public OptionContainer container;
 	public ArrayList<LaunchBackup> launches;
 	
-	public Backup(String version){
+	public Backup(Configuration configuration){
 		
-		this.version = version;
-		container = null;
+		version = configuration.getVersion();
+		container = configuration.getOptionContainer();
 		launches = new ArrayList<LaunchBackup>();
 	}
 	
 	public class LaunchBackup {
 		
+		public String id;
 		public String name;
 		public OptionContainer container;
 		
 		public ArrayList<OperationBackup> operations;
 		public ArrayList<TriggerBackup> triggers;
 		
-		public LaunchBackup(String name){
+		public LaunchBackup(LaunchConfig launchConfig){
 			
-			this.name = name;
-			container = null;
+			id = launchConfig.getId();
+			name = launchConfig.getName();
+			container = launchConfig.getOptionContainer();
 			operations = new ArrayList<OperationBackup>();
 			triggers = new ArrayList<TriggerBackup>();
 		}
@@ -36,25 +43,29 @@ public class Backup {
 	
 	public class OperationBackup {
 		
+		public String id;
 		public String name;
 		public OptionContainer container;
 		
-		public OperationBackup(String name){
+		public OperationBackup(AbstractOperationConfig operationConfig){
 			
-			this.name = name;
-			container = null;
+			id = operationConfig.getId();
+			name = operationConfig.getName();
+			container = operationConfig.getOptionContainer();
 		}
 	}
 	
 	public class TriggerBackup {
 		
+		public String id;
 		public String name;
 		public OptionContainer container;
 		
-		public TriggerBackup(String name){
+		public TriggerBackup(AbstractTriggerConfig triggerConfig){
 			
-			this.name = name;
-			container = null;
+			id = triggerConfig.getId();
+			name = triggerConfig.getName();
+			container = triggerConfig.getOptionContainer();
 		}
 	}
 }
