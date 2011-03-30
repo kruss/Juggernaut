@@ -1,8 +1,6 @@
 package core.launch.trigger;
 
 import java.util.ArrayList;
-import java.util.Collections;
-
 import core.launch.ILifecycleListener;
 import core.launch.LaunchAgent;
 import core.launch.LifecycleObject;
@@ -11,6 +9,7 @@ import core.launch.data.StatusManager.Status;
 import core.launch.data.property.Property;
 import core.launch.repository.SVNClient;
 import core.launch.repository.IRepositoryClient.HistoryInfo;
+import core.launch.trigger.SearchTriggerConfig.SearchMode;
 import core.persistence.Cache;
 import core.persistence.Configuration;
 import core.runtime.TaskManager;
@@ -51,14 +50,14 @@ public class SearchTrigger extends AbstractTrigger implements ILifecycleListener
 				if(info == null){
 					status = new TriggerStatus("No history ("+state.startRevision+" - "+state.endRevision+")", false);
 					state.buildMode = BuildMode.FINISHED;
-				}else if(info.commits.size() <= 1){
-					status = new TriggerStatus("No interval ("+state.startRevision+" - "+state.endRevision+")", false);
+				}else if(!isValidIntervall()){
+					status = new TriggerStatus("Invalid interval ("+state.startRevision+" - "+state.endRevision+")", false);
 					state.buildMode = BuildMode.FINISHED;
 				}else if(state.buildMode == BuildMode.START){
-					status = new TriggerStatus("Searching ("+state.startRevision+")", true);
+					status = new TriggerStatus(config.getSearchMode().toString()+"-Search ("+state.startRevision+")", true);
 					revision = state.startRevision;
 				}else if(state.buildMode == BuildMode.END){
-					status = new TriggerStatus("Searching ("+state.endRevision+")", true);
+					status = new TriggerStatus(config.getSearchMode().toString()+"-Search ("+state.endRevision+")", true);
 					revision = state.endRevision;
 				}else{
 					status = new TriggerStatus("Invalid mode: "+state.buildMode.toString(), false);
@@ -71,6 +70,16 @@ public class SearchTrigger extends AbstractTrigger implements ILifecycleListener
 			status = new TriggerStatus(
 					e.getMessage(), false
 			);
+		}
+	}
+
+	private boolean isValidIntervall() {
+		if(config.getSearchMode() == SearchMode.LINEAR){
+			return info.commits.size() >= 1;
+		}else if(config.getSearchMode() == SearchMode.BINARY){
+			return info.commits.size() >= 2;
+		}else{
+			return false;
 		}
 	}
 
@@ -90,69 +99,103 @@ public class SearchTrigger extends AbstractTrigger implements ILifecycleListener
 		if(lifecycle == Lifecycle.FINISH && info != null && state != null && revision != null){
 			
 			LaunchAgent launch = (LaunchAgent)object;
-			String name = launch.getConfig().getName();
 			Status status = launch.getStatusManager().getStatus();
-			Long hash = new Long(launch.getOperationErrorHash());
-			
+			String message = 
+				config.getSearchMode().toString()+
+				"-Search for ["+launch.getConfig().getName()+"] has "+status.toString()+
+				" ("+revision+")";
 			if(status == Status.SUCCEED || status == Status.ERROR){
-				String message = "SEARCH: ["+name+"] has "+status.toString()+" at "+revision;
-
-				if(state.buildMode == BuildMode.START){
-					
-					if(state.endErrorHash == null){
-						logger.log(Module.COMMON, message+" => continue at END");
-						state.startErrorHash = hash;
-						state.buildMode = BuildMode.END;
-					}else if(state.endErrorHash != hash){
-						logger.log(Module.COMMON, message+" => continue at TOP");
-						state.startRevision = getMidRevision(info.getRevisions(), revision, null, true);
-						state.buildMode = BuildMode.START;
-					}else{
-						logger.log(Module.COMMON, message+" => continue at BOTTOM");
-						state.endRevision = revision;
-						state.startRevision = getMidRevision(info.getRevisions(), null, revision, true);
-						state.buildMode = BuildMode.START;
-					}
-					
-				}else if(state.buildMode == BuildMode.END){
-					
-					if(state.startErrorHash == hash){
-						logger.log(Module.COMMON, message+" => equal bounds");
-						state.buildMode = BuildMode.FINISHED;
-					}else{
-						logger.log(Module.COMMON, message+" => continue at MID");
-						state.endErrorHash = hash;
-						state.startRevision = getMidRevision(info.getRevisions(), null, null, true);
-						state.buildMode = BuildMode.START;
-					}
+				
+				if(config.getSearchMode() == SearchMode.LINEAR){
+					continueLinearSearch(launch, message);
+				}else if(config.getSearchMode() == SearchMode.BINARY){					
+					continueBinarySearch(launch, message);
 				}
-					
 				saveState();
 			}
 		}
 	}
+
+	private void continueLinearSearch(LaunchAgent launch, String message) {
+		
+		if(state.buildMode == BuildMode.START){
+			if(info.commits.size() <= 1){
+				logger.log(Module.COMMON, message+" => FINISHED (intervall elapsed)");
+				state.buildMode = BuildMode.FINISHED;
+			}else{
+				logger.log(Module.COMMON, message+" => continue at NEXT");
+				state.startRevision = getNextRevision(info.getRevisions(), revision);
+				state.buildMode = BuildMode.START;
+			}
+		}
+	}
 	
-	private String getMidRevision(ArrayList<String> revisions, String lowerBound, String upperBound, boolean revert) {
+	private String getNextRevision(ArrayList<String> revisions, String revision) {
+		
+		int maxIdx = revisions.size() - 1;
+		int idx = revision.indexOf(revision);
+		if(idx >= 0 && idx < maxIdx){
+			return revisions.get(idx + 1);
+		}else{
+			return revisions.get(maxIdx);
+		}
+	}
+
+	private void continueBinarySearch(LaunchAgent launch, String message) {
+		
+		
+		Long hash = new Long(launch.getOperationErrorHash());
+		if(info.commits.size() <= 2 && state.endErrorHash != null){
+			logger.log(Module.COMMON, message+" => FINISHED (intervall elapsed)");
+			state.buildMode = BuildMode.FINISHED;
+			
+		}else if(state.buildMode == BuildMode.START){
+			
+			if(state.endErrorHash == null){
+				logger.log(Module.COMMON, message+" => continue at END");
+				state.startErrorHash = hash;
+				state.buildMode = BuildMode.END;
+			}else if(state.endErrorHash.longValue() != hash.longValue()){
+				logger.log(Module.COMMON, message+" => continue at TOP");
+				state.startRevision = getMidRevision(info.getRevisions(), revision, null);
+				state.buildMode = BuildMode.START;
+			}else{
+				logger.log(Module.COMMON, message+" => continue at BOTTOM");
+				state.endRevision = revision;
+				state.startRevision = getMidRevision(info.getRevisions(), null, revision);
+				state.buildMode = BuildMode.START;
+			}
+			
+		}else if(state.buildMode == BuildMode.END){
+			
+			if(state.startErrorHash.longValue() == hash.longValue()){
+				logger.log(Module.COMMON, message+" => FINISHED (equal bounds)");
+				state.buildMode = BuildMode.FINISHED;
+			}else{
+				logger.log(Module.COMMON, message+" => continue at MID");
+				state.endErrorHash = hash;
+				state.startRevision = getMidRevision(info.getRevisions(), null, null);
+				state.buildMode = BuildMode.START;
+			}
+		}
+	}
+	
+	private String getMidRevision(ArrayList<String> revisions, String lowerBound, String upperBound) {
 		
 		ArrayList<String> intervall = new ArrayList<String>();
-		intervall.addAll(revisions);
-		if(revert){
-			Collections.reverse(intervall);
-		}
-		ArrayList<String> part = new ArrayList<String>();
 		boolean copy = lowerBound != null ? false : true;
-		for(String revision : intervall){
+		for(String revision : revisions){
 			if(lowerBound != null && revision.equals(lowerBound)){
 				copy = true;
 			}
 			if(copy){
-				part.add(revision);
+				intervall.add(revision);
 			}
 			if(upperBound != null && revision.equals(upperBound)){
 				break;
 			}
 		}
-		String mid = part.get(part.size() / 2);
+		String mid = intervall.get(intervall.size() / 2);
 		return mid;
 	}
 

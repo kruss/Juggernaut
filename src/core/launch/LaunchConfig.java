@@ -211,14 +211,15 @@ public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitialize
 		LaunchConfig config = this.clone();
 		config.id = duplicateId(config.id, map);
 		config.name = this.getName()+" (Copy)";
-		config.dirty = true;
 		for(AbstractOperationConfig operationConfig : config.getOperationConfigs()){
 			operationConfig.setId(duplicateId(operationConfig.getId(), map));
 		}
 		for(AbstractTriggerConfig triggerConfig : config.getTriggerConfigs()){
 			triggerConfig.setId(duplicateId(triggerConfig.getId(), map));
 		}
-		return applyDuplicateIds(config, map);
+		config = applyDuplicateIds(config, map);
+		config.dirty = true;
+		return config;
 	}
 
 	private String duplicateId(String id, HashMap<String, String> map){

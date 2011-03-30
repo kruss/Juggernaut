@@ -1,6 +1,7 @@
 package core.launch.repository;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 
 import util.DateTools;
@@ -36,7 +37,7 @@ public interface IRepositoryClient {
 		}
 	}
 	
-	/** get history of url within interval: [revision1, revision2] */
+	/** get history of url within interval: [revision1, revision2] with commits descending */
 	public HistoryInfo getHistory(String url, String revision1, String revision2, long timeout) throws Exception;
 
 	public class HistoryInfo {
@@ -55,11 +56,13 @@ public interface IRepositoryClient {
 			return text.toString();
 		}
 		
+		/** get the ascending revision withn commits */
 		public ArrayList<String> getRevisions(){
 			ArrayList<String> revisions = new ArrayList<String>();
 			for(CommitInfo commit : commits){
 				revisions.add(commit.revision);
 			}
+			Collections.reverse(revisions);
 			return revisions;
 		}
 	}
