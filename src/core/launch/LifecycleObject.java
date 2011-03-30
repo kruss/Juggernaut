@@ -35,9 +35,17 @@ public abstract class LifecycleObject extends Task {
 		historyFolder = null;
 	}
 	
-	public void addListener(ILifecycleListener listener){ listeners.add(listener); }
+	public void addListener(ILifecycleListener listener){ 
+		synchronized(listeners){
+			listeners.add(listener);
+		}
+	}
 	public void notifyListeners(Lifecycle lifecycle){
-		for(ILifecycleListener listener : listeners){ listener.lifecycleChanged(this, lifecycle); }
+		synchronized(listeners){
+			for(ILifecycleListener listener : listeners){ 
+				listener.lifecycleChanged(this, lifecycle); 
+			}
+		}
 	}
 	
 	public abstract String getId();

@@ -1,8 +1,10 @@
 package core.launch.trigger;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 
+import ui.dialog.PropertyInfo;
 import ui.option.IOptionInitializer;
 import ui.option.Option;
 import ui.option.OptionContainer;
@@ -61,12 +63,20 @@ public abstract class AbstractTriggerConfig implements IOptionInitializer {
 	@Override
 	public void initOptions(OptionContainer container) {}
 	@Override
-	public void initEditor(OptionEditor editor) {}
+	public void initEditor(OptionEditor editor) {
+		
+		ArrayList<String> properties = getPropertyNames();
+		if(properties.size() > 0){
+			PropertyInfo info = new PropertyInfo(id, properties);
+			info.setInfo(editor);
+		}
+	}
 	
 	public void setId(String id){ this.id = id; }
 	public String getId(){ return id; }
 	
 	public OptionContainer getOptionContainer(){ return optionContainer; }
+	public ArrayList<String> getPropertyNames() { return new ArrayList<String>(); }
 
 	public boolean isActive(){ 
 		return optionContainer.getOption(OPTIONS.ACTIVE.toString()).getBooleanValue(); 

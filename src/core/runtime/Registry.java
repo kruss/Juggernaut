@@ -10,6 +10,7 @@ import core.launch.operation.SVNOperationConfig;
 import core.launch.operation.SampleOperationConfig;
 import core.launch.trigger.AbstractTriggerConfig;
 import core.launch.trigger.IntervallTriggerConfig;
+import core.launch.trigger.SearchTriggerConfig;
 import core.launch.trigger.SVNTriggerConfig;
 import core.launch.trigger.TimeTriggerConfig;
 import core.runtime.logger.Logger;
@@ -47,6 +48,7 @@ public class Registry implements ISystemComponent {
 		triggerConfigs.add(IntervallTriggerConfig.class);
 		triggerConfigs.add(TimeTriggerConfig.class);
 		triggerConfigs.add(SVNTriggerConfig.class);
+		triggerConfigs.add(SearchTriggerConfig.class);
 	}
 	
 	@Override

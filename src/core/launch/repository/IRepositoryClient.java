@@ -54,6 +54,14 @@ public interface IRepositoryClient {
 			}
 			return text.toString();
 		}
+		
+		public ArrayList<String> getRevisions(){
+			ArrayList<String> revisions = new ArrayList<String>();
+			for(CommitInfo commit : commits){
+				revisions.add(commit.revision);
+			}
+			return revisions;
+		}
 	}
 	
 	public class CommitInfo {

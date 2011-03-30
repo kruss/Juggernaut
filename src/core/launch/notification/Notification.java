@@ -13,6 +13,7 @@ import core.html.HtmlLink;
 import core.html.HtmlList;
 import core.html.HtmlTable;
 import core.launch.LaunchAgent;
+import core.launch.LaunchAgent.LaunchMode;
 import core.launch.data.Artifact;
 import core.launch.data.Error;
 import core.launch.data.StatusManager;
@@ -300,7 +301,10 @@ public class Notification {
 	}
 	
 	private boolean isCommitterNotificationRequired(){	
-		return hasCommitter() && isCommitterThresholdValid() && isCommitterStatusValid();
+		return 
+			launch.getMode() == LaunchMode.AUTOMATED &&
+			hasCommitter() && isCommitterThresholdValid() && 
+			isCommitterStatusValid();
 	}
 	
 	private boolean hasCommitter(){

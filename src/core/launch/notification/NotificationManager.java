@@ -3,9 +3,7 @@ package core.launch.notification;
 
 import core.launch.LaunchAgent;
 import core.launch.data.Artifact;
-import core.launch.data.Error;
 import core.launch.data.StatusManager.Status;
-import core.launch.operation.AbstractOperation;
 import core.persistence.Cache;
 import core.persistence.History;
 import core.runtime.http.IHttpServer;
@@ -66,14 +64,14 @@ public class NotificationManager {
 	private boolean isStatusHashChanged() {
 		
 		Long last = getStatusHash();
-		Long current = computeStatusHash();
+		Long current = new Long(launch.getLaunchStatusHash());
 		return (last == null) || (last.longValue() != current.longValue());
 	}
 	
 	private void setStatusHash(){
 		
 		cache.setValue(
-				launch.getConfig().getId(), PROPERTY.STATUS_HASH.toString(), ""+computeStatusHash().longValue()
+				launch.getConfig().getId(), PROPERTY.STATUS_HASH.toString(), ""+launch.getLaunchStatusHash()
 		);
 	}
 	
@@ -89,27 +87,17 @@ public class NotificationManager {
 		}
 	}
 	
-	private Long computeStatusHash() {
-		
-		long hash = 0;
-		hash += launch.getStatusManager().getHash();
-		for(AbstractOperation operation : launch.getOperations()){
-			hash += operation.getStatusManager().getHash();
-		}
-		return new Long(hash);
-	}
-	
 	private boolean isErrorHashChanged() {
 		
 		Long last = getErrorHash();
-		Long current = computeErrorHash().longValue();
+		Long current =  new Long(launch.getOperationErrorHash());
 		return (last == null) || (last.longValue() != current.longValue());
 	}
 	
 	private void setErrorHash(){
 		
 		cache.setValue(
-				launch.getConfig().getId(), PROPERTY.ERROR_HASH.toString(), ""+computeErrorHash().longValue()
+				launch.getConfig().getId(), PROPERTY.ERROR_HASH.toString(), ""+launch.getOperationErrorHash()
 		);
 	}
 	
@@ -123,14 +111,5 @@ public class NotificationManager {
 		}else{
 			return null;
 		}
-	}
-	
-	private Long computeErrorHash() {
-		
-		long hash = 0;
-		for(Error error : launch.getOperationErrors()){
-			hash += error.getHash();
-		}
-		return new Long(hash);
 	}
 }

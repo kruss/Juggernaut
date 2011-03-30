@@ -128,9 +128,7 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 		for(LaunchConfig launchConfig : launchConfigs){
 			if(launchManager.isReady()){
 				logger.log(Module.COMMON, "Check Launch ["+launchConfig.getName()+"]");
-				if(!checkSchedules(launchConfig)){
-					logger.log(Module.COMMON, "Launch ["+launchConfig.getName()+"] is IDLE");
-				}else{
+				if(checkSchedules(launchConfig)){
 					count++;
 				}
 			}else{
@@ -173,6 +171,7 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 								Module.COMMON, 
 								"Launch ["+launchConfig.getName()+"] is BLOCKED: "+launchStatus.message
 						);
+						return false;
 					}
 
 				}else{

@@ -16,7 +16,6 @@ import core.launch.operation.AbstractOperation;
 import core.launch.operation.AbstractOperationConfig;
 import core.launch.operation.IRepositoryOperation;
 import core.launch.trigger.AbstractTrigger;
-import core.launch.trigger.UserTrigger;
 import core.persistence.Cache;
 import core.persistence.Configuration;
 import core.persistence.History;
@@ -36,6 +35,8 @@ public class LaunchAgent extends LifecycleObject {
 
 	public enum PROPERTY { NAME, FOLDER, START }
 	
+	public enum LaunchMode { AUTOMATED, USER, SEARCH }
+	
 	private Logger logger;
 	private History history;
 	private FileManager fileManager;
@@ -45,7 +46,9 @@ public class LaunchAgent extends LifecycleObject {
 	private ArrayList<AbstractOperation> operations;
 	private NotificationManager notificationManager;
 	private LaunchHistory launchHistory;
+	
 	private boolean aboard;
+	private LaunchMode mode;
 	
 	public LaunchHistory getHistory(){ return launchHistory; }
 	
@@ -91,12 +94,15 @@ public class LaunchAgent extends LifecycleObject {
 		
 		statusManager.setProgressMax(operations.size());
 		aboard = false;
+		mode = LaunchMode.AUTOMATED;
 	}
 	
 	public LaunchConfig getConfig(){ return launchConfig; }
 	public AbstractTrigger getTrigger(){ return trigger; }
 	public PropertyContainer getPropertyContainer(){ return propertyContainer; }
 	public ArrayList<AbstractOperation> getOperations(){ return operations; }
+	public void setMode(LaunchMode mode){ this.mode = mode; }
+	public LaunchMode getMode(){ return mode; }
 	
 	@Override
 	public String getId() {
@@ -241,7 +247,7 @@ public class LaunchAgent extends LifecycleObject {
 		}
 		
 		// open browser
-		if(trigger instanceof UserTrigger){
+		if(mode == LaunchMode.USER){
 			try{
 				String path = launchHistory.getIndexPath();
 				logger.debug(Module.COMMON, "browser: "+path);
@@ -265,6 +271,24 @@ public class LaunchAgent extends LifecycleObject {
 			}	
 		}
 		return list;
+	}
+	
+	public long getLaunchStatusHash() {
+		
+		long hash = statusManager.getHash();
+		for(AbstractOperation operation : operations){
+			hash += operation.getStatusManager().getHash();
+		}
+		return hash;
+	}
+	
+	public long getOperationErrorHash() {
+		
+		long hash = 0;
+		for(Error error : getOperationErrors()){
+			hash += error.getHash();
+		}
+		return hash;
 	}
 	
 	public ArrayList<Error> getOperationErrors(){
