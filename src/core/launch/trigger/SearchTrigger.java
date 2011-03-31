@@ -24,9 +24,8 @@ public class SearchTrigger extends AbstractTrigger implements ILifecycleListener
 	private SVNClient client;
 	private SearchTriggerConfig config;
 	
-	private HistoryInfo info;
-	
 	private SearchState state;
+	private ArrayList<String> revisions;	
 	private String revision;
 	
 	public SearchTrigger(Configuration configuration, Cache cache, TaskManager taskManager, Logger logger, SearchTriggerConfig config) {
@@ -35,6 +34,7 @@ public class SearchTrigger extends AbstractTrigger implements ILifecycleListener
 		
 		client = new SVNClient(taskManager, logger);
 		state = null;
+		revisions = new ArrayList<String>();
 		revision = null;
 	}
 	
@@ -43,43 +43,42 @@ public class SearchTrigger extends AbstractTrigger implements ILifecycleListener
 		
 		try{
 			loadState();
+			String message = (state.buildCount+1)+". "+config.getSearchMode().toString()+"-Search";
 			if(state.buildMode == BuildMode.FINISHED){
-				status = new TriggerStatus("Search FINISHED", false);
+				status = new TriggerStatus(message+" FINISHED", false);
 			}else{
-				info = client.getHistory(config.getUrl(), state.startRevision, state.endRevision, HISTORY_TIMEOUT);
+				HistoryInfo info = client.getHistory(config.getUrl(), state.startRevision, state.endRevision, HISTORY_TIMEOUT);
 				if(info == null){
 					status = new TriggerStatus("No history ("+state.startRevision+" - "+state.endRevision+")", false);
 					state.buildMode = BuildMode.FINISHED;
-				}else if(!isValidIntervall()){
-					status = new TriggerStatus("Invalid interval ("+state.startRevision+" - "+state.endRevision+")", false);
-					state.buildMode = BuildMode.FINISHED;
-				}else if(state.buildMode == BuildMode.START){
-					status = new TriggerStatus(config.getSearchMode().toString()+"-Search ("+state.startRevision+")", true);
-					revision = state.startRevision;
-				}else if(state.buildMode == BuildMode.END){
-					status = new TriggerStatus(config.getSearchMode().toString()+"-Search ("+state.endRevision+")", true);
-					revision = state.endRevision;
 				}else{
-					status = new TriggerStatus("Invalid mode: "+state.buildMode.toString(), false);
+					revisions = info.getRevisions();
+					if(config.getSearchMode() == SearchMode.LINEAR && revisions.size() < 1){
+						status = new TriggerStatus("Invalid interval for "+message+" ("+state.startRevision+" - "+state.endRevision+")", false);
+						state.buildMode = BuildMode.FINISHED;
+					}else if(config.getSearchMode() == SearchMode.BINARY && revisions.size() < 2){
+						status = new TriggerStatus("Invalid interval for "+message+" ("+state.startRevision+" - "+state.endRevision+")", false);
+						state.buildMode = BuildMode.FINISHED;
+					}else if(state.buildMode == BuildMode.START){
+						status = new TriggerStatus(message+" ("+state.startRevision+")", true);
+						revision = state.startRevision;
+					}else if(state.buildMode == BuildMode.MID){
+						status = new TriggerStatus(message+" ("+state.midRevision+")", true);
+						revision = state.midRevision;
+					}else if(state.buildMode == BuildMode.END){
+						status = new TriggerStatus(message+" ("+state.endRevision+")", true);
+						revision = state.endRevision;
+					}else{
+						status = new TriggerStatus("Invalid mode: "+state.buildMode.toString(), false);
+					}
 				}
 				saveState();
 			}
-
 		}catch(Exception e){
 			logger.error(Module.COMMON, e);
 			status = new TriggerStatus(
 					e.getMessage(), false
 			);
-		}
-	}
-
-	private boolean isValidIntervall() {
-		if(config.getSearchMode() == SearchMode.LINEAR){
-			return info.commits.size() >= 1;
-		}else if(config.getSearchMode() == SearchMode.BINARY){
-			return info.commits.size() >= 2;
-		}else{
-			return false;
 		}
 	}
 
@@ -96,7 +95,7 @@ public class SearchTrigger extends AbstractTrigger implements ILifecycleListener
 	@Override
 	public void lifecycleChanged(LifecycleObject object, Lifecycle lifecycle) {
 		
-		if(lifecycle == Lifecycle.FINISH && info != null && state != null && revision != null){
+		if(lifecycle == Lifecycle.FINISH){
 			
 			LaunchAgent launch = (LaunchAgent)object;
 			Status status = launch.getStatusManager().getStatus();
@@ -105,27 +104,84 @@ public class SearchTrigger extends AbstractTrigger implements ILifecycleListener
 				"-Search for ["+launch.getConfig().getName()+"] has "+status.toString()+
 				" ("+revision+")";
 			if(status == Status.SUCCEED || status == Status.ERROR){
-				
-				if(config.getSearchMode() == SearchMode.LINEAR){
-					continueLinearSearch(launch, message);
-				}else if(config.getSearchMode() == SearchMode.BINARY){					
-					continueBinarySearch(launch, message);
+				try{
+					if(config.getSearchMode() == SearchMode.LINEAR){
+						continueLinearSearch(launch, message);
+					}else if(config.getSearchMode() == SearchMode.BINARY){					
+						continueBinarySearch(launch, message);
+					}
+					state.buildCount++;
+					saveState();
+				}catch(Exception e){
+					logger.error(Module.COMMON, e);
 				}
-				saveState();
 			}
 		}
 	}
 
-	private void continueLinearSearch(LaunchAgent launch, String message) {
+	private void continueLinearSearch(LaunchAgent launch, String message) throws Exception {
 		
 		if(state.buildMode == BuildMode.START){
-			if(info.commits.size() <= 1){
+			if(revisions.size() <= 1){
 				logger.log(Module.COMMON, message+" => FINISHED (intervall elapsed)");
 				state.buildMode = BuildMode.FINISHED;
 			}else{
 				logger.log(Module.COMMON, message+" => continue at NEXT");
-				state.startRevision = getNextRevision(info.getRevisions(), revision);
+				state.startRevision = getNextRevision(revisions, revision);
 				state.buildMode = BuildMode.START;
+			}
+		}
+	}
+
+	private void continueBinarySearch(LaunchAgent launch, String message) throws Exception {
+		
+		Long hash = new Long(launch.getOperationErrorHash());
+		if(revisions.size() <= 2 && state.buildCount > 0){
+			logger.log(Module.COMMON, message+" => FINISHED (intervall elapsed)");
+			state.buildMode = BuildMode.FINISHED;
+			
+		}else if(state.buildMode == BuildMode.START){
+			state.startRevision = revision;
+			state.startErrorHash = hash;
+			
+			logger.log(Module.COMMON, message+" => continue at END");
+			state.buildMode = BuildMode.END;
+			
+		}else if(state.buildMode == BuildMode.MID){
+			state.midRevision = revision;
+			state.midErrorHash = hash;
+			String nextRevision = null;
+			
+			if(state.midErrorHash.longValue() != state.endErrorHash.longValue()){
+				logger.log(Module.COMMON, message+" => continue at TOP");
+				state.startRevision = state.midRevision;
+				nextRevision = getMidRevision(revisions, state.midRevision, state.endRevision);
+
+			}else{
+				logger.log(Module.COMMON, message+" => continue at BOTTOM");
+				state.endRevision = state.midRevision;
+				nextRevision = getMidRevision(revisions, state.startRevision, state.midRevision);
+			}
+			
+			if(!nextRevision.equals(state.midRevision)){
+				state.midRevision = nextRevision;
+				state.buildMode = BuildMode.MID;
+			}else{
+				logger.log(Module.COMMON, message+" => FINISHED (end of search)");
+				state.buildMode = BuildMode.FINISHED;
+			}
+			
+		}else if(state.buildMode == BuildMode.END){
+			state.endRevision = revision;
+			state.endErrorHash = hash;
+			
+			if(state.startErrorHash.longValue() == state.endErrorHash.longValue()){
+				logger.log(Module.COMMON, message+" => FINISHED (equal bounds)");
+				state.buildMode = BuildMode.FINISHED;
+			}else{
+				logger.log(Module.COMMON, message+" => continue at MID");
+				state.midRevision = getMidRevision(revisions, state.startRevision, state.endRevision);
+				state.buildMode = BuildMode.MID;
 			}
 		}
 	}
@@ -138,45 +194,6 @@ public class SearchTrigger extends AbstractTrigger implements ILifecycleListener
 			return revisions.get(idx + 1);
 		}else{
 			return revisions.get(maxIdx);
-		}
-	}
-
-	private void continueBinarySearch(LaunchAgent launch, String message) {
-		
-		
-		Long hash = new Long(launch.getOperationErrorHash());
-		if(info.commits.size() <= 2 && state.endErrorHash != null){
-			logger.log(Module.COMMON, message+" => FINISHED (intervall elapsed)");
-			state.buildMode = BuildMode.FINISHED;
-			
-		}else if(state.buildMode == BuildMode.START){
-			
-			if(state.endErrorHash == null){
-				logger.log(Module.COMMON, message+" => continue at END");
-				state.startErrorHash = hash;
-				state.buildMode = BuildMode.END;
-			}else if(state.endErrorHash.longValue() != hash.longValue()){
-				logger.log(Module.COMMON, message+" => continue at TOP");
-				state.startRevision = getMidRevision(info.getRevisions(), revision, null);
-				state.buildMode = BuildMode.START;
-			}else{
-				logger.log(Module.COMMON, message+" => continue at BOTTOM");
-				state.endRevision = revision;
-				state.startRevision = getMidRevision(info.getRevisions(), null, revision);
-				state.buildMode = BuildMode.START;
-			}
-			
-		}else if(state.buildMode == BuildMode.END){
-			
-			if(state.startErrorHash.longValue() == hash.longValue()){
-				logger.log(Module.COMMON, message+" => FINISHED (equal bounds)");
-				state.buildMode = BuildMode.FINISHED;
-			}else{
-				logger.log(Module.COMMON, message+" => continue at MID");
-				state.endErrorHash = hash;
-				state.startRevision = getMidRevision(info.getRevisions(), null, null);
-				state.buildMode = BuildMode.START;
-			}
 		}
 	}
 	
@@ -199,35 +216,51 @@ public class SearchTrigger extends AbstractTrigger implements ILifecycleListener
 		return mid;
 	}
 
-	private enum BuildMode { START, END, FINISHED }
-	private enum VALUE { BUILD_MODE, REVISION_START, REVISION_END, ERROR_HASH_START, ERROR_HASH_END }
+	private enum BuildMode { START, MID, END, FINISHED }
+	private enum VALUE { 
+			BUILD_MODE, BUILD_COUNT, 
+			REVISION_START, REVISION_MID, REVISION_END, 
+			ERROR_HASH_START, ERROR_HASH_MID, ERROR_HASH_END 
+	}
 	
 	private class SearchState {
 		BuildMode buildMode;
+		int buildCount;
 		String startRevision;
+		String midRevision;
 		String endRevision;
 		Long startErrorHash;
+		Long midErrorHash;
 		Long endErrorHash;
 		
 		public SearchState(SearchTriggerConfig config){
 			buildMode = BuildMode.START;
+			buildCount = 0;
 			startRevision = config.getStartRevision();
+			midRevision = null;
 			endRevision = config.getEndRevision();
 			startErrorHash = null;
+			midErrorHash = null;
 			endErrorHash = null;
 		}
 		
 		public SearchState(
 				String buildModeProperty, 
-				String startRevisionProperty, 
+				String buildCountProperty,
+				String startRevisionProperty,
+				String midRevisionProperty, 
 				String endRevisionProperty, 
 				String startErrorHashProperty, 
+				String midErrorHashProperty,
 				String endErrorHashProperty)
 		{
 			buildMode = BuildMode.valueOf(buildModeProperty);
+			buildCount = new Integer(buildCountProperty).intValue();
 			startRevision = startRevisionProperty;
+			midRevision = midRevisionProperty;
 			endRevision = endRevisionProperty;
 			startErrorHash = startErrorHashProperty != null ? new Long(startErrorHashProperty) : null;
+			midErrorHash = midErrorHashProperty != null ? new Long(midErrorHashProperty) : null;
 			endErrorHash = endErrorHashProperty != null ? new Long(endErrorHashProperty) : null;
 		}
 	}
@@ -238,9 +271,12 @@ public class SearchTrigger extends AbstractTrigger implements ILifecycleListener
 		if(buildModeProperty != null){
 			state = new SearchState(
 				buildModeProperty,
+				cache.getValue(config.getId(), VALUE.BUILD_COUNT.toString()),
 				cache.getValue(config.getId(), VALUE.REVISION_START.toString()),
+				cache.getValue(config.getId(), VALUE.REVISION_MID.toString()),
 				cache.getValue(config.getId(), VALUE.REVISION_END.toString()),
 				cache.getValue(config.getId(), VALUE.ERROR_HASH_START.toString()),
+				cache.getValue(config.getId(), VALUE.ERROR_HASH_MID.toString()),
 				cache.getValue(config.getId(), VALUE.ERROR_HASH_END.toString())
 			);
 		}else{
@@ -248,27 +284,31 @@ public class SearchTrigger extends AbstractTrigger implements ILifecycleListener
 		}
 	}
 	
+	public void resetState(){
+		cache.removeValues(config.getId());
+	}
+	
 	public void saveState(){
+		resetState();
 		cache.setValue(config.getId(), VALUE.BUILD_MODE.toString(), state.buildMode.toString());
+		cache.setValue(config.getId(), VALUE.BUILD_COUNT.toString(), ""+state.buildCount);
 		if(state.startRevision != null){
 			cache.setValue(config.getId(), VALUE.REVISION_START.toString(), state.startRevision);
-		}else{
-			cache.removeValue(config.getId(), VALUE.REVISION_START.toString());
+		}
+		if(state.midRevision != null){
+			cache.setValue(config.getId(), VALUE.REVISION_MID.toString(), state.midRevision);
 		}
 		if(state.endRevision != null){
 			cache.setValue(config.getId(), VALUE.REVISION_END.toString(), state.endRevision);
-		}else{
-			cache.removeValue(config.getId(), VALUE.REVISION_END.toString());
 		}
 		if(state.startErrorHash != null){
 			cache.setValue(config.getId(), VALUE.ERROR_HASH_START.toString(), ""+state.startErrorHash);
-		}else{
-			cache.removeValue(config.getId(), VALUE.ERROR_HASH_START.toString());
+		}
+		if(state.midErrorHash != null){
+			cache.setValue(config.getId(), VALUE.ERROR_HASH_MID.toString(), ""+state.midErrorHash);
 		}
 		if(state.endErrorHash != null){
 			cache.setValue(config.getId(), VALUE.ERROR_HASH_END.toString(), ""+state.endErrorHash);
-		}else{
-			cache.removeValue(config.getId(), VALUE.ERROR_HASH_END.toString());
 		}
 	}
 }

@@ -122,6 +122,19 @@ public class Cache implements ISystemComponent, IChangeable {
 		}
 	}
 	
+	public void removeValues(String id){
+		
+		synchronized(container){
+			container.removeProperties(id);
+			dirty = true;
+			try{ 
+				save(); 
+			}catch(Exception e){
+				logger.error(Module.COMMON, e);
+			}
+		}
+	}
+	
 	public void clear(){
 		
 		synchronized(container){
