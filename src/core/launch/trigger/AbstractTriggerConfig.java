@@ -36,6 +36,7 @@ public abstract class AbstractTriggerConfig implements IOptionInitializer {
 		ACTIVE
 	}
 	
+	protected transient Cache cache;
 	protected transient TaskManager taskManager;
 	protected transient Logger logger;
 	
@@ -55,7 +56,8 @@ public abstract class AbstractTriggerConfig implements IOptionInitializer {
 		));
 	}
 	
-	public void initInstance(TaskManager taskManager, Logger logger) {
+	public void initInstance(Cache cache, TaskManager taskManager, Logger logger) {
+		this.cache = cache;
 		this.taskManager = taskManager;
 		this.logger = logger;
 	}

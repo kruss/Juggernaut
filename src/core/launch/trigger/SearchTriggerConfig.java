@@ -68,8 +68,7 @@ public class SearchTriggerConfig extends AbstractTriggerConfig {
 					@Override
 					public void perform(String content) {
 						if(UiTools.confirmDialog("Restart the search")){
-							// TODO reset cache
-							UiTools.errorDialog("NIY !!!");
+							cache.removeValues(getId());
 						}
 					}
 				}

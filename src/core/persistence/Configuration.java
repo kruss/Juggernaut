@@ -55,13 +55,13 @@ implements
 	IChangeable
 {
 
-	public static Configuration create(TaskManager taskManager, FileManager fileManager, Logger logger) throws Exception {
+	public static Configuration create(Cache cache, TaskManager taskManager, FileManager fileManager, Logger logger) throws Exception {
 		
 		File file = new File(fileManager.getDataFolderPath()+File.separator+Configuration.OUTPUT_FILE);
 		if(file.isFile()){
-			return Configuration.load(taskManager, fileManager, logger, file.getAbsolutePath());
+			return Configuration.load(cache, taskManager, fileManager, logger, file.getAbsolutePath());
 		}else{
-			return new Configuration(fileManager, logger, file.getAbsolutePath());
+			return new Configuration(cache, fileManager, logger, file.getAbsolutePath());
 		}	
 	}
 	
@@ -77,6 +77,7 @@ implements
 	
 	public static final String OUTPUT_FILE = "Configuration.xml";
 	
+	private transient Cache cache;
 	private transient FileManager fileManager;
 	private transient Logger logger;
 	private transient ArrayList<IChangeListener> listeners;
@@ -90,10 +91,12 @@ implements
 	private LogConfig logConfig;
 
 	public Configuration( 
+			Cache cache,
 			FileManager fileManager, 
 			Logger logger, 
 			String path)
 	{
+		this.cache = cache;
 		this.fileManager = fileManager;
 		this.logger = logger;
 		
@@ -177,7 +180,9 @@ implements
 	}
 
 	@Override
-	public void shutdown() throws Exception {}
+	public void shutdown() throws Exception {
+		cache.cleanup(this);
+	}
 	
 	@Override
 	public void initOptions(OptionContainer container) {
@@ -317,13 +322,14 @@ implements
 	}
 	
 	public static Configuration load(
-			TaskManager taskManager, FileManager fileManager, Logger logger, String path
+			Cache cache, TaskManager taskManager, FileManager fileManager, Logger logger, String path
 	) throws Exception {
 	
 		logger.debug(Module.COMMON, "load: "+path);
 		XStream xstream = new XStream(new DomDriver());
 		String xml = FileTools.readFile(path);
 		Configuration configuration = (Configuration)xstream.fromXML(xml);
+		configuration.cache = cache;
 		configuration.fileManager = fileManager;
 		configuration.logger = logger;
 		configuration.listeners = new ArrayList<IChangeListener>();
@@ -334,7 +340,7 @@ implements
 				operationConfig.initInstance(taskManager, logger);
 			}
 			for(AbstractTriggerConfig triggerConfig : launchConfig.getTriggerConfigs()){
-				triggerConfig.initInstance(taskManager, logger);
+				triggerConfig.initInstance(cache, taskManager, logger);
 			}
 		}
 		configuration.dirty = false;

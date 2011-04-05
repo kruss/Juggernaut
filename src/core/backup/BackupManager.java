@@ -13,6 +13,7 @@ import core.backup.Backup.TriggerBackup;
 import core.launch.LaunchConfig;
 import core.launch.operation.AbstractOperationConfig;
 import core.launch.trigger.AbstractTriggerConfig;
+import core.persistence.Cache;
 import core.persistence.Configuration;
 import core.runtime.FileManager;
 import core.runtime.Registry;
@@ -21,17 +22,20 @@ import core.runtime.logger.ILogConfig.Module;
 
 public class BackupManager {
 
+	private Cache cache;
 	private Configuration configuration;
 	private Registry registry;
 	private FileManager fileManager;
 	private Logger logger;
 	
 	public BackupManager(
+			Cache cache,
 			Configuration configuration, 
 			Registry registry, 
 			FileManager fileManager, 
 			Logger logger)
 	{
+		this.cache = cache;
 		this.configuration = configuration;
 		this.registry = registry;
 		this.fileManager = fileManager;
@@ -71,7 +75,7 @@ public class BackupManager {
 		Backup backup = (Backup)xstream.fromXML(xml);
 		
 		logger.log(Module.COMMON, "Restore "+path);
-		Configuration restore = new Configuration(fileManager, logger, configuration.getPath());
+		Configuration restore = new Configuration(cache, fileManager, logger, configuration.getPath());
 		// preferences
 		restore(backup.container, restore.getOptionContainer());
 		// launches

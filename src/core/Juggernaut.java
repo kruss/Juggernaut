@@ -179,16 +179,16 @@ public class Juggernaut extends AbstractSystem {
 		
 		public Persistence() throws Exception {
 			
+			cache = Cache.create(
+					core.fileManager, 
+					logging.logger);
+			add(cache);
 			configuration = Configuration.create(
+					cache,
 					core.taskManager,
 					core.fileManager, 
 					logging.logger);
 			add(configuration);
-			cache = Cache.create(
-					configuration,
-					core.fileManager, 
-					logging.logger);
-			add(cache);
 			history = History.create(
 					configuration, 
 					core.fileManager, 
@@ -210,6 +210,7 @@ public class Juggernaut extends AbstractSystem {
 		public Runtime() throws Exception {
 			
 			registry = new Registry(
+					persistence.cache,
 					core.taskManager, 
 					logging.logger);
 			add(registry);
@@ -272,8 +273,8 @@ public class Juggernaut extends AbstractSystem {
 			toolsMenu = new ToolsMenu(
 					juggernaut,
 					logging.errorManager,
-					persistence.configuration,
 					persistence.cache, 
+					persistence.configuration,
 					runtime.registry,
 					core.taskManager,
 					core.fileManager, 

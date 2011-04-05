@@ -27,6 +27,7 @@ import util.UiTools;
 import core.Constants;
 import core.ISystemComponent;
 import core.persistence.Cache;
+import core.persistence.Configuration;
 import core.persistence.Cache.CacheInfo;
 
 public class CacheMonitor extends JDialog implements ISystemComponent, IChangeListener {
@@ -34,6 +35,7 @@ public class CacheMonitor extends JDialog implements ISystemComponent, IChangeLi
 	private static final long serialVersionUID = 1L;
 	
 	private Cache cache;
+	private Configuration configuration;
 	private DefaultTableModel tableModel;
 	private JTable cacheTable;
 	private JButton emptyCache;
@@ -42,9 +44,10 @@ public class CacheMonitor extends JDialog implements ISystemComponent, IChangeLi
 	
 	private ArrayList<CacheInfo> entries;
 	
-	public CacheMonitor(Cache cache){
+	public CacheMonitor(Cache cache, Configuration configuration){
 		
 		this.cache = cache;
+		this.configuration = configuration;
 		entries = new ArrayList<CacheInfo>();
 		
 		tableModel = new DefaultTableModel(){
@@ -201,7 +204,7 @@ public class CacheMonitor extends JDialog implements ISystemComponent, IChangeLi
 	private synchronized void updateUI() {
 		
 		CacheInfo selected = getSelectedEntry();
-		entries = cache.getInfo();
+		entries = cache.getInfo(configuration);
 		refreshUI(selected);
 	}
 	

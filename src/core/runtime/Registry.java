@@ -13,11 +13,13 @@ import core.launch.trigger.IntervallTriggerConfig;
 import core.launch.trigger.SearchTriggerConfig;
 import core.launch.trigger.SVNTriggerConfig;
 import core.launch.trigger.TimeTriggerConfig;
+import core.persistence.Cache;
 import core.runtime.logger.Logger;
 
 /** runtime object factory */
 public class Registry implements ISystemComponent {
 
+	private Cache cache;
 	private TaskManager taskManager;
 	private Logger logger;
 	
@@ -25,9 +27,11 @@ public class Registry implements ISystemComponent {
 	private ArrayList<Class<?>> triggerConfigs;
 	
 	public Registry(
+			Cache cache,
 			TaskManager taskManager, 
 			Logger logger)
 	{
+		this.cache = cache;
 		this.taskManager = taskManager;
 		this.logger = logger;
 		
@@ -97,7 +101,7 @@ public class Registry implements ISystemComponent {
 		for(Class<?> clazz : triggerConfigs){
 			if(name.equals(getTriggerName(clazz))){
 				AbstractTriggerConfig instance = (AbstractTriggerConfig) clazz.newInstance();
-				instance.initInstance(taskManager, logger);
+				instance.initInstance(cache, taskManager, logger);
 				return instance;
 			}
 		}

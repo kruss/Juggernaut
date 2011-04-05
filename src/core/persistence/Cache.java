@@ -28,19 +28,18 @@ import core.runtime.logger.ILogConfig.Module;
  */
 public class Cache implements ISystemComponent, IChangeable {
 
-	public static Cache create(Configuration configuration, FileManager fileManager, Logger logger) throws Exception {
+	public static Cache create(FileManager fileManager, Logger logger) throws Exception {
 		
 		File file = new File(fileManager.getDataFolderPath()+File.separator+Cache.OUTPUT_FILE);
 		if(file.isFile()){
-			return Cache.load(configuration, logger, file.getAbsolutePath());
+			return Cache.load(logger, file.getAbsolutePath());
 		}else{
-			return new Cache(configuration, logger, file.getAbsolutePath());
+			return new Cache(logger, file.getAbsolutePath());
 		}	
 	}
 	
 	public static final String OUTPUT_FILE = "Cache.xml";
 	
-	private transient Configuration configuration;
 	private transient Logger logger;
 	private transient ArrayList<IChangeListener> listeners;
 	
@@ -50,11 +49,9 @@ public class Cache implements ISystemComponent, IChangeable {
 	private transient String path;
 	private transient boolean dirty;
 	
-	public Cache(Configuration configuration, Logger logger, String path){
+	public Cache(Logger logger, String path){
 		
-		this.configuration = configuration;
 		this.logger = logger;
-		
 		version = Constants.APP_VERSION;
 		container = new PropertyContainer();
 		listeners = new ArrayList<IChangeListener>();
@@ -68,9 +65,7 @@ public class Cache implements ISystemComponent, IChangeable {
 	}
 
 	@Override
-	public void shutdown() throws Exception {
-		cleanup();
-	}
+	public void shutdown() throws Exception {}
 	
 	@Override
 	public void addListener(IChangeListener listener){ listeners.add(listener); }
@@ -148,13 +143,12 @@ public class Cache implements ISystemComponent, IChangeable {
 		}
 	}
 	
-	public static Cache load(Configuration configuration, Logger logger, String path) throws Exception {
+	public static Cache load(Logger logger, String path) throws Exception {
 		
 		logger.debug(Module.COMMON, "load: "+path);
 		XStream xstream = new XStream(new DomDriver());
 		String xml = FileTools.readFile(path);
 		Cache cache = (Cache)xstream.fromXML(xml);
-		cache.configuration = configuration;
 		cache.logger = logger;
 		cache.listeners = new ArrayList<IChangeListener>();
 		cache.path = path;
@@ -174,9 +168,11 @@ public class Cache implements ISystemComponent, IChangeable {
 		}
 	}
 
-	public ArrayList<CacheInfo> getInfo(){
+	/** get info on entries related to configuration */
+	public ArrayList<CacheInfo> getInfo(Configuration configuration){
 		
 		ArrayList<CacheInfo> info = new ArrayList<CacheInfo>();
+		// info on configuration related items
 		for(LaunchConfig launchConfig : configuration.getLaunchConfigs()){
 			String launchIdentifier = "Launch("+launchConfig.getName()+")";
 			for(Property property : container.getProperties(launchConfig.getId())){
@@ -193,6 +189,12 @@ public class Cache implements ISystemComponent, IChangeable {
 				for(Property property : container.getProperties(triggerConfig.getId())){
 					info.add(new CacheInfo(triggerIdentifier, property));
 				}
+			}
+		}
+		// info on non-configuration related items
+		for(String id : getNonConfigurationIds(configuration)){
+			for(Property property : container.getProperties(id)){
+				info.add(new CacheInfo("<"+id+">", property));
 			}
 		}
 		return info;
@@ -213,39 +215,47 @@ public class Cache implements ISystemComponent, IChangeable {
 		}
 	}
 	
-	private void cleanup() throws Exception {
+	/** delete all entries not related to configuration */
+	public void cleanup(Configuration configuration) throws Exception {
 		
 		synchronized(container){
-			boolean cleanup = false;
-			
-			ArrayList<String> ids = container.getIds();
-			ArrayList<String> validIds = getIds(configuration);
-			for(String id : ids){
-				if(!validIds.contains(id)){
+			ArrayList<String> ids = getNonConfigurationIds(configuration);
+			if(ids.size() > 0){
+				for(String id : ids){
 					container.removeProperties(id);
-					cleanup = true;
 				}
-			}
-			
-			if(cleanup){
 				dirty = true;
 				save();
 			}
 		}
 	}
 
-	/** get all ids of current configuration */
-	private ArrayList<String> getIds(Configuration configuration) {
+	/** get all ids wich are not related to configuration */
+	private ArrayList<String> getNonConfigurationIds(Configuration configuration) {
+
+		ArrayList<String> ids = new ArrayList<String>();
+		ArrayList<String> cacheIds = container.getIds();
+		ArrayList<String> configurationIds = getConfigurationIds(configuration);
+		for(String id : cacheIds){
+			if(!configurationIds.contains(id)){
+				ids.add(id);
+			}
+		}
+		return ids;
+	}
+
+	/** get all ids wich are related to configuration */
+	private ArrayList<String> getConfigurationIds(Configuration configuration) {
 		
 		ArrayList<String> ids = new ArrayList<String>();
 		for(LaunchConfig config : configuration.getLaunchConfigs()){
-			ids.addAll(getIds(config));
+			ids.addAll(getLaunchConfigurationIds(config));
 		}
 		return ids;
 	}
 	
-	/** get all ids of a launch */
-	private ArrayList<String> getIds(LaunchConfig config) {
+	/** get all ids wich are related to a launch */
+	private ArrayList<String> getLaunchConfigurationIds(LaunchConfig config) {
 		
 		ArrayList<String> ids = new ArrayList<String>();
 		ids.add(config.getId());

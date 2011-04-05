@@ -43,6 +43,7 @@ public class ToolsMenu extends JMenu implements ISystemComponent, IChangeListene
 
 	private Juggernaut juggernaut; 
 	private ErrorManager errorManager;
+	private Cache cache;
 	private Configuration configuration;
 	private Registry registry;
 	private FileManager fileManager;
@@ -65,8 +66,8 @@ public class ToolsMenu extends JMenu implements ISystemComponent, IChangeListene
 	public ToolsMenu(
 			Juggernaut juggernaut,
 			ErrorManager errorManager,
-			Configuration configuration,
 			Cache cache,
+			Configuration configuration,
 			Registry registry,
 			TaskManager taskManager,
 			FileManager fileManager,
@@ -78,6 +79,7 @@ public class ToolsMenu extends JMenu implements ISystemComponent, IChangeListene
 		
 		this.juggernaut = juggernaut;
 		this.errorManager = errorManager;
+		this.cache = cache;
 		this.configuration = configuration;
 		this.registry = registry;
 		this.fileManager = fileManager;
@@ -86,7 +88,7 @@ public class ToolsMenu extends JMenu implements ISystemComponent, IChangeListene
 		this.logger = logger;
 		
 		taskMonitor = new TaskMonitor(taskManager);
-		cacheMonitor = new CacheMonitor(cache);
+		cacheMonitor = new CacheMonitor(cache, configuration);
 		
 		JMenu configMenu = new JMenu("Configuration");
 		add(configMenu);
@@ -173,7 +175,7 @@ public class ToolsMenu extends JMenu implements ISystemComponent, IChangeListene
 			SystemTools.getWorkingDir()+File.separator+
 			"Configuration_"+DateTools.getFileSystemDate(new Date())+".xml";
 		try{
-			BackupManager backup = new BackupManager(configuration, registry, fileManager, logger);
+			BackupManager backup = new BackupManager(cache, configuration, registry, fileManager, logger);
 			backup.backup(path);
 			
 			UiTools.infoDialog("Backup to:\n\n"+path);
@@ -191,7 +193,7 @@ public class ToolsMenu extends JMenu implements ISystemComponent, IChangeListene
 		){
 			String path = file.getAbsolutePath();
 			try{
-				BackupManager backup = new BackupManager(configuration, registry, fileManager, logger);
+				BackupManager backup = new BackupManager(cache, configuration, registry, fileManager, logger);
 				Configuration restore = backup.restore(path);
 				restore.save();
 				
