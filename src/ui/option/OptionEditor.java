@@ -47,21 +47,29 @@ public class OptionEditor extends JPanel implements IChangeable, IStatusProvider
 	private IStatusClient client;
 	private OptionContainer container;
 	private IOptionInitializer initializer;
-	private boolean groups;
 	private JPanel centerPanel;
-	private JPopupMenu popup;
+	private JPopupMenu contextMenu;
+	
+	private JLabel tooltipInfo;
+	private JLabel contextInfo;
+
+	private boolean showGroups;
+	private boolean showInfo;
 	
 	public OptionEditor(){
 		
 		listeners = new ArrayList<IChangeListener>();
 		client = null;
 		container = null;
-		groups = true;
+		
+		showGroups = true;
+		showInfo = true;
 		
 		setLayout(new BorderLayout());
 	}
 	
-	public void setGroups(boolean groups){ this.groups = groups; }
+	public void setShowGroups(boolean show){ showGroups = show; }
+	public void setShowInfo(boolean show){ showInfo = show; }
 	
 	public void setOptionContainer(OptionContainer container, IOptionInitializer initializer) {
 		
@@ -71,7 +79,7 @@ public class OptionEditor extends JPanel implements IChangeable, IStatusProvider
 		centerPanel = new JPanel();
 		centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
 		if(container != null){
-			// create panel
+			// create option-panels
 			String groupName = "";
 			JPanel groupPanel = null;
 			for(Option option : container.getOptions()){
@@ -83,7 +91,7 @@ public class OptionEditor extends JPanel implements IChangeable, IStatusProvider
 					}
 					groupPanel = new JPanel();
 					groupPanel.setLayout(new BoxLayout(groupPanel, BoxLayout.Y_AXIS));
-					if(groups){
+					if(showGroups){
 						groupPanel.setBorder(BorderFactory.createTitledBorder(groupName));
 					}
 				}
@@ -95,32 +103,74 @@ public class OptionEditor extends JPanel implements IChangeable, IStatusProvider
 				centerPanel.add(groupPanel);
 				groupPanel = null;
 			}
-			add(centerPanel, BorderLayout.NORTH);
+			// set info-panel
+			if(showInfo){
+				initializeInfoPanel();
+			}
 			// set tool-tip
 			if(!container.getDescription().isEmpty()){
-				for(int i=0; i<getComponentCount(); i++){
-					Component component = getComponent(i);
-					if(component instanceof JPanel){
-						((JPanel) component).setToolTipText(container.getDescription());
-					}
-				}
-				setToolTipText(container.getDescription());
+				initializeToolTip();
 			}
 			// set actions
 			if(initializer != null){
-				popup = new JPopupMenu();
-				centerPanel.addMouseListener(new MouseAdapter(){
-					public void mouseClicked(MouseEvent e){
-						if(e.getButton() == MouseEvent.BUTTON3){
-							popup.show(e.getComponent(), e.getX(), e.getY());
-						}
-					}
-				});
-				initializer.initEditor(this);
-				initializer.initOptions(container);
+				initializeOptions();
 			}
+			// set center-panel
+			add(centerPanel, BorderLayout.NORTH);
 		}else{
 			setToolTipText(null);
+		}
+	}
+
+	private void initializeInfoPanel() {
+		tooltipInfo = new JLabel("");
+		tooltipInfo.setEnabled(false);
+		contextInfo = new JLabel("");
+		contextInfo.setEnabled(false);
+		JPanel infoPanel = new JPanel(new BorderLayout());
+		infoPanel.add(tooltipInfo, BorderLayout.WEST);
+		infoPanel.add(contextInfo, BorderLayout.EAST);
+		centerPanel.add(infoPanel);
+	}
+
+	private void initializeToolTip() {
+		for(int i=0; i<getComponentCount(); i++){
+			Component component = getComponent(i);
+			if(component instanceof JPanel){
+				((JPanel) component).setToolTipText(container.getDescription());
+			}
+		}
+		setToolTipText(container.getDescription());
+		if(showInfo){
+			tooltipInfo.setText(" "+container.getDescription());
+		}
+	}
+
+	private void initializeOptions() {
+		contextMenu = new JPopupMenu();
+		centerPanel.addMouseListener(new MouseAdapter(){
+			public void mouseClicked(MouseEvent e){
+				if(e.getButton() == MouseEvent.BUTTON3){
+					contextMenu.show(e.getComponent(), e.getX(), e.getY());
+				}
+			}
+		});
+		initializer.initOptions(container);
+		updateContext();
+	}
+	
+	public void updateContext(){
+		
+		if(initializer != null && contextMenu != null){
+			contextMenu.removeAll();
+			initializer.initEditor(this);
+			if(showInfo){
+				if(contextMenu.getComponentCount() > 0){
+					contextInfo.setText("Context available ("+contextMenu.getComponentCount()+") ");
+				}else{
+					contextInfo.setText("");
+				}
+			}
 		}
 	}
 
@@ -342,16 +392,17 @@ public class OptionEditor extends JPanel implements IChangeable, IStatusProvider
 		return panel;
 	}
 	
-	public void addEditorDelegate(final IEditorDelegate delegate){
+	public void addContextDelegate(final IEditorDelegate delegate){
 		
-		JMenuItem item = new JMenuItem(delegate.getDelegateName());
-		item.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){ 
-				delegate.perform();
-			}
-		});
-		
-		popup.add(item);
+		if(contextMenu != null){
+			JMenuItem item = new JMenuItem(delegate.getDelegateName());
+			item.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e){ 
+					delegate.perform();
+				}
+			});
+			contextMenu.add(item);
+		}
 	}
 	
 	public static void setOptionDelegate(final Option option, final IOptionDelegate delegate){
@@ -363,13 +414,5 @@ public class OptionEditor extends JPanel implements IChangeable, IStatusProvider
 			}
 		});
 		option.parent.add(button, BorderLayout.EAST);
-	}
-	
-	public void refreshPopup(){
-		
-		if(initializer != null){
-			popup.removeAll();
-			initializer.initEditor(this);
-		}
 	}
 }

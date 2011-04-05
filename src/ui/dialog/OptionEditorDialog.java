@@ -31,6 +31,7 @@ public class OptionEditorDialog extends JDialog implements IOptionDelegate {
 		this.name = name; 
 		
 		optionEditor = new OptionEditor();
+		optionEditor.setShowInfo(false);
 		optionEditor.setOptionContainer(container, null);
 		optionEditor.addListener(listener);
 		

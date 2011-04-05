@@ -26,6 +26,7 @@ public class LoggerPanel extends JPanel implements ISystemComponent, IChangeList
 		
 		loggingConsole = new LoggerConsole();
 		optionEditor = new OptionEditor();
+		optionEditor.setShowInfo(false);
 		
 		setLayout(new BorderLayout());
 		add(loggingConsole, BorderLayout.CENTER);

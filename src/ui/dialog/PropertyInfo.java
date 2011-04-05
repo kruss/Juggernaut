@@ -22,7 +22,7 @@ public class PropertyInfo {
 	public void setInfo(final OptionEditor editor){
 		
 		for(final String property : properties){
-			editor.addEditorDelegate(new IEditorDelegate(){
+			editor.addContextDelegate(new IEditorDelegate(){
 				@Override
 				public String getDelegateName() { return "Property ["+property+"]"; }
 				@Override
