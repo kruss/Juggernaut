@@ -69,6 +69,7 @@ public class CommandTask extends Task {
 			try{
 				process.waitFor();
 				result = process.exitValue();
+				waitForStreams(outputStream, errorStream);
 			}catch(InterruptedException e){ 
 				process.destroy();	 // not destroying sub-processes on windows
 			}finally{
@@ -80,6 +81,16 @@ public class CommandTask extends Task {
 			logger.error(Module.COMMAND, e);
 		}finally{
 			logger.debug(Module.COMMAND, "return: "+result);
+		}
+	}
+
+	private void waitForStreams(CommandStreamer outputStream, CommandStreamer errorStream) throws Exception {
+		while(true){
+			if(outputStream.getState() == State.RUNNING || errorStream.getState() == State.RUNNING){
+				Thread.sleep(100);
+			}else{
+				return;
+			}
 		}
 	}
 
