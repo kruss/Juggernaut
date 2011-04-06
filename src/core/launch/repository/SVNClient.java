@@ -36,7 +36,7 @@ public class SVNClient implements IRepositoryClient {
 		CommandTask task = new CommandTask(command, arguments, path, taskManager, logger);
 		task.syncRun(0, timeout);
 		if(!task.hasSucceded()){
-			throw new Exception(name+" failed: "+task.getResult());
+			throw new Exception(name+": failed ("+task.getResult()+") for "+url);
 		}
 		
 		// get result
@@ -50,7 +50,7 @@ public class SVNClient implements IRepositoryClient {
 			result.revision = m1.group(1);
 		}
 		if(result.revision == null){
-			throw new Exception(name+": no revision");
+			throw new Exception(name+": no revision for "+url);
 		}
 		
 		// find e.g: "Last Changed Date: 2010-11-26 12:47:16 +0100 (Fr, 26 Nov 2010)"
@@ -61,7 +61,7 @@ public class SVNClient implements IRepositoryClient {
 			result.date = sdf.parse(m2.group(1));
 		}
 		if(result.date == null){
-			throw new Exception(name+": no date");
+			throw new Exception(name+": no date for "+url);
 		}
 		
 		logger.debug(Module.COMMAND, result.toString());
@@ -80,7 +80,7 @@ public class SVNClient implements IRepositoryClient {
 		CommandTask task = new CommandTask(command, arguments, path, taskManager, logger);
 		task.syncRun(0, timeout);
 		if(!task.hasSucceded()){
-			throw new Exception(name+" failed: "+task.getResult());
+			throw new Exception(name+": failed ("+task.getResult()+") for "+url+" ("+revision+")");
 		}
 		
 		// get result
@@ -94,7 +94,7 @@ public class SVNClient implements IRepositoryClient {
 			result.revision = m.group(1);
 		}
 		if(result.revision == null){
-			throw new Exception(name+": no revision");
+			throw new Exception(name+": no revision for "+url+" ("+revision+")");
 		}
 		
 		logger.debug(Module.COMMAND, result.toString());
@@ -113,7 +113,7 @@ public class SVNClient implements IRepositoryClient {
 		CommandTask task = new CommandTask(command, arguments, path, taskManager, logger);
 		task.syncRun(0, timeout);
 		if(!task.hasSucceded()){
-			throw new Exception(name+" failed: "+task.getResult());
+			throw new Exception(name+" failed ("+task.getResult()+") for "+url+" ("+revision1+", "+revision2+")");
 		}
 		
 		// get result
@@ -135,7 +135,7 @@ public class SVNClient implements IRepositoryClient {
 			result.commits.add(commit);
 		}
 		if(!revision1.equals(revision2) && result.commits.size() == 0){
-			throw new Exception(name+": no commits");
+			throw new Exception(name+": no commits for "+url+" ("+revision2+", "+revision1+")");
 		}
 
 		logger.debug(Module.COMMAND, result.toString());
