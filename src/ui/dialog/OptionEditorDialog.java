@@ -48,7 +48,7 @@ public class OptionEditorDialog extends JDialog implements IOptionDelegate {
 			}
 		});
 		
-		UiTools.setLookAndFeel(this, Constants.APP_STYLE);
+		UiTools.setStyle(this, Constants.APP_STYLE);
 		setAlwaysOnTop(true); 
 		setLocation(150, 150);
 		setTitle(name);

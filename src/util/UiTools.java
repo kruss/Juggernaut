@@ -100,7 +100,18 @@ public class UiTools {
 		( e.isControlDown() && KeyEvent.VK_X == e.getKeyCode() ); 
 	}
 	
-	public static boolean setLookAndFeel(Component component, int style){
+	public static int getStyle(String name){
+		
+		UIManager.LookAndFeelInfo styles[] = UIManager.getInstalledLookAndFeels();
+		for(int i=0; i<styles.length; i++){
+			if(styles[i].getName().equals(name)){
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	public static boolean setStyle(Component component, int style){
 		
 		try{
 			UIManager.LookAndFeelInfo styles[] = UIManager.getInstalledLookAndFeels();

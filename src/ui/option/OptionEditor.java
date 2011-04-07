@@ -22,6 +22,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -276,6 +277,7 @@ public class OptionEditor extends JPanel implements IChangeable, IStatusProvider
 		option.component = component;
 		component.setToolTipText(option.getDescription());
 		component.setText(option.getStringValue());
+		component.setCaretPosition(0);
 		component.addKeyListener(new KeyListener(){
 			@Override
 			public void keyPressed(KeyEvent e) {}
@@ -292,7 +294,7 @@ public class OptionEditor extends JPanel implements IChangeable, IStatusProvider
 		});
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(new JLabel(option.getUIName()+":"), BorderLayout.NORTH);
-		panel.add(component, BorderLayout.CENTER);
+		panel.add(new JScrollPane(component), BorderLayout.CENTER);
 		return panel;
 	}
 

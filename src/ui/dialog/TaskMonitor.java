@@ -116,7 +116,7 @@ public class TaskMonitor extends JDialog implements ISystemComponent, IChangeLis
 			}
 		});
 		
-		UiTools.setLookAndFeel(this, Constants.APP_STYLE);
+		UiTools.setStyle(this, Constants.APP_STYLE);
 		setAlwaysOnTop(true);
 		setSize(400, 200); 
 		setLocation(75, 75);

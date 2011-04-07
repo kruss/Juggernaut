@@ -138,7 +138,7 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 			}
 		});
 		
-		UiTools.setLookAndFeel(this, Constants.APP_STYLE);
+		UiTools.setStyle(this, Constants.APP_STYLE);
 		
 		setStatus(Constants.APP_NAME+" started at "+DateTools.getTextDate(new Date()));
 		setInfo();

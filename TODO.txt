@@ -10,8 +10,6 @@ TASKS
 BUGS
 ----
 
-# APP_STYLE==1 makes UnixUI on some Systems ;-(
-
 # timeout launches remain in launch-manager & do not provide correct status
 # history panel with filter set shows strange behave on delete 
 # serialized versions in persistent files do not update

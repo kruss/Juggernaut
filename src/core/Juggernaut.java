@@ -41,6 +41,7 @@ public class Juggernaut extends AbstractSystem {
 		
 		try{
 			if(!getLockFile().isFile()){
+				setLookAndFeel(args);
 				Juggernaut juggernaut = new Juggernaut();
 				juggernaut.init(); 
 			}else{
@@ -55,6 +56,18 @@ public class Juggernaut extends AbstractSystem {
 			}
 			System.exit(Constants.PROCESS_NOK);
 		}
+	}
+
+	private static void setLookAndFeel(String[] args) throws Exception {
+		
+		int style = UiTools.getStyle(Constants.APP_STYLE_DEFAULT);
+		for(int i=0; i<args.length; i++){
+			if(args[i].equals("-style") && i<args.length-1){
+				style = (new Integer(args[i+1])).intValue();
+				break;
+			}
+		}
+		Constants.APP_STYLE = style != -1 ? style : 0;
 	}
 
 	private Logging logging;

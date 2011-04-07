@@ -131,7 +131,7 @@ public class CacheMonitor extends JDialog implements ISystemComponent, IChangeLi
 			}
 		});
 		
-		UiTools.setLookAndFeel(this, Constants.APP_STYLE);
+		UiTools.setStyle(this, Constants.APP_STYLE);
 		setAlwaysOnTop(true);
 		setSize(500, 200); 
 		setLocation(75, 75);

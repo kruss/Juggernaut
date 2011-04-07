@@ -27,8 +27,12 @@ public class SystemMonitor {
 			max = system.getComponentCount(true);
 			progress = 0;
 			JFrame frame = new JFrame(); 
-			UiTools.setLookAndFeel(frame, Constants.APP_STYLE);
-			monitor = new ProgressMonitor(frame,  message, "", 0, max);
+			UiTools.setStyle(frame, Constants.APP_STYLE);
+			if(UiTools.getStyle(Constants.APP_STYLE_DEFAULT) == Constants.APP_STYLE){
+				monitor = new ProgressMonitor(frame,  message, "", 0, max);
+			}else{
+				monitor = new ProgressMonitor(frame,  null, "", 0, max);
+			}
 			monitor.setMillisToDecideToPopup(0);
 			monitor.setMillisToPopup(0);
 		}
