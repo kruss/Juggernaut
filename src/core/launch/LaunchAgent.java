@@ -27,6 +27,7 @@ import core.runtime.logger.Logger;
 import core.runtime.logger.ILogConfig.Module;
 import core.runtime.logger.Logger.Mode;
 import core.runtime.smtp.ISmtpClient;
+import util.DateTools;
 import util.FileTools;
 import util.SystemTools;
 
@@ -160,7 +161,7 @@ public class LaunchAgent extends LifecycleObject {
 				new Property(launchConfig.getId(), PROPERTY.FOLDER.toString(), getFolder())
 		);
 		propertyContainer.setProperty(
-				new Property(launchConfig.getId(), PROPERTY.START.toString(), ""+statusManager.getStart().getTime())
+				new Property(launchConfig.getId(), PROPERTY.START.toString(), DateTools.getTextDate(statusManager.getStart()))
 		);
 		
 		// debug configuration
