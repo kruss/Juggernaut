@@ -3,6 +3,7 @@ package core.runtime;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 
 import util.IChangeListener;
@@ -29,6 +30,10 @@ import core.runtime.smtp.ISmtpClient;
 /** checks the configured launches for triggers to be fired */
 public class ScheduleManager implements ISystemComponent, IChangeable {
 
+	public enum Priority {
+		HIGH, NORMAL, LOW
+	}
+	
 	private ErrorManager errorManager;
 	private Configuration configuration;
 	private Cache cache;
@@ -122,7 +127,7 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 	
 	private void checkSchedules() {
 		
-		ArrayList<LaunchConfig> launchConfigs = getLaunches();
+		ArrayList<LaunchConfig> launchConfigs = getScheduleLauncheConfigs();
 		logger.debug(Module.COMMON, "Running Scheduler");
 		int count = 0;
 		for(LaunchConfig launchConfig : launchConfigs){
@@ -185,17 +190,28 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 		return false;
 	}
 	
-	/** get randomized list of the launches to be scheduled */
-	private ArrayList<LaunchConfig> getLaunches(){
+	/** get randomized priority list of the launch-configurations to be scheduled */
+	private ArrayList<LaunchConfig> getScheduleLauncheConfigs(){
 		
-		ArrayList<LaunchConfig> configs = new ArrayList<LaunchConfig>();
-		for(LaunchConfig config : configuration.getLaunchConfigs()){
-			if(config.isReady()){
-				configs.add(config);
+		ArrayList<LaunchConfig> launchConfigs = new ArrayList<LaunchConfig>();
+		for(LaunchConfig launchConfig : configuration.getLaunchConfigs()){
+			if(launchConfig.isReady()){
+				launchConfigs.add(launchConfig);
 			}
 		}
-		Collections.shuffle(configs);
-		return configs;
+		Collections.shuffle(launchConfigs);
+		Collections.sort(launchConfigs, new Comparator<LaunchConfig>(){
+			  @Override public int compare(LaunchConfig c1, LaunchConfig c2) { // higher priority at start of list
+				  if(getPriorityValue(c1.getPriority()) > getPriorityValue(c2.getPriority())){
+					  return -1;
+				  }else if(getPriorityValue(c1.getPriority()) < getPriorityValue(c2.getPriority())){
+					  return 1;
+				  }else{
+					  return 0;
+				  }
+			  }
+		});
+		return launchConfigs;
 	}
 	
 	public void setUpdated(Date updated){
@@ -238,6 +254,19 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 				logger.debug(Module.COMMON, "Scheduler IDLE");
 			}
 			setCycle();
+		}
+	}
+	
+	public static int getPriorityValue(Priority priority){
+		
+		if(priority == Priority.LOW){
+			return 0;
+		}else if(priority == Priority.NORMAL){
+			return 1;
+		}else if(priority == Priority.HIGH){
+			return 2;
+		}else {
+			return -1;
 		}
 	}
 }

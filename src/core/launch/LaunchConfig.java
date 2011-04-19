@@ -25,6 +25,7 @@ import core.persistence.Configuration;
 import core.persistence.History;
 import core.runtime.FileManager;
 import core.runtime.TaskManager;
+import core.runtime.ScheduleManager.Priority;
 import core.runtime.http.IHttpServer;
 import core.runtime.logger.ErrorManager;
 import core.runtime.smtp.ISmtpClient;
@@ -40,7 +41,7 @@ public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitialize
 	}
 	
 	public enum OPTIONS {
-		ACTIVE, DESCRIPTION, CLEAN, TIMEOUT, NOTIFICATION, ADMINISTRATORS, COMMITTERS, MESSAGE
+		ACTIVE, DESCRIPTION, CLEAN, TIMEOUT, PRIORITY, NOTIFICATION, ADMINISTRATORS, COMMITTERS, MESSAGE
 	}
 
 	private String id;
@@ -76,6 +77,11 @@ public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitialize
 				GROUPS.GENERAL.toString(),
 				OPTIONS.TIMEOUT.toString(), "Timeout in minutes (0 = no timeout)", 
 				Type.INTEGER, 0, 0, 300
+		));
+		optionContainer.setOption(new Option(
+				GROUPS.GENERAL.toString(),
+				OPTIONS.PRIORITY.toString(), "The scheduler priority", 
+				Type.TEXT_LIST, StringTools.enum2strings(Priority.class), Priority.NORMAL.toString()
 		));
 		optionContainer.setOption(new Option(
 				GROUPS.NOTIFICATION.toString(),
@@ -143,6 +149,10 @@ public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitialize
 	/** the timout in millis */
 	public long getTimeout() {
 		return DateTools.min2millis(optionContainer.getOption(OPTIONS.TIMEOUT.toString()).getIntegerValue());
+	}
+	
+	public Priority getPriority(){
+		return Priority.valueOf(optionContainer.getOption(OPTIONS.PRIORITY.toString()).getStringValue());
 	}
 	
 	public boolean isNotification(){
