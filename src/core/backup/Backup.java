@@ -12,13 +12,17 @@ import ui.option.OptionContainer;
 public class Backup {
 	
 	public String version;
-	public OptionContainer container;
+	public OptionContainer preferences;
+	public OptionContainer maintenance;
+	public OptionContainer logging;
 	public ArrayList<LaunchBackup> launches;
 	
 	public Backup(Configuration configuration){
 		
 		version = configuration.getVersion();
-		container = configuration.getOptionContainer();
+		preferences = configuration.getOptionContainer();
+		maintenance = configuration.getMaintenanceConfig().getOptionContainer();
+		logging = configuration.getLogConfig().getOptionContainer();
 		launches = new ArrayList<LaunchBackup>();
 	}
 	

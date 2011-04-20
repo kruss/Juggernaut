@@ -44,7 +44,7 @@ public class BackupManager {
 	
 	public void backup(String path) throws Exception {
 		
-		// preferences
+		// configuration
 		Backup backup = new Backup(configuration);
 		// launches
 		for(LaunchConfig launchConfig : configuration.getLaunchConfigs()){
@@ -76,8 +76,10 @@ public class BackupManager {
 		
 		logger.log(Module.COMMON, "Restore "+path);
 		Configuration restore = new Configuration(cache, fileManager, logger, configuration.getPath());
-		// preferences
-		restore(backup.container, restore.getOptionContainer());
+		// configuration
+		restore(backup.preferences, restore.getOptionContainer());
+		restore(backup.maintenance, restore.getMaintenanceConfig().getOptionContainer());
+		restore(backup.logging, restore.getLogConfig().getOptionContainer());
 		// launches
 		for(LaunchBackup launchBackup : backup.launches){
 			String launchName = launchBackup.name;
