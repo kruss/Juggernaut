@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 
+import javax.mail.SendFailedException;
+
 
 
 import core.Constants;
@@ -46,6 +48,10 @@ public class Notification {
 	private LaunchAgent launch;
 	private LaunchHistory previous;
 	
+	private ArrayList<String> adminAddresses;
+	private ArrayList<String> committerAddresses;
+	private boolean isCommitterNotification;
+	
 	public Notification(
 			History history, ISmtpClient smtpClient, IHttpServer httpServer, LaunchAgent launch
 	){
@@ -54,14 +60,20 @@ public class Notification {
 		this.httpServer = httpServer;
 		this.launch = launch;
 		this.previous = history.getLatest(launch.getConfig().getId());
+		
+		adminAddresses = getAdministratorAddresses();
+		committerAddresses = getComitterAddresses();
+		isCommitterNotification = isCommitterNotification();
 	}
 	
 	public Artifact performNotification() {
 		
 		Mail mail = new Mail(getSubject());
 		mail.from = smtpClient.getConfig().getHostAddress();
-		mail.to = getToAdresses();
-		mail.cc = getCcAdresses();
+		mail.to = adminAddresses;
+		if(isCommitterNotification){ 
+			mail.cc = committerAddresses; 
+		}
 		mail.content = getContent();
 		Status status = null;
 		
@@ -71,6 +83,10 @@ public class Notification {
 			}catch(Exception e){
 				launch.getLogger().error(Module.SMTP, e);
 				status = Status.ERROR;
+				if(e instanceof SendFailedException && mail.cc.size() > 0){
+					mail.cc.clear();
+					reportSendFailure(mail, "Committer could NOT be notified ("+e.getMessage()+")");
+				}
 			}
 		}else{
 			launch.getLogger().debug(Module.SMTP, "Notification NOT enabled");
@@ -81,22 +97,20 @@ public class Notification {
 		artifact.status = status;
 		return artifact;
 	}
-	
+
+	private void reportSendFailure(Mail mail, String message) {
+		
+		launch.getLogger().emph(Module.SMTP, "report send-failure");
+		mail.content = "<p><font color=red>!!! "+message+" !!!</font></p>"+mail.content;
+		try{
+			smtpClient.send(mail, launch.getLogger());
+		}catch(Exception e){
+			launch.getLogger().error(Module.SMTP, e);
+		}
+	}
+
 	private String getSubject() {
 		return "Launch ["+launch.getConfig().getName()+"] - "+launch.getStatusManager().getStatus().toString();
-	}
-	
-	private ArrayList<String> getToAdresses() {
-		return getAdministratorAdresses();
-	}
-	
-	private ArrayList<String> getCcAdresses() {
-		
-		if(isCommitterNotificationRequired()){
-			return getComitterAddresses();
-		}else{
-			return new ArrayList<String>();
-		}
 	}
 
 	private String getContent() {
@@ -219,9 +233,9 @@ public class Notification {
 	private String getCommitterHtml() {
 		
 		ArrayList<IRepositoryOperation> repositories = launch.getRepositoryOperations();
-		if(hasCommitter()){
+		if(committerAddresses.size() > 0){
 			HtmlList list = new HtmlList("Commits");
-			if(!isCommitterNotificationRequired()){
+			if(!isCommitterNotification){
 				list.setDescription("<font color=blue>!!! Committer NOT being notified !!!</font>");
 			}
 			for(IRepositoryOperation repository : repositories){
@@ -297,24 +311,23 @@ public class Notification {
 	}
 	
 	private boolean isNotificationEnabled(){
-		return smtpClient.getConfig().isNotification() && launch.getConfig().isNotification();
-	}
-	
-	private boolean isCommitterNotificationRequired(){	
 		return 
-			launch.getMode() == LaunchMode.AUTOMATED &&
-			hasCommitter() && isCommitterThresholdValid() && 
-			isCommitterStatusValid();
+			smtpClient.getConfig().isNotification() && 
+			launch.getConfig().isNotification();
 	}
 	
-	private boolean hasCommitter(){
-		return getComitterAddresses().size() > 0;
+	private boolean isCommitterNotification(){	
+		return 
+			(launch.getMode() == LaunchMode.AUTOMATED) &&
+			(committerAddresses.size() > 0) && 
+			isCommitterThresholdValid() && 
+			isCommitterStatusValid();
 	}
 	
 	private boolean isCommitterThresholdValid(){
 		
 		int threshold = launch.getConfig().getCommitterThreshold();
-		int committers = getComitterAddresses().size();
+		int committers = committerAddresses.size();
 		return threshold >= committers;
 	}
 	
@@ -332,7 +345,7 @@ public class Notification {
 		}
 	}
 	
-	private ArrayList<String> getAdministratorAdresses() {
+	private ArrayList<String> getAdministratorAddresses() {
 		
 		ArrayList<String> admins = new ArrayList<String>();
 		for(String addr : smtpClient.getConfig().getAdministratorAddresses()){
