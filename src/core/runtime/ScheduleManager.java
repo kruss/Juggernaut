@@ -78,7 +78,7 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 	@Override
 	public void init() throws Exception {
 		if(configuration.isScheduler()){
-			startScheduler(SchedulerTask.DELAY);
+			startScheduler(60 * 1000); // 1 min delay
 		}
 	}
 	
@@ -104,7 +104,7 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 	public void startScheduler(long delay) throws Exception { 
 		if(scheduler == null){
 			scheduler = new SchedulerTask(true);
-			scheduler.asyncRun(delay, SchedulerTask.TIMEOUT); 
+			scheduler.asyncRun(delay, 0); 
 			notifyListeners();
 		}
 	}
@@ -122,26 +122,26 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 	public void triggerScheduler(long delay) {
 
 		SchedulerTask scheduler = new SchedulerTask(false);
-		scheduler.asyncRun(delay, SchedulerTask.TIMEOUT);
+		scheduler.asyncRun(delay, 0);
 	}
 	
-	private void checkSchedules() {
+	private synchronized void checkSchedules() {
 		
-		ArrayList<LaunchConfig> launchConfigs = getScheduleLauncheConfigs();
-		logger.debug(Module.COMMON, "Running Scheduler");
-		int count = 0;
+		ArrayList<LaunchConfig> launchConfigs = getSortedLaunchConfigs();
+		logger.debug(Module.COMMON, "Scheduler START ("+launchConfigs.size()+")");
+		int triggered = 0;
 		for(LaunchConfig launchConfig : launchConfigs){
 			if(launchManager.isReady()){
 				logger.log(Module.COMMON, "Check Launch ["+launchConfig.getName()+"]");
 				if(checkSchedules(launchConfig)){
-					count++;
+					triggered++;
 				}
 			}else{
 				break;
 			}
 		}
 		setUpdated(new Date());
-		logger.debug(Module.COMMON, "Scheduled: "+count+"/"+launchConfigs.size());
+		logger.debug(Module.COMMON, "Scheduler STOP ("+triggered+")");
 	}
 	
 	private boolean checkSchedules(LaunchConfig launchConfig) {
@@ -191,7 +191,7 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 	}
 	
 	/** get randomized priority list of the launch-configurations to be scheduled */
-	private ArrayList<LaunchConfig> getScheduleLauncheConfigs(){
+	private ArrayList<LaunchConfig> getSortedLaunchConfigs(){
 		
 		ArrayList<LaunchConfig> launchConfigs = new ArrayList<LaunchConfig>();
 		for(LaunchConfig launchConfig : configuration.getLaunchConfigs()){
@@ -229,18 +229,15 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 	
 	private class SchedulerTask extends Task {
 		
-		public static final long DELAY = 60 * 1000; // 1min
-		public static final long TIMEOUT = 60 * 60 * 1000; // 1h
-		
 		private boolean cyclic;
 		
 		public SchedulerTask(boolean cyclic){
 			super("SchedulerTask", taskManager);
 			this.cyclic = cyclic;
-			setCycle();
+			updateCycle();
 		}
 		
-		private void setCycle() {
+		private void updateCycle() {
 			if(cyclic){
 				setCyclic(configuration.getSchedulerIntervall());
 			}
@@ -253,7 +250,7 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 			}else{
 				logger.debug(Module.COMMON, "Scheduler IDLE");
 			}
-			setCycle();
+			updateCycle();
 		}
 	}
 	

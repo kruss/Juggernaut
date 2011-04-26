@@ -33,8 +33,8 @@ public abstract class Task implements IChangeable {
 		state = State.INITIAL;
 		delay = 0;
 		cycle = 0;
-		start = null;
 		timeout = 0;
+		start = null;
 	}
 	
 	@Override

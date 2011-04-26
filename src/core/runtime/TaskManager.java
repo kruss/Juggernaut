@@ -155,11 +155,10 @@ public class TaskManager implements ISystemComponent, IChangeable, IChangeListen
 	}
 	
 	private class TimeoutTask extends Task {
-		public static final long CYCLE = 10 * 1000; // 10 sec
 		
 		public TimeoutTask(TaskManager taskManager) {
 			super("TimeoutTask", taskManager);
-			setCyclic(CYCLE);
+			setCyclic(10 * 1000); // 10 sec
 		}
 
 		@Override
