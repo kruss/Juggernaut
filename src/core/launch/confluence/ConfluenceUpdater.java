@@ -162,8 +162,8 @@ public class ConfluenceUpdater {
 	private String getHistoryContent() {
 		
 		StringBuilder content = new StringBuilder();
+		content.append("\r\nh3. History\r\n");
 		if(previous != null){
-			content.append("\r\nh3. History\r\n");
 			int count = 0;
 			LaunchHistory entry = previous;
 			while(entry != null && count < HISTORY_MAX){
