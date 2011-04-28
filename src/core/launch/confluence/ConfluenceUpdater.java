@@ -21,6 +21,7 @@ public class ConfluenceUpdater {
 	private static final int HISTORY_MAX = 5;
 	private static final int DESCRIPTION_MAX = 150;
 	
+	private History history;
 	private IConfluenceConfig confluenceConfig;
 	private IHttpConfig httpConfig;
 	private IConfluenceClient client;
@@ -32,6 +33,7 @@ public class ConfluenceUpdater {
 			IConfluenceConfig confluenceConfig, IConfluenceClient client, 
 			LaunchAgent launch)
 	{
+		this.history = history;
 		this.confluenceConfig = confluenceConfig;
 		this.client = client;
 		this.httpConfig = httpConfig;
@@ -90,6 +92,7 @@ public class ConfluenceUpdater {
 		StringBuilder content = new StringBuilder();
 		content.append(getGeneralContent());
 		content.append(getOperationsContent());
+		content.append(getHistoryContent());
 		return content.toString();
 	}
 	
@@ -151,6 +154,24 @@ public class ConfluenceUpdater {
 			}
 
 		}else{
+			content.append("_empty_\r\n");
+		}
+		return content.toString();
+	}
+	
+	private String getHistoryContent() {
+		
+		StringBuilder content = new StringBuilder();
+		if(previous != null){
+			content.append("\r\nh3. History\r\n");
+			int count = 0;
+			LaunchHistory entry = previous;
+			while(entry != null && count < HISTORY_MAX){
+				content.append("* "+DateTools.getTextDate(entry.start)+" "+getStatusIcon(entry.status)+"\r\n");
+				entry = history.getPrevious(entry);
+				count++;
+			}
+		}else{			
 			content.append("_empty_\r\n");
 		}
 		return content.toString();
