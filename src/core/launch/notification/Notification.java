@@ -27,7 +27,7 @@ import core.launch.operation.IRepositoryOperation;
 import core.launch.repository.IRepositoryClient.CommitInfo;
 import core.launch.repository.IRepositoryClient.HistoryInfo;
 import core.persistence.History;
-import core.runtime.http.IHttpServer;
+import core.runtime.http.IHttpConfig;
 import core.runtime.logger.ILogConfig.Module;
 import core.runtime.smtp.ISmtpClient;
 import core.runtime.smtp.Mail;
@@ -44,7 +44,7 @@ public class Notification {
 	
 	private History history;
 	private ISmtpClient smtpClient;
-	private IHttpServer httpServer;
+	private IHttpConfig httpConfig;
 	private LaunchAgent launch;
 	private LaunchHistory previous;
 	
@@ -53,11 +53,11 @@ public class Notification {
 	private boolean isCommitterNotification;
 	
 	public Notification(
-			History history, ISmtpClient smtpClient, IHttpServer httpServer, LaunchAgent launch
+			History history, ISmtpClient smtpClient, IHttpConfig httpConfig, LaunchAgent launch
 	){
 		this.history = history;
 		this.smtpClient = smtpClient;
-		this.httpServer = httpServer;
+		this.httpConfig = httpConfig;
 		this.launch = launch;
 		this.previous = history.getLatest(launch.getConfig().getId());
 		
@@ -291,10 +291,10 @@ public class Notification {
 	
 	private String getLinkHtml() {
 		
-		if(httpServer.getConfig().isHttpServer()){
+		if(httpConfig.isHttpServer()){
 			try{
 				String url = 
-					"http://"+SystemTools.getHostName()+":"+httpServer.getConfig().getHttpPort()+
+					"http://"+SystemTools.getHostName()+":"+httpConfig.getHttpPort()+
 					"/"+launch.getStatusManager().getStart().getTime()+"/"+Constants.INDEX_NAME+".htm";
 				HtmlLink link = new HtmlLink(url, url);
 				link.setExtern(true);

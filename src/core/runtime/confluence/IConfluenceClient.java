@@ -1,11 +1,15 @@
 package core.runtime.confluence;
 
+import core.runtime.logger.Logger;
+
 public interface IConfluenceClient {
 	
-	public void login(String url) throws Exception;
-	public void logout() throws Exception;
+	public static String RPC_USER  = "xmlrpc";
 	
-	public PageInfo getInfo(String spaceKey, String pageTitle) throws Exception;
+	public void login(String url, String user, String password, Logger logger) throws Exception;
+	public void logout(Logger logger) throws Exception;
+	
+	public PageInfo getInfo(String spaceKey, String pageTitle, Logger logger) throws Exception;
 	
 	public class PageInfo {
 		public String spaceKey;
@@ -14,5 +18,5 @@ public interface IConfluenceClient {
 		public String pageTitle;
 	}
 	
-	public void updatePage(PageInfo pageInfo, String pageContent) throws Exception;
+	public void updatePage(PageInfo pageInfo, String pageContent, Logger logger) throws Exception;
 }

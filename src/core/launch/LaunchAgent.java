@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import core.launch.confluence.ConfluenceUpdater;
 import core.launch.data.Artifact;
 import core.launch.data.Error;
 import core.launch.data.StatusManager.Status;
@@ -21,6 +22,7 @@ import core.persistence.Configuration;
 import core.persistence.History;
 import core.runtime.FileManager;
 import core.runtime.TaskManager;
+import core.runtime.confluence.IConfluenceClient;
 import core.runtime.http.IHttpServer;
 import core.runtime.logger.ErrorManager;
 import core.runtime.logger.Logger;
@@ -46,6 +48,7 @@ public class LaunchAgent extends LifecycleObject {
 	private PropertyContainer propertyContainer;
 	private ArrayList<AbstractOperation> operations;
 	private NotificationManager notificationManager;
+	private ConfluenceUpdater confluenceUpdater;
 	private LaunchHistory launchHistory;
 	
 	private boolean aboard;
@@ -62,6 +65,7 @@ public class LaunchAgent extends LifecycleObject {
 			TaskManager taskManager, 
 			ISmtpClient smtpClient,
 			IHttpServer httpServer,
+			IConfluenceClient confluenceClient,
 			LaunchConfig launchConfig,
 			AbstractTrigger trigger)
 	{
@@ -86,7 +90,8 @@ public class LaunchAgent extends LifecycleObject {
 			}
 		}
 		
-		notificationManager = new NotificationManager(history, cache, smtpClient, httpServer, this);
+		notificationManager = new NotificationManager(history, cache, smtpClient, httpServer.getConfig(), this);
+		confluenceUpdater = new ConfluenceUpdater(history, httpServer.getConfig(), configuration, confluenceClient, this);
 		
 		launchHistory = new LaunchHistory(this, fileManager);
 		for(AbstractOperation operation : operations){
@@ -245,6 +250,15 @@ public class LaunchAgent extends LifecycleObject {
 			history.add(launchHistory);
 		}catch(Exception e){
 			logger.error(Module.COMMON, e);
+		}
+		
+		// update confluence
+		if(confluenceUpdater.isReady()){
+			try{
+				confluenceUpdater.update();
+			}catch(Exception e){
+				logger.error(Module.COMMON, e);
+			}
 		}
 		
 		// open browser

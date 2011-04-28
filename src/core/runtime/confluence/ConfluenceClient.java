@@ -15,16 +15,12 @@ import core.runtime.logger.ILogConfig.Module;
 public class ConfluenceClient implements ISystemComponent, IConfluenceClient {
 
 	private static String RPC_PATH  = "/rpc/xmlrpc";
-	private static String RPC_USER  = "xmlrpc";
-	private static String RPC_PASSWORD  = "xmlrpc";
-	
-	private Logger logger;
 	
 	private XmlRpcClient rpc;
 	private String login;
 	
-	public ConfluenceClient(Logger logger){	
-		this.logger = logger;
+	public ConfluenceClient(){
+		rpc = null;
 		login = null;
 	}
 	
@@ -35,10 +31,10 @@ public class ConfluenceClient implements ISystemComponent, IConfluenceClient {
 	public void shutdown() throws Exception {}
 	
 	@Override
-	public void login(String url) throws Exception {
+	public void login(String url, String user, String password, Logger logger) throws Exception {
 		
 		if(login == null){
-			logger.log(Module.COMMON, "login to confluence ("+url+")");
+			logger.log(Module.COMMON, "login to confluence ("+user+"@"+url+")");
 			
 			String uri = url+RPC_PATH;
 			XmlRpcClientConfigImpl rpcConfig = new XmlRpcClientConfigImpl();
@@ -47,8 +43,8 @@ public class ConfluenceClient implements ISystemComponent, IConfluenceClient {
 			rpc.setConfig(rpcConfig);
 			
 	        Vector<String> params = new Vector<String>(2);
-	        params.add(RPC_USER);
-	        params.add(RPC_PASSWORD);
+	        params.add(user);
+	        params.add(password);
 	        login = (String) rpc.execute("confluence1.login", params);
 	        
 	        logger.debug(Module.COMMON, "confluence login: "+login);
@@ -58,7 +54,7 @@ public class ConfluenceClient implements ISystemComponent, IConfluenceClient {
 	}
 
 	@Override
-	public void logout() throws Exception {
+	public void logout(Logger logger) throws Exception {
 		
 		if(login != null){
 			logger.log(Module.COMMON, "logout from confluence");
@@ -79,7 +75,7 @@ public class ConfluenceClient implements ISystemComponent, IConfluenceClient {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public PageInfo getInfo(String spaceKey, String pageTitle) throws Exception {
+	public PageInfo getInfo(String spaceKey, String pageTitle, Logger logger) throws Exception {
 		
 		if(login != null){
 			logger.debug(Module.COMMON, "get confluence page-id ("+spaceKey+"::"+pageTitle+")");
@@ -104,7 +100,7 @@ public class ConfluenceClient implements ISystemComponent, IConfluenceClient {
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public void updatePage(PageInfo pageInfo, String pageContent) throws Exception {
+	public void updatePage(PageInfo pageInfo, String pageContent, Logger logger) throws Exception {
 		
 		if(login != null){
 			logger.debug(Module.COMMON, "update content for confluence page-id ("+pageInfo.pageId+")");
@@ -121,9 +117,11 @@ public class ConfluenceClient implements ISystemComponent, IConfluenceClient {
 	            new Object[] {login, params}
 	        );   
 	        
-	        String updated = result.get("content");
-	        if(updated == null || !updated.equals(pageContent)){
+	        String update = result.get("content");
+	        if(update == null || !update.equals(pageContent)){
 	        	throw new Exception("update failed");
+	        }else{
+	        	logger.debug(Module.COMMON, "confluence updated ("+update.getBytes().length+" bytes)");
 	        }
 		}else{
 			throw new Exception("not logged in");

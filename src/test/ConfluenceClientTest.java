@@ -7,6 +7,7 @@ import java.util.Date;
 import org.junit.Test;
 
 import core.runtime.confluence.ConfluenceClient;
+import core.runtime.confluence.IConfluenceClient;
 import core.runtime.confluence.IConfluenceClient.PageInfo;
 import core.runtime.logger.ILogConfig;
 import core.runtime.logger.Logger;
@@ -31,19 +32,19 @@ public class ConfluenceClientTest {
 				return Level.DEBUG;
 			}
 		});
-		client = new ConfluenceClient(logger);
+		client = new ConfluenceClient();
 	}
 	
 	@Test public void testGetInfo() {
 		
 		logger.info(Module.COMMON, "Confluence Info");
 		try{
-			client.login(CONFLUENCE_SERVER);
+			client.login(CONFLUENCE_SERVER, IConfluenceClient.RPC_USER, IConfluenceClient.RPC_USER, logger);
 			try{
-				PageInfo pageInfo = client.getInfo(CONFLUENCE_SPACE_KEY, CONFLUENCE_PAGE_TITLE);
+				PageInfo pageInfo = client.getInfo(CONFLUENCE_SPACE_KEY, CONFLUENCE_PAGE_TITLE, logger);
 				assertEquals(CONFLUENCE_PAGE_ID, pageInfo.pageId);
 			}finally{
-				client.logout();
+				client.logout(logger);
 			}
 		}catch(Exception e){
 			logger.error(Module.COMMON, e);
@@ -55,12 +56,12 @@ public class ConfluenceClientTest {
 		
 		logger.info(Module.COMMON, "Confluence Update");
 		try{
-			client.login(CONFLUENCE_SERVER);
+			client.login(CONFLUENCE_SERVER, IConfluenceClient.RPC_USER, IConfluenceClient.RPC_USER, logger);
 			try{
-				PageInfo pageInfo = client.getInfo(CONFLUENCE_SPACE_KEY, CONFLUENCE_PAGE_TITLE);
-				client.updatePage(pageInfo, ""+(new Date()).getTime());
+				PageInfo pageInfo = client.getInfo(CONFLUENCE_SPACE_KEY, CONFLUENCE_PAGE_TITLE, logger);
+				client.updatePage(pageInfo, ""+(new Date()).getTime(), logger);
 			}finally{
-				client.logout();
+				client.logout(logger);
 			}
 		}catch(Exception e){
 			logger.error(Module.COMMON, e);

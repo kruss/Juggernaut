@@ -26,6 +26,7 @@ import core.persistence.History;
 import core.runtime.FileManager;
 import core.runtime.TaskManager;
 import core.runtime.ScheduleManager.Priority;
+import core.runtime.confluence.IConfluenceClient;
 import core.runtime.http.IHttpServer;
 import core.runtime.logger.ErrorManager;
 import core.runtime.smtp.ISmtpClient;
@@ -37,11 +38,13 @@ import core.runtime.smtp.ISmtpClient;
 public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitializer {
 	
 	public enum GROUPS {
-		GENERAL, NOTIFICATION
+		GENERAL, NOTIFICATION, CONFLUENCE
 	}
 	
 	public enum OPTIONS {
-		ACTIVE, DESCRIPTION, CLEAN, TIMEOUT, PRIORITY, NOTIFICATION, ADMINISTRATORS, COMMITTERS, MESSAGE
+		ACTIVE, DESCRIPTION, CLEAN, TIMEOUT, PRIORITY, 
+		NOTIFICATION, ADMINISTRATORS, COMMITTERS, MESSAGE, 
+		UPDATE, SPACE
 	}
 
 	private String id;
@@ -85,7 +88,7 @@ public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitialize
 		));
 		optionContainer.setOption(new Option(
 				GROUPS.NOTIFICATION.toString(),
-				OPTIONS.NOTIFICATION.toString(), "Perform eMail-notifications",
+				OPTIONS.NOTIFICATION.toString(), "Perform eMail notifications",
 				Type.BOOLEAN, false
 		));
 		optionContainer.setOption(new Option(
@@ -102,6 +105,16 @@ public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitialize
 				GROUPS.NOTIFICATION.toString(),
 				OPTIONS.MESSAGE.toString(), "Optional notification message", 
 				Type.TEXT_AREA, ""
+		));
+		optionContainer.setOption(new Option(
+				GROUPS.CONFLUENCE.toString(),
+				OPTIONS.UPDATE.toString(), "Perform Confluence updates",
+				Type.BOOLEAN, false
+		));
+		optionContainer.setOption(new Option(
+				GROUPS.CONFLUENCE.toString(),
+				OPTIONS.SPACE.toString(), "The Confluence-Space to update pages: Juggernaut_<Launch>|_Link", 
+				Type.TEXT_SMALL, ""
 		));
 		
 		operations = new ArrayList<AbstractOperationConfig>();
@@ -173,11 +186,22 @@ public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitialize
 		return optionContainer.getOption(OPTIONS.MESSAGE.toString()).getStringValue();
 	}
 	
+	public boolean isConfluenceUpdate(){
+		return optionContainer.getOption(OPTIONS.UPDATE.toString()).getBooleanValue();
+	}
+	
+	public String getConfluenceSpace() {
+		return optionContainer.getOption(OPTIONS.SPACE.toString()).getStringValue();
+	}
+	
 	public void setDirty(boolean dirty){ this.dirty = dirty; }
 	public boolean isDirty(){ return dirty; }
 	
 	public boolean isValid(){
 		
+		if(isConfluenceUpdate() && getConfluenceSpace().isEmpty()){
+			return false;
+		}
 		for(AbstractOperationConfig config : operations){
 			if(config.isActive() && !config.isValid()){ return false; }
 		}
@@ -261,11 +285,12 @@ public class LaunchConfig implements Comparable<LaunchConfig>, IOptionInitialize
 			TaskManager taskManager, 
 			ISmtpClient smtpClient,
 			IHttpServer httpServer,
+			IConfluenceClient confluenceClient,
 			AbstractTrigger trigger)
 	{
 		return new LaunchAgent(
 				errorManager, configuration, cache, history, fileManager, 
-				taskManager, smtpClient, httpServer, this, trigger
+				taskManager, smtpClient, httpServer, confluenceClient, this, trigger
 		);
 	}
 }

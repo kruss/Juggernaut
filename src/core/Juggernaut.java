@@ -12,6 +12,7 @@ import core.runtime.LaunchManager;
 import core.runtime.Registry;
 import core.runtime.ScheduleManager;
 import core.runtime.TaskManager;
+import core.runtime.confluence.ConfluenceClient;
 import core.runtime.http.HttpServer;
 import core.runtime.logger.ErrorManager;
 import core.runtime.logger.SystemLogger;
@@ -219,6 +220,7 @@ public class Juggernaut extends AbstractSystem {
 		public LaunchManager launchManager;
 		public ScheduleManager scheduleManager;
 		public HttpServer httpServer;
+		public ConfluenceClient confluenceClient;
 		
 		public Runtime() throws Exception {
 			
@@ -242,6 +244,8 @@ public class Juggernaut extends AbstractSystem {
 					core.taskManager, 
 					logging.logger);
 			add(httpServer);
+			confluenceClient = new ConfluenceClient();
+			add(confluenceClient);
 			launchManager = new LaunchManager(
 					persistence.configuration,
 					core.fileManager,
@@ -256,6 +260,7 @@ public class Juggernaut extends AbstractSystem {
 					core.taskManager,
 					smtpClient,
 					httpServer,
+					confluenceClient,
 					launchManager, 
 					logging.logger);
 			add(scheduleManager);
@@ -306,6 +311,7 @@ public class Juggernaut extends AbstractSystem {
 					core.taskManager, 
 					runtime.smtpClient,
 					runtime.httpServer,
+					runtime.confluenceClient,
 					runtime.launchManager, 
 					runtime.registry,
 					logging.logger);

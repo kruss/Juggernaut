@@ -6,7 +6,7 @@ import core.launch.data.Artifact;
 import core.launch.data.StatusManager.Status;
 import core.persistence.Cache;
 import core.persistence.History;
-import core.runtime.http.IHttpServer;
+import core.runtime.http.IHttpConfig;
 import core.runtime.logger.ILogConfig.Module;
 import core.runtime.smtp.ISmtpClient;
 
@@ -20,16 +20,16 @@ public class NotificationManager {
 	private History history;
 	private Cache cache;
 	private ISmtpClient smtpClient;
-	private IHttpServer httpServer;
+	private IHttpConfig httpConfig;
 	private LaunchAgent launch;
 	
 	public NotificationManager(
-			History history, Cache cache, ISmtpClient smtpClient, IHttpServer httpServer, LaunchAgent launch
+			History history, Cache cache, ISmtpClient smtpClient, IHttpConfig httpConfig, LaunchAgent launch
 	){
 		this.history = history;
 		this.cache = cache;
 		this.smtpClient = smtpClient;
-		this.httpServer = httpServer;
+		this.httpConfig = httpConfig;
 		this.launch = launch;
 	}
 
@@ -45,7 +45,7 @@ public class NotificationManager {
 				launch.getLogger().log(Module.SMTP, "Notification required for Errors");
 			}
 			if(statusChanged || errorChanged){
-				Notification notification = new Notification(history, smtpClient, httpServer, launch);
+				Notification notification = new Notification(history, smtpClient, httpConfig, launch);
 				Artifact artifact = notification.performNotification();
 				launch.getArtifacts().add(artifact);
 				

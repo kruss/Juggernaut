@@ -20,6 +20,7 @@ import core.persistence.Cache;
 import core.persistence.Configuration;
 import core.persistence.History;
 import core.runtime.LaunchManager.LaunchStatus;
+import core.runtime.confluence.IConfluenceClient;
 import core.runtime.http.IHttpServer;
 import core.runtime.logger.ErrorManager;
 import core.runtime.logger.Logger;
@@ -42,6 +43,7 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 	private TaskManager taskManager;
 	private ISmtpClient smtpClient;
 	private IHttpServer httpServer;
+	private IConfluenceClient confluenceClient;
 	private LaunchManager launchManager;
 	private Logger logger;
 	private SchedulerTask scheduler;
@@ -57,6 +59,7 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 			TaskManager taskManager,
 			ISmtpClient smtpClient,
 			IHttpServer httpServer,
+			IConfluenceClient confluenceClient,
 			LaunchManager launchManager, 
 			Logger logger
 	){
@@ -68,6 +71,7 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 		this.taskManager = taskManager;
 		this.smtpClient = smtpClient;
 		this.httpServer = httpServer;
+		this.confluenceClient = confluenceClient;
 		this.launchManager = launchManager;
 		this.logger = logger;
 		scheduler = null;
@@ -161,7 +165,7 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 
 					LaunchAgent launch = launchConfig.createLaunch(
 							errorManager, configuration, cache, history, fileManager, 
-							taskManager, smtpClient, httpServer, trigger
+							taskManager, smtpClient, httpServer, confluenceClient, trigger
 					);
 					LaunchStatus launchStatus = launchManager.runLaunch(launch);
 					if(launchStatus.launched){

@@ -38,6 +38,7 @@ import core.runtime.LaunchManager;
 import core.runtime.Registry;
 import core.runtime.TaskManager;
 import core.runtime.LaunchManager.LaunchStatus;
+import core.runtime.confluence.IConfluenceClient;
 import core.runtime.http.IHttpServer;
 import core.runtime.logger.ErrorManager;
 import core.runtime.logger.Logger;
@@ -56,6 +57,7 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 	private TaskManager taskManager;
 	private ISmtpClient smtpClient;
 	private IHttpServer httpServer;
+	private IConfluenceClient confluenceClient;
 	private LaunchManager launchManager;
 	private Logger logger;
 	
@@ -86,6 +88,7 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 			TaskManager taskManager,
 			ISmtpClient smtpClient,
 			IHttpServer httpServer,
+			IConfluenceClient confluenceClient,
 			LaunchManager launchManager,
 			Registry registry,
 			Logger logger)
@@ -98,6 +101,7 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 		this.taskManager = taskManager;
 		this.smtpClient = smtpClient;
 		this.httpServer = httpServer;
+		this.confluenceClient = confluenceClient;
 		this.launchManager = launchManager;
 		this.logger = logger;
 		
@@ -391,7 +395,7 @@ public class ConfigPanel extends JPanel implements ISystemComponent, IChangeList
 					LaunchConfig config = configuration.getLaunchConfigs().get(index);
 					LaunchAgent launch = config.createLaunch(
 							errorManager, configuration, cache, history, 
-							fileManager, taskManager, smtpClient, httpServer, 
+							fileManager, taskManager, smtpClient, httpServer, confluenceClient, 
 							(new UserTriggerConfig()).createTrigger(configuration, cache, taskManager, logger)
 					);
 					LaunchStatus status = launchManager.runLaunch(launch);

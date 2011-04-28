@@ -32,6 +32,10 @@ import core.runtime.FileManager;
 import core.runtime.IToolConfig;
 import core.runtime.MaintenanceConfig;
 import core.runtime.TaskManager;
+import core.runtime.confluence.ConfluenceClient;
+import core.runtime.confluence.ConfluenceTest;
+import core.runtime.confluence.IConfluenceClient;
+import core.runtime.confluence.IConfluenceConfig;
 import core.runtime.http.HttpTest;
 import core.runtime.http.IHttpConfig;
 import core.runtime.logger.LogConfig;
@@ -52,6 +56,7 @@ implements
 	IToolConfig,
 	ISmtpConfig,
 	IHttpConfig,
+	IConfluenceConfig,
 	IChangeable
 {
 
@@ -66,12 +71,12 @@ implements
 	}
 	
 	public enum GROUPS {
-		GENERAL, HTTP, SMTP, RUNTIME, TOOL
+		GENERAL, HTTP, SMTP, CONFLUENCE, RUNTIME, TOOL
 	}
 	
 	public enum OPTIONS {
 		SCHEDULER, SCHEDULER_INTERVAL, MAXIMUM_AGENTS, MAXIMUM_HISTORY, SERVER, HTTP_PORT, 
-		NOTIFICATION, ADMINISTRATORS, SMTP_SERVER, HOST_ADDRESS, 
+		NOTIFICATION, ADMINISTRATORS, SMTP_SERVER, HOST_ADDRESS, CONFLUENCE_SERVER,
 		PROPERTY, UNLOCKER
 	}
 	
@@ -135,7 +140,7 @@ implements
 		));
 		optionContainer.setOption(new Option(
 				GROUPS.SMTP.toString(),
-				OPTIONS.NOTIFICATION.toString(), "Perform eMail-notifications",
+				OPTIONS.NOTIFICATION.toString(), "Perform eMail notifications",
 				Type.BOOLEAN, false
 		));
 		optionContainer.setOption(new Option(
@@ -152,6 +157,11 @@ implements
 				GROUPS.SMTP.toString(),
 				OPTIONS.HOST_ADDRESS.toString(), "The HOST-Address for notifications", 
 				Type.TEXT_SMALL, "SMTP@"+Constants.APP_NAME
+		));
+		optionContainer.setOption(new Option(
+				GROUPS.CONFLUENCE.toString(),
+				OPTIONS.CONFLUENCE_SERVER.toString(), "The Confluence-Server for updates (user/pwd: "+IConfluenceClient.RPC_USER+")", 
+				Type.TEXT_SMALL, ""
 		));
 		optionContainer.setOption(new Option(
 				GROUPS.RUNTIME.toString(),
@@ -206,6 +216,11 @@ implements
 		OptionEditor.setOptionDelegate(
 				container.getOption(OPTIONS.SMTP_SERVER.toString()),
 				new SmtpTest(new SmtpClient(this), logger)
+		);
+		
+		OptionEditor.setOptionDelegate(
+				container.getOption(OPTIONS.CONFLUENCE_SERVER.toString()),
+				new ConfluenceTest(new ConfluenceClient(), logger)
 		);
 	}
 	@Override
@@ -269,6 +284,11 @@ implements
 		
 		String value = optionContainer.getOption(OPTIONS.ADMINISTRATORS.toString()).getStringValue();
 		return StringTools.split(value, ", ");
+	}
+	
+	@Override
+	public String getConfluenceServer() {
+		return optionContainer.getOption(OPTIONS.CONFLUENCE_SERVER.toString()).getStringValue();
 	}
 	
 	public ArrayList<Property> getSystemProperties() {
