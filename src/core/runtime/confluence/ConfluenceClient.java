@@ -105,6 +105,7 @@ public class ConfluenceClient implements ISystemComponent, IConfluenceClient {
 		if(login != null){
 			logger.debug(Module.COMMON, "update content for confluence page-id ("+pageInfo.pageId+")");
 			
+			pageContent = pageContent.replaceAll("\r\n", "\n");
 			Map<String, String> params = new HashMap<String, String>();
 			params.put("space", pageInfo.spaceKey);
 			params.put("id", pageInfo.pageId);
@@ -117,11 +118,11 @@ public class ConfluenceClient implements ISystemComponent, IConfluenceClient {
 	            new Object[] {login, params}
 	        );   
 	        
-	        String update = result.get("content");
-	        if(update == null || !update.equals(pageContent)){
+	        String pageUpdate = result.get("content");	        
+	        if(pageUpdate == null || !pageUpdate.equals(pageContent)){
 	        	throw new Exception("update failed");
 	        }else{
-	        	logger.debug(Module.COMMON, "confluence updated ("+update.getBytes().length+" bytes)");
+	        	logger.debug(Module.COMMON, "confluence updated ("+pageUpdate.getBytes().length+" bytes)");
 	        }
 		}else{
 			throw new Exception("not logged in");

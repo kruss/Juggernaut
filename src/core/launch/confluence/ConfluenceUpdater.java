@@ -21,6 +21,8 @@ public class ConfluenceUpdater {
 	private static final int HISTORY_MAX = 5;
 	private static final int DESCRIPTION_MAX = 150;
 	
+	private static final String BREAK = "\n";
+	
 	private History history;
 	private IConfluenceConfig confluenceConfig;
 	private IHttpConfig httpConfig;
@@ -101,29 +103,29 @@ public class ConfluenceUpdater {
 		StringBuilder content = new StringBuilder();
 		content.append(
 				"h2. Launch \\[ "+launch.getConfig().getName()+" \\] - "+
-				DateTools.getTextDate(launch.getStatusManager().getStart())+"\r\n\r\n"
+				DateTools.getTextDate(launch.getStatusManager().getStart())+BREAK+BREAK
 		);
 		Status currentStatus = launch.getStatusManager().getStatus();
 		Status lastStatus = previous != null ? previous.status : null;
 		if(lastStatus != null && lastStatus != currentStatus){
-			content.append("* Status: "+getStatusIcon(lastStatus)+" -> "+getStatusIcon(currentStatus)+"\r\n");
+			content.append("* Status: "+getStatusIcon(lastStatus)+" -> "+getStatusIcon(currentStatus)+BREAK);
 		}else{
-			content.append("* Status: "+getStatusIcon(currentStatus)+"\r\n");
+			content.append("* Status: "+getStatusIcon(currentStatus)+BREAK);
 		}
 		String description = launch.getConfig().getDescription();
 		if(!description.isEmpty()){
-			content.append("* Description: "+description+"\r\n");
+			content.append("* Description: "+description+BREAK);
 		}
 		String trigger = launch.getTrigger().getStatus().message;
 		if(!trigger.isEmpty()){
-			content.append("* Trigger: "+trigger+"\r\n");
+			content.append("* Trigger: "+trigger+BREAK);
 		}
 		if(httpConfig.isHttpServer()){
 			try{
 				String url = 
 					"http://"+SystemTools.getHostName()+":"+httpConfig.getHttpPort()+
 					"/"+launch.getStatusManager().getStart().getTime()+"/"+Constants.INDEX_NAME+".htm";
-				content.append("* Logfile: ["+url+"|"+url+"]\r\n");
+				content.append("* Logfile: ["+url+"|"+url+"]"+BREAK);
 			}catch(Exception e){
 				launch.getLogger().error(Module.HTTP, e);
 			}
@@ -134,27 +136,27 @@ public class ConfluenceUpdater {
 	private String getOperationsContent() {
 		
 		StringBuilder content = new StringBuilder();
-		content.append("\r\nh3. Operations\r\n");
+		content.append(BREAK+"h3. Operations"+BREAK);
 		if(launch.getOperations().size() > 0){
 			for(AbstractOperation operation : launch.getOperations()){	
-				content.append("\r\nh4. "+operation.getIndex()+".) "+operation.getConfig().getUIName()+"\r\n\r\n");
+				content.append(BREAK+"h4. "+operation.getIndex()+".) "+operation.getConfig().getUIName()+BREAK+BREAK);
 				Status currentStatus = operation.getStatusManager().getStatus();
 				OperationHistory operationHistory = previous != null ? previous.getOperation(operation.getConfig().getId()) : null;
 				Status lastStatus = operationHistory != null ? operationHistory.status : null;
 				
 				if(lastStatus != null && lastStatus != currentStatus){
-					content.append("* Status: "+getStatusIcon(lastStatus)+" -> "+getStatusIcon(currentStatus)+"\r\n");
+					content.append("* Status: "+getStatusIcon(lastStatus)+" -> "+getStatusIcon(currentStatus)+BREAK);
 				}else{
-					content.append("* Status: "+getStatusIcon(currentStatus)+"\r\n");
+					content.append("* Status: "+getStatusIcon(currentStatus)+BREAK);
 				}
 				String description = operation.getRuntimeDescription();
 				if(!description.isEmpty()){
-					content.append("* Description: "+StringTools.border(description, DESCRIPTION_MAX)+"\r\n");
+					content.append("* Description: "+StringTools.border(description, DESCRIPTION_MAX)+BREAK);
 				}
 			}
 
 		}else{
-			content.append("_empty_\r\n");
+			content.append("_empty_"+BREAK);
 		}
 		return content.toString();
 	}
@@ -162,17 +164,17 @@ public class ConfluenceUpdater {
 	private String getHistoryContent() {
 		
 		StringBuilder content = new StringBuilder();
-		content.append("\r\nh3. History\r\n");
+		content.append(BREAK+"h3. History"+BREAK);
 		if(previous != null){
 			int count = 0;
 			LaunchHistory entry = previous;
 			while(entry != null && count < HISTORY_MAX){
-				content.append("* "+DateTools.getTextDate(entry.start)+" "+getStatusIcon(entry.status)+"\r\n");
+				content.append("* "+DateTools.getTextDate(entry.start)+" "+getStatusIcon(entry.status)+BREAK);
 				entry = history.getPrevious(entry);
 				count++;
 			}
 		}else{			
-			content.append("_empty_\r\n");
+			content.append("_empty_"+BREAK);
 		}
 		return content.toString();
 	}
