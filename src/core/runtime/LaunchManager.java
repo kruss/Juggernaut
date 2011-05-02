@@ -69,7 +69,7 @@ public class LaunchManager implements ISystemComponent, ILifecycleListener, ICha
 
 	@Override
 	public void init() throws Exception {
-		cleanup();
+		cleanupLegacyFolders();
 	}
 
 	@Override
@@ -80,6 +80,7 @@ public class LaunchManager implements ISystemComponent, ILifecycleListener, ICha
 		}
 	}
 	
+	/** async run a launch */
 	public LaunchStatus runLaunch(LaunchAgent agent) {
 		
 		synchronized(agents){
@@ -98,11 +99,27 @@ public class LaunchManager implements ISystemComponent, ILifecycleListener, ICha
 		}
 	}
 	
+	/** sync stop a launch */
 	public void stopLaunch(String id) {
 		
 		LaunchAgent agent = getLaunch(id);
 		if(agent != null){ 
-			agent.asyncStop(agent.getOperations().size() * 1000); 
+			long timeout = agent.getOperations().size() * 1000;
+			try{
+				agent.syncStop(timeout);
+				boolean stuck = false;
+				synchronized(agents){
+					if(agents.contains(agent)){
+						agents.remove(agent);
+						stuck = true;
+					}
+				}
+				if(stuck){
+					notifyListeners();
+				}
+			}catch(Exception e){
+				logger.error(Module.COMMON, e);
+			}
 		}
 	}
 	
@@ -173,6 +190,7 @@ public class LaunchManager implements ISystemComponent, ILifecycleListener, ICha
 		public String trigger;
 		public Date start;
 		public int progress;
+		public Date proof;
 		public Status status;
 		
 		public LaunchInfo(LaunchAgent agent){
@@ -181,6 +199,7 @@ public class LaunchManager implements ISystemComponent, ILifecycleListener, ICha
 			trigger = agent.getTrigger().getStatus().message;
 			start = agent.getStatusManager().getStart();
 			progress = agent.getStatusManager().getProgress();
+			proof = agent.getProofOfLiveMonitor().getUpdated();
 			status = agent.getStatusManager().getStatus();
 		}
 		
@@ -212,11 +231,9 @@ public class LaunchManager implements ISystemComponent, ILifecycleListener, ICha
 		}
 	}
 	
-
-	public void cleanup() {
+	private void cleanupLegacyFolders() {
 		
-		// silently delete any legacy items in build-folder
-		final ArrayList<File> legacyFiles = getLegacyFiles();
+		final ArrayList<File> legacyFiles = getLegacyFolders();
 		if(legacyFiles.size() > 0){
 			Thread thread = new Thread(new Runnable(){
 				@Override
@@ -239,9 +256,9 @@ public class LaunchManager implements ISystemComponent, ILifecycleListener, ICha
 		}
 	}
 	
-	private ArrayList<File> getLegacyFiles() {
+	private ArrayList<File> getLegacyFolders() {
 		
-		ArrayList<File> files = new ArrayList<File>();
+		ArrayList<File> folders = new ArrayList<File>();
 		for(File file : fileManager.getBuildFolder().listFiles()){
 			boolean legacy = true;
 			if(file.isDirectory()){
@@ -253,9 +270,9 @@ public class LaunchManager implements ISystemComponent, ILifecycleListener, ICha
 				}
 			}
 			if(legacy){
-				files.add(file);
+				folders.add(file);
 			}
 		}
-		return files;
+		return folders;
 	}
 }

@@ -31,6 +31,8 @@ import core.runtime.smtp.ISmtpClient;
 /** checks the configured launches for triggers to be fired */
 public class ScheduleManager implements ISystemComponent, IChangeable {
 
+	public static final String SCHEDULER_TASK_NAME = "SchedulerTask";
+	
 	public enum Priority {
 		HIGH, NORMAL, LOW
 	}
@@ -236,7 +238,7 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 		private boolean cyclic;
 		
 		public SchedulerTask(boolean cyclic){
-			super("SchedulerTask", taskManager);
+			super(SCHEDULER_TASK_NAME, taskManager);
 			this.cyclic = cyclic;
 			updateCycle();
 		}

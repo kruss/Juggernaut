@@ -54,6 +54,8 @@ public class LaunchAgent extends LifecycleObject {
 	private boolean aboard;
 	private LaunchMode mode;
 	
+	private ProofOfLiveMonitor monitor;
+	
 	public LaunchHistory getHistory(){ return launchHistory; }
 	
 	public LaunchAgent(
@@ -101,6 +103,7 @@ public class LaunchAgent extends LifecycleObject {
 		statusManager.setProgressMax(operations.size());
 		aboard = false;
 		mode = LaunchMode.AUTOMATED;
+		monitor = new ProofOfLiveMonitor(this);
 	}
 	
 	public LaunchConfig getConfig(){ return launchConfig; }
@@ -109,6 +112,7 @@ public class LaunchAgent extends LifecycleObject {
 	public ArrayList<AbstractOperation> getOperations(){ return operations; }
 	public void setMode(LaunchMode mode){ this.mode = mode; }
 	public LaunchMode getMode(){ return mode; }
+	public ProofOfLiveMonitor getProofOfLiveMonitor(){ return monitor; }
 	
 	@Override
 	public String getId() {

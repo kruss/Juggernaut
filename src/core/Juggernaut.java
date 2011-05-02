@@ -12,6 +12,7 @@ import core.runtime.LaunchManager;
 import core.runtime.Registry;
 import core.runtime.ScheduleManager;
 import core.runtime.TaskManager;
+import core.runtime.WatchDog;
 import core.runtime.confluence.ConfluenceClient;
 import core.runtime.http.HttpServer;
 import core.runtime.logger.ErrorManager;
@@ -221,6 +222,7 @@ public class Juggernaut extends AbstractSystem {
 		public ScheduleManager scheduleManager;
 		public HttpServer httpServer;
 		public ConfluenceClient confluenceClient;
+		public WatchDog watchDog;
 		
 		public Runtime() throws Exception {
 			
@@ -264,6 +266,14 @@ public class Juggernaut extends AbstractSystem {
 					launchManager, 
 					logging.logger);
 			add(scheduleManager);
+			watchDog = new WatchDog(
+					persistence.configuration,
+					core.taskManager,
+					smtpClient,
+					scheduleManager,
+					launchManager,
+					logging.logger);
+			add(watchDog);
 		}
 	}
 	

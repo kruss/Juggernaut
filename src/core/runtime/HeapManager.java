@@ -71,7 +71,7 @@ public class HeapManager implements ISystemComponent, IChangeable {
 
 	private class HeapStatusUpdater extends Task {
 
-		public static final long CYCLE = 15 * 1000; // 15 sec
+		public static final long CYCLE = 30 * 1000; // 30 sec
 
 		public HeapStatusUpdater() {
 			super("HeapStatus", taskManager);
