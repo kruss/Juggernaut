@@ -134,7 +134,7 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 	private synchronized void checkSchedules() {
 		
 		ArrayList<LaunchConfig> launchConfigs = getSortedLaunchConfigs();
-		logger.debug(Module.COMMON, "Scheduler START => checking "+launchConfigs.size()+" launches");
+		logger.debug(Module.COMMON, "Scheduler START => checking "+launchConfigs.size()+" launch(s)");
 		int triggered = 0;
 		for(LaunchConfig launchConfig : launchConfigs){
 			if(launchManager.isReady()){
@@ -146,7 +146,7 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 				break;
 			}
 		}
-		logger.debug(Module.COMMON, "Scheduler STOP => "+triggered+" launches triggered");
+		logger.debug(Module.COMMON, "Scheduler STOP => "+triggered+" launch(s) triggered");
 	}
 	
 	private boolean checkSchedules(LaunchConfig launchConfig) {
@@ -253,7 +253,7 @@ public class ScheduleManager implements ISystemComponent, IChangeable {
 			if(!configuration.getMaintenanceConfig().isMaintenanceToday(new Date())){
 				checkSchedules();
 			}else{
-				logger.debug(Module.COMMON, "Scheduler IDLE for Maintenance");
+				logger.debug(Module.COMMON, "Scheduler IDLE for maintenance");
 			}
 			setUpdated(new Date());
 			updateCycle();

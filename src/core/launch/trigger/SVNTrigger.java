@@ -66,7 +66,7 @@ public class SVNTrigger extends AbstractTrigger {
 					}
 				}else{
 					status = new TriggerStatus(
-							config.getName()+" repository idle", false
+							config.getName()+" revision not changed", false
 					);
 				}
 			}
