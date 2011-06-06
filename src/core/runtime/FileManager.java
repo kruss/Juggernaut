@@ -107,7 +107,7 @@ public class FileManager implements ISystemComponent {
 			String arguments = file.getAbsolutePath();
 			String path = SystemTools.getWorkingDir();
 			CommandTask task = new CommandTask(
-					command, arguments, path, taskManager, logger
+					command, arguments, path, null, taskManager, logger
 			);
 			task.syncRun(0, IToolConfig.UNLOCKER_TIMEOUT);
 			

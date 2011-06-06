@@ -16,7 +16,7 @@ import java.io.File;
 public class Constants {
 
 	public static final String 		APP_NAME = "Juggernaut";
-	public static final String 		APP_VERSION = "0.7.1"; 
+	public static final String 		APP_VERSION = "0.8.0"; 
 	public static final String 		APP_FULL_NAME = APP_NAME+" ("+APP_VERSION+")";
 	public static final int 		APP_WIDTH = 800;
 	public static final int 		APP_HEIGHT = 600;

@@ -16,7 +16,7 @@ public class EclipseOperationConfig extends AbstractOperationConfig {
 	public static final String OPERATION_NAME = "Eclipse";
 
 	public enum OPTIONS {
-		ECLIPSE, BUILD, EXCLUDE, CLEAN, STRICT, HEAP, PREFERENCES
+		ECLIPSE, BUILD, EXCLUDE, CLEAN, STRICT, HEAP, PREFERENCES, COMPILER
 	}
 	
 	public EclipseOperationConfig(){
@@ -54,6 +54,11 @@ public class EclipseOperationConfig extends AbstractOperationConfig {
 		optionContainer.setOption(new Option(
 				GROUPS.SETTINGS.toString(),
 				OPTIONS.PREFERENCES.toString(), "Optional path to a preference file (epf)", 
+				Type.TEXT, ""
+		));
+		optionContainer.setOption(new Option(
+				GROUPS.SETTINGS.toString(),
+				OPTIONS.COMPILER.toString(), "Optional compiler-path (bin-Folder)", 
 				Type.TEXT, ""
 		));
 	}
@@ -100,6 +105,10 @@ public class EclipseOperationConfig extends AbstractOperationConfig {
 	
 	public String getPreferencePath(){ 
 		return optionContainer.getOption(OPTIONS.PREFERENCES.toString()).getStringValue(); 
+	}
+	
+	public String getCompilerPath() {
+		return optionContainer.getOption(OPTIONS.COMPILER.toString()).getStringValue(); 
 	}
 	
 	@Override

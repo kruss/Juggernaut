@@ -1,6 +1,7 @@
 package util;
 
 import java.io.File;
+import java.util.HashMap;
 
 
 
@@ -15,6 +16,7 @@ public class CommandTask extends Task {
 	private String command;
 	private String arguments;
 	private String path;
+	private HashMap<String, String> environment;
 	private TaskManager taskManager;
 	private Logger logger;
 	
@@ -25,6 +27,7 @@ public class CommandTask extends Task {
 			String command, 
 			String arguments, 
 			String path, 
+			HashMap<String, String> environment,
 			TaskManager taskManager, 
 			Logger logger)
 	{
@@ -32,6 +35,7 @@ public class CommandTask extends Task {
 		this.command = command;
 		this.arguments = arguments;
 		this.path = path;
+		this.environment = environment;
 		this.taskManager = taskManager;
 		this.logger = logger;
 		
@@ -51,7 +55,7 @@ public class CommandTask extends Task {
 		
 		try{
 			String commandline = arguments.isEmpty() ? command : command+" "+arguments;
-			ProcessBuilder processBuilder = getProcessBuilder(commandline, path);
+			ProcessBuilder processBuilder = getProcessBuilder(commandline, path, environment);
 			
 			logger.log(Module.COMMAND, "command: "+commandline);
 			logger.debug(Module.COMMAND, "directory: "+path);
@@ -98,7 +102,11 @@ public class CommandTask extends Task {
 		output.append(line);
 	}
 	
-	private ProcessBuilder getProcessBuilder(String commandline, String path) throws Exception {
+	private ProcessBuilder getProcessBuilder(
+			String commandline, 
+			String path, 
+			HashMap<String, String> environment
+	) throws Exception {
 		
 		ProcessBuilder processBuilder = null;
 		
@@ -115,6 +123,10 @@ public class CommandTask extends Task {
 			processBuilder.directory(folder);
 		}else{
 			throw new Exception("invalid folder: "+path);
+		}
+		
+		if(environment != null){
+			processBuilder.environment().putAll(environment);
 		}
 		
 		return processBuilder;

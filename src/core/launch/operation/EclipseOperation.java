@@ -2,6 +2,7 @@ package core.launch.operation;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import core.launch.LaunchAgent;
 import core.launch.data.Artifact;
@@ -41,6 +42,7 @@ public class EclipseOperation extends AbstractOperation {
 		File eclipse = new File(config.getEclipsePath());
 		String command = null;
 		String directory = null;
+		HashMap<String, String> environment = null;
 		
 		if(eclipse.isFile()){
 			command = eclipse.getName();
@@ -53,11 +55,18 @@ public class EclipseOperation extends AbstractOperation {
 			throw new Exception("invalid path: "+eclipse.getAbsolutePath());
 		}
 		
+		String compiler = config.getCompilerPath();
+		if(compiler != null && !compiler.isEmpty()){
+			environment = new HashMap<String, String>();
+			environment.put("PATH", compiler+";"+System.getenv("PATH"));
+		}
+		
 		ArrayList<String> arguments = getArguments();
 		CommandTask task = new CommandTask(
 				command, 
 				StringTools.join(arguments, " "),
 				directory, 
+				environment,
 				taskManager,
 				logger
 		);

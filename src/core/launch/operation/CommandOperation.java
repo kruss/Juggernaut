@@ -39,6 +39,7 @@ public class CommandOperation extends AbstractOperation {
 				config.getDirectory().isEmpty() ? 
 						parent.getFolder() : 
 						parent.getFolder()+File.separator+config.getDirectory(), 
+				config.getEnvironment(),
 				taskManager,
 				logger
 		);

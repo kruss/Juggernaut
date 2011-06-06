@@ -2,6 +2,7 @@ package core.launch.operation;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import ui.option.Option;
 import ui.option.Option.Type;
@@ -19,7 +20,7 @@ public class CommandOperationConfig extends AbstractOperationConfig {
 	private static final int NAME_MAX = 25;
 
 	public enum OPTIONS {
-		COMMAND, DIRECTORY, ARGUMENTS, OUTPUT
+		COMMAND, DIRECTORY, ARGUMENTS, OUTPUT, ENVIRONMENT
 	}
 	
 	public CommandOperationConfig(){
@@ -43,6 +44,11 @@ public class CommandOperationConfig extends AbstractOperationConfig {
 				GROUPS.SETTINGS.toString(),
 				OPTIONS.OUTPUT.toString(), "List of output-directories to collect (comma seperated)", 
 				Type.TEXT, ""
+		));
+		optionContainer.setOption(new Option(
+				GROUPS.SETTINGS.toString(),
+				OPTIONS.ENVIRONMENT.toString(), "Environment-Variables (linewise <key=value>, commented with '//')", 
+				Type.TEXT_AREA, ""
 		));
 	}
 
@@ -82,6 +88,20 @@ public class CommandOperationConfig extends AbstractOperationConfig {
 		
 		String value = optionContainer.getOption(OPTIONS.OUTPUT.toString()).getStringValue();
 		return StringTools.split(value, ", ");
+	}
+	
+	public HashMap<String, String> getEnvironment() {
+
+		String value = optionContainer.getOption(OPTIONS.ENVIRONMENT.toString()).getStringValue();
+		ArrayList<String> entries = StringTools.split(value, "\\n", "//");
+		HashMap<String, String> map = new HashMap<String, String>();
+		for(String entry : entries){
+			String[] seg = entry.split("=");
+			if(seg.length == 2){
+				map.put(seg[0], seg[1]);
+			}
+		}
+		return map;
 	}
 	
 	@Override
