@@ -184,7 +184,7 @@ public class Window extends JFrame implements ISystemComponent, IStatusClient, I
 	private void setInfo() {
 		
 		ArrayList<String> infos = new ArrayList<String>();
-		infos.add("Schedule "+(scheduleManager.isRunning() ? "ON" : "OFF"));
+		infos.add("Scheduler "+(scheduleManager.isRunning() ? "ON" : "OFF"));
 		infos.add("Server "+(httpServer.isRunning() ? "ON" : "OFF"));
 		infos.add("Task "+taskManager.getTaskCount());
 		infos.add("Error "+errorManager.getErrorCount());

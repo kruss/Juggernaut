@@ -58,7 +58,7 @@ public class EclipseOperation extends AbstractOperation {
 		String compiler = config.getCompilerPath();
 		if(compiler != null && !compiler.isEmpty()){
 			environment = new HashMap<String, String>();
-			environment.put("PATH", compiler+";"+System.getenv("PATH"));
+			environment.put("Path", compiler+";"+System.getenv("Path"));
 		}
 		
 		ArrayList<String> arguments = getArguments();
