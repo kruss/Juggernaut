@@ -21,11 +21,7 @@ public class SearchTriggerConfig extends AbstractTriggerConfig {
 	public static final String TRIGGER_NAME = "Search";
 	
 	public enum OPTIONS {
-		URL, REVISION_START, REVISION_END, SEARCH_MODE
-	}
-	
-	public enum SearchMode {
-		LINEAR, BINARY
+		URL, REVISION_START, REVISION_END, REVISION_INTERVALL
 	}
 
 	public SearchTriggerConfig(){
@@ -37,18 +33,18 @@ public class SearchTriggerConfig extends AbstractTriggerConfig {
 		));
 		optionContainer.setOption(new Option(
 				GROUPS.SETTINGS.toString(),
-				OPTIONS.REVISION_START.toString(), "Start revision for the search", 
+				OPTIONS.REVISION_START.toString(), "Start revision for search", 
 				Type.TEXT_SMALL, ""
 		));
 		optionContainer.setOption(new Option(
 				GROUPS.SETTINGS.toString(),
-				OPTIONS.REVISION_END.toString(), "End revision for the search", 
+				OPTIONS.REVISION_END.toString(), "End revision for search", 
 				Type.TEXT_SMALL, ""
 		));
 		optionContainer.setOption(new Option(
 				GROUPS.SETTINGS.toString(),
-				OPTIONS.SEARCH_MODE.toString(), "The search-mode to be used", 
-				Type.TEXT_LIST, StringTools.enum2strings(SearchMode.class), SearchMode.LINEAR.toString()
+				OPTIONS.REVISION_INTERVALL.toString(), "Revision intervall for search", 
+				Type.INTEGER, 1, 1, 100
 		));
 	}
 	
@@ -61,7 +57,7 @@ public class SearchTriggerConfig extends AbstractTriggerConfig {
 		);
 		
 		OptionEditor.setOptionDelegate(
-				container.getOption(OPTIONS.SEARCH_MODE.toString()),
+				container.getOption(OPTIONS.REVISION_START.toString()),
 				new IOptionDelegate(){
 					@Override
 					public String getDelegateName() { return "Restart"; }
@@ -100,8 +96,8 @@ public class SearchTriggerConfig extends AbstractTriggerConfig {
 		return optionContainer.getOption(OPTIONS.REVISION_END.toString()).getStringValue();
 	}
 	
-	public SearchMode getSearchMode(){ 
-		return SearchMode.valueOf(optionContainer.getOption(OPTIONS.SEARCH_MODE.toString()).getStringValue());
+	public int getRevisionIntervall(){ 
+		return optionContainer.getOption(OPTIONS.REVISION_INTERVALL.toString()).getIntegerValue();
 	}
 	
 	@Override
