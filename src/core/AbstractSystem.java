@@ -6,7 +6,7 @@ import util.UiTools;
 
 public class AbstractSystem implements ISystemComponent {
 
-	public static final Exception ABOARDING = new Exception("aboarding");
+	public static final Exception ABORT_EXCEPTION = new Exception("abort");
 	
 	private ArrayList<ISystemComponent> components;
 	private boolean init;
@@ -63,10 +63,10 @@ public class AbstractSystem implements ISystemComponent {
 				}
 				component.init();
 			}catch(Exception e){
-				if(e != ABOARDING){
+				if(e != ABORT_EXCEPTION){
 					error(e);
 					if(!UiTools.confirmDialog(name+" Error on INIT !!!\nContinue anyway ?", e)){
-						throw ABOARDING;
+						throw ABORT_EXCEPTION;
 					}
 				}else{
 					throw e;
@@ -91,10 +91,10 @@ public class AbstractSystem implements ISystemComponent {
 				}
 				component.shutdown();
 			}catch(Exception e){
-				if(e != ABOARDING){
+				if(e != ABORT_EXCEPTION){
 					error(e);
 					UiTools.errorDialog(name+" Error on SHUTDOWN !!!", e);
-					throw ABOARDING;
+					throw ABORT_EXCEPTION;
 				}else{
 					throw e;
 				}

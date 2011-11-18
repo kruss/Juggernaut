@@ -42,7 +42,7 @@ public class SearchTriggerConfig extends AbstractTriggerConfig {
 		));
 		optionContainer.setOption(new Option(
 				GROUPS.SETTINGS.toString(),
-				OPTIONS.REVISION_END.toString(), "Start revision for the search", 
+				OPTIONS.REVISION_END.toString(), "End revision for the search", 
 				Type.TEXT_SMALL, ""
 		));
 		optionContainer.setOption(new Option(

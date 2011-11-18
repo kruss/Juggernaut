@@ -35,33 +35,33 @@ public class Juggernaut extends AbstractSystem {
 	
 	private static final String LOCK_FILE = "lock";
 	
-	private static File getLockFile(){
-		return new File(SystemTools.getWorkingDir()+File.separator+LOCK_FILE);
-	}
-	
 	public static void main(String[] args){
 		
+		File lock = getLockFile();
 		try{
-			if(!getLockFile().isFile()){
-				setLookAndFeel(args);
+			if(!lock.isFile()){
+				setAppStyle(args);
 				Juggernaut juggernaut = new Juggernaut();
 				juggernaut.init(); 
 			}else{
-				throw new Exception("Lock-File at: "+getLockFile().getAbsolutePath());
+				throw new Exception("Locked at: "+lock.getAbsolutePath());
 			}
 		}catch(Exception e){
-			if(e != ABOARDING){
+			if(e != ABORT_EXCEPTION){
 				e.printStackTrace();
 				UiTools.errorDialog("Error on STARTUP !!!", e);
 			}else{
-				getLockFile().delete();
+				lock.delete();
 			}
 			System.exit(Constants.PROCESS_NOK);
 		}
 	}
+	
+	private static File getLockFile(){
+		return new File(SystemTools.getWorkingDir()+File.separator+LOCK_FILE);
+	}
 
-	private static void setLookAndFeel(String[] args) throws Exception {
-		
+	private static void setAppStyle(String[] args) throws Exception {
 		int style = UiTools.getStyle(Constants.APP_STYLE_DEFAULT);
 		for(int i=0; i<args.length; i++){
 			if(args[i].equals("-style") && i<args.length-1){
@@ -69,7 +69,7 @@ public class Juggernaut extends AbstractSystem {
 				break;
 			}
 		}
-		Constants.APP_STYLE = style != -1 ? style : 0;
+		Constants.APP_STYLE = (style != -1) ? style : 0;
 	}
 
 	private Logging logging;

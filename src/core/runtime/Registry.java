@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import core.ISystemComponent;
 import core.launch.operation.AbstractOperationConfig;
 import core.launch.operation.CommandOperationConfig;
-import core.launch.operation.EclipseOperationConfig;
 import core.launch.operation.SVNOperationConfig;
 import core.launch.operation.SampleOperationConfig;
 import core.launch.trigger.AbstractTriggerConfig;
@@ -46,7 +45,6 @@ public class Registry implements ISystemComponent {
 		operationConfigs.add(SampleOperationConfig.class);
 		operationConfigs.add(CommandOperationConfig.class);
 		operationConfigs.add(SVNOperationConfig.class);
-		operationConfigs.add(EclipseOperationConfig.class);
 		
 		triggerConfigs.clear();
 		triggerConfigs.add(IntervallTriggerConfig.class);

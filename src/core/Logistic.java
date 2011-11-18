@@ -1,5 +1,5 @@
 package core;
 /** generated file */
 public class Logistic {
-  public static final String BUILD_DATE = "Fri Jun 10 15:04:52 +0200 2011";
+  public static final String BUILD_DATE = "2011-11-18 14:57:19 +0100";
 }

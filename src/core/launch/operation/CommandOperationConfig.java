@@ -47,7 +47,7 @@ public class CommandOperationConfig extends AbstractOperationConfig {
 		));
 		optionContainer.setOption(new Option(
 				GROUPS.SETTINGS.toString(),
-				OPTIONS.ENVIRONMENT.toString(), "Environment-Variables (linewise <key=value>, commented with '//')", 
+				OPTIONS.ENVIRONMENT.toString(), "Environment-Variables, eg: 'Path' (linewise <key=value>, commented with '//')", 
 				Type.TEXT_AREA, ""
 		));
 	}

@@ -113,7 +113,7 @@ public class ProjectMenu extends JMenu implements ISystemComponent, IChangeListe
 					try{
 						juggernaut.shutdown();
 					}catch(Exception e){
-						if(e != AbstractSystem.ABOARDING){
+						if(e != AbstractSystem.ABORT_EXCEPTION){
 							UiTools.errorDialog(e);
 						}
 						System.exit(Constants.PROCESS_NOK);

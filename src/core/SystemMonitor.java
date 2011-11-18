@@ -42,7 +42,7 @@ public class SystemMonitor {
 		
 		if(monitor != null){
 			if(monitor.isCanceled()){
-				throw AbstractSystem.ABOARDING;
+				throw AbstractSystem.ABORT_EXCEPTION;
 			}else{
 				monitor.setProgress(++progress);
 				monitor.setNote(message);
