@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import core.Result;
-import core.Result.Resolution;
 import core.launch.LifecycleObject;
 
 public class ResultManager {
@@ -29,17 +28,16 @@ public class ResultManager {
 	}
 	
 	private void addResultErrors(Result result, String trace) {
-		
 		if(trace == null){
 			trace = result.name;
 		}else{
 			trace += "::"+result.name;
 		}
 		
-		if(result.resolution == Resolution.ERROR){
-			if(result.messages.size() > 0){
-				for(String message : result.messages){
-					parent.getStatusManager().addError(parent, trace, message);
+		if(result.status == Result.Status.ERROR){
+			if(result.values.size() > 0){
+				for(String value : result.values){
+					parent.getStatusManager().addError(parent, trace, value);
 				}
 			}else{
 				parent.getStatusManager().addError(parent, trace, null);
@@ -54,22 +52,22 @@ public class ResultManager {
 	public static String getResultHtml(Result result){
 		
 		StringBuilder html = new StringBuilder();
-		if(result.resolution != Resolution.UNDEFINED){
-			html.append("<b>"+result.name+"</b> - "+getResolutionHtml(result.resolution)+"\n");
+		if(result.status != Result.Status.UNDEFINED){
+			html.append("<b>"+result.name+"</b> - "+getResultStatusHtml(result.status)+"\n");
 		}else{
 			html.append("<b>"+result.name+"</b>\n");
 		}
 		ArrayList<String> keys = new ArrayList<String>();
-		for(String key : result.values.keySet()){
+		for(String key : result.properties.keySet()){
 			keys.add(key);
 		}
 		Collections.sort(keys);
 		for(String key : keys){
-			String value = result.values.get(key);
+			String value = result.properties.get(key);
 			html.append("<br>- <i>"+key+": "+value+"</i>\n");
 		}
-		for(String message : result.messages){
-			html.append("<br>+ "+message+"\n");
+		for(String value : result.values){
+			html.append("<br>+ "+value+"\n");
 		}
 		if(result.results.size() > 0){
 			html.append("<ul>\n");
@@ -83,18 +81,18 @@ public class ResultManager {
 		return html.toString();
 	}
 	
-	public static String getResolutionHtml(Resolution resolution) {
-		return "<font color='"+getResolutionColor(resolution)+"'>"+resolution.toString()+"</font>";
+	public static String getResultStatusHtml(Result.Status status) {
+		return "<font color='"+getResultStatusColor(status)+"'>"+status.toString()+"</font>";
 	}
 	
-	public static String getResolutionColor(Resolution resolution) {
+	public static String getResultStatusColor(Result.Status status) {
 
 		String color = "black";
-		if(resolution == Resolution.SUCCEED){
+		if(status == Result.Status.SUCCEED){
 			color = "green";
-		}else if(resolution == Resolution.WARNING){
+		}else if(status == Result.Status.WARNING){
 			color = "blue";
-		}else if(resolution == Resolution.ERROR){
+		}else if(status == Result.Status.ERROR){
 			color = "red";
 		}
 		return color;
