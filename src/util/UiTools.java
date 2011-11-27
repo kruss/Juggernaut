@@ -30,11 +30,16 @@ public class UiTools {
 	}
 
 	public static String inputDialog(String text, String value){ 
-		
+		String input = null;
 		if(value != null){
-			return JOptionPane.showInputDialog(text, value).trim();
+			input = JOptionPane.showInputDialog(text, value);
 		}else{
-			return JOptionPane.showInputDialog(text).trim();
+			input = JOptionPane.showInputDialog(text);
+		}
+		if(input != null){
+			return input.trim();
+		}else{
+			return null;
 		}
 	}	
 	
