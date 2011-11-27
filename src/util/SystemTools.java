@@ -26,6 +26,11 @@ public class SystemTools {
 		return getOSName().toLowerCase().contains("linux");
 	}
 	
+	/** answers if current os is mac */
+	public static boolean isMacOS(){
+		return getOSName().toLowerCase().contains("mac");
+	}
+	
 	/** get the local host-name */
 	public static String getHostName() throws UnknownHostException {
 		
@@ -41,10 +46,12 @@ public class SystemTools {
 	/** open system-browser on url */
 	public static void openBrowser(String url) throws IOException {
 		
-		if(getOSName().toLowerCase().contains("windows")){
+		if(isWindowsOS()){
 			openWindowsBrowser(url);
-		}else if(getOSName().toLowerCase().contains("linux")){
+		}else if(isLinuxOS()){
 			openLinuxBrowser(url);
+		}else if(isMacOS()){
+			openMacBrowser(url);
 		}else{
 			throw new IOException("Unsuported OS: "+getOSName());
 		}
@@ -55,6 +62,10 @@ public class SystemTools {
 	}
 	
 	private static void openLinuxBrowser(String target) throws IOException {
-		Runtime.getRuntime().exec("firefox "+target); // the most probably one
+		Runtime.getRuntime().exec("firefox "+target);
+	}
+	
+	private static void openMacBrowser(String path) throws IOException {
+		Runtime.getRuntime().exec("open file://"+path.replaceAll("\\s", "%20"));
 	}
 }
