@@ -136,7 +136,7 @@ implements
 		optionContainer.setOption(new Option(
 				GROUPS.HTTP.toString(),
 				OPTIONS.HTTP_PORT.toString(), "The HTTP-Server port", 
-				Type.INTEGER, 80, 1, 1024
+				Type.INTEGER, 80, 1, 65536
 		));
 		optionContainer.setOption(new Option(
 				GROUPS.SMTP.toString(),
