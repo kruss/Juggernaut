@@ -1,8 +1,4 @@
 #!/bin/bash
 
 cd ..
-
-ruby --version
-gem list
-
 java -jar deploy/Juggernaut.jar
