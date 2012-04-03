@@ -7,7 +7,8 @@ public interface IHttpServer extends ISystemComponent, IChangeable {
 
 	public IHttpConfig getConfig();
 	
-	public void startServer() throws Exception;
-	public void stopServer() throws Exception;
 	public boolean isRunning();
+	
+	public void start() throws Exception;
+	public void stop() throws Exception;
 }

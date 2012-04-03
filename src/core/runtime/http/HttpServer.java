@@ -6,13 +6,12 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.ServerSocket;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
-import java.util.Properties;
 import java.util.StringTokenizer;
-import java.util.TimeZone;
 
 import util.IChangeListener;
 import util.Task;
@@ -22,23 +21,21 @@ import core.runtime.TaskManager;
 import core.runtime.logger.Logger;
 import core.runtime.logger.ILogConfig.Module;
 
-
-@SuppressWarnings({ "deprecation", "unchecked" })
 public class HttpServer implements IHttpServer {
 
 	private IHttpConfig config;
 	private TaskManager taskManager;
-	private File root;
-	private ServerSocket serverSocket;
-	private ServerThread serverThread; 
 	private Logger logger;
 	private ArrayList<IChangeListener> listeners;
+	private ServerSocket socket;
+	private ServerThread thread; 
+	private File root;
 	
 	@Override
 	public IHttpConfig getConfig(){ return config; }
 	
 	@Override
-	public boolean isRunning(){ return serverThread != null; }
+	public boolean isRunning(){ return thread != null; }
 	
 	public HttpServer(
 			IHttpConfig config, 
@@ -49,6 +46,7 @@ public class HttpServer implements IHttpServer {
 		this.config = config;
 		this.logger = logger;
 		this.taskManager = taskManager;
+		
 		root = fileManager.getHistoryFolder();
 		listeners = new ArrayList<IChangeListener>();
 	}
@@ -56,13 +54,13 @@ public class HttpServer implements IHttpServer {
 	@Override
 	public void init() throws Exception {
 		if(config.isHttpServer()){
-			startServer();
+			start();
 		}
 	}
 	
 	@Override
 	public void shutdown() throws Exception {
-		stopServer();
+		stop();
 	}
 	
 	@Override
@@ -75,37 +73,34 @@ public class HttpServer implements IHttpServer {
 	}
 	
 	@Override
-	public void startServer() throws Exception {
-		if(serverThread == null){
-			startHttpServer();
+	public void start() throws Exception {
+		if(thread == null){
+			startServer();
 			notifyListeners();
 		}
 	}
 
 	@Override
-	public void stopServer() throws Exception {
-		if(serverThread != null){
-			stopHttpServer();
+	public void stop() throws Exception {
+		if(thread != null){
+			stopServer();
 			notifyListeners();
 		}
 	}
 	
-	private void startHttpServer() throws Exception {
-		
+	private void startServer() throws Exception {
 		int port = config.getHttpPort();
 		logger.debug(Module.HTTP, "Startup HTTP - Port: "+port);
-		serverSocket = new ServerSocket(port);
-		final HttpServer instance = this;
-		serverThread = new ServerThread(instance);
-		serverThread.asyncRun(0, 0);
+		socket = new ServerSocket(port);
+		thread = new ServerThread(this);
+		thread.asyncRun(0, 0);
 	}
 	
-	private void stopHttpServer() throws Exception {
-		
+	private void stopServer() throws Exception {
 		logger.debug(Module.HTTP, "Shutdown HTTP");
-		serverSocket.close();
-		serverThread.syncStop(1000);
-		serverThread = null;
+		socket.close();
+		thread.syncStop(1000);
+		thread = null;
 	}
 	
 	private class ServerThread extends Task {
@@ -121,217 +116,200 @@ public class HttpServer implements IHttpServer {
 		
 		protected void runTask() {
 			try{
-				new HttpSession(server, serverSocket.accept());
+				new HttpSession(server, socket.accept());
 			}catch(IOException e){
 				logger.debug(Module.HTTP, e.getMessage());
 			}
 		}
 	}
 	
-	/**
-	 * By default, this delegates to serveFile() and allows directory listing.
-	 *
-	 * @parm uri	Percent-decoded URI without parameters, for example "/index.cgi"
-	 * @parm method	"GET", "POST" etc.
-	 * @parm parms	Parsed, percent decoded parameters from URI and, in case of POST, data.
-	 * @parm header	Header entries, percent decoded
-	 * @return HTTP response, see class Response for details
-	 */
-	public HttpResponse serve(String uri, String method, Properties header, Properties parms)
-	{
+	public HttpResponse serve(String uri, String method, HashMap<String, String> header, HashMap<String, String> params){
 		logger.debug(Module.HTTP, method+" '"+uri+"' ");
-
-		Enumeration e = header.propertyNames();
-		while ( e.hasMoreElements())
-		{
-			String value = (String)e.nextElement();
-			logger.debug(Module.HTTP, "  HDR: '" + value + "' = '" +
-								header.getProperty( value ) + "'" );
+		for(String key : header.keySet()){
+			logger.debug(Module.HTTP, "  HDR: '"+key+"' = '"+header.get(key)+ "'");
 		}
-		e = parms.propertyNames();
-		while ( e.hasMoreElements())
-		{
-			String value = (String)e.nextElement();
-			logger.debug(Module.HTTP, "  PRM: '" + value + "' = '" +
-								parms.getProperty( value ) + "'" );
+		for(String key : params.keySet()){
+			logger.debug(Module.HTTP, "  PRM: '"+key+"' = '"+params.get(key)+ "'");
 		}
 
-		return serveFile( uri, header, root, true );
+		if(root.isDirectory()){
+			return serveFile(uri, header);
+		}else{
+			return new HttpResponse( 
+					HTTP_INTERNALERROR, MIME_TEXT,
+					"not a directory: "+root.getAbsolutePath()
+			);
+		}
 	}
 
-	/**
-	 * Serves file from homeDir and its' subdirectories (only).
-	 * Uses only URI, ignores all headers and HTTP parameters.
-	 */
-	public HttpResponse serveFile( String uri, Properties header, File homeDir,
-							   boolean allowDirectoryListing )
-	{
-		// Make sure we won't die of an exception later
-		if ( !homeDir.isDirectory())
-			return new HttpResponse( HTTP_INTERNALERROR, MIME_PLAINTEXT,
-								 "INTERNAL ERRROR: serveFile(): given homeDir is not a directory." );
-
-		// Remove URL arguments
-		uri = uri.trim().replace( File.separatorChar, '/' );
-		if ( uri.indexOf( '?' ) >= 0 )
+	public HttpResponse serveFile(String uri, HashMap<String, String> header) {
+		// cut off args
+		uri = uri.trim().replace(File.separatorChar, '/');
+		if(uri.indexOf('?') >= 0){
 			uri = uri.substring(0, uri.indexOf( '?' ));
-
-		// Prohibit getting out of current directory
-		if ( uri.startsWith( ".." ) || uri.endsWith( ".." ) || uri.indexOf( "../" ) >= 0 )
-			return new HttpResponse( HTTP_FORBIDDEN, MIME_PLAINTEXT,
-								 "FORBIDDEN: Won't serve ../ for security reasons." );
-
-		File f = new File( homeDir, uri );
-		if ( !f.exists())
-			return new HttpResponse( HTTP_NOTFOUND, MIME_PLAINTEXT,
-								 "Error 404, file not found." );
-
-		// List the directory, if necessary
-		if ( f.isDirectory())
-		{
-			// Browsers get confused without '/' after the
-			// directory, send a redirect.
-			if ( !uri.endsWith( "/" ))
-			{
+		}
+		// protect browsing
+		if(uri.startsWith("..") || uri.endsWith("..") || uri.indexOf("../") >= 0){
+			return new HttpResponse( 
+					HTTP_FORBIDDEN, MIME_TEXT,
+					"invalid uri: "+uri
+			);
+		}
+		// check for existence
+		File file = new File(root, uri);
+		if(!file.exists()){
+			return new HttpResponse( 
+					HTTP_NOTFOUND, MIME_TEXT,
+					"not a file: "+file.getAbsolutePath() 
+			);
+		}
+		
+		// check for directory
+		if(file.isDirectory()){
+			if (!uri.endsWith( "/")){ // redirect to folder
 				uri += "/";
-				HttpResponse r = new HttpResponse( HTTP_REDIRECT, MIME_HTML,
-										   "<html><body>Redirected: <a href=\"" + uri + "\">" +
-										   uri + "</a></body></html>");
-				r.addHeader( "Location", uri );
-				return r;
+				HttpResponse response = new HttpResponse( 
+						HTTP_REDIRECT, MIME_HTML,
+						"<html><body>Redirected: <a href=\""+uri+"\">"+uri+"</a></body></html>"
+				);
+				response.header.put("Location", uri);
+				return response;
 			}
-
-			// First try index.html and index.htm
-			if ( new File( f, "index.html" ).exists())
-				f = new File( homeDir, uri + "/index.html" );
-			else if ( new File( f, "index.htm" ).exists())
-				f = new File( homeDir, uri + "/index.htm" );
-
-			// No index file, list the directory
-			else if ( allowDirectoryListing )
-			{
-				String[] files = f.list();
-				String msg = "<html><body><h1>Directory " + uri + "</h1><br/>";
-
-				if ( uri.length() > 1 )
-				{
-					String u = uri.substring( 0, uri.length()-1 );
-					int slash = u.lastIndexOf( '/' );
-					if ( slash >= 0 && slash  < u.length())
-						msg += "<b><a href=\"" + uri.substring(0, slash+1) + "\">..</a></b><br/>";
-				}
-
-				for ( int i=0; i<files.length; ++i )
-				{
-					File curFile = new File( f, files[i] );
-					boolean dir = curFile.isDirectory();
-					if ( dir )
-					{
-						msg += "<b>";
-						files[i] += "/";
-					}
-
-					msg += "<a href=\"" + encodeUri( uri + files[i] ) + "\">" +
-						   files[i] + "</a>";
-
-					// Show file size
-					if ( curFile.isFile())
-					{
-						long len = curFile.length();
-						msg += " &nbsp;<font size=2>(";
-						if ( len < 1024 )
-							msg += curFile.length() + " bytes";
-						else if ( len < 1024 * 1024 )
-							msg += curFile.length()/1024 + "." + (curFile.length()%1024/10%100) + " KB";
-						else
-							msg += curFile.length()/(1024*1024) + "." + curFile.length()%(1024*1024)/10%100 + " MB";
-
-						msg += ")</font>";
-					}
-					msg += "<br/>";
-					if ( dir ) msg += "</b>";
-				}
-				return new HttpResponse( HTTP_OK, MIME_HTML, msg );
-			}
-			else
-			{
-				return new HttpResponse( HTTP_FORBIDDEN, MIME_PLAINTEXT,
-								 "FORBIDDEN: No directory listing." );
+			
+			// check for index-page
+			if(new File(file, "index.html").exists()){
+				file = new File(root, uri+"/index.html");
+			}else if(new File(file, "index.htm").exists()){
+				file = new File(root, uri+"/index.htm");
+			}else{ // list the directory
+				String message = getListing(uri, file);
+				return new HttpResponse(
+						HTTP_OK, MIME_HTML, 
+						message
+				);
 			}
 		}
 
-		try
-		{
-			// Get MIME type from file name extension, if possible
-			String mime = null;
-			int dot = f.getCanonicalPath().lastIndexOf( '.' );
-			if ( dot >= 0 )
-				mime = (String)theMimeTypes.get( f.getCanonicalPath().substring( dot + 1 ).toLowerCase());
-			if ( mime == null )
-				mime = MIME_DEFAULT_BINARY;
-
-			// Support (simple) skipping:
-			long startFrom = 0;
-			String range = header.getProperty( "range" );
-			if ( range != null )
-			{
-				if ( range.startsWith( "bytes=" ))
-				{
-					range = range.substring( "bytes=".length());
-					int minus = range.indexOf( '-' );
-					if ( minus > 0 )
-						range = range.substring( 0, minus );
-					try	{
-						startFrom = Long.parseLong( range );
-					}
-					catch ( NumberFormatException nfe ) {}
-				}
-			}
-
-			FileInputStream fis = new FileInputStream( f );
-			fis.skip( startFrom );
-			HttpResponse r = new HttpResponse( HTTP_OK, mime, fis );
-			r.addHeader( "Content-length", "" + (f.length() - startFrom));
-			r.addHeader( "Content-range", "" + startFrom + "-" +
-						(f.length()-1) + "/" + f.length());
-			return r;
-		}
-		catch( IOException ioe )
-		{
-			return new HttpResponse( HTTP_FORBIDDEN, MIME_PLAINTEXT, "FORBIDDEN: Reading file failed." );
+		// create response
+		try{
+			String mime = getMimeType(file);
+			long start = parseStart(header);
+			FileInputStream stream = new FileInputStream(file);
+			stream.skip(start);
+			HttpResponse response = new HttpResponse(HTTP_OK, mime, stream);
+			response.header.put("Content-length", ""+(file.length()-start));
+			response.header.put("Content-range", start+"-"+(file.length()-1)+"/"+file.length());
+			return response;
+		}catch(IOException e){
+			return new HttpResponse(
+					HTTP_FORBIDDEN, MIME_TEXT, 
+					"Could not read: "+file.getAbsolutePath() 
+			);
 		}
 	}
 
-	/**
-	 * Hashtable mapping (String)FILENAME_EXTENSION -> (String)MIME_TYPE
-	 */
-	private static Hashtable theMimeTypes = new Hashtable();
-	static
-	{
-		StringTokenizer st = new StringTokenizer(
-			"htm		text/html "+
-			"html		text/html "+
-			"txt		text/plain "+
-			"asc		text/plain "+
-			"gif		image/gif "+
-			"jpg		image/jpeg "+
-			"jpeg		image/jpeg "+
-			"png		image/png "+
-			"mp3		audio/mpeg "+
-			"m3u		audio/mpeg-url " +
-			"pdf		application/pdf "+
-			"doc		application/msword "+
-			"ogg		application/x-ogg "+
-			"zip		application/octet-stream "+
-			"exe		application/octet-stream "+
-			"class		application/octet-stream " );
-		while ( st.hasMoreTokens())
-			theMimeTypes.put( st.nextToken(), st.nextToken());
+	private String getListing(String uri, File folder) {
+		String[] files = folder.list();
+		String message = "<html><body><h1>Directory "+uri+"</h1><br/>";
+		// parent path
+		if(uri.length() > 1){
+			String part = uri.substring(0, uri.length()-1);
+			int index = part.lastIndexOf('/');
+			if(index >= 0 && index  < part.length()){
+				message += "<b><a href=\"" + uri.substring(0, index+1) + "\">..</a></b><br/>";
+			}
+		}
+		// folder content
+		for(int i=0; i<files.length; ++i){
+			File file = new File(folder, files[i]);
+			if(file.isDirectory()){
+				message += "<b>";
+				files[i] += "/";
+			}
+			message += "<a href=\""+encodeUri(uri+files[i])+"\">"+files[i]+"</a>";
+			if(file.isFile()){
+				message += " &nbsp;<font size=2>("+file.length()+" bytes"+")</font>";
+			}
+			message += "<br/>";
+			if(file.isDirectory()){ 
+				message += "</b>"; 
+			}
+		}
+		return message;
 	}
 
-	/**
-	 * Some HTTP response status codes
-	 */
+	public static String formatDate(Date date){
+		SimpleDateFormat formater = new SimpleDateFormat("E, d MMM yyyy HH:mm:ss 'GMT'", Locale.US);
+		return formater.format(date);
+	}
+	
+	@SuppressWarnings("deprecation")
+	private String encodeUri(String uri){
+		String encoded = "";
+		StringTokenizer tokenizer = new StringTokenizer(uri, "/ ", true);
+		while(tokenizer.hasMoreTokens()){
+			String token = tokenizer.nextToken();
+			if(token.equals( "/" )){
+				encoded += "/";
+			}else if(token.equals( " " )){
+				encoded += "%20";
+			}else{
+				try{ 
+					encoded += URLEncoder.encode(token, "UTF-8"); 
+				}catch(UnsupportedEncodingException e){
+					encoded += URLEncoder.encode(token);
+				}
+			}
+		}
+		return encoded;
+	}
+	
+	private long parseStart(HashMap<String, String> header) {
+		long start = 0;
+		String range = header.get("range");
+		if(range != null){
+			if(range.startsWith("bytes=")){
+				range = range.substring("bytes=".length());
+				int index = range.indexOf('-');
+				if(index > 0){
+					range = range.substring(0, index);
+				}
+				try{
+					start = Long.parseLong(range);
+				}catch(NumberFormatException e){
+					/* NOTHING */
+				}
+			}
+		}
+		return start;
+	}
+	
+	private String getMimeType(File file) throws IOException {
+		String mime = MIME_BINARY;
+		int index = file.getCanonicalPath().lastIndexOf('.');
+		if(index >= 0){
+			String extention = file.getCanonicalPath().substring(index + 1).toLowerCase();
+			mime = getMimeType(extention);
+		}
+		return mime;
+	}
+	
+	public static String getMimeType(String extention){
+		if(
+			extention.equals("txt") ||
+			extention.equals("log")
+		){
+			return MIME_TEXT;
+		}else if(
+			extention.equals("htm") ||
+			extention.equals("html")
+		){
+			return MIME_HTML;
+		}else{
+			return MIME_BINARY;
+		}
+	}
+
 	public static final String
 		HTTP_OK = "200 OK",
 		HTTP_REDIRECT = "301 Moved Permanently",
@@ -341,50 +319,9 @@ public class HttpServer implements IHttpServer {
 		HTTP_INTERNALERROR = "500 Internal Server Error",
 		HTTP_NOTIMPLEMENTED = "501 Not Implemented";
 
-	/**
-	 * Common mime types for dynamic content
-	 */
 	public static final String
-		MIME_PLAINTEXT = "text/plain",
+		MIME_TEXT = "text/plain",
 		MIME_HTML = "text/html",
-		MIME_DEFAULT_BINARY = "application/octet-stream";
-
-
-	/**
-	 * URL-encodes everything between "/"-characters.
-	 * Encodes spaces as '%20' instead of '+'.
-	 */
-	private String encodeUri( String uri )
-	{
-		String newUri = "";
-		StringTokenizer st = new StringTokenizer( uri, "/ ", true );
-		while ( st.hasMoreTokens())
-		{
-			String tok = st.nextToken();
-			if ( tok.equals( "/" ))
-				newUri += "/";
-			else if ( tok.equals( " " ))
-				newUri += "%20";
-			else
-			{
-				try { 
-					newUri += URLEncoder.encode( tok, "UTF-8" ); 
-				} catch ( UnsupportedEncodingException uee ){
-					newUri += URLEncoder.encode( tok );
-				}
-			}
-		}
-		return newUri;
-	}
-
-	/**
-	 * GMT date formatter
-	 */
-    public static java.text.SimpleDateFormat gmtFrmt;
-	static
-	{
-		gmtFrmt = new java.text.SimpleDateFormat( "E, d MMM yyyy HH:mm:ss 'GMT'", Locale.US);
-		gmtFrmt.setTimeZone(TimeZone.getTimeZone("GMT"));
-	}
+		MIME_BINARY = "application/octet-stream";
 }
 

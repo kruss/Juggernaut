@@ -81,9 +81,9 @@ public class PreferencePanel extends JPanel implements ISystemComponent, IChange
 		
 		try{
 			if(configuration.isHttpServer()){
-				httpServer.startServer();
+				httpServer.start();
 			}else{
-				httpServer.stopServer();
+				httpServer.stop();
 			}
 		}catch(Exception e){
 			UiTools.errorDialog(e);
